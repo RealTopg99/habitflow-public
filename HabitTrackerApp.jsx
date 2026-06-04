@@ -1237,6 +1237,164 @@ const injectStyles = () => {
     .app-main { padding: 24px 28px; max-width: 1280px; margin: 0 auto; width: 100%; }
     .mobile-only { display: none !important; }
 
+    :root {
+      --hf-radius-xs: 10px;
+      --hf-radius-sm: 14px;
+      --hf-radius-md: 18px;
+      --hf-radius-lg: 26px;
+      --hf-glass: linear-gradient(145deg, rgba(255,255,255,0.052), rgba(255,255,255,0.018));
+      --hf-glass-quiet: linear-gradient(145deg, rgba(255,255,255,0.038), rgba(255,255,255,0.012));
+      --hf-shadow: 0 22px 58px rgba(0,0,0,0.26);
+      --hf-shadow-soft: 0 12px 32px rgba(0,0,0,0.18);
+    }
+    body {
+      background:
+        radial-gradient(circle at 12% 10%, rgba(var(--icon-rgb,225,29,72),0.10), transparent 26%),
+        radial-gradient(circle at 84% 18%, rgba(255,255,255,0.045), transparent 24%),
+        radial-gradient(circle at 72% 86%, rgba(var(--icon-rgb,225,29,72),0.055), transparent 32%),
+        var(--app-bg, #050505) !important;
+    }
+    .content-area > header {
+      border-bottom: 1px solid var(--app-border, rgba(255,255,255,0.08)) !important;
+      background: var(--header-bg, rgba(0,0,0,0.92)) !important;
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+    }
+    .sidebar {
+      border-right: 1px solid var(--app-border, rgba(255,255,255,0.08)) !important;
+      background:
+        radial-gradient(circle at 40% 0%, rgba(var(--icon-rgb,225,29,72),0.09), transparent 25%),
+        var(--app-surface, #050505) !important;
+    }
+    .view-enter {
+      animation: fadeIn 0.28s cubic-bezier(.2,.8,.2,1);
+    }
+    input, textarea, select {
+      transition: border-color 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+    }
+    input:focus, textarea:focus, select:focus {
+      border-color: rgba(var(--icon-rgb,225,29,72),0.48) !important;
+      box-shadow: 0 0 0 4px rgba(var(--icon-rgb,225,29,72),0.10) !important;
+    }
+    button {
+      transition: transform 0.18s ease, filter 0.18s ease, background 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
+    }
+    button:disabled {
+      cursor: not-allowed !important;
+      opacity: 0.52 !important;
+      filter: grayscale(0.25);
+    }
+    .lab-shell-card,
+    .finance-card,
+    .kpi-card,
+    .habit-card {
+      border-radius: var(--hf-radius-lg) !important;
+      border-color: rgba(255,255,255,0.105) !important;
+      background: var(--hf-glass) !important;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.045), var(--hf-shadow) !important;
+    }
+    .finance-card,
+    .reading-view [style*="box-shadow"] {
+      background: var(--hf-glass-quiet) !important;
+    }
+    .lab-pill {
+      min-height: 26px;
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      letter-spacing: 0.015em;
+    }
+    .lab-cta {
+      min-height: 40px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      font-weight: 800 !important;
+      letter-spacing: -0.01em;
+    }
+    .lab-cta:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 10px 26px rgba(var(--icon-rgb,225,29,72),0.18) !important;
+    }
+    .kpi-card:hover,
+    .habit-card:hover,
+    .finance-card:hover,
+    .reading-view [style*="box-shadow"]:hover {
+      border-color: rgba(var(--icon-rgb,225,29,72),0.24) !important;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.06), 0 24px 70px rgba(0,0,0,0.30) !important;
+    }
+    .app-main h1,
+    .app-main h2 {
+      text-wrap: balance;
+    }
+    .app-main p,
+    .app-main div {
+      text-rendering: geometricPrecision;
+    }
+    .top-sync,
+    .top-random {
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.05);
+    }
+    .mobile-more-popover {
+      box-shadow: 0 -18px 54px rgba(0,0,0,0.45), inset 0 1px 0 rgba(255,255,255,0.05) !important;
+    }
+    .recharts-cartesian-grid line {
+      stroke-opacity: 0.45 !important;
+    }
+    .recharts-text {
+      fill: var(--app-text-dim, #8888a0) !important;
+    }
+    .reading-view iframe {
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.04), 0 20px 60px rgba(0,0,0,0.22);
+    }
+    html[data-theme-mode="pinkLight"] {
+      --hf-glass: linear-gradient(145deg, rgba(255,255,255,0.92), rgba(255,240,246,0.78));
+      --hf-glass-quiet: linear-gradient(145deg, rgba(255,255,255,0.96), rgba(255,247,251,0.86));
+      --hf-shadow: 0 22px 58px rgba(190,18,60,0.12);
+      --hf-shadow-soft: 0 12px 32px rgba(190,18,60,0.09);
+    }
+    html[data-theme-mode="pinkLight"] body {
+      background:
+        radial-gradient(circle at 12% 8%, rgba(251,113,133,0.20), transparent 28%),
+        radial-gradient(circle at 82% 18%, rgba(255,255,255,0.86), transparent 24%),
+        linear-gradient(135deg, #fff7fb, #fff0f6 46%, #ffffff) !important;
+    }
+    html[data-theme-mode="pinkLight"] .app-main h2,
+    html[data-theme-mode="pinkLight"] .lab-hero-title {
+      background: linear-gradient(150deg, #24131c 12%, #8a3154 58%, #e11d48 108%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent !important;
+    }
+    html[data-theme-mode="pinkLight"] .content-area > header,
+    html[data-theme-mode="pinkLight"] .sidebar {
+      background: rgba(255,247,251,0.86) !important;
+      border-color: rgba(190,18,60,0.14) !important;
+    }
+    html[data-theme-mode="pinkLight"] .lab-cta {
+      background: linear-gradient(135deg, #e11d48, #fb7185) !important;
+      border-color: rgba(190,18,60,0.22) !important;
+      box-shadow: 0 12px 26px rgba(225,29,72,0.18) !important;
+    }
+    html[data-theme-mode="pinkLight"] .lab-cta::before {
+      display: none !important;
+    }
+    html[data-theme-mode="pinkLight"] .kpi-card,
+    html[data-theme-mode="pinkLight"] .habit-card,
+    html[data-theme-mode="pinkLight"] .finance-card,
+    html[data-theme-mode="pinkLight"] .lab-shell-card {
+      border-color: rgba(190,18,60,0.16) !important;
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.001ms !important;
+        animation-iteration-count: 1 !important;
+        scroll-behavior: auto !important;
+        transition-duration: 0.001ms !important;
+      }
+    }
+
     @media (max-width: 768px) {
       .mobile-only { display: flex !important; }
       .desktop-only { display: none !important; }
