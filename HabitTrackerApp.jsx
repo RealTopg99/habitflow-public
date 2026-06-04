@@ -31,8 +31,9 @@ const BASE_COLORS = {
 
 const COLORS = { ...BASE_COLORS };
 
-const APP_UPDATE_VERSION = '2026-06-04-premium-finance-agenda-v2';
+const APP_UPDATE_VERSION = '2026-06-04-finance-currency-labels-v3';
 const APP_UPDATE_NOTES = [
+  'Finanzas ahora etiqueta claramente cada valor como USD y COP.',
   'Finanzas ahora está separada por secciones para que no se sienta cargada.',
   'Los valores financieros muestran USD y COP al mismo tiempo.',
   'Las cuentas permiten tipos como banco, ahorro, crédito, deuda e inversión.',
@@ -4498,8 +4499,8 @@ const FinanceView = ({ data, onUpdateFinance }) => {
     if (!v) return '';
     return Number.isInteger(v) ? String(v) : v.toFixed(2);
   };
-  const moneyUSD = (n) => Number(n || 0).toLocaleString('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 });
-  const moneyCOP = (n) => Number(Number(n || 0) * copRate).toLocaleString('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 });
+  const moneyUSD = (n) => `USD ${Number(n || 0).toLocaleString('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 })}`;
+  const moneyCOP = (n) => `COP ${Number(Number(n || 0) * copRate).toLocaleString('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 })}`;
   const money = (n) => `${moneyUSD(n)} · ${moneyCOP(n)}`;
   const catById = (id) => categories.find(c => c.id === id) || { name: 'Sin categoria', color: COLORS.textDim };
   const accountById = (id) => accounts.find(a => a.id === id) || accounts[0] || { name: 'Sin cuenta' };
@@ -4815,7 +4816,10 @@ const FinanceView = ({ data, onUpdateFinance }) => {
                         <div style={{ color: COLORS.text, fontSize: 13, fontWeight: 800 }}><span style={{ color: cat.color }}>●</span> {cat.name}</div>
                         <div style={{ color: pct > 90 ? COLORS.alert : COLORS.textDim, fontSize: 11 }}>{money(spent)} usados de {money(limit)}</div>
                       </div>
-                      <input type="number" value={cleanDisplayValue(limit)} onChange={e => updateBudget(cat.id, e.target.value)} placeholder={`Limite ${currency}`} style={{ ...inputStyle, padding: '8px 9px', fontSize: 11 }} />
+                      <div style={{ position: 'relative' }}>
+                        <input type="number" value={cleanDisplayValue(limit)} onChange={e => updateBudget(cat.id, e.target.value)} placeholder={`Limite ${currency}`} style={{ ...inputStyle, padding: '8px 42px 8px 9px', fontSize: 11, width: '100%' }} />
+                        <span style={{ position: 'absolute', right: 9, top: '50%', transform: 'translateY(-50%)', color: COLORS.textDim, fontSize: 9, fontWeight: 800 }}>{currency}</span>
+                      </div>
                     </div>
                     <div style={{ height: 7, borderRadius: 99, background: COLORS.bg, overflow: 'hidden' }}>
                       <div style={{ height: '100%', width: `${pct}%`, borderRadius: 99, background: pct > 90 ? COLORS.alert : `linear-gradient(90deg, ${cat.color}, ${COLORS.primary})` }} />
@@ -4842,7 +4846,10 @@ const FinanceView = ({ data, onUpdateFinance }) => {
 
           <div className="finance-card finance-monthly-budget-card" style={{ ...cardStyle, display: section === 'budget' ? 'block' : 'none' }}>
             <h3 style={{ fontSize: 16, color: COLORS.text, marginBottom: 12 }}>Presupuesto mensual</h3>
-            <input type="number" value={cleanDisplayValue(finance.monthlyBudget)} onChange={e => onUpdateFinance(prev => ({ ...prev, monthlyBudget: fromDisplayAmount(e.target.value || 0) }))} placeholder={`Presupuesto ${currency}`} style={{ ...inputStyle, width: '100%', marginBottom: 12 }} />
+            <div style={{ position: 'relative', marginBottom: 12 }}>
+              <input type="number" value={cleanDisplayValue(finance.monthlyBudget)} onChange={e => onUpdateFinance(prev => ({ ...prev, monthlyBudget: fromDisplayAmount(e.target.value || 0) }))} placeholder={`Presupuesto ${currency}`} style={{ ...inputStyle, width: '100%', paddingRight: 52 }} />
+              <span style={{ position: 'absolute', right: 12, top: '50%', transform: 'translateY(-50%)', color: COLORS.textDim, fontSize: 10, fontWeight: 800 }}>{currency}</span>
+            </div>
             <div style={{ height: 8, background: COLORS.bg, borderRadius: 99, overflow: 'hidden' }}><div style={{ height: '100%', width: `${budgetPct}%`, background: `linear-gradient(90deg, ${COLORS.primary}, ${COLORS.alert})`, borderRadius: 99 }} /></div>
             <div style={{ color: COLORS.textDim, fontSize: 11, marginTop: 8 }}>Usado: {money(expenses)} · Plan por categorías: {money(budgetTotal)}</div>
           </div>
@@ -4875,7 +4882,10 @@ const FinanceView = ({ data, onUpdateFinance }) => {
               <select value={accountForm.type} onChange={e => setAccountForm(f => ({ ...f, type: e.target.value }))} style={{ ...inputStyle, padding: '8px 9px', fontSize: 11 }}>
                 {ACCOUNT_TYPES.map(type => <option key={type.id} value={type.id}>{type.label}</option>)}
               </select>
-              <input type="number" value={accountForm.balance} onChange={e => setAccountForm(f => ({ ...f, balance: e.target.value }))} placeholder={`Saldo inicial ${currency}`} style={{ ...inputStyle, padding: '8px 9px', fontSize: 11 }} />
+              <div style={{ position: 'relative' }}>
+                <input type="number" value={accountForm.balance} onChange={e => setAccountForm(f => ({ ...f, balance: e.target.value }))} placeholder={`Saldo inicial ${currency}`} style={{ ...inputStyle, padding: '8px 42px 8px 9px', fontSize: 11, width: '100%' }} />
+                <span style={{ position: 'absolute', right: 9, top: '50%', transform: 'translateY(-50%)', color: COLORS.textDim, fontSize: 9, fontWeight: 800 }}>{currency}</span>
+              </div>
               <button className="finance-submit-button" onClick={addAccount} style={{ border: 'none', borderRadius: 10, background: COLORS.primary, color: '#fff', padding: '0 12px', cursor: 'pointer', fontWeight: 800, whiteSpace: 'nowrap' }}><Plus size={15} /> Agregar cuenta</button>
             </div>
             <div style={{ color: COLORS.textDim, fontSize: 10, marginTop: 8, lineHeight: 1.45 }}>
