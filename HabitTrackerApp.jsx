@@ -31,6 +31,18 @@ const BASE_COLORS = {
 
 const COLORS = { ...BASE_COLORS };
 
+const APP_UPDATE_VERSION = '2026-06-04-premium-finance-agenda-v2';
+const APP_UPDATE_NOTES = [
+  'Finanzas ahora está separada por secciones para que no se sienta cargada.',
+  'Los valores financieros muestran USD y COP al mismo tiempo.',
+  'Las cuentas permiten tipos como banco, ahorro, crédito, deuda e inversión.',
+  'Ahora puedes eliminar cuentas y los movimientos se reasignan a otra cuenta disponible.',
+  'Las metas completadas al 100% ya no permiten más aportes.',
+  'Nueva tarea en agenda se abre como una tarjeta centrada y más limpia.',
+  'El panel muestra Perspectivas y Recomendaciones, y el scroll se reinicia al cambiar de sección.',
+  'Entreno incluye una vista de progreso general, no solo por ejercicio.'
+];
+
 const CATEGORIES = [
   { id: 'salud', label: 'Salud', icon: '\u{1F4A7}', color: '#00ff9d' },
   { id: 'fitness', label: 'Ejercicio', icon: '\u{1F4AA}', color: '#ff6b6b' },
@@ -315,7 +327,9 @@ const getFinanceData = () => ({
   },
   accounts: [
     { id: 'cash', name: 'Efectivo', type: 'cash', balance: 180 },
-    { id: 'bank', name: 'Cuenta principal', type: 'bank', balance: 2100 }
+    { id: 'bank', name: 'Cuenta principal', type: 'bank', balance: 2100 },
+    { id: 'savings', name: 'Ahorros', type: 'savings', balance: 650 },
+    { id: 'credit_card', name: 'Tarjeta de crédito', type: 'credit', balance: -320 }
   ],
   recurring: [
     { id: 'rec1', name: 'Renta', type: 'expense', amount: 520, category: 'home', day: 5, active: true },
@@ -480,7 +494,7 @@ const getDefaultData = (reset = false) => {
     dailyNotes: reset ? {} : { [toYYYYMMDD(new Date())]: { note: 'Buen día en general, cumplí todos mis hábitos', mood: 4 } },
     challenges: reset ? [] : [{ id: 'ch1', habitId: 'h1', startDate: toYYYYMMDD(addDays(new Date(), -14)), status: 'active' }],
     workoutData: reset ? { exercises: WORKOUT_EXERCISES.map(e => ({ ...e, custom: false })), routines: [], sessions: [] } : getWorkoutData(),
-    financeData: reset ? { currency: 'USD', copRate: 4000, monthlyBudget: 0, categories: getFinanceData().categories, transactions: [] } : getFinanceData(),
+    financeData: reset ? { ...getFinanceData(), monthlyBudget: 0, transactions: [], recurring: [], goals: [] } : getFinanceData(),
     studyData: reset ? { subjects: [], sessions: [] } : getStudyData(),
     readingData: getReadingData(),
     dreamGoals: reset ? [] : getDreamGoals(),
@@ -4438,6 +4452,16 @@ const HabitsView = ({ data, onAddHabit, onUpdateHabit, onDeleteHabit, onToggleHa
 const FinanceView = ({ data, onUpdateFinance }) => {
   const finance = data.financeData || getFinanceData();
   const s = { fontFamily: "'Inter', sans-serif" };
+  const ACCOUNT_TYPES = [
+    { id: 'cash', label: 'Efectivo' },
+    { id: 'bank', label: 'Cuenta bancaria' },
+    { id: 'savings', label: 'Cuenta de ahorro' },
+    { id: 'credit', label: 'Tarjeta / crédito' },
+    { id: 'loan', label: 'Crédito / deuda' },
+    { id: 'investment', label: 'Inversión' },
+    { id: 'custom', label: 'Otra cuenta' }
+  ];
+  const accountTypeLabel = (type) => ACCOUNT_TYPES.find(item => item.id === type)?.label || 'Cuenta';
   const categories = finance.categories || [];
   const expenseCategories = categories.filter(c => c.id !== 'income');
   const transactions = finance.transactions || [];
@@ -4448,7 +4472,7 @@ const FinanceView = ({ data, onUpdateFinance }) => {
   const today = toYYYYMMDD(new Date());
   const [selectedMonth, setSelectedMonth] = useState(today.slice(0, 7));
   const [form, setForm] = useState({ type: 'expense', amount: '', category: expenseCategories[0]?.id || categories[0]?.id || 'food', accountId: accounts[0]?.id || 'cash', payee: '', note: '', date: today });
-  const [accountForm, setAccountForm] = useState({ name: '', balance: '' });
+  const [accountForm, setAccountForm] = useState({ name: '', balance: '', type: 'bank' });
   const [recurringForm, setRecurringForm] = useState({ name: '', amount: '', category: expenseCategories[0]?.id || 'food', day: 1, type: 'expense' });
   const [goalForm, setGoalForm] = useState({ name: '', target: '', saved: '', dueDate: '' });
   const [goalAdds, setGoalAdds] = useState({});
@@ -4570,8 +4594,21 @@ const FinanceView = ({ data, onUpdateFinance }) => {
   const addAccount = () => {
     const clean = accountForm.name.trim();
     if (!clean) return;
-    onUpdateFinance(prev => ({ ...prev, accounts: [...(prev.accounts || []), { id: `acc_${Date.now()}`, name: clean, type: 'custom', balance: fromDisplayAmount(accountForm.balance) }] }));
-    setAccountForm({ name: '', balance: '' });
+    onUpdateFinance(prev => ({ ...prev, accounts: [...(prev.accounts || []), { id: `acc_${Date.now()}`, name: clean, type: accountForm.type || 'bank', balance: fromDisplayAmount(accountForm.balance) }] }));
+    setAccountForm({ name: '', balance: '', type: 'bank' });
+  };
+
+  const removeAccount = (id) => {
+    onUpdateFinance(prev => {
+      const currentAccounts = prev.accounts || [];
+      if (currentAccounts.length <= 1) return prev;
+      const fallback = currentAccounts.find(a => a.id !== id)?.id || currentAccounts[0]?.id || 'cash';
+      return {
+        ...prev,
+        accounts: currentAccounts.filter(a => a.id !== id),
+        transactions: (prev.transactions || []).map(t => (t.accountId === id ? { ...t, accountId: fallback } : t))
+      };
+    });
   };
 
   const updateBudget = (catId, amount) => {
@@ -4817,16 +4854,32 @@ const FinanceView = ({ data, onUpdateFinance }) => {
                 <div key={a.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 11px', borderRadius: 12, background: 'rgba(239,239,239,0.035)', border: `1px solid ${COLORS.border}` }}>
                   <div>
                     <div style={{ color: COLORS.text, fontSize: 12, fontWeight: 800 }}>{a.name}</div>
-                    <div style={{ color: COLORS.textDim, fontSize: 10 }}>{a.type}</div>
+                    <div style={{ color: COLORS.textDim, fontSize: 10 }}>{accountTypeLabel(a.type)}</div>
                   </div>
-                  <div style={{ color: a.current >= 0 ? COLORS.text : COLORS.alert, fontWeight: 800 }}>{money(a.current)}</div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                    <div style={{ color: a.current >= 0 ? COLORS.text : COLORS.alert, fontWeight: 800, textAlign: 'right' }}>{money(a.current)}</div>
+                    <button
+                      onClick={() => removeAccount(a.id)}
+                      disabled={accounts.length <= 1}
+                      title={accounts.length <= 1 ? 'Debe quedar al menos una cuenta' : 'Eliminar cuenta'}
+                      style={{ width: 30, height: 30, borderRadius: 9, border: `1px solid ${COLORS.border}`, background: accounts.length <= 1 ? 'rgba(255,255,255,0.025)' : `${COLORS.alert}10`, color: accounts.length <= 1 ? COLORS.textDim : COLORS.alert, cursor: accounts.length <= 1 ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                    >
+                      <Trash2 size={13} />
+                    </button>
+                  </div>
                 </div>
               ))}
             </div>
-            <div className="finance-compact-form" style={{ display: 'grid', gridTemplateColumns: '1fr 96px auto', gap: 8 }}>
+            <div className="finance-compact-form finance-account-form" style={{ display: 'grid', gridTemplateColumns: '1fr 150px 130px auto', gap: 8 }}>
               <input value={accountForm.name} onChange={e => setAccountForm(f => ({ ...f, name: e.target.value }))} placeholder="Nueva cuenta" style={{ ...inputStyle, padding: '8px 9px', fontSize: 11 }} />
-              <input type="number" value={accountForm.balance} onChange={e => setAccountForm(f => ({ ...f, balance: e.target.value }))} placeholder={`Saldo ${currency}`} style={{ ...inputStyle, padding: '8px 9px', fontSize: 11 }} />
+              <select value={accountForm.type} onChange={e => setAccountForm(f => ({ ...f, type: e.target.value }))} style={{ ...inputStyle, padding: '8px 9px', fontSize: 11 }}>
+                {ACCOUNT_TYPES.map(type => <option key={type.id} value={type.id}>{type.label}</option>)}
+              </select>
+              <input type="number" value={accountForm.balance} onChange={e => setAccountForm(f => ({ ...f, balance: e.target.value }))} placeholder={`Saldo inicial ${currency}`} style={{ ...inputStyle, padding: '8px 9px', fontSize: 11 }} />
               <button className="finance-submit-button" onClick={addAccount} style={{ border: 'none', borderRadius: 10, background: COLORS.primary, color: '#fff', padding: '0 12px', cursor: 'pointer', fontWeight: 800, whiteSpace: 'nowrap' }}><Plus size={15} /> Agregar cuenta</button>
+            </div>
+            <div style={{ color: COLORS.textDim, fontSize: 10, marginTop: 8, lineHeight: 1.45 }}>
+              Consejo: si una tarjeta o crédito debe restar patrimonio, registra su saldo inicial como número negativo.
             </div>
           </div>
 
@@ -9092,9 +9145,9 @@ const AgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAgendaTo
   const renderTaskModal = () => {
     if (!showModal) return null;
     const t = editModalTask || {};
-    const modalStyle = { background: COLORS.card, borderRadius: '18px 0 0 18px', borderLeft: `1px solid ${COLORS.border}`, padding: '28px 30px', maxWidth: 440, width: '100%', height: '100%', overflow: 'hidden', boxSizing: 'border-box', boxShadow: '-18px 0 54px rgba(0,0,0,0.38)', display: 'flex', flexDirection: 'column' };
+    const modalStyle = { background: COLORS.card, borderRadius: 24, border: `1px solid ${COLORS.border}`, padding: '24px 26px', maxWidth: 560, width: 'min(94vw, 560px)', maxHeight: '88vh', overflow: 'hidden', boxSizing: 'border-box', boxShadow: '0 34px 100px rgba(0,0,0,0.52)', display: 'flex', flexDirection: 'column' };
     return (
-      <div onClick={closeTaskModal} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.36)', zIndex: 1000, display: 'flex', alignItems: 'stretch', justifyContent: 'flex-end', backdropFilter: 'blur(2px)' }}>
+      <div onClick={closeTaskModal} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.62)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20, boxSizing: 'border-box', backdropFilter: 'blur(8px)' }}>
         <div onClick={e => e.stopPropagation()} style={modalStyle}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24, flexShrink: 0 }}>
             <div style={{ fontSize: 18, color: COLORS.text, fontFamily: "'DM Serif Display', serif" }}>{t.id ? 'Editar tarea' : 'Nueva tarea'}</div>
@@ -9405,10 +9458,21 @@ const HabitFlowApp = () => {
   const [mobileMenu, setMobileMenu] = useState(false);
   const [showMoreNav, setShowMoreNav] = useState(false);
   const [toast, setToast] = useState(null);
+  const [showUpdateNotes, setShowUpdateNotes] = useState(false);
   const [cloudSync, setCloudSync] = useState({ status: 'checking', label: 'Conectando nube', reason: '' });
   const pushAutoSyncRef = useRef(false);
 
   useEffect(() => { injectStyles(); }, []);
+
+  useEffect(() => {
+    const seenVersion = localStorage.getItem('habitflow_seen_update_version');
+    if (seenVersion !== APP_UPDATE_VERSION) setShowUpdateNotes(true);
+  }, []);
+
+  const closeUpdateNotes = useCallback(() => {
+    localStorage.setItem('habitflow_seen_update_version', APP_UPDATE_VERSION);
+    setShowUpdateNotes(false);
+  }, []);
 
   useEffect(() => {
     const handleCloudSync = (event) => {
@@ -10120,6 +10184,23 @@ const HabitFlowApp = () => {
     <div style={{ display: 'flex', minHeight: '100vh', background: COLORS.bg }}>
       {confetti && <Confetti key={confetti.key} x={confetti.x} y={confetti.y} />}
       {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
+      <Modal isOpen={showUpdateNotes} onClose={closeUpdateNotes} title="Novedades de HabitFlow" width={620}>
+        <div style={{ color: COLORS.textDim, fontSize: 13, lineHeight: 1.65, marginBottom: 18 }}>
+          Actualizamos la experiencia para que la app se sienta más ordenada, más premium y más fácil de usar. Esto se muestra una sola vez por dispositivo.
+        </div>
+        <div style={{ display: 'grid', gap: 10, marginBottom: 20 }}>
+          {APP_UPDATE_NOTES.map((note, index) => (
+            <div key={note} style={{ display: 'flex', gap: 10, alignItems: 'flex-start', padding: '11px 12px', borderRadius: 14, background: `${COLORS.primary}0c`, border: `1px solid ${COLORS.border}` }}>
+              <span style={{ width: 22, height: 22, borderRadius: 999, background: `${COLORS.primary}18`, color: COLORS.primary, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, fontWeight: 900, flexShrink: 0 }}>{index + 1}</span>
+              <span style={{ color: COLORS.text, fontSize: 13, lineHeight: 1.45 }}>{note}</span>
+            </div>
+          ))}
+        </div>
+        <button onClick={closeUpdateNotes} className="lab-cta" style={{ width: '100%', justifyContent: 'center', borderRadius: 14, padding: '13px 16px', cursor: 'pointer' }}>
+          <Sparkles size={16} />
+          <span>Entendido, abrir HabitFlow</span>
+        </button>
+      </Modal>
 
       <button className="sidebar-toggle" onClick={() => setSidebarOpen(s => !s)} style={{
         position: 'fixed', left: sidebarWidth - 12, top: 24, zIndex: 110,
