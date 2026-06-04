@@ -170,9 +170,11 @@ const markDelivery = async (deliveryKey, userId) => {
 };
 
 const sendPush = async (subscription, item) => {
+  const taskTitle = item.task.text || 'Recordatorio';
+  const details = `${reminderLabel(item.task)} · ${item.task.dueTime}${item.task.category ? ` · ${item.task.category}` : ''}`;
   const payload = JSON.stringify({
-    title: `🔔 ${item.task.text || 'Recordatorio de HabitFlow'}`,
-    body: `${reminderLabel(item.task)} · ${item.task.dueTime}${item.task.category ? ` · ${item.task.category}` : ''}`,
+    title: 'HabitFlow • Agenda',
+    body: `${taskTitle}\n${details}`,
     tag: item.deliveryKey,
     renotify: true,
     requireInteraction: true,

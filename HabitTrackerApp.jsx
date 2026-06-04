@@ -50,7 +50,65 @@ const ICONS = [
   '\u{1F333}', '\u{1F33A}', '\u{1F525}', '\u{26A1}', '\u{1F31F}', '\u{1F3C6}',
   '\u{1F4B0}', '\u{1F9F9}', '\u{1F9F4}', '\u{1F6BF}', '\u{1F6CF}\u{FE0F}', '\u{1F415}',
   '\u{1F431}', '\u{1F30D}', '\u{1F3E0}', '\u{1F697}', '\u{2708}\u{FE0F}', '\u{1F381}',
-  '\u{1F389}', '\u{2B50}', '\u{1F308}', '\u{1F60A}'
+  '\u{1F389}', '\u{2B50}', '\u{1F308}', '\u{1F60A}',
+  '\u{1F3C1}', '\u{1F947}', '\u{1F948}', '\u{1F949}', '\u{1F3AE}', '\u{1F3B2}',
+  '\u{1F3B8}', '\u{1F3A7}', '\u{1F3AC}', '\u{1F3A4}', '\u{1F3B9}', '\u{1F3BB}',
+  '\u{1F4D6}', '\u{1F4D3}', '\u{1F4D8}', '\u{1F4D9}', '\u{1F4D7}', '\u{1F4CA}',
+  '\u{1F4C8}', '\u{1F4C9}', '\u{1F4CB}', '\u{1F4CC}', '\u{1F4CE}', '\u{1F4E6}',
+  '\u{1F4E7}', '\u{1F4DE}', '\u{1F4F1}', '\u{1F4BE}', '\u{1F5C2}\u{FE0F}', '\u{1F5D3}\u{FE0F}',
+  '\u{1F512}', '\u{1F511}', '\u{1F50D}', '\u{1F527}', '\u{1F528}', '\u{1F9F0}',
+  '\u{1F9EA}', '\u{1F52C}', '\u{1F489}', '\u{1F48A}', '\u{1FA7A}', '\u{1F9EC}',
+  '\u{1F951}', '\u{1F34C}', '\u{1F353}', '\u{1FAD0}', '\u{1F35A}', '\u{1F35D}',
+  '\u{1F95A}', '\u{1F95B}', '\u{2615}', '\u{1F375}', '\u{1F9CA}', '\u{1F6CC}',
+  '\u{1F9D1}\u{200D}\u{1F4BB}', '\u{1F9D1}\u{200D}\u{1F3A8}', '\u{1F9D1}\u{200D}\u{1F373}', '\u{1F468}\u{200D}\u{2695}\u{FE0F}', '\u{1F469}\u{200D}\u{1F3EB}', '\u{1F9D1}\u{200D}\u{1F52C}',
+  '\u{1F6D2}', '\u{1F6CD}\u{FE0F}', '\u{1F3E6}', '\u{1F4B3}', '\u{1F9FE}', '\u{1F4B8}',
+  '\u{1F3D6}\u{FE0F}', '\u{1F5FA}\u{FE0F}', '\u{1F9ED}', '\u{1F3D4}\u{FE0F}', '\u{1F3DD}\u{FE0F}', '\u{1F6A2}',
+  '\u{1F6F5}', '\u{1F68C}', '\u{1F686}', '\u{1F6B6}', '\u{1F3CA}', '\u{1F9D7}',
+  '\u{1F94A}', '\u{1F3BE}', '\u{26BD}', '\u{1F3C0}', '\u{1F3D0}', '\u{1F94B}',
+  '\u{1F6A8}', '\u{1F6E1}\u{FE0F}', '\u{1F9F2}', '\u{1F9FF}', '\u{1F9E9}', '\u{1F9D2}',
+  '\u{1F468}', '\u{1F469}', '\u{1F476}', '\u{1F46A}', '\u{1F46B}', '\u{1F64F}',
+  '\u{1F60E}', '\u{1F642}', '\u{1F929}', '\u{1F973}', '\u{1F914}', '\u{1F62E}\u{200D}\u{1F4A8}',
+  '\u{1F98B}', '\u{1F985}', '\u{1F407}', '\u{1F43E}', '\u{1F331}', '\u{1F340}',
+  '\u{1F30A}', '\u{1F32B}\u{FE0F}', '\u{1F4AB}', '\u{1FA90}', '\u{1F9FF}', '\u{1F5A4}',
+  '\u{1F600}', '\u{1F601}', '\u{1F602}', '\u{1F603}', '\u{1F604}', '\u{1F605}',
+  '\u{1F606}', '\u{1F607}', '\u{1F609}', '\u{1F60B}', '\u{1F60C}', '\u{1F60D}',
+  '\u{1F618}', '\u{1F61C}', '\u{1F61D}', '\u{1F62A}', '\u{1F62D}', '\u{1F631}',
+  '\u{1F636}', '\u{1F641}', '\u{1F642}', '\u{1F643}', '\u{1F644}', '\u{1F910}',
+  '\u{1F911}', '\u{1F917}', '\u{1F920}', '\u{1F923}', '\u{1F928}', '\u{1F92B}',
+  '\u{1F92C}', '\u{1F92D}', '\u{1F970}', '\u{1F972}', '\u{1F978}', '\u{1FAE1}',
+  '\u{1FAE2}', '\u{1FAE3}', '\u{1FAE8}', '\u{1F44D}', '\u{1F44E}', '\u{1F44F}',
+  '\u{1F450}', '\u{1F64C}', '\u{1F91C}', '\u{1F91B}', '\u{1F91E}', '\u{270C}\u{FE0F}',
+  '\u{1F90C}', '\u{1F90F}', '\u{1F4AA}', '\u{1F9BE}', '\u{1F9BF}', '\u{1F9B5}',
+  '\u{1F9B6}', '\u{1FAC0}', '\u{1FAC1}', '\u{1FAC2}', '\u{1F9D1}', '\u{1F468}',
+  '\u{1F469}', '\u{1F9D4}', '\u{1F475}', '\u{1F474}', '\u{1F9D3}', '\u{1F46E}',
+  '\u{1F575}\u{FE0F}', '\u{1F477}', '\u{1F934}', '\u{1F478}', '\u{1F9D9}', '\u{1F9DA}',
+  '\u{1F9DB}', '\u{1F9DC}', '\u{1F9DD}', '\u{1F9DE}', '\u{1F9DF}', '\u{1F486}',
+  '\u{1F487}', '\u{1F6B6}', '\u{1F9CD}', '\u{1F9CE}', '\u{1F3C4}', '\u{1F3C7}',
+  '\u{1F3CC}\u{FE0F}', '\u{1F3C2}', '\u{26F7}\u{FE0F}', '\u{1F3A3}', '\u{1F93F}', '\u{1F6F9}',
+  '\u{1F6F4}', '\u{1F6EB}', '\u{1F680}', '\u{1F6F8}', '\u{1F6A5}', '\u{1F6A7}',
+  '\u{2699}\u{FE0F}', '\u{1F9F1}', '\u{1F9EF}', '\u{1F9FA}', '\u{1FAA3}', '\u{1FAA4}',
+  '\u{1FA9B}', '\u{1FA9E}', '\u{1FA91}', '\u{1FA9C}', '\u{1F6AA}', '\u{1FA9F}',
+  '\u{1F6CB}\u{FE0F}', '\u{1F6BD}', '\u{1F6C1}', '\u{1FAA5}', '\u{1F9FD}', '\u{1F9FC}',
+  '\u{1FAA5}', '\u{1F9FA}', '\u{1F9FB}', '\u{1FAE7}', '\u{1F48E}', '\u{1F48D}',
+  '\u{1F451}', '\u{1F45F}', '\u{1F3BD}', '\u{1F97E}', '\u{1F9E2}', '\u{1F9E3}',
+  '\u{1F9E4}', '\u{1F9E5}', '\u{1F97C}', '\u{1F45C}', '\u{1F392}', '\u{1F453}',
+  '\u{1F576}\u{FE0F}', '\u{1F9E2}', '\u{2602}\u{FE0F}', '\u{1F436}', '\u{1F98A}', '\u{1F981}',
+  '\u{1F42F}', '\u{1F434}', '\u{1F984}', '\u{1F41D}', '\u{1F41E}', '\u{1F33C}',
+  '\u{1F337}', '\u{1F339}', '\u{1F940}', '\u{1F344}', '\u{1F335}', '\u{1F334}',
+  '\u{1F341}', '\u{1F342}', '\u{1F347}', '\u{1F348}', '\u{1F349}', '\u{1F34A}',
+  '\u{1F34D}', '\u{1F96D}', '\u{1FAD2}', '\u{1FAD1}', '\u{1FAD3}', '\u{1F955}',
+  '\u{1F33D}', '\u{1F336}\u{FE0F}', '\u{1FAD1}', '\u{1F96C}', '\u{1F966}', '\u{1F9C4}',
+  '\u{1F9C5}', '\u{1F95C}', '\u{1F330}', '\u{1F35E}', '\u{1F950}', '\u{1F956}',
+  '\u{1F968}', '\u{1F9C0}', '\u{1F356}', '\u{1F357}', '\u{1F969}', '\u{1F953}',
+  '\u{1F354}', '\u{1F35F}', '\u{1F355}', '\u{1F32D}', '\u{1F96A}', '\u{1F32E}',
+  '\u{1F372}', '\u{1F963}', '\u{1F96B}', '\u{1F371}', '\u{1F363}', '\u{1F364}',
+  '\u{1F36A}', '\u{1F382}', '\u{1F36B}', '\u{1F36F}', '\u{1F37C}', '\u{1F9C3}',
+  '\u{1F377}', '\u{1F37A}', '\u{1F943}', '\u{1F6D0}', '\u{262F}\u{FE0F}', '\u{271D}\u{FE0F}',
+  '\u{262E}\u{FE0F}', '\u{267B}\u{FE0F}', '\u{2695}\u{FE0F}', '\u{2696}\u{FE0F}', '\u{1F4F0}', '\u{1F4D1}',
+  '\u{1F4D2}', '\u{1F4C4}', '\u{1F4C3}', '\u{1F4DC}', '\u{1F4DD}', '\u{270F}\u{FE0F}',
+  '\u{1F58A}\u{FE0F}', '\u{1F5DD}\u{FE0F}', '\u{1F4E5}', '\u{1F4E4}', '\u{1F4EB}', '\u{1F4EC}',
+  '\u{1F4AD}', '\u{1F4A4}', '\u{1F4A6}', '\u{1F4A8}', '\u{1F4AF}', '\u{1F4A5}',
+  '\u{1F4A2}', '\u{1F4A3}', '\u{1F4AC}', '\u{1F441}\u{FE0F}', '\u{1F9FF}', '\u{1FAAC}'
 ];
 
 const getCategoryIcon = (category) => CATEGORIES.find(c => c.id === category)?.icon || CATEGORIES[0].icon;
@@ -237,6 +295,8 @@ const getWorkoutData = () => ({
 });
 
 const getFinanceData = () => ({
+  currency: 'USD',
+  copRate: 4000,
   monthlyBudget: 1200,
   categories: [
     { id: 'food', name: 'Comida', color: '#efefef' },
@@ -270,6 +330,11 @@ const getFinanceData = () => ({
     { id: 'fin2', type: 'expense', amount: 86, category: 'food', accountId: 'bank', payee: 'Supermercado', note: 'Compra semanal', date: toYYYYMMDD(new Date()) },
     { id: 'fin3', type: 'expense', amount: 42, category: 'transport', accountId: 'cash', payee: 'Transporte', note: 'Transporte semanal', date: toYYYYMMDD(addDays(new Date(), -1)) }
   ]
+});
+
+const getReadingData = () => ({
+  books: [],
+  activeBookId: null
 });
 
 const getStudyData = () => ({
@@ -415,8 +480,9 @@ const getDefaultData = (reset = false) => {
     dailyNotes: reset ? {} : { [toYYYYMMDD(new Date())]: { note: 'Buen día en general, cumplí todos mis hábitos', mood: 4 } },
     challenges: reset ? [] : [{ id: 'ch1', habitId: 'h1', startDate: toYYYYMMDD(addDays(new Date(), -14)), status: 'active' }],
     workoutData: reset ? { exercises: WORKOUT_EXERCISES.map(e => ({ ...e, custom: false })), routines: [], sessions: [] } : getWorkoutData(),
-    financeData: reset ? { monthlyBudget: 0, categories: getFinanceData().categories, transactions: [] } : getFinanceData(),
+    financeData: reset ? { currency: 'USD', copRate: 4000, monthlyBudget: 0, categories: getFinanceData().categories, transactions: [] } : getFinanceData(),
     studyData: reset ? { subjects: [], sessions: [] } : getStudyData(),
+    readingData: getReadingData(),
     dreamGoals: reset ? [] : getDreamGoals(),
     pomodoroRecords: [],
     agenda: {},
@@ -451,6 +517,8 @@ const normalizeLoadedData = (parsed) => {
   if (!parsed.workoutData.routines) parsed.workoutData.routines = SAMPLE_ROUTINES.map(r => ({ id: r.id, name: r.name, muscleGroups: r.mgs, exercises: r.exs, createdAt: toYYYYMMDD(addDays(new Date(), -60)) }));
   if (!parsed.workoutData.sessions) parsed.workoutData.sessions = genSampleSessions();
   if (!parsed.financeData) parsed.financeData = getFinanceData();
+  if (!parsed.financeData.currency) parsed.financeData.currency = 'USD';
+  if (!parsed.financeData.copRate) parsed.financeData.copRate = 4000;
   if (!parsed.financeData.categories) parsed.financeData.categories = getFinanceData().categories;
   if (!parsed.financeData.transactions) parsed.financeData.transactions = [];
   if (parsed.financeData.monthlyBudget === undefined) parsed.financeData.monthlyBudget = 0;
@@ -462,6 +530,9 @@ const normalizeLoadedData = (parsed) => {
   if (!parsed.studyData.subjects) parsed.studyData.subjects = [];
   if (!parsed.studyData.sessions) parsed.studyData.sessions = [];
   parsed.studyData.subjects.forEach(s => { if (!s.topics) s.topics = []; if (!s.goalHours) s.goalHours = 0; });
+  if (!parsed.readingData) parsed.readingData = getReadingData();
+  if (!parsed.readingData.books) parsed.readingData.books = [];
+  if (parsed.readingData.activeBookId === undefined) parsed.readingData.activeBookId = parsed.readingData.books[0]?.id || null;
   if (!parsed.dreamGoals) parsed.dreamGoals = getDreamGoals();
   if (!parsed.agenda) parsed.agenda = {};
   if (!parsed.agendaNotes) parsed.agendaNotes = {};
@@ -1639,6 +1710,44 @@ const injectStyles = () => {
         overflow: hidden !important;
         text-overflow: ellipsis !important;
         white-space: nowrap !important;
+      }
+      .finance-currency-controls {
+        grid-template-columns: 1fr !important;
+      }
+      .reading-view {
+        width: 100% !important;
+        max-width: 100% !important;
+        overflow-x: hidden !important;
+      }
+      .reading-view .lab-shell-card {
+        padding: 20px !important;
+        border-radius: 22px !important;
+        margin-bottom: 14px !important;
+      }
+      .reading-view .lab-hero-title {
+        font-size: 31px !important;
+        line-height: 1 !important;
+      }
+      .reading-layout,
+      .reading-notes-grid {
+        display: grid !important;
+        grid-template-columns: 1fr !important;
+        gap: 14px !important;
+      }
+      .reading-toolbar,
+      .reading-progress-row {
+        display: grid !important;
+        grid-template-columns: 1fr !important;
+        gap: 10px !important;
+      }
+      .reading-view iframe {
+        height: 68vh !important;
+        min-height: 420px !important;
+      }
+      .reading-view input,
+      .reading-view button {
+        min-height: 44px !important;
+        font-size: 16px !important;
       }
       .habits-mobile-view .habit-stats-grid,
       .pomodoro-mobile-view .pomodoro-kpis,
@@ -2966,8 +3075,15 @@ const HabitForm = ({ initial, onSave, onCancel }) => {
     frequency: 'Diario', frequencyDays: [1, 2, 3, 4, 5], targetStreak: 21, active: true
   });
   const [error, setError] = useState('');
+  const [iconSearch, setIconSearch] = useState('');
 
   const handleChange = (k, v) => setForm(f => ({ ...f, [k]: v }));
+  const uniqueIcons = useMemo(() => [...new Set(ICONS)], []);
+  const visibleIcons = useMemo(() => {
+    const q = iconSearch.trim();
+    if (!q) return uniqueIcons;
+    return uniqueIcons.filter(ic => ic.includes(q));
+  }, [iconSearch, uniqueIcons]);
 
   const toggleDay = (day) => {
     const current = form.frequencyDays || [1, 2, 3, 4, 5];
@@ -3052,9 +3168,18 @@ const HabitForm = ({ initial, onSave, onCancel }) => {
 
       <div>
         <label style={{ display: 'block', fontSize: 12, color: COLORS.textDim, marginBottom: 6, letterSpacing: '0.05em' }}>ÍCONO</label>
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, maxHeight: 200, overflowY: 'auto' }}>
-          {ICONS.map(ic => (
+        <div style={{ display: 'grid', gap: 8 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr auto', gap: 8, alignItems: 'center' }}>
+            <input value={iconSearch} onChange={e => setIconSearch(e.target.value)}
+              placeholder="Buscar pegando un emoji..."
+              style={{
+                width: '100%', padding: '10px 12px', background: COLORS.bg, border: `1px solid ${COLORS.border}`,
+                borderRadius: 8, color: COLORS.text, fontSize: 12, outline: 'none', fontFamily: "'Inter', sans-serif"
+              }} />
+            <span style={{ fontSize: 11, color: COLORS.textDim, whiteSpace: 'nowrap' }}>{visibleIcons.length} iconos</span>
+          </div>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, maxHeight: 220, overflowY: 'auto', paddingRight: 4 }}>
+          {visibleIcons.map(ic => (
             <button key={ic} onClick={() => handleChange('icon', ic)} style={{
               width: 36, height: 36, borderRadius: 8, border: `2px solid ${form.icon === ic ? COLORS.primary : COLORS.border}`,
               background: form.icon === ic ? `${COLORS.primary}14` : 'transparent',
@@ -3726,23 +3851,24 @@ const HabitsView = ({ data, onAddHabit, onUpdateHabit, onDeleteHabit, onToggleHa
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: 6 }}>
             {weekDays.map((wd, wi) => {
               const done = getDayCompletion(wd.date);
-              const todayRec = records.find(r => r.habitId === h.id && r.date === toYYYYMMDD(new Date()));
-              const isSkipped = todayRec && todayRec.skipped;
+              const rec = records.find(r => r.habitId === h.id && r.date === wd.date);
+              const isSkipped = rec && rec.skipped;
               const isToday = wd.isToday;
+              const isScheduled = isExpectedDay(h, wd.date);
               const isPast = new Date(wd.date + 'T00:00:00') <= new Date();
               return (
                 <div key={wi} style={{ textAlign: 'center', padding: '4px 0', position: 'relative' }}>
                   <div onClick={isToday ? () => onCompleteHabit(h.id) : undefined} style={{
                     width: 28, height: 28, borderRadius: '50%', margin: '0 auto 4px',
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    background: done ? `linear-gradient(135deg, ${COLORS.success}, #9f1239)` : isSkipped ? `${COLORS.textDim}15` : 'transparent',
-                    border: done ? 'none' : isSkipped ? `1.5px dashed ${COLORS.textDim}50` : isToday ? `2px solid ${COLORS.primary}80` : `1.5px solid ${COLORS.border}50`,
+                    background: done ? `linear-gradient(135deg, ${COLORS.success}, #9f1239)` : isSkipped ? `${COLORS.textDim}15` : isScheduled ? `${COLORS.primary}12` : 'transparent',
+                    border: done ? 'none' : isSkipped ? `1.5px dashed ${COLORS.textDim}50` : isToday ? `2px solid ${COLORS.primary}80` : isScheduled ? `1.5px solid ${COLORS.primary}55` : `1.5px dashed ${COLORS.border}35`,
                     transition: 'all 0.25s ease',
                     boxShadow: done ? `0 2px 8px ${COLORS.success}40` : 'none',
                     cursor: isToday ? 'pointer' : 'default',
-                    opacity: isPast || isToday ? 1 : 0.35
+                    opacity: isScheduled ? (isPast || isToday ? 1 : 0.55) : 0.22
                   }}>
-                    {done ? <Check size={13} color="#0a0a0f" strokeWidth={3.5} /> : isSkipped ? <span style={{ fontSize: 11, color: COLORS.textDim }}>-</span> : null}
+                    {done ? <Check size={13} color="#0a0a0f" strokeWidth={3.5} /> : isSkipped ? <span style={{ fontSize: 11, color: COLORS.textDim }}>-</span> : !isScheduled ? <span style={{ fontSize: 11, color: COLORS.textDim }}>·</span> : null}
                   </div>
                   <div style={{
                     fontSize: 10, color: isToday ? COLORS.primary : COLORS.textDim + '99',
@@ -3771,10 +3897,11 @@ const HabitsView = ({ data, onAddHabit, onUpdateHabit, onDeleteHabit, onToggleHa
             <div key={wi} style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: 3, marginBottom: 4 }}>
               {week.map((wd, di) => {
                 const done = getDayCompletion(wd.date);
+                const scheduled = isExpectedDay(h, wd.date);
                 return (
                   <div key={di} style={{
                     textAlign: 'center', padding: '6px 0', borderRadius: 8,
-                    opacity: wd.isCurrentMonth ? 1 : 0.12,
+                    opacity: wd.isCurrentMonth ? (scheduled ? 1 : 0.3) : 0.12,
                     background: wd.isToday ? `${COLORS.primary}12` : 'transparent',
                     position: 'relative'
                   }}>
@@ -3786,7 +3913,7 @@ const HabitsView = ({ data, onAddHabit, onUpdateHabit, onDeleteHabit, onToggleHa
                     {wd.isCurrentMonth && (
                       <div style={{
                         width: 5, height: 5, borderRadius: '50%', margin: '0 auto',
-                        background: done ? COLORS.success : `${COLORS.border}30`,
+                        background: done ? COLORS.success : scheduled ? `${COLORS.primary}75` : `${COLORS.border}30`,
                         transition: 'all 0.2s'
                       }} />
                     )}
@@ -4000,6 +4127,15 @@ const HabitsView = ({ data, onAddHabit, onUpdateHabit, onDeleteHabit, onToggleHa
                     }}>
                       <span className="fire-emoji">{cat.icon}</span> {cat.label}
                     </div>
+                    {h.frequency === 'Personalizado' && h.frequencyDays?.length > 0 && (
+                      <div style={{
+                        marginTop: 5, fontSize: 10, color: COLORS.primary,
+                        fontFamily: "'Inter', sans-serif", fontWeight: 700,
+                        letterSpacing: '0.03em'
+                      }}>
+                        Programado: {h.frequencyDays.map(d => DAY_LABELS[d]).join(' · ')}
+                      </div>
+                    )}
                   </div>
                 </div>
                 <div style={{ display: 'flex', gap: 4, alignItems: 'center' }}>
@@ -4156,7 +4292,16 @@ const FinanceView = ({ data, onUpdateFinance }) => {
   const budget = Number(finance.monthlyBudget || 0);
   const budgetTotal = expenseCategories.reduce((sum, c) => sum + Number(budgets[c.id] || 0), 0) || budget;
   const budgetPct = budget > 0 ? Math.min(100, Math.round((expenses / budget) * 100)) : 0;
-  const money = (n) => Number(n || 0).toLocaleString('es-ES', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 });
+  const currency = finance.currency || 'USD';
+  const copRate = Math.max(1, Number(finance.copRate || 4000));
+  const toDisplayAmount = (n) => currency === 'COP' ? Number(n || 0) * copRate : Number(n || 0);
+  const fromDisplayAmount = (n) => currency === 'COP' ? Number(n || 0) / copRate : Number(n || 0);
+  const cleanDisplayValue = (n) => {
+    const v = toDisplayAmount(n);
+    if (!v) return '';
+    return Number.isInteger(v) ? String(v) : v.toFixed(2);
+  };
+  const money = (n) => Number(toDisplayAmount(n) || 0).toLocaleString('es-CO', { style: 'currency', currency, maximumFractionDigits: currency === 'COP' ? 0 : 0 });
   const catById = (id) => categories.find(c => c.id === id) || { name: 'Sin categoria', color: COLORS.textDim };
   const accountById = (id) => accounts.find(a => a.id === id) || accounts[0] || { name: 'Sin cuenta' };
   const inputStyle = { padding: '10px 12px', background: COLORS.bg, border: `1px solid ${COLORS.border}`, borderRadius: 10, color: COLORS.text, outline: 'none', boxSizing: 'border-box', ...s };
@@ -4213,7 +4358,7 @@ const FinanceView = ({ data, onUpdateFinance }) => {
   ];
 
   const addTransaction = () => {
-    const amount = Number(form.amount);
+    const amount = fromDisplayAmount(form.amount);
     if (!amount || amount <= 0) return;
     const category = form.type === 'income' ? 'income' : form.category;
     onUpdateFinance(prev => ({
@@ -4241,17 +4386,17 @@ const FinanceView = ({ data, onUpdateFinance }) => {
   const addAccount = () => {
     const clean = accountForm.name.trim();
     if (!clean) return;
-    onUpdateFinance(prev => ({ ...prev, accounts: [...(prev.accounts || []), { id: `acc_${Date.now()}`, name: clean, type: 'custom', balance: Number(accountForm.balance || 0) }] }));
+    onUpdateFinance(prev => ({ ...prev, accounts: [...(prev.accounts || []), { id: `acc_${Date.now()}`, name: clean, type: 'custom', balance: fromDisplayAmount(accountForm.balance) }] }));
     setAccountForm({ name: '', balance: '' });
   };
 
   const updateBudget = (catId, amount) => {
-    onUpdateFinance(prev => ({ ...prev, budgets: { ...(prev.budgets || {}), [catId]: Number(amount || 0) } }));
+    onUpdateFinance(prev => ({ ...prev, budgets: { ...(prev.budgets || {}), [catId]: fromDisplayAmount(amount) } }));
   };
 
   const addRecurring = () => {
     const name = recurringForm.name.trim();
-    const amount = Number(recurringForm.amount);
+    const amount = fromDisplayAmount(recurringForm.amount);
     if (!name || !amount) return;
     onUpdateFinance(prev => ({ ...prev, recurring: [{ ...recurringForm, id: `rec_${Date.now()}`, amount, day: Number(recurringForm.day || 1), active: true }, ...(prev.recurring || [])] }));
     setRecurringForm(f => ({ ...f, name: '', amount: '' }));
@@ -4268,14 +4413,14 @@ const FinanceView = ({ data, onUpdateFinance }) => {
 
   const addGoal = () => {
     const name = goalForm.name.trim();
-    const target = Number(goalForm.target);
+    const target = fromDisplayAmount(goalForm.target);
     if (!name || !target) return;
-    onUpdateFinance(prev => ({ ...prev, goals: [{ ...goalForm, id: `goal_${Date.now()}`, target, saved: Number(goalForm.saved || 0) }, ...(prev.goals || [])] }));
+    onUpdateFinance(prev => ({ ...prev, goals: [{ ...goalForm, id: `goal_${Date.now()}`, target, saved: fromDisplayAmount(goalForm.saved || 0) }, ...(prev.goals || [])] }));
     setGoalForm({ name: '', target: '', saved: '', dueDate: '' });
   };
 
   const contributeGoal = (goalId) => {
-    const amount = Number(goalAdds[goalId] || 0);
+    const amount = fromDisplayAmount(goalAdds[goalId] || 0);
     if (!amount) return;
     onUpdateFinance(prev => ({ ...prev, goals: (prev.goals || []).map(g => g.id === goalId ? { ...g, saved: Number(g.saved || 0) + amount } : g) }));
     setGoalAdds(prev => ({ ...prev, [goalId]: '' }));
@@ -4296,6 +4441,14 @@ const FinanceView = ({ data, onUpdateFinance }) => {
             <div style={{ fontSize: 11, color: COLORS.textDim, marginBottom: 6, ...s }}>Disponible proyectado</div>
             <div style={{ fontSize: 34, color: available >= 0 ? COLORS.success : COLORS.alert, fontFamily: "'DM Serif Display', serif" }}>{money(available)}</div>
             <div style={{ color: COLORS.textDim, fontSize: 11, ...s }}>Mes: {monthDate.toLocaleDateString('es-ES', { month: 'long', year: 'numeric' })}</div>
+            <div className="finance-currency-controls" style={{ display: 'grid', gridTemplateColumns: '92px 1fr', gap: 8, marginTop: 12 }}>
+              <select value={currency} onChange={e => onUpdateFinance(prev => ({ ...prev, currency: e.target.value }))} style={{ ...inputStyle, padding: '8px 9px', fontSize: 11 }}>
+                <option value="USD">USD</option>
+                <option value="COP">COP</option>
+              </select>
+              <input type="number" min="1" value={copRate} onChange={e => onUpdateFinance(prev => ({ ...prev, copRate: Math.max(1, Number(e.target.value || 1)) }))} placeholder="COP por 1 USD" style={{ ...inputStyle, padding: '8px 9px', fontSize: 11 }} />
+            </div>
+            <div style={{ color: COLORS.textDim, fontSize: 10, marginTop: 6, ...s }}>Tasa editable para convertir tus datos entre USD y COP.</div>
           </div>
         </div>
       </div>
@@ -4326,7 +4479,7 @@ const FinanceView = ({ data, onUpdateFinance }) => {
               <select value={form.type} onChange={e => setForm(f => ({ ...f, type: e.target.value, category: e.target.value === 'income' ? 'income' : (expenseCategories[0]?.id || f.category) }))} style={inputStyle}>
                 <option value="expense">Gasto</option><option value="income">Ingreso</option>
               </select>
-              <input type="number" value={form.amount} onChange={e => setForm(f => ({ ...f, amount: e.target.value }))} placeholder="Monto" style={inputStyle} />
+              <input type="number" value={form.amount} onChange={e => setForm(f => ({ ...f, amount: e.target.value }))} placeholder={`Monto ${currency}`} style={inputStyle} />
               <input type="date" value={form.date} onClick={e => openNativeDatePicker(e.currentTarget)} onFocus={e => openNativeDatePicker(e.currentTarget)} onChange={e => setForm(f => ({ ...f, date: e.target.value }))} style={{ ...inputStyle, cursor: 'pointer' }} />
             </div>
             <div className="finance-form-row finance-form-row-4" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr auto', gap: 10 }}>
@@ -4377,7 +4530,7 @@ const FinanceView = ({ data, onUpdateFinance }) => {
               <LineChart data={cashFlow}>
                 <CartesianGrid stroke="rgba(255,255,255,0.05)" vertical={false} />
                 <XAxis dataKey="name" stroke={COLORS.textDim} tick={{ fontSize: 11 }} />
-                <YAxis stroke={COLORS.textDim} tick={{ fontSize: 11 }} tickFormatter={v => `$${v}`} />
+                <YAxis stroke={COLORS.textDim} tick={{ fontSize: 11 }} tickFormatter={v => currency === 'COP' ? `${Math.round(toDisplayAmount(v) / 1000)}k` : `$${Math.round(toDisplayAmount(v))}`} />
                 <Tooltip formatter={v => money(v)} contentStyle={tooltipStyle} labelStyle={{ color: COLORS.text }} />
                 <Line type="monotone" dataKey="ingresos" stroke={COLORS.success} strokeWidth={2} dot={false} />
                 <Line type="monotone" dataKey="gastos" stroke={COLORS.alert} strokeWidth={2} dot={false} />
@@ -4400,7 +4553,7 @@ const FinanceView = ({ data, onUpdateFinance }) => {
                         <div style={{ color: COLORS.text, fontSize: 13, fontWeight: 800 }}><span style={{ color: cat.color }}>●</span> {cat.name}</div>
                         <div style={{ color: pct > 90 ? COLORS.alert : COLORS.textDim, fontSize: 11 }}>{money(spent)} usados de {money(limit)}</div>
                       </div>
-                      <input type="number" value={limit || ''} onChange={e => updateBudget(cat.id, e.target.value)} placeholder="Limite" style={{ ...inputStyle, padding: '8px 9px', fontSize: 11 }} />
+                      <input type="number" value={cleanDisplayValue(limit)} onChange={e => updateBudget(cat.id, e.target.value)} placeholder={`Limite ${currency}`} style={{ ...inputStyle, padding: '8px 9px', fontSize: 11 }} />
                     </div>
                     <div style={{ height: 7, borderRadius: 99, background: COLORS.bg, overflow: 'hidden' }}>
                       <div style={{ height: '100%', width: `${pct}%`, borderRadius: 99, background: pct > 90 ? COLORS.alert : `linear-gradient(90deg, ${cat.color}, ${COLORS.primary})` }} />
@@ -4427,7 +4580,7 @@ const FinanceView = ({ data, onUpdateFinance }) => {
 
           <div className="finance-card finance-monthly-budget-card" style={cardStyle}>
             <h3 style={{ fontSize: 16, color: COLORS.text, marginBottom: 12 }}>Presupuesto mensual</h3>
-            <input type="number" value={finance.monthlyBudget || ''} onChange={e => onUpdateFinance(prev => ({ ...prev, monthlyBudget: Number(e.target.value || 0) }))} placeholder="Presupuesto" style={{ ...inputStyle, width: '100%', marginBottom: 12 }} />
+            <input type="number" value={cleanDisplayValue(finance.monthlyBudget)} onChange={e => onUpdateFinance(prev => ({ ...prev, monthlyBudget: fromDisplayAmount(e.target.value || 0) }))} placeholder={`Presupuesto ${currency}`} style={{ ...inputStyle, width: '100%', marginBottom: 12 }} />
             <div style={{ height: 8, background: COLORS.bg, borderRadius: 99, overflow: 'hidden' }}><div style={{ height: '100%', width: `${budgetPct}%`, background: `linear-gradient(90deg, ${COLORS.primary}, ${COLORS.alert})`, borderRadius: 99 }} /></div>
             <div style={{ color: COLORS.textDim, fontSize: 11, marginTop: 8 }}>Usado: {money(expenses)} · Plan por categorías: {money(budgetTotal)}</div>
           </div>
@@ -4447,7 +4600,7 @@ const FinanceView = ({ data, onUpdateFinance }) => {
             </div>
             <div className="finance-compact-form" style={{ display: 'grid', gridTemplateColumns: '1fr 96px auto', gap: 8 }}>
               <input value={accountForm.name} onChange={e => setAccountForm(f => ({ ...f, name: e.target.value }))} placeholder="Nueva cuenta" style={{ ...inputStyle, padding: '8px 9px', fontSize: 11 }} />
-              <input type="number" value={accountForm.balance} onChange={e => setAccountForm(f => ({ ...f, balance: e.target.value }))} placeholder="Saldo" style={{ ...inputStyle, padding: '8px 9px', fontSize: 11 }} />
+              <input type="number" value={accountForm.balance} onChange={e => setAccountForm(f => ({ ...f, balance: e.target.value }))} placeholder={`Saldo ${currency}`} style={{ ...inputStyle, padding: '8px 9px', fontSize: 11 }} />
               <button className="finance-submit-button" onClick={addAccount} style={{ border: 'none', borderRadius: 10, background: COLORS.primary, color: '#fff', padding: '0 12px', cursor: 'pointer', fontWeight: 800, whiteSpace: 'nowrap' }}><Plus size={15} /> Agregar cuenta</button>
             </div>
           </div>
@@ -4482,7 +4635,7 @@ const FinanceView = ({ data, onUpdateFinance }) => {
             </div>
             <div className="finance-compact-form" style={{ display: 'grid', gridTemplateColumns: '1fr 82px 58px', gap: 7, marginBottom: 7 }}>
               <input value={recurringForm.name} onChange={e => setRecurringForm(f => ({ ...f, name: e.target.value }))} placeholder="Nombre" style={{ ...inputStyle, padding: '8px 9px', fontSize: 11 }} />
-              <input type="number" value={recurringForm.amount} onChange={e => setRecurringForm(f => ({ ...f, amount: e.target.value }))} placeholder="Monto" style={{ ...inputStyle, padding: '8px 9px', fontSize: 11 }} />
+              <input type="number" value={recurringForm.amount} onChange={e => setRecurringForm(f => ({ ...f, amount: e.target.value }))} placeholder={`Monto ${currency}`} style={{ ...inputStyle, padding: '8px 9px', fontSize: 11 }} />
               <input type="number" min="1" max="31" value={recurringForm.day} onChange={e => setRecurringForm(f => ({ ...f, day: e.target.value }))} style={{ ...inputStyle, padding: '8px 9px', fontSize: 11 }} />
             </div>
             <div className="finance-compact-form" style={{ display: 'grid', gridTemplateColumns: '1fr auto', gap: 7 }}>
@@ -4519,7 +4672,7 @@ const FinanceView = ({ data, onUpdateFinance }) => {
             <div className="finance-goal-form" style={{ display: 'grid', gap: 7 }}>
               <input value={goalForm.name} onChange={e => setGoalForm(f => ({ ...f, name: e.target.value }))} placeholder="Meta: viaje, emergencia..." style={{ ...inputStyle, padding: '8px 9px', fontSize: 11 }} />
               <div className="finance-compact-form" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 7 }}>
-                <input type="number" value={goalForm.target} onChange={e => setGoalForm(f => ({ ...f, target: e.target.value }))} placeholder="Objetivo" style={{ ...inputStyle, padding: '8px 9px', fontSize: 11 }} />
+                <input type="number" value={goalForm.target} onChange={e => setGoalForm(f => ({ ...f, target: e.target.value }))} placeholder={`Objetivo ${currency}`} style={{ ...inputStyle, padding: '8px 9px', fontSize: 11 }} />
                 <input type="date" value={goalForm.dueDate} onClick={e => openNativeDatePicker(e.currentTarget)} onFocus={e => openNativeDatePicker(e.currentTarget)} onChange={e => setGoalForm(f => ({ ...f, dueDate: e.target.value }))} style={{ ...inputStyle, padding: '8px 9px', fontSize: 11, cursor: 'pointer' }} />
               </div>
               <button onClick={addGoal} style={{ border: 'none', borderRadius: 10, background: COLORS.primary, color: '#fff', padding: '9px 0', cursor: 'pointer', fontWeight: 800 }}>Crear meta</button>
@@ -4533,6 +4686,191 @@ const FinanceView = ({ data, onUpdateFinance }) => {
             </ResponsiveContainer>
             <div style={{ color: COLORS.textDim, fontSize: 11, textAlign: 'center' }}>{savingsTarget > 0 ? `Pendiente en metas: ${money(savingsTarget)}` : 'Sin metas pendientes.'}</div>
           </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const ReadingView = ({ data, onUpdateReading }) => {
+  const reading = data.readingData || getReadingData();
+  const books = reading.books || [];
+  const activeBook = books.find(b => b.id === reading.activeBookId) || books[0] || null;
+  const fileRef = useRef(null);
+  const [bookmarkForm, setBookmarkForm] = useState({ page: '', label: '' });
+  const [noteForm, setNoteForm] = useState({ page: '', text: '' });
+  const s = { fontFamily: "'Inter', sans-serif" };
+  const inputStyle = { padding: '11px 12px', background: COLORS.bg, border: `1px solid ${COLORS.border}`, borderRadius: 12, color: COLORS.text, outline: 'none', boxSizing: 'border-box', ...s };
+  const cardStyle = { background: COLORS.card, borderRadius: 22, border: `1px solid ${COLORS.border}`, padding: 20, boxShadow: '0 18px 50px rgba(0,0,0,0.18)' };
+
+  const updateBook = (bookId, updater) => {
+    onUpdateReading(prev => ({
+      ...prev,
+      books: (prev.books || []).map(book => book.id === bookId ? updater(book) : book),
+      activeBookId: bookId
+    }));
+  };
+
+  const handleUpload = (file) => {
+    if (!file || (file.type !== 'application/pdf' && !/\.pdf$/i.test(file.name || ''))) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      const book = {
+        id: `book_${Date.now()}`,
+        title: file.name.replace(/\.pdf$/i, ''),
+        fileName: file.name,
+        fileData: reader.result,
+        currentPage: 1,
+        totalPages: '',
+        bookmarks: [],
+        notes: [],
+        createdAt: new Date().toISOString()
+      };
+      onUpdateReading(prev => ({ ...prev, books: [book, ...(prev.books || [])], activeBookId: book.id }));
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const removeBook = (bookId) => {
+    onUpdateReading(prev => {
+      const nextBooks = (prev.books || []).filter(book => book.id !== bookId);
+      return { ...prev, books: nextBooks, activeBookId: nextBooks[0]?.id || null };
+    });
+  };
+
+  const addBookmark = () => {
+    if (!activeBook) return;
+    const page = Math.max(1, Number(bookmarkForm.page || activeBook.currentPage || 1));
+    const label = bookmarkForm.label.trim() || `Página ${page}`;
+    updateBook(activeBook.id, book => ({
+      ...book,
+      bookmarks: [{ id: `bm_${Date.now()}`, page, label, createdAt: new Date().toISOString() }, ...(book.bookmarks || [])]
+    }));
+    setBookmarkForm({ page: '', label: '' });
+  };
+
+  const addNote = () => {
+    if (!activeBook || !noteForm.text.trim()) return;
+    const page = Math.max(1, Number(noteForm.page || activeBook.currentPage || 1));
+    updateBook(activeBook.id, book => ({
+      ...book,
+      notes: [{ id: `note_${Date.now()}`, page, text: noteForm.text.trim(), createdAt: new Date().toISOString() }, ...(book.notes || [])]
+    }));
+    setNoteForm({ page: '', text: '' });
+  };
+
+  const removeBookmark = (id) => activeBook && updateBook(activeBook.id, book => ({ ...book, bookmarks: (book.bookmarks || []).filter(b => b.id !== id) }));
+  const removeNote = (id) => activeBook && updateBook(activeBook.id, book => ({ ...book, notes: (book.notes || []).filter(n => n.id !== id) }));
+  const progress = activeBook?.totalPages ? Math.min(100, Math.round((Number(activeBook.currentPage || 1) / Number(activeBook.totalPages || 1)) * 100)) : 0;
+
+  return (
+    <div className="reading-view" style={{ animation: 'fadeIn 0.3s ease-out' }}>
+      <div className="lab-shell-card" style={{ borderRadius: 28, padding: 30, marginBottom: 20 }}>
+        <div className="lab-pill" style={{ display: 'inline-flex', padding: '7px 11px', fontSize: 11, marginBottom: 12 }}><BookOpen size={14} /> Biblioteca personal</div>
+        <h2 className="lab-hero-title" style={{ fontSize: 40, lineHeight: 1.05, marginBottom: 8 }}>Lectura con marcadores y notas.</h2>
+        <div style={{ color: COLORS.textDim, fontSize: 13, lineHeight: 1.7, maxWidth: 680 }}>Sube tus PDFs, guarda tu avance, marca páginas importantes y deja notas rápidas mientras estudias o lees.</div>
+      </div>
+
+      <div className="reading-layout" style={{ display: 'grid', gridTemplateColumns: 'minmax(260px, 0.38fr) minmax(0, 1fr)', gap: 18, alignItems: 'start' }}>
+        <div style={{ display: 'grid', gap: 14 }}>
+          <div style={cardStyle}>
+            <input ref={fileRef} type="file" accept="application/pdf" onChange={e => handleUpload(e.target.files?.[0])} style={{ display: 'none' }} />
+            <button onClick={() => fileRef.current?.click()} className="lab-cta" style={{ width: '100%', justifyContent: 'center', borderRadius: 14, padding: '13px 16px', cursor: 'pointer' }}>
+              <Upload size={16} /> <span>Subir libro PDF</span>
+            </button>
+            <div style={{ color: COLORS.textDim, fontSize: 11, marginTop: 10, lineHeight: 1.5, ...s }}>Los PDFs quedan guardados en tu cuenta como parte de tus datos. Para libros muy pesados puede tardar un poco.</div>
+          </div>
+
+          <div style={cardStyle}>
+            <h3 style={{ color: COLORS.text, fontSize: 18, marginBottom: 14 }}>Mis libros</h3>
+            <div style={{ display: 'grid', gap: 8 }}>
+              {books.map(book => (
+                <button key={book.id} onClick={() => onUpdateReading(prev => ({ ...prev, activeBookId: book.id }))} style={{
+                  textAlign: 'left', border: `1px solid ${reading.activeBookId === book.id ? COLORS.primary : COLORS.border}`,
+                  background: reading.activeBookId === book.id ? `${COLORS.primary}12` : COLORS.bg,
+                  borderRadius: 14, padding: 12, cursor: 'pointer', color: COLORS.text
+                }}>
+                  <div style={{ fontWeight: 800, fontSize: 13, marginBottom: 4 }}>{book.title}</div>
+                  <div style={{ color: COLORS.textDim, fontSize: 11 }}>Pág. {book.currentPage || 1}{book.totalPages ? ` de ${book.totalPages}` : ''} · {(book.notes || []).length} notas</div>
+                </button>
+              ))}
+              {!books.length && <div style={{ color: COLORS.textDim, fontSize: 13, textAlign: 'center', padding: 18 }}>Sube tu primer PDF para empezar.</div>}
+            </div>
+          </div>
+        </div>
+
+        <div style={{ display: 'grid', gap: 18 }}>
+          {activeBook ? (
+            <>
+              <div style={cardStyle}>
+                <div className="reading-toolbar" style={{ display: 'flex', justifyContent: 'space-between', gap: 12, alignItems: 'flex-start', marginBottom: 14, flexWrap: 'wrap' }}>
+                  <div>
+                    <h3 style={{ color: COLORS.text, fontSize: 22, margin: 0 }}>{activeBook.title}</h3>
+                    <div style={{ color: COLORS.textDim, fontSize: 12, marginTop: 4 }}>{activeBook.fileName}</div>
+                  </div>
+                  <button onClick={() => removeBook(activeBook.id)} style={{ border: `1px solid ${COLORS.border}`, background: COLORS.bg, color: COLORS.alert, borderRadius: 12, padding: '9px 11px', cursor: 'pointer' }}><Trash2 size={15} /></button>
+                </div>
+
+                <div className="reading-progress-row" style={{ display: 'grid', gridTemplateColumns: '1fr 120px 120px', gap: 10, alignItems: 'center', marginBottom: 14 }}>
+                  <div>
+                    <div style={{ height: 8, background: COLORS.bg, borderRadius: 99, overflow: 'hidden' }}><div style={{ width: `${progress}%`, height: '100%', background: `linear-gradient(90deg, ${COLORS.primary}, ${COLORS.secondary})` }} /></div>
+                    <div style={{ color: COLORS.textDim, fontSize: 11, marginTop: 6 }}>{progress ? `${progress}% leído` : 'Agrega total de páginas para ver progreso'}</div>
+                  </div>
+                  <input type="number" min="1" value={activeBook.currentPage || ''} onChange={e => updateBook(activeBook.id, book => ({ ...book, currentPage: Math.max(1, Number(e.target.value || 1)) }))} placeholder="Página actual" style={inputStyle} />
+                  <input type="number" min="1" value={activeBook.totalPages || ''} onChange={e => updateBook(activeBook.id, book => ({ ...book, totalPages: e.target.value }))} placeholder="Total páginas" style={inputStyle} />
+                </div>
+
+                <iframe title={activeBook.title} src={activeBook.fileData} style={{ width: '100%', height: 'min(72vh, 760px)', border: `1px solid ${COLORS.border}`, borderRadius: 18, background: COLORS.bg }} />
+              </div>
+
+              <div className="reading-notes-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 18 }}>
+                <div style={cardStyle}>
+                  <h3 style={{ color: COLORS.text, fontSize: 17, marginBottom: 12 }}>Marcadores</h3>
+                  <div style={{ display: 'grid', gridTemplateColumns: '90px 1fr auto', gap: 8, marginBottom: 12 }}>
+                    <input type="number" min="1" value={bookmarkForm.page} onChange={e => setBookmarkForm(f => ({ ...f, page: e.target.value }))} placeholder="Pág." style={inputStyle} />
+                    <input value={bookmarkForm.label} onChange={e => setBookmarkForm(f => ({ ...f, label: e.target.value }))} placeholder="Nombre del marcador" style={inputStyle} />
+                    <button onClick={addBookmark} style={{ border: 'none', background: COLORS.primary, color: '#fff', borderRadius: 12, padding: '0 13px', cursor: 'pointer' }}><Plus size={16} /></button>
+                  </div>
+                  <div style={{ display: 'grid', gap: 8 }}>
+                    {(activeBook.bookmarks || []).map(b => (
+                      <div key={b.id} style={{ display: 'flex', justifyContent: 'space-between', gap: 10, padding: 10, borderRadius: 12, background: COLORS.bg, border: `1px solid ${COLORS.border}` }}>
+                        <span style={{ color: COLORS.text, fontSize: 12 }}><strong style={{ color: COLORS.primary }}>Pág. {b.page}</strong> · {b.label}</span>
+                        <button onClick={() => removeBookmark(b.id)} style={{ border: 'none', background: 'transparent', color: COLORS.textDim, cursor: 'pointer' }}><X size={13} /></button>
+                      </div>
+                    ))}
+                    {!activeBook.bookmarks?.length && <div style={{ color: COLORS.textDim, fontSize: 12 }}>Aún no tienes marcadores.</div>}
+                  </div>
+                </div>
+
+                <div style={cardStyle}>
+                  <h3 style={{ color: COLORS.text, fontSize: 17, marginBottom: 12 }}>Notas</h3>
+                  <div style={{ display: 'grid', gridTemplateColumns: '90px 1fr auto', gap: 8, marginBottom: 12 }}>
+                    <input type="number" min="1" value={noteForm.page} onChange={e => setNoteForm(f => ({ ...f, page: e.target.value }))} placeholder="Pág." style={inputStyle} />
+                    <input value={noteForm.text} onChange={e => setNoteForm(f => ({ ...f, text: e.target.value }))} placeholder="Escribe una nota..." style={inputStyle} />
+                    <button onClick={addNote} style={{ border: 'none', background: COLORS.primary, color: '#fff', borderRadius: 12, padding: '0 13px', cursor: 'pointer' }}><Plus size={16} /></button>
+                  </div>
+                  <div style={{ display: 'grid', gap: 8 }}>
+                    {(activeBook.notes || []).map(n => (
+                      <div key={n.id} style={{ padding: 10, borderRadius: 12, background: COLORS.bg, border: `1px solid ${COLORS.border}` }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', gap: 8, marginBottom: 5 }}>
+                          <strong style={{ color: COLORS.primary, fontSize: 12 }}>Pág. {n.page}</strong>
+                          <button onClick={() => removeNote(n.id)} style={{ border: 'none', background: 'transparent', color: COLORS.textDim, cursor: 'pointer' }}><X size={13} /></button>
+                        </div>
+                        <div style={{ color: COLORS.text, fontSize: 12, lineHeight: 1.5 }}>{n.text}</div>
+                      </div>
+                    ))}
+                    {!activeBook.notes?.length && <div style={{ color: COLORS.textDim, fontSize: 12 }}>Aún no tienes notas.</div>}
+                  </div>
+                </div>
+              </div>
+            </>
+          ) : (
+            <div style={{ ...cardStyle, textAlign: 'center', padding: 46 }}>
+              <div className="fire-emoji" style={{ fontSize: 54, marginBottom: 12 }}>{'\u{1F4D6}'}</div>
+              <h3 style={{ color: COLORS.text, fontSize: 22, marginBottom: 8 }}>Tu biblioteca está vacía</h3>
+              <div style={{ color: COLORS.textDim, fontSize: 13 }}>Sube un PDF para leerlo, guardar progreso, marcadores y notas.</div>
+            </div>
+          )}
         </div>
       </div>
     </div>
@@ -5284,7 +5622,7 @@ const SettingsView = ({ data, onUpdateUser, onResetData }) => {
     setNotificationPermission(result.permission);
     setNotificationMsg(result.reason);
     if (result.ok) {
-      await showHabitFlowNotification('🔔 HabitFlow listo', {
+      await showHabitFlowNotification('HabitFlow', {
         body: 'Las alertas de agenda ya pueden aparecer en este dispositivo.',
         tag: 'habitflow-notifications-enabled'
       });
@@ -5296,7 +5634,7 @@ const SettingsView = ({ data, onUpdateUser, onResetData }) => {
       await handleEnableNotifications();
       return;
     }
-    const ok = await showHabitFlowNotification('🔔 Prueba de HabitFlow', {
+    const ok = await showHabitFlowNotification('HabitFlow • Prueba', {
       body: 'Si ves esto, las notificaciones funcionan en este dispositivo.',
       tag: `habitflow-test-${Date.now()}`
     });
@@ -5393,7 +5731,7 @@ const SettingsView = ({ data, onUpdateUser, onResetData }) => {
             Notificaciones
           </h3>
           <div style={{ fontSize: 11, color: COLORS.textDim, marginBottom: 14, lineHeight: 1.55 }}>
-            Las alarmas se envían a todos los dispositivos de tu cuenta. Activa este permiso una vez en cada PC o celular donde uses HabitFlow.
+            Recibe alarmas de agenda, recordatorios de habitos pendientes y mensajes de disciplina en todos los dispositivos de tu cuenta.
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
             <span style={{
@@ -8958,9 +9296,10 @@ const HabitFlowApp = () => {
           if (sentMap[key]) return;
           sentMap[key] = now.getTime();
           changed = true;
-          const when = reminder.mins > 0 ? `${reminder.label}. Tarea a las ${task.dueTime}` : `Programada para las ${task.dueTime}`;
-          showHabitFlowNotification(`🔔 ${task.text}`, {
-            body: when,
+          const when = reminder.mins > 0 ? `${reminder.label} · ${task.dueTime}` : `Es hora · ${task.dueTime}`;
+          const category = task.category ? ` · ${task.category}` : '';
+          showHabitFlowNotification('HabitFlow • Agenda', {
+            body: `${task.text}\n${when}${category}`,
             tag: key,
             data: { view: 'agenda', taskId: task.id, date: dateStr },
             renotify: true
@@ -9149,6 +9488,14 @@ const HabitFlowApp = () => {
   const onUpdateFinance = useCallback((updater) => {
     setData(prev => {
       const newData = { ...prev, financeData: updater(prev.financeData || getFinanceData()) };
+      saveData(newData);
+      return newData;
+    });
+  }, []);
+
+  const onUpdateReading = useCallback((updater) => {
+    setData(prev => {
+      const newData = { ...prev, readingData: updater(prev.readingData || getReadingData()) };
       saveData(newData);
       return newData;
     });
@@ -9385,6 +9732,8 @@ const HabitFlowApp = () => {
         });
       });
       const financeData = {
+        currency: 'USD',
+        copRate: 4000,
         monthlyBudget: moneyAmount(1400, 2600),
         categories: financeCategories,
         budgets: { food: moneyAmount(260, 520), home: moneyAmount(500, 900), transport: moneyAmount(100, 260), health: moneyAmount(80, 220), fun: moneyAmount(90, 260), education: moneyAmount(80, 240) },
@@ -9453,6 +9802,7 @@ const HabitFlowApp = () => {
         records: newRecords,
         workoutData: newWorkout,
         financeData,
+        readingData: getReadingData(),
         studyData,
         agenda,
         agendaNotes,
@@ -9520,6 +9870,7 @@ const HabitFlowApp = () => {
     { id: 'pomodoro', label: 'Pomodoro', icon: <Clock size={20} /> },
     { id: 'workout', label: 'Entreno', icon: <Dumbbell size={20} /> },
     { id: 'agenda', label: 'Agenda', icon: <List size={20} /> },
+    { id: 'reading', label: 'Lectura', icon: <BookOpen size={20} /> },
     { id: 'dreams', label: 'Metas', icon: <Sparkles size={20} /> },
     { id: 'finance', label: 'Finanzas', icon: <CreditCard size={20} /> },
     { id: 'stats', label:  'Estadísticas', icon: <BarChart3 size={20} /> },
@@ -9533,6 +9884,7 @@ const HabitFlowApp = () => {
       case 'pomodoro': return <PomodoroView data={data} onUpdateUser={onUpdateUser} onUpdatePomodoro={onUpdatePomodoro} />;
       case 'workout': return <WorkoutView data={data} onUpdateData={onUpdateWorkout} onCompleteHabit={onCompleteHabit} awardXp={(prev, amt) => awardXp(prev, amt)} />;
       case 'agenda': return <AgendaView data={data} onUpdateAgenda={onUpdateAgenda} onUpdateAgendaNote={onUpdateAgendaNote} onUpdateAgendaTodos={onUpdateAgendaTodos} onUpdateAgendaTodoLabels={onUpdateAgendaTodoLabels} onMoveTaskToDate={onMoveTaskToDate} onCompleteHabit={onCompleteHabit} />;
+      case 'reading': return <ReadingView data={data} onUpdateReading={onUpdateReading} />;
       case 'dreams': return <DreamGoalsView data={data} onUpdateDreamGoals={onUpdateDreamGoals} />;
       case 'finance': return <FinanceView data={data} onUpdateFinance={onUpdateFinance} />;
       case 'stats': return <StatisticsView data={data} />;
