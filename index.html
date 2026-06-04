@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#000000">
+  <meta name="description" content="HabitFlow: sistema personal de hábitos, agenda, metas, entreno y finanzas.">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="HabitFlow">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta property="og:title" content="HabitFlow - Habit Tracker">
+  <meta property="og:description" content="Sistema personal de hábitos, agenda, metas, entreno y finanzas.">
+  <meta property="og:image" content="https://habit-flow-personal.netlify.app/icon-512-20260603.png">
+  <meta property="og:url" content="https://habit-flow-personal.netlify.app/">
+  <meta property="og:type" content="website">
+  <link rel="icon" href="./favicon.svg?v=20260603" type="image/svg+xml">
+  <link rel="icon" href="./icon-192-20260603.png" type="image/png" sizes="192x192">
+  <link rel="apple-touch-icon" href="./apple-touch-icon-20260603.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="./apple-touch-icon-20260603.png">
+  <link rel="manifest" href="./manifest.webmanifest">
+  <title>HabitFlow - Habit Tracker</title>
+  <style>
+    body { margin: 0; background: #0a0a0f; }
+    #root { min-height: 100vh; }
+    .loading { display: flex; align-items: center; justify-content: center; height: 100vh; flex-direction: column; gap: 16px; color: #8888a0; font-family: 'Inter', sans-serif; }
+    .loading-logo { width: 72px; height: 72px; border-radius: 18px; box-shadow: 0 0 0 1px rgba(255,255,255,0.10), 0 18px 46px rgba(0,0,0,0.42), 0 0 28px rgba(225,29,72,0.16); }
+    .spinner { width: 40px; height: 40px; border-radius: 50%; border: 3px solid #1a1a26; border-top-color: #6c63ff; animation: spin 0.8s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .error { color: #ff6b6b; padding: 40px; font-family: 'Inter', sans-serif; max-width: 800px; margin: 40px auto; line-height: 1.6; }
+    .error h2 { margin-bottom: 16px; color: #ff6b6b; }
+    .error pre { background: #1a1a26; padding: 16px; border-radius: 8px; overflow-x: auto; font-size: 13px; margin-top: 12px; color: #e8e8f0; }
+  </style>
+</head>
+<body>
+  <div id="root">
+    <div class="loading">
+      <img class="loading-logo" src="./brand-logo.svg" alt="HabitFlow">
+      <div>Cargando HabitFlow...</div>
+      <div class="spinner"></div>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+  <!-- PropTypes needed by recharts UMD -->
+  <script src="https://cdn.jsdelivr.net/npm/prop-types@15.8.1/prop-types.min.js"></script>
+
+  <script>
+  window.HABITFLOW_CLERK_PUBLISHABLE_KEY = 'pk_test_cHVtcGVkLWNoaW1wLTgxLmNsZXJrLmFjY291bnRzLmRldiQ';
+  window.HABITFLOW_VAPID_PUBLIC_KEY = 'BKCUxkoOZqeo6mPDLzpA9TckNHFHCxGSXp5hglnEm9JeZzAP79oVs6feKw2zo17INJGVP2w8uVR-5_c_AKoHm68';
+
+  window.addEventListener('DOMContentLoaded', async function initApp() {
+    try {
+      const rootEl = document.getElementById('root');
+      if ('serviceWorker' in navigator && (window.isSecureContext || ['localhost', '127.0.0.1'].includes(window.location.hostname))) {
+        navigator.serviceWorker.register('./sw.js').catch(() => {});
+      }
+
+      // Load lucide-react
+      window.lucideReact = await import('https://cdn.jsdelivr.net/npm/lucide-react@0.263.0/+esm');
+
+      // Load Supabase
+      const { createClient } = await import('https://esm.sh/@supabase/supabase-js@2');
+      window.HABITFLOW_SUPABASE_URL = 'https://mbqchbwzfyjxynjbtgws.supabase.co';
+      window.HABITFLOW_SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_112gMTbx7ZdkgGzB_AoM5g_fyKLiRIj';
+      window.createSupabaseClient = createClient;
+      window.supabaseClient = createClient(window.HABITFLOW_SUPABASE_URL, window.HABITFLOW_SUPABASE_PUBLISHABLE_KEY);
+
+      // Load recharts UMD
+      await new Promise((resolve, reject) => {
+        const s = document.createElement('script');
+        s.src = 'https://cdn.jsdelivr.net/npm/recharts@2.12.0/umd/Recharts.js';
+        s.onload = resolve;
+        s.onerror = () => reject(new Error('No se pudo cargar Recharts UMD'));
+        document.head.appendChild(s);
+      });
+
+      if (typeof window.Recharts === 'undefined' || typeof window.Recharts.LineChart === 'undefined') {
+        throw new Error('Recharts no tiene componentes. Verifica la consola.');
+      }
+
+      console.log('Recharts OK, componentes:', Object.keys(window.Recharts).filter(k => k[0] === k[0].toUpperCase()).join(', '));
+
+      const resp = await fetch('./HabitTrackerApp.jsx?_=' + Date.now());
+      if (!resp.ok) throw new Error('Error al cargar HabitTrackerApp.jsx: HTTP ' + resp.status);
+      const buf = await resp.arrayBuffer();
+      let code = new TextDecoder('utf-8').decode(buf);
+
+      code = code.replace(/import React, \{([\s\S]*?)\} from 'react';/, 'const {$1} = React;');
+      code = code.replace(/import \{([\s\S]*?)\} from 'recharts';/, 'const {$1} = Recharts;');
+      code = code.replace(/import \{([\s\S]*?)\} from 'lucide-react';/, 'const {$1} = lucideReact;');
+      code = code.replace('export default App;', 'window.__App = App;');
+
+      const result = Babel.transform(code, { presets: ['react'] });
+
+      const fn = new Function('React', 'ReactDOM', result.code);
+      fn(React, ReactDOM);
+
+      const root = ReactDOM.createRoot(rootEl);
+      root.render(React.createElement(window.__App));
+
+    } catch (err) {
+      console.error('HabitFlow error:', err);
+      document.getElementById('root').innerHTML =
+        '<div class="error">' +
+        '<h2>Error al cargar la aplicaci\u00f3n</h2>' +
+        '<p>' + err.message + '</p>' +
+        (err.stack ? '<pre>' + err.stack.replace(/</g, '&lt;').replace(/>/g, '&gt;') + '</pre>' : '') +
+        '<p style="margin-top:16px;color:#8888a0;">Abre la consola (F12) para m\u00e1s detalles.</p></div>';
+    }
+  });
+  </script>
+</body>
+</html>
