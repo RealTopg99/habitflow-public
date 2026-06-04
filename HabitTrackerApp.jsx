@@ -530,10 +530,12 @@ const normalizeLoadedData = (parsed) => {
   if (!parsed.studyData.subjects) parsed.studyData.subjects = [];
   if (!parsed.studyData.sessions) parsed.studyData.sessions = [];
   parsed.studyData.subjects.forEach(s => { if (!s.topics) s.topics = []; if (!s.goalHours) s.goalHours = 0; });
-  if (!parsed.readingData) parsed.readingData = getReadingData();
-  if (!parsed.readingData.books) parsed.readingData.books = [];
-  if (parsed.readingData.activeBookId === undefined) parsed.readingData.activeBookId = parsed.readingData.books[0]?.id || null;
+  parsed.readingData = getReadingData();
   if (!parsed.dreamGoals) parsed.dreamGoals = getDreamGoals();
+  parsed.dreamGoals = (parsed.dreamGoals || []).map(goal => ({
+    ...goal,
+    image: typeof goal.image === 'string' && goal.image.startsWith('data:') ? '' : goal.image
+  }));
   if (!parsed.agenda) parsed.agenda = {};
   if (!parsed.agendaNotes) parsed.agendaNotes = {};
   if (!parsed.agendaTodos) parsed.agendaTodos = {};
@@ -3233,15 +3235,9 @@ const HabitForm = ({ initial, onSave, onCancel }) => {
     frequency: 'Diario', frequencyDays: [1, 2, 3, 4, 5], targetStreak: 21, active: true
   });
   const [error, setError] = useState('');
-  const [iconSearch, setIconSearch] = useState('');
 
   const handleChange = (k, v) => setForm(f => ({ ...f, [k]: v }));
   const uniqueIcons = useMemo(() => [...new Set(ICONS)], []);
-  const visibleIcons = useMemo(() => {
-    const q = iconSearch.trim();
-    if (!q) return uniqueIcons;
-    return uniqueIcons.filter(ic => ic.includes(q));
-  }, [iconSearch, uniqueIcons]);
 
   const toggleDay = (day) => {
     const current = form.frequencyDays || [1, 2, 3, 4, 5];
@@ -3327,17 +3323,12 @@ const HabitForm = ({ initial, onSave, onCancel }) => {
       <div>
         <label style={{ display: 'block', fontSize: 12, color: COLORS.textDim, marginBottom: 6, letterSpacing: '0.05em' }}>ÍCONO</label>
         <div style={{ display: 'grid', gap: 8 }}>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr auto', gap: 8, alignItems: 'center' }}>
-            <input value={iconSearch} onChange={e => setIconSearch(e.target.value)}
-              placeholder="Buscar pegando un emoji..."
-              style={{
-                width: '100%', padding: '10px 12px', background: COLORS.bg, border: `1px solid ${COLORS.border}`,
-                borderRadius: 8, color: COLORS.text, fontSize: 12, outline: 'none', fontFamily: "'Inter', sans-serif"
-              }} />
-            <span style={{ fontSize: 11, color: COLORS.textDim, whiteSpace: 'nowrap' }}>{visibleIcons.length} iconos</span>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 8 }}>
+            <span style={{ fontSize: 12, color: COLORS.textDim }}>Elige uno de los iconos disponibles</span>
+            <span style={{ fontSize: 11, color: COLORS.textDim, whiteSpace: 'nowrap' }}>{uniqueIcons.length} iconos</span>
           </div>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, maxHeight: 220, overflowY: 'auto', paddingRight: 4 }}>
-          {visibleIcons.map(ic => (
+          {uniqueIcons.map(ic => (
             <button key={ic} onClick={() => handleChange('icon', ic)} style={{
               width: 36, height: 36, borderRadius: 8, border: `2px solid ${form.icon === ic ? COLORS.primary : COLORS.border}`,
               background: form.icon === ic ? `${COLORS.primary}14` : 'transparent',
@@ -3495,6 +3486,7 @@ const DashboardView = ({ data, onCompleteHabit, workoutData, onNavigate, onUpdat
   const today = toYYYYMMDD(new Date());
   const todayCount = getTodayCount(habits, records);
   const greet = greets();
+  const insights = useMemo(() => generateInsights(habits, records).slice(0, 4), [habits, records]);
 
   const kpis = useMemo(() => ({
     completed: todayCount.completed,
@@ -3644,6 +3636,28 @@ const DashboardView = ({ data, onCompleteHabit, workoutData, onNavigate, onUpdat
                 </ResponsiveContainer>
               );
             })()}
+          </div>
+
+          <div style={{ background: COLORS.card, borderRadius: 16, border: `1px solid ${COLORS.border}`, padding: 24, marginBottom: 24 }}>
+            <h3 style={{ fontSize: 18, color: COLORS.text, marginBottom: 16, fontFamily: "'DM Serif Display', serif" }}>
+              <Activity size={16} style={{ verticalAlign: 'middle', marginRight: 6, color: COLORS.primary }} />
+              Perspectivas y Recomendaciones
+            </h3>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(230px, 1fr))', gap: 12 }}>
+              {insights.map((insight, i) => {
+                const bgColors = { positive: 'rgba(0,255,157,0.08)', warning: 'rgba(255,217,61,0.08)', attention: `${COLORS.primary}12`, danger: 'rgba(255,77,77,0.08)' };
+                const borderColors = { positive: 'rgba(0,255,157,0.2)', warning: 'rgba(255,217,61,0.2)', attention: `${COLORS.primary}30`, danger: 'rgba(255,77,77,0.2)' };
+                return (
+                  <div key={insight.id || i} style={{ background: bgColors[insight.type] || COLORS.bg, borderRadius: 12, border: `1px solid ${borderColors[insight.type] || COLORS.border}`, padding: 14, display: 'flex', alignItems: 'flex-start', gap: 10 }}>
+                    <span className="fire-emoji" style={{ fontSize: 20 }}>{insight.icon}</span>
+                    <div style={{ fontSize: 13, color: COLORS.text, lineHeight: 1.5 }}>{insight.text}</div>
+                  </div>
+                );
+              })}
+              {insights.length === 0 && (
+                <div style={{ color: COLORS.textDim, fontSize: 13, padding: 16 }}>Completa más hábitos para recibir perspectivas personalizadas.</div>
+              )}
+            </div>
           </div>
 
           <AchievementsSection habits={habits} records={records} />
@@ -4441,6 +4455,7 @@ const FinanceView = ({ data, onUpdateFinance }) => {
   const [search, setSearch] = useState('');
   const [filterType, setFilterType] = useState('all');
   const [catName, setCatName] = useState('');
+  const [section, setSection] = useState('overview');
 
   const monthDate = new Date(`${selectedMonth}-01T12:00:00`);
   const monthly = transactions.filter(t => (t.date || '').startsWith(selectedMonth));
@@ -4459,7 +4474,9 @@ const FinanceView = ({ data, onUpdateFinance }) => {
     if (!v) return '';
     return Number.isInteger(v) ? String(v) : v.toFixed(2);
   };
-  const money = (n) => Number(toDisplayAmount(n) || 0).toLocaleString('es-CO', { style: 'currency', currency, maximumFractionDigits: currency === 'COP' ? 0 : 0 });
+  const moneyUSD = (n) => Number(n || 0).toLocaleString('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 });
+  const moneyCOP = (n) => Number(Number(n || 0) * copRate).toLocaleString('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 });
+  const money = (n) => `${moneyUSD(n)} · ${moneyCOP(n)}`;
   const catById = (id) => categories.find(c => c.id === id) || { name: 'Sin categoria', color: COLORS.textDim };
   const accountById = (id) => accounts.find(a => a.id === id) || accounts[0] || { name: 'Sin cuenta' };
   const inputStyle = { padding: '10px 12px', background: COLORS.bg, border: `1px solid ${COLORS.border}`, borderRadius: 10, color: COLORS.text, outline: 'none', boxSizing: 'border-box', ...s };
@@ -4507,6 +4524,15 @@ const FinanceView = ({ data, onUpdateFinance }) => {
     const d = new Date(`${key}-01T12:00:00`);
     return { name: d.toLocaleDateString('es-ES', { month: 'short' }), ingresos: inc, gastos: exp, balance: inc - exp };
   });
+  const accountChartData = accountBalances.map(a => ({ name: a.name, balance: a.current }));
+  const financeSections = [
+    { id: 'overview', label: 'Resumen', icon: BarChart3 },
+    { id: 'movements', label: 'Movimientos', icon: List },
+    { id: 'accounts', label: 'Cuentas', icon: CreditCard },
+    { id: 'budget', label: 'Presupuesto', icon: Target },
+    { id: 'recurring', label: 'Recurrentes', icon: Repeat },
+    { id: 'goals', label: 'Metas', icon: Sparkles }
+  ];
 
   const insights = [
     budgetPct > 90 ? `Alerta: ya usaste ${budgetPct}% del presupuesto mensual.` : `Presupuesto sano: vas en ${budgetPct}% del mes.`,
@@ -4580,7 +4606,12 @@ const FinanceView = ({ data, onUpdateFinance }) => {
   const contributeGoal = (goalId) => {
     const amount = fromDisplayAmount(goalAdds[goalId] || 0);
     if (!amount) return;
-    onUpdateFinance(prev => ({ ...prev, goals: (prev.goals || []).map(g => g.id === goalId ? { ...g, saved: Number(g.saved || 0) + amount } : g) }));
+    onUpdateFinance(prev => ({ ...prev, goals: (prev.goals || []).map(g => {
+      const target = Number(g.target || 0);
+      const saved = Number(g.saved || 0);
+      if (g.id !== goalId || (target && saved >= target)) return g;
+      return { ...g, saved: Math.min(target, saved + amount) };
+    }) }));
     setGoalAdds(prev => ({ ...prev, [goalId]: '' }));
   };
 
@@ -4626,9 +4657,32 @@ const FinanceView = ({ data, onUpdateFinance }) => {
         ))}
       </div>
 
-      <div className="finance-layout" style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1.45fr) minmax(330px, 0.9fr)', gap: 18, alignItems: 'start' }}>
-        <div className="finance-main-column" style={{ display: 'grid', gap: 18 }}>
-          <div className="finance-card finance-transaction-card" style={cardStyle}>
+      <div className="finance-section-tabs" style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 20 }}>
+        {financeSections.map(item => {
+          const Icon = item.icon;
+          const active = section === item.id;
+          return (
+            <button key={item.id} onClick={() => setSection(item.id)} style={{
+              display: 'inline-flex', alignItems: 'center', gap: 8,
+              border: `1px solid ${active ? COLORS.primary : COLORS.border}`,
+              background: active ? `${COLORS.primary}18` : COLORS.card,
+              color: active ? COLORS.primary : COLORS.textDim,
+              borderRadius: 999,
+              padding: '10px 14px',
+              cursor: 'pointer',
+              fontWeight: 800,
+              fontSize: 12,
+              ...s
+            }}>
+              <Icon size={14} /> {item.label}
+            </button>
+          );
+        })}
+      </div>
+
+      <div className="finance-layout" style={{ display: 'grid', gridTemplateColumns: ['overview', 'accounts', 'budget'].includes(section) ? 'minmax(0, 1.45fr) minmax(330px, 0.9fr)' : '1fr', gap: 18, alignItems: 'start' }}>
+        <div className="finance-main-column" style={{ display: ['overview', 'movements', 'accounts', 'budget'].includes(section) ? 'grid' : 'none', gap: 18 }}>
+          <div className="finance-card finance-transaction-card" style={{ ...cardStyle, display: section === 'movements' ? 'block' : 'none' }}>
             <div className="finance-card-header" style={{ display: 'flex', justifyContent: 'space-between', gap: 12, alignItems: 'center', marginBottom: 14 }}>
               <h3 style={{ fontSize: 17, color: COLORS.text, margin: 0 }}>Registrar movimiento</h3>
               <input type="month" value={selectedMonth} onClick={e => openNativeDatePicker(e.currentTarget)} onFocus={e => openNativeDatePicker(e.currentTarget)} onChange={e => setSelectedMonth(e.target.value || today.slice(0, 7))} style={{ ...inputStyle, width: 160, cursor: 'pointer' }} />
@@ -4653,7 +4707,7 @@ const FinanceView = ({ data, onUpdateFinance }) => {
             <input value={form.note} onChange={e => setForm(f => ({ ...f, note: e.target.value }))} placeholder="Nota opcional: supermercado, salario, factura..." style={{ ...inputStyle, width: '100%', marginTop: 10 }} />
           </div>
 
-          <div className="finance-card finance-movements-card" style={cardStyle}>
+          <div className="finance-card finance-movements-card" style={{ ...cardStyle, display: section === 'movements' ? 'block' : 'none' }}>
             <div className="finance-card-header finance-card-header-wrap" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 10, marginBottom: 14, flexWrap: 'wrap' }}>
               <h3 style={{ fontSize: 17, color: COLORS.text, margin: 0 }}>Movimientos</h3>
               <div className="finance-filter-row" style={{ display: 'flex', gap: 8 }}>
@@ -4682,7 +4736,7 @@ const FinanceView = ({ data, onUpdateFinance }) => {
             </div>
           </div>
 
-          <div className="finance-card finance-chart-card" style={cardStyle}>
+          <div className="finance-card finance-chart-card" style={{ ...cardStyle, display: section === 'overview' ? 'block' : 'none' }}>
             <h3 style={{ fontSize: 17, color: COLORS.text, marginBottom: 14 }}>Flujo de caja</h3>
             <ResponsiveContainer width="100%" height={250}>
               <LineChart data={cashFlow}>
@@ -4697,7 +4751,20 @@ const FinanceView = ({ data, onUpdateFinance }) => {
             </ResponsiveContainer>
           </div>
 
-          <div className="finance-card finance-budget-card" style={cardStyle}>
+          <div className="finance-card finance-chart-card" style={{ ...cardStyle, display: section === 'accounts' ? 'block' : 'none' }}>
+            <h3 style={{ fontSize: 17, color: COLORS.text, marginBottom: 14 }}>Balance por cuenta</h3>
+            <ResponsiveContainer width="100%" height={250}>
+              <BarChart data={accountChartData}>
+                <CartesianGrid stroke="rgba(255,255,255,0.05)" vertical={false} />
+                <XAxis dataKey="name" stroke={COLORS.textDim} tick={{ fontSize: 11 }} />
+                <YAxis stroke={COLORS.textDim} tick={{ fontSize: 11 }} tickFormatter={v => moneyUSD(v)} />
+                <Tooltip formatter={v => money(v)} contentStyle={tooltipStyle} labelStyle={{ color: COLORS.text }} />
+                <Bar dataKey="balance" fill={COLORS.primary} radius={[8, 8, 0, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+
+          <div className="finance-card finance-budget-card" style={{ ...cardStyle, display: section === 'budget' ? 'block' : 'none' }}>
             <h3 style={{ fontSize: 17, color: COLORS.text, marginBottom: 14 }}>Presupuesto por categoria</h3>
             <div style={{ display: 'grid', gap: 10 }}>
               {expenseCategories.map(cat => {
@@ -4723,8 +4790,8 @@ const FinanceView = ({ data, onUpdateFinance }) => {
           </div>
         </div>
 
-        <div className="finance-side-column" style={{ display: 'grid', gap: 18 }}>
-          <div className="finance-card finance-insights-card" style={cardStyle}>
+        <div className="finance-side-column" style={{ display: ['overview', 'accounts', 'budget', 'recurring', 'goals'].includes(section) ? 'grid' : 'none', gap: 18 }}>
+          <div className="finance-card finance-insights-card" style={{ ...cardStyle, display: section === 'overview' ? 'block' : 'none' }}>
             <h3 style={{ fontSize: 16, color: COLORS.text, marginBottom: 12 }}>Insights</h3>
             <div style={{ display: 'grid', gap: 8 }}>
               {insights.map((item, idx) => (
@@ -4736,14 +4803,14 @@ const FinanceView = ({ data, onUpdateFinance }) => {
             </div>
           </div>
 
-          <div className="finance-card finance-monthly-budget-card" style={cardStyle}>
+          <div className="finance-card finance-monthly-budget-card" style={{ ...cardStyle, display: section === 'budget' ? 'block' : 'none' }}>
             <h3 style={{ fontSize: 16, color: COLORS.text, marginBottom: 12 }}>Presupuesto mensual</h3>
             <input type="number" value={cleanDisplayValue(finance.monthlyBudget)} onChange={e => onUpdateFinance(prev => ({ ...prev, monthlyBudget: fromDisplayAmount(e.target.value || 0) }))} placeholder={`Presupuesto ${currency}`} style={{ ...inputStyle, width: '100%', marginBottom: 12 }} />
             <div style={{ height: 8, background: COLORS.bg, borderRadius: 99, overflow: 'hidden' }}><div style={{ height: '100%', width: `${budgetPct}%`, background: `linear-gradient(90deg, ${COLORS.primary}, ${COLORS.alert})`, borderRadius: 99 }} /></div>
             <div style={{ color: COLORS.textDim, fontSize: 11, marginTop: 8 }}>Usado: {money(expenses)} · Plan por categorías: {money(budgetTotal)}</div>
           </div>
 
-          <div className="finance-card finance-accounts-card" style={cardStyle}>
+          <div className="finance-card finance-accounts-card" style={{ ...cardStyle, display: section === 'accounts' ? 'block' : 'none' }}>
             <h3 style={{ fontSize: 16, color: COLORS.text, marginBottom: 12 }}>Cuentas</h3>
             <div style={{ display: 'grid', gap: 8, marginBottom: 12 }}>
               {accountBalances.map(a => (
@@ -4763,7 +4830,7 @@ const FinanceView = ({ data, onUpdateFinance }) => {
             </div>
           </div>
 
-          <div className="finance-card finance-categories-card" style={cardStyle}>
+          <div className="finance-card finance-categories-card" style={{ ...cardStyle, display: section === 'budget' ? 'block' : 'none' }}>
             <h3 style={{ fontSize: 16, color: COLORS.text, marginBottom: 12 }}>Categorías</h3>
             <div className="finance-inline-form finance-category-form" style={{ display: 'flex', gap: 8, marginBottom: 12 }}>
               <input value={catName} onChange={e => setCatName(e.target.value)} placeholder="Nueva categoría" style={{ ...inputStyle, flex: 1, padding: '9px 11px' }} />
@@ -4772,7 +4839,7 @@ const FinanceView = ({ data, onUpdateFinance }) => {
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 7 }}>{categories.map(c => <span key={c.id} className="lab-pill" style={{ padding: '6px 9px', fontSize: 11 }}><span style={{ color: c.color }}>●</span> {c.name}</span>)}</div>
           </div>
 
-          <div className="finance-card finance-recurring-card" style={cardStyle}>
+          <div className="finance-card finance-recurring-card" style={{ ...cardStyle, display: section === 'recurring' ? 'block' : 'none' }}>
             <h3 style={{ fontSize: 16, color: COLORS.text, marginBottom: 12 }}>Pagos recurrentes</h3>
             <div style={{ display: 'grid', gap: 8, marginBottom: 12 }}>
               {activeRecurring.slice(0, 5).map(r => (
@@ -4804,11 +4871,12 @@ const FinanceView = ({ data, onUpdateFinance }) => {
             </div>
           </div>
 
-          <div className="finance-card finance-saving-goals-card" style={cardStyle}>
+          <div className="finance-card finance-saving-goals-card" style={{ ...cardStyle, display: section === 'goals' ? 'block' : 'none' }}>
             <h3 style={{ fontSize: 16, color: COLORS.text, marginBottom: 12 }}>Metas de ahorro</h3>
             <div style={{ display: 'grid', gap: 9, marginBottom: 12 }}>
               {goals.map(g => {
                 const pct = g.target ? Math.min(100, Math.round((Number(g.saved || 0) / Number(g.target || 1)) * 100)) : 0;
+                const completed = pct >= 100;
                 return (
                   <div key={g.id} style={{ padding: '11px', borderRadius: 12, background: 'rgba(239,239,239,0.035)', border: `1px solid ${COLORS.border}` }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', gap: 8, marginBottom: 8 }}>
@@ -4820,8 +4888,14 @@ const FinanceView = ({ data, onUpdateFinance }) => {
                     </div>
                     <div style={{ height: 7, borderRadius: 99, background: COLORS.bg, overflow: 'hidden', marginBottom: 8 }}><div style={{ height: '100%', width: `${pct}%`, background: `linear-gradient(90deg, ${COLORS.success}, ${COLORS.primary})` }} /></div>
                     <div className="finance-inline-form" style={{ display: 'flex', gap: 7 }}>
-                      <input type="number" value={goalAdds[g.id] || ''} onChange={e => setGoalAdds(prev => ({ ...prev, [g.id]: e.target.value }))} placeholder="Aportar" style={{ ...inputStyle, flex: 1, padding: '7px 8px', fontSize: 11 }} />
-                      <button onClick={() => contributeGoal(g.id)} style={{ border: 'none', borderRadius: 9, background: `${COLORS.success}18`, color: COLORS.success, padding: '0 10px', cursor: 'pointer', fontWeight: 800 }}>+</button>
+                      {completed ? (
+                        <div style={{ ...inputStyle, flex: 1, padding: '7px 8px', fontSize: 11, color: COLORS.success, fontWeight: 800 }}>Meta completada</div>
+                      ) : (
+                        <>
+                          <input type="number" value={goalAdds[g.id] || ''} onChange={e => setGoalAdds(prev => ({ ...prev, [g.id]: e.target.value }))} placeholder="Aportar" style={{ ...inputStyle, flex: 1, padding: '7px 8px', fontSize: 11 }} />
+                          <button onClick={() => contributeGoal(g.id)} style={{ border: 'none', borderRadius: 9, background: `${COLORS.success}18`, color: COLORS.success, padding: '0 10px', cursor: 'pointer', fontWeight: 800 }}>+</button>
+                        </>
+                      )}
                     </div>
                   </div>
                 );
@@ -4837,7 +4911,7 @@ const FinanceView = ({ data, onUpdateFinance }) => {
             </div>
           </div>
 
-          <div className="finance-card finance-pie-card" style={cardStyle}>
+          <div className="finance-card finance-pie-card" style={{ ...cardStyle, display: section === 'overview' ? 'block' : 'none' }}>
             <h3 style={{ fontSize: 16, color: COLORS.text, marginBottom: 12 }}>Gastos por categoria</h3>
             <ResponsiveContainer width="100%" height={210}>
               <PieChart>{byCategory.length ? <Pie data={byCategory} dataKey="value" nameKey="name" outerRadius={78}>{byCategory.map((c, i) => <Cell key={i} fill={c.color} />)}</Pie> : null}<Tooltip formatter={v => money(v)} contentStyle={tooltipStyle} labelStyle={{ color: COLORS.text }} /></PieChart>
@@ -5038,7 +5112,6 @@ const ReadingView = ({ data, onUpdateReading }) => {
 const DreamGoalsView = ({ data, onUpdateDreamGoals }) => {
   const goals = data.dreamGoals || getDreamGoals();
   const s = { fontFamily: "'Inter', sans-serif" };
-  const imageInputRef = useRef(null);
   const isPinkLight = (data?.user?.themeMode || '') === 'pinkLight';
   const dreamPanelBg = isPinkLight ? 'rgba(255,255,255,0.92)' : '#080808';
   const dreamInputBg = isPinkLight ? '#fffafd' : '#050505';
@@ -5053,7 +5126,6 @@ const DreamGoalsView = ({ data, onUpdateDreamGoals }) => {
     accent: '#e11d48'
   });
   const [showIconPicker, setShowIconPicker] = useState(false);
-  const [imageUploadHint, setImageUploadHint] = useState('');
   const [adds, setAdds] = useState({});
   const money = (n) => Number(n || 0).toLocaleString('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 });
   const inputStyle = { padding: '10px 12px', background: dreamInputBg, border: `1px solid ${COLORS.border}`, borderRadius: 10, color: COLORS.text, outline: 'none', ...s };
@@ -5080,46 +5152,6 @@ const DreamGoalsView = ({ data, onUpdateDreamGoals }) => {
     '\u{1F468}\u{200D}\u{1F4BC}', '\u{1F469}\u{200D}\u{1F4BC}', '\u{1F468}\u{200D}\u{1F393}', '\u{1F469}\u{200D}\u{1F393}', '\u{1F46A}', '\u{2764}\u{FE0F}'
   ];
 
-  const resizeImageFile = (file) => new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => {
-      const img = new Image();
-      img.onload = () => {
-        const maxWidth = 1200;
-        const maxHeight = 720;
-        const ratio = Math.min(maxWidth / img.width, maxHeight / img.height, 1);
-        const width = Math.round(img.width * ratio);
-        const height = Math.round(img.height * ratio);
-        const canvas = document.createElement('canvas');
-        canvas.width = width;
-        canvas.height = height;
-        const ctx = canvas.getContext('2d');
-        ctx.drawImage(img, 0, 0, width, height);
-        resolve(canvas.toDataURL('image/jpeg', 0.82));
-      };
-      img.onerror = reject;
-      img.src = reader.result;
-    };
-    reader.onerror = reject;
-    reader.readAsDataURL(file);
-  });
-
-  const handleImageUpload = async (event) => {
-    const file = event.target.files?.[0];
-    if (!file) return;
-    if (!file.type.startsWith('image/')) return;
-    setImageUploadHint('Optimizando imagen...');
-    try {
-      const optimized = await resizeImageFile(file);
-      setForm(f => ({ ...f, image: optimized || '' }));
-      setImageUploadHint('Imagen optimizada y lista.');
-    } catch {
-      setImageUploadHint('No pude optimizar esa imagen. Prueba con otra foto.');
-    } finally {
-      event.target.value = '';
-    }
-  };
-
   const addGoal = () => {
     const title = form.title.trim();
     const target = Number(form.target);
@@ -5141,7 +5173,12 @@ const DreamGoalsView = ({ data, onUpdateDreamGoals }) => {
   const contributeGoal = (id) => {
     const amount = Number(adds[id] || 0);
     if (!amount) return;
-    onUpdateDreamGoals(prev => (prev || []).map(goal => goal.id === id ? { ...goal, current: Math.min(Number(goal.target || 0), Number(goal.current || 0) + amount) } : goal));
+    onUpdateDreamGoals(prev => (prev || []).map(goal => {
+      const target = Number(goal.target || 0);
+      const current = Number(goal.current || 0);
+      if (goal.id !== id || (target && current >= target)) return goal;
+      return { ...goal, current: Math.min(target, current + amount) };
+    }));
     setAdds(prev => ({ ...prev, [id]: '' }));
   };
 
@@ -5209,9 +5246,15 @@ const DreamGoalsView = ({ data, onUpdateDreamGoals }) => {
                     <strong style={{ color: goal.accent || COLORS.primary }}>{money(missing)}</strong>
                     <span>{missing === 0 ? 'meta completada.' : 'para completar.'}</span>
                   </div>
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr auto auto', gap: 8, marginTop: 12 }}>
-                    <input type="number" value={adds[goal.id] || ''} onChange={e => setAdds(prev => ({ ...prev, [goal.id]: e.target.value }))} placeholder="Aportar" style={{ ...inputStyle, padding: '8px 10px', fontSize: 11 }} />
-                    <button onClick={() => contributeGoal(goal.id)} style={{ border: 'none', borderRadius: 10, background: goal.accent || COLORS.primary, color: '#fff', padding: '0 14px', cursor: 'pointer', fontWeight: 800 }}>+ Aportar</button>
+                  <div style={{ display: 'grid', gridTemplateColumns: missing === 0 ? '1fr auto' : '1fr auto auto', gap: 8, marginTop: 12 }}>
+                    {missing > 0 ? (
+                      <>
+                        <input type="number" value={adds[goal.id] || ''} onChange={e => setAdds(prev => ({ ...prev, [goal.id]: e.target.value }))} placeholder="Aportar" style={{ ...inputStyle, padding: '8px 10px', fontSize: 11 }} />
+                        <button onClick={() => contributeGoal(goal.id)} style={{ border: 'none', borderRadius: 10, background: goal.accent || COLORS.primary, color: '#fff', padding: '0 14px', cursor: 'pointer', fontWeight: 800 }}>+ Aportar</button>
+                      </>
+                    ) : (
+                      <div style={{ ...inputStyle, padding: '8px 10px', fontSize: 11, color: COLORS.success, fontWeight: 800 }}>Meta completada</div>
+                    )}
                     <button onClick={() => removeGoal(goal.id)} style={{ border: `1px solid ${COLORS.border}`, borderRadius: 10, background: 'transparent', color: COLORS.textDim, padding: '0 10px', cursor: 'pointer' }}><Trash2 size={13} /></button>
                   </div>
                 </div>
@@ -5280,13 +5323,11 @@ const DreamGoalsView = ({ data, onUpdateDreamGoals }) => {
             </div>
           )}
         </div>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(170px, 1fr))', gap: 10, alignItems: 'center' }}>
-          <input value={form.image} onChange={e => setForm(f => ({ ...f, image: e.target.value }))} placeholder="URL de imagen opcional" style={inputStyle} />
-          <input ref={imageInputRef} type="file" accept="image/*" onChange={handleImageUpload} style={{ display: 'none' }} />
-          <button onClick={() => imageInputRef.current?.click()} style={{ border: `1px solid ${COLORS.border}`, borderRadius: 999, background: dreamInputBg, color: COLORS.text, padding: '10px 14px', cursor: 'pointer', fontWeight: 800, ...s }}>Subir imagen</button>
+        <div style={{ display: 'grid', gridTemplateColumns: 'minmax(220px, 1fr) minmax(160px, 0.6fr)', gap: 10, alignItems: 'center' }}>
+          <input value={form.image} onChange={e => setForm(f => ({ ...f, image: e.target.value }))} placeholder="URL de imagen opcional (no se almacena la foto)" style={inputStyle} />
           <button className="lab-cta" onClick={addGoal} style={{ borderRadius: 999, padding: '10px 18px', cursor: 'pointer', fontWeight: 800 }}><span>Crear meta</span></button>
         </div>
-        {imageUploadHint && <div style={{ color: COLORS.textDim, fontSize: 11, ...s }}>{imageUploadHint}</div>}
+        <div style={{ color: COLORS.textDim, fontSize: 11, ...s }}>HabitFlow solo guarda el enlace. La imagen queda alojada en donde pegues la URL.</div>
         {form.image && (
           <div style={{
             width: 'min(100%, 360px)',
@@ -5482,7 +5523,6 @@ const StatisticsView = ({ data }) => {
   );
 
   const stackedHabits = habits.filter(h => h.active);
-  const insights = useMemo(() => generateInsights(habits, records), [habits, records]);
 
   return (
     <div className="stats-mobile-view" style={{ animation: 'fadeIn 0.3s ease-out' }}>
@@ -5684,28 +5724,6 @@ const StatisticsView = ({ data }) => {
                 ))}
               </tbody>
             </table>
-          </div>
-        </div>
-
-        <div style={{ background: COLORS.card, borderRadius: 16, border: `1px solid ${COLORS.border}`, padding: 24 }}>
-          <h3 style={{ fontSize: 16, color: COLORS.text, marginBottom: 16, fontFamily: "'DM Serif Display', serif" }}>
-            <Activity size={16} style={{ verticalAlign: 'middle', marginRight: 6, color: COLORS.primary }} />
-            Perspectivas y Recomendaciones
-          </h3>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 12 }}>
-            {insights.map((insight, i) => {
-              const bgColors = { positive: 'rgba(0,255,157,0.08)', warning: 'rgba(255,217,61,0.08)', attention: `${COLORS.primary}12`, danger: 'rgba(255,77,77,0.08)' };
-              const borderColors = { positive: 'rgba(0,255,157,0.2)', warning: 'rgba(255,217,61,0.2)', attention: `${COLORS.primary}30`, danger: 'rgba(255,77,77,0.2)' };
-              return (
-                <div key={i} style={{ background: bgColors[insight.type] || COLORS.bg, borderRadius: 10, border: `1px solid ${borderColors[insight.type] || COLORS.border}`, padding: 14, display: 'flex', alignItems: 'flex-start', gap: 10 }}>
-                  <span className="fire-emoji" style={{ fontSize: 20 }}>{insight.icon}</span>
-                  <div style={{ fontSize: 13, color: COLORS.text, lineHeight: 1.5 }}>{insight.text}</div>
-                </div>
-              );
-            })}
-            {insights.length === 0 && (
-              <div style={{ color: COLORS.textDim, fontSize: 13, padding: 20, textAlign: 'center' }}>Completa más hábitos para recibir perspectivas personalizadas.</div>
-            )}
           </div>
         </div>
       </div>
@@ -8000,14 +8018,47 @@ const WorkoutProgTab = ({ workoutData }) => {
   const weeklyData = Array.from({ length: 8 }, (_, i) => {
     const end = new Date(); end.setDate(end.getDate() - i * 7); const start = new Date(end); start.setDate(start.getDate() - 6);
     const weekSessions = sessions.filter(s => s.date >= toYYYYMMDD(start) && s.date <= toYYYYMMDD(end));
-    return { week: `S${8 - i}`, sessions: weekSessions.length, volume: weekSessions.reduce((t, s) => t + s.totalVolume, 0) };
+    return { week: `S${8 - i}`, sessions: weekSessions.length, volume: weekSessions.reduce((t, s) => t + Number(s.totalVolume || 0), 0), duration: weekSessions.reduce((t, s) => t + Number(s.duration || 0), 0) };
   }).reverse();
+  const totalVolume = sessions.reduce((t, s) => t + Number(s.totalVolume || 0), 0);
+  const totalDuration = sessions.reduce((t, s) => t + Number(s.duration || 0), 0);
+  const totalExerciseLogs = sessions.reduce((t, s) => t + (s.exercises?.length || 0), 0);
+  const trainedExercises = new Set(sessions.flatMap(s => s.exercises?.map(e => e.exerciseId) || [])).size;
 
   const allPRs = sessions.flatMap(s => s.exercises?.flatMap(e => (e.sets || []).filter(x => x.isPersonalRecord).map(x => ({ ...x, exName: e.exerciseName, date: s.date }))) || []).sort((a, b) => b.date.localeCompare(a.date));
   const isNewPR = (d) => Math.abs((new Date(d) - new Date()) / (1000 * 60 * 60 * 24)) <= 7;
 
   return (
     <div style={{ animation: 'fadeIn 0.3s ease-out' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: 12, marginBottom: 20 }}>
+        {[
+          { label: 'Sesiones totales', value: sessions.length, color: COLORS.primary },
+          { label: 'Volumen general', value: totalVolume > 999 ? `${(totalVolume / 1000).toFixed(1)}k kg` : `${totalVolume} kg`, color: COLORS.success },
+          { label: 'Tiempo entrenado', value: `${Math.round(totalDuration / 60)} min`, color: COLORS.alert },
+          { label: 'Ejercicios tocados', value: `${trainedExercises}/${exercises.length}`, color: '#ffd93d' }
+        ].map(item => (
+          <div key={item.label} style={{ background: COLORS.card, borderRadius: 14, border: `1px solid ${COLORS.border}`, padding: 16 }}>
+            <div style={{ color: COLORS.textDim, fontSize: 10, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 8 }}>{item.label}</div>
+            <div style={{ color: item.color, fontSize: 24, fontWeight: 900, fontFamily: "'Inter', sans-serif" }}>{item.value}</div>
+          </div>
+        ))}
+      </div>
+
+      <div style={{ background: COLORS.card, borderRadius: 16, border: `1px solid ${COLORS.border}`, padding: 20, marginBottom: 24 }}>
+        <div style={{ fontSize: 16, color: COLORS.text, marginBottom: 12, fontFamily: "'DM Serif Display', serif" }}>Progreso general</div>
+        <ResponsiveContainer width="100%" height={230}>
+          <BarChart data={weeklyData}>
+            <CartesianGrid stroke="rgba(255,255,255,0.05)" vertical={false} />
+            <XAxis dataKey="week" tick={{ fontSize: 10, fill: COLORS.textDim }} />
+            <YAxis tick={{ fontSize: 10, fill: COLORS.textDim }} />
+            <Tooltip />
+            <Bar dataKey="sessions" name="Sesiones" fill={COLORS.primary} radius={[5, 5, 0, 0]} />
+            <Bar dataKey="volume" name="Volumen" fill={COLORS.success} radius={[5, 5, 0, 0]} />
+          </BarChart>
+        </ResponsiveContainer>
+        <div style={{ color: COLORS.textDim, fontSize: 11, marginTop: 8 }}>Registros de ejercicios guardados: {totalExerciseLogs}</div>
+      </div>
+
       <div style={{ display: 'flex', gap: 8, alignItems: 'center', marginBottom: 20, flexWrap: 'wrap' }}>
         <span style={{ fontSize: 13, color: COLORS.textDim, fontFamily: "'Inter', sans-serif" }}>Ejercicio:</span>
         <select value={selectedEx} onChange={e => setSelectedEx(e.target.value)} style={{ padding: '8px 14px', background: COLORS.card, border: `1px solid ${COLORS.border}`, borderRadius: 8, color: COLORS.text, fontSize: 13, fontFamily: "'Inter', sans-serif", outline: 'none' }}>
@@ -9346,7 +9397,10 @@ const AgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAgendaTo
 
 const HabitFlowApp = () => {
   const [data, setData] = useState(null);
-  const [view, setView] = useState('dashboard');
+  const [view, setView] = useState(() => {
+    const saved = localStorage.getItem('habitflow_active_view');
+    return saved && saved !== 'reading' ? saved : 'dashboard';
+  });
   const [confetti, setConfetti] = useState(null);
   const [mobileMenu, setMobileMenu] = useState(false);
   const [showMoreNav, setShowMoreNav] = useState(false);
@@ -9489,6 +9543,17 @@ const HabitFlowApp = () => {
   const [showChallengeComplete, setShowChallengeComplete] = useState(null);
   const [showFocus, setShowFocus] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(true);
+
+  const navigateTo = useCallback((nextView) => {
+    const safeView = nextView === 'reading' ? 'dashboard' : nextView;
+    setView(safeView);
+    localStorage.setItem('habitflow_active_view', safeView);
+    requestAnimationFrame(() => {
+      window.scrollTo(0, 0);
+      const main = document.querySelector('.app-main');
+      if (main) main.scrollTop = 0;
+    });
+  }, []);
 
   const awardXp = useCallback((prev, amount) => {
     const user = { ...prev.user };
@@ -10028,7 +10093,6 @@ const HabitFlowApp = () => {
     { id: 'pomodoro', label: 'Pomodoro', icon: <Clock size={20} /> },
     { id: 'workout', label: 'Entreno', icon: <Dumbbell size={20} /> },
     { id: 'agenda', label: 'Agenda', icon: <List size={20} /> },
-    { id: 'reading', label: 'Lectura', icon: <BookOpen size={20} /> },
     { id: 'dreams', label: 'Metas', icon: <Sparkles size={20} /> },
     { id: 'finance', label: 'Finanzas', icon: <CreditCard size={20} /> },
     { id: 'stats', label:  'Estadísticas', icon: <BarChart3 size={20} /> },
@@ -10037,17 +10101,16 @@ const HabitFlowApp = () => {
 
   const renderView = () => {
     switch (view) {
-      case 'dashboard': return <DashboardView data={data} onCompleteHabit={onCompleteHabit} workoutData={data.workoutData} onNavigate={setView} onUpdateUser={onUpdateUser} />;
+      case 'dashboard': return <DashboardView data={data} onCompleteHabit={onCompleteHabit} workoutData={data.workoutData} onNavigate={navigateTo} onUpdateUser={onUpdateUser} />;
       case 'habits': return <HabitsView data={data} onAddHabit={onAddHabit} onUpdateHabit={onUpdateHabit} onDeleteHabit={onDeleteHabit} onToggleHabit={onToggleHabit} onCompleteHabit={onCompleteHabit} onUpdateRecord={onUpdateRecord} records={data.records} />;
       case 'pomodoro': return <PomodoroView data={data} onUpdateUser={onUpdateUser} onUpdatePomodoro={onUpdatePomodoro} />;
       case 'workout': return <WorkoutView data={data} onUpdateData={onUpdateWorkout} onCompleteHabit={onCompleteHabit} awardXp={(prev, amt) => awardXp(prev, amt)} />;
       case 'agenda': return <AgendaView data={data} onUpdateAgenda={onUpdateAgenda} onUpdateAgendaNote={onUpdateAgendaNote} onUpdateAgendaTodos={onUpdateAgendaTodos} onUpdateAgendaTodoLabels={onUpdateAgendaTodoLabels} onMoveTaskToDate={onMoveTaskToDate} onCompleteHabit={onCompleteHabit} />;
-      case 'reading': return <ReadingView data={data} onUpdateReading={onUpdateReading} />;
       case 'dreams': return <DreamGoalsView data={data} onUpdateDreamGoals={onUpdateDreamGoals} />;
       case 'finance': return <FinanceView data={data} onUpdateFinance={onUpdateFinance} />;
       case 'stats': return <StatisticsView data={data} />;
       case 'settings': return <SettingsView data={data} onUpdateUser={onUpdateUser} onResetData={onResetData} />;
-      default: return <DashboardView data={data} onCompleteHabit={onCompleteHabit} workoutData={data.workoutData} onNavigate={setView} onUpdateUser={onUpdateUser} />;
+      default: return <DashboardView data={data} onCompleteHabit={onCompleteHabit} workoutData={data.workoutData} onNavigate={navigateTo} onUpdateUser={onUpdateUser} />;
     }
   };
 
@@ -10077,7 +10140,7 @@ const HabitFlowApp = () => {
         <div className="user-info" style={{ padding: sidebarOpen ? '20px 16px' : '16px 8px', borderBottom: `1px solid ${COLORS.border}`, transition: 'padding 0.3s ease', textAlign: sidebarOpen ? 'left' : 'center' }}>
           <BrandLogo size="sm" compact={!sidebarOpen} center={!sidebarOpen} />
           <div style={{ display: sidebarOpen ? 'block' : 'none', fontSize: 11, color: COLORS.textDim, lineHeight: 1.4, marginTop: 4 }}>
-            {data.user.motto}
+              {data.user.motto}
           </div>
           <div style={{ marginTop: sidebarOpen ? 12 : 10, display: 'flex', alignItems: 'center', justifyContent: sidebarOpen ? 'flex-start' : 'center', gap: 8 }}>
             <div style={{ width: 28, height: 28, borderRadius: 8, background: `linear-gradient(135deg, ${theme.primary}, #7f1028)`, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: 11, fontFamily: "'Inter', sans-serif", fontWeight: 600 }}>
@@ -10094,7 +10157,7 @@ const HabitFlowApp = () => {
 
         <nav style={{ flex: 1, padding: sidebarOpen ? '16px 12px' : '16px 8px', display: 'flex', flexDirection: 'column', gap: 4, transition: 'padding 0.3s ease' }}>
           {navItems.map(item => (
-            <button key={item.id} aria-label={item.label} title={item.label} onClick={() => { setView(item.id); setMobileMenu(false); }} style={{
+            <button key={item.id} aria-label={item.label} title={item.label} onClick={() => { navigateTo(item.id); setMobileMenu(false); }} style={{
               display: 'flex', alignItems: 'center', justifyContent: sidebarOpen ? 'flex-start' : 'center', gap: sidebarOpen ? 12 : 0,
               padding: sidebarOpen ? '12px 16px' : '12px 0', borderRadius: 10,
               border: 'none', background: view === item.id ? `${theme.primary}15` : 'transparent',
@@ -10215,7 +10278,7 @@ const HabitFlowApp = () => {
         padding: '8px 0', paddingBottom: 'calc(8px + env(safe-area-inset-bottom))'
       }}>
         {navItems.slice(0, 4).map(item => (
-          <button key={item.id} aria-label={item.label} title={item.label} onClick={() => { setView(item.id); setShowMoreNav(false); }} style={{
+          <button key={item.id} aria-label={item.label} title={item.label} onClick={() => { navigateTo(item.id); setShowMoreNav(false); }} style={{
             display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2,
             padding: '8px 12px', borderRadius: 8, border: 'none',
             background: view === item.id ? `${theme.primary}15` : 'transparent',
@@ -10247,7 +10310,7 @@ const HabitFlowApp = () => {
               animation: 'fadeIn 0.15s ease-out'
             }}>
               {navItems.slice(4).map(item => (
-                <button className="mobile-more-item" key={item.id} aria-label={item.label} title={item.label} onClick={() => { setView(item.id); setShowMoreNav(false); }} style={{
+                <button className="mobile-more-item" key={item.id} aria-label={item.label} title={item.label} onClick={() => { navigateTo(item.id); setShowMoreNav(false); }} style={{
                   display: 'flex', alignItems: 'center', gap: 10, width: '100%',
                   padding: '10px 14px', borderRadius: 8, border: 'none',
                   background: view === item.id ? `${theme.primary}15` : 'transparent',
