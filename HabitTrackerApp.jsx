@@ -330,11 +330,20 @@ const getFinanceData = () => ({
     health: 100,
     fun: 160
   },
+  accountTags: [
+    { id: 'cash', name: 'Efectivo', group: 'cash' },
+    { id: 'checking', name: 'Cuenta corriente', group: 'bank' },
+    { id: 'savings', name: 'Cuenta de ahorros', group: 'savings' },
+    { id: 'credit_card', name: 'Tarjeta / crédito', group: 'credit' },
+    { id: 'loan', name: 'Crédito / deuda', group: 'loan' },
+    { id: 'investment', name: 'Inversión', group: 'investment' },
+    { id: 'custom', name: 'Otra cuenta', group: 'custom' }
+  ],
   accounts: [
-    { id: 'cash', name: 'Efectivo', type: 'cash', balance: 180 },
-    { id: 'bank', name: 'Cuenta principal', type: 'bank', balance: 2100 },
-    { id: 'savings', name: 'Ahorros', type: 'savings', balance: 650 },
-    { id: 'credit_card', name: 'Tarjeta de crédito', type: 'credit', balance: -320 }
+    { id: 'cash', name: 'Efectivo', type: 'cash', tagId: 'cash', balance: 180 },
+    { id: 'bank', name: 'Cuenta principal', type: 'bank', tagId: 'checking', balance: 2100 },
+    { id: 'savings', name: 'Ahorros', type: 'savings', tagId: 'savings', balance: 650 },
+    { id: 'credit_card', name: 'Tarjeta de crédito', type: 'credit', tagId: 'credit_card', balance: -320 }
   ],
   recurring: [
     { id: 'rec1', name: 'Renta', type: 'expense', amount: 520, category: 'home', day: 5, active: true },
@@ -542,7 +551,9 @@ const normalizeLoadedData = (parsed) => {
   if (!parsed.financeData.transactions) parsed.financeData.transactions = [];
   if (parsed.financeData.monthlyBudget === undefined) parsed.financeData.monthlyBudget = 0;
   if (!parsed.financeData.budgets) parsed.financeData.budgets = {};
+  if (!parsed.financeData.accountTags) parsed.financeData.accountTags = getFinanceData().accountTags;
   if (!parsed.financeData.accounts || !parsed.financeData.accounts.length) parsed.financeData.accounts = getFinanceData().accounts;
+  parsed.financeData.accounts = parsed.financeData.accounts.map(account => ({ ...account, tagId: account.tagId || (account.type === 'credit' ? 'credit_card' : account.type === 'bank' ? 'checking' : account.type || 'custom') }));
   if (!parsed.financeData.recurring) parsed.financeData.recurring = [];
   if (!parsed.financeData.goals) parsed.financeData.goals = [];
   if (!parsed.studyData) parsed.studyData = getStudyData();
@@ -4189,130 +4200,6 @@ const HabitsView = ({ data, onAddHabit, onUpdateHabit, onDeleteHabit, onToggleHa
     </div>
   );
 
-  const HabitControlPanel = () => {
-    const activeHabits = habits.filter(h => h.active);
-    const weekTotal = weekDays.reduce((sum, day) => sum + activeHabits.filter(h => isExpectedDay(h, day.date)).length, 0);
-    const weekDone = weekDays.reduce((sum, day) => sum + activeHabits.filter(h => {
-      const rec = records.find(r => r.habitId === h.id && r.date === day.date);
-      return isExpectedDay(h, day.date) && rec?.completed;
-    }).length, 0);
-    const todayExpected = activeHabits.filter(h => isExpectedDay(h, today));
-    const todayDone = todayExpected.filter(h => records.find(r => r.habitId === h.id && r.date === today)?.completed).length;
-    const monthlyRate = getWeeklyRate(habits, records);
-    const bestGlobal = getGlobalBestStreak(habits, records);
-    const avgWeekly = activeHabits.length ? Math.round((weekDone / Math.max(1, activeHabits.length)) * 10) / 10 : 0;
-    const perfectDays = Array.from({ length: 84 }, (_, i) => toYYYYMMDD(addDays(new Date(), -83 + i))).filter(ds => {
-      const expected = activeHabits.filter(h => isExpectedDay(h, ds));
-      return expected.length > 0 && expected.every(h => records.find(r => r.habitId === h.id && r.date === ds)?.completed);
-    }).length;
-    const bestHabit = activeHabits
-      .map(h => ({ habit: h, score: getCompletionRate(h.id, records, 30, h), streak: getCurrentStreak(h.id, records, h) }))
-      .sort((a, b) => b.score - a.score || b.streak - a.streak)[0];
-
-    return (
-      <div className="habit-control-panel" style={{
-        background: 'linear-gradient(145deg, rgba(255,255,255,0.045), rgba(255,255,255,0.015))',
-        border: `1px solid ${COLORS.border}`,
-        borderRadius: 28,
-        padding: 26,
-        marginBottom: 20,
-        boxShadow: '0 26px 80px rgba(0,0,0,0.24)'
-      }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 22, color: COLORS.text, fontSize: 12, fontWeight: 900 }}>
-          <span style={{ width: 28, height: 28, borderRadius: 10, background: `${COLORS.primary}18`, border: `1px solid ${COLORS.primary}30`, display: 'grid', placeItems: 'center', color: COLORS.primary }}><Calendar size={15} /></span>
-          Habit Tracker · Full Control
-        </div>
-        <div className="habit-pro-kpis" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 14, marginBottom: 24 }}>
-          {[
-            ['Progreso de hoy', `${todayExpected.length ? Math.round((todayDone / todayExpected.length) * 100) : 0}%`, `${todayDone} de ${todayExpected.length} listos`, COLORS.text],
-            ['Mejor racha', `${bestGlobal} 🔥`, 'días seguidos', COLORS.text],
-            ['Tasa mensual', `${monthlyRate}%`, `${monthlyRate >= 70 ? '+' : ''}${monthlyRate - 65}% vs mes ant.`, COLORS.success]
-          ].map(([label, value, sub, color]) => (
-            <div key={label} style={{ background: COLORS.card, border: `1px solid ${COLORS.border}`, borderRadius: 16, padding: 16 }}>
-              <div style={{ color: COLORS.textDim, fontSize: 10, textTransform: 'uppercase', letterSpacing: '0.12em', marginBottom: 7 }}>{label}</div>
-              <div style={{ color, fontSize: 22, fontWeight: 900 }}>{value}</div>
-              <div style={{ color: label === 'Tasa mensual' ? COLORS.success : COLORS.textDim, fontSize: 11, marginTop: 4 }}>{sub}</div>
-            </div>
-          ))}
-        </div>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
-          <div style={{ color: COLORS.text, fontSize: 15, fontWeight: 900 }}>Esta semana <span style={{ marginLeft: 8, fontSize: 11, color: COLORS.alert, background: `${COLORS.alert}15`, borderRadius: 999, padding: '4px 9px' }}>🔥 {getGlobalCurrentStreak(habits, records)} días de racha</span></div>
-          <div style={{ display: 'flex', gap: 6 }}>
-            <button onClick={() => navigate(-1)} style={{ width: 28, height: 28, borderRadius: 999, border: `1px solid ${COLORS.border}`, background: COLORS.bg, color: COLORS.textDim, cursor: 'pointer' }}><ChevronLeft size={14} /></button>
-            <button onClick={() => navigate(1)} style={{ width: 28, height: 28, borderRadius: 999, border: `1px solid ${COLORS.border}`, background: COLORS.bg, color: COLORS.textDim, cursor: 'pointer' }}><ChevronRight size={14} /></button>
-          </div>
-        </div>
-        <div className="habit-week-matrix" style={{ display: 'grid', gridTemplateColumns: '150px repeat(7, 34px)', gap: '9px 10px', alignItems: 'center', overflowX: 'auto', paddingBottom: 4 }}>
-          <div />
-          {weekDays.map(d => <div key={d.date} style={{ color: d.isToday ? COLORS.primary : COLORS.text, textAlign: 'center', fontSize: 12, fontWeight: 900 }}>{d.dayNum}<div style={{ fontSize: 9, color: COLORS.textDim, fontWeight: 700 }}>{d.label}</div></div>)}
-          {activeHabits.slice(0, 7).map(h => {
-            const cat = getCategoryInfo(h.category);
-            return (
-              <React.Fragment key={h.id}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 8, color: COLORS.text, fontSize: 13, minWidth: 0 }}>
-                  <span className="fire-emoji">{h.icon}</span>
-                  <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{h.name}</span>
-                </div>
-                {weekDays.map(day => {
-                  const scheduled = isExpectedDay(h, day.date);
-                  const done = records.find(r => r.habitId === h.id && r.date === day.date)?.completed;
-                  return (
-                    <button key={day.date} onClick={day.isToday && scheduled ? () => onCompleteHabit(h.id) : undefined} style={{
-                      width: 30, height: 30, borderRadius: '50%', border: done ? 'none' : `1px solid ${scheduled ? COLORS.primary : COLORS.border}`,
-                      background: done ? COLORS.primary : scheduled ? `${COLORS.primary}0d` : 'transparent',
-                      color: done ? '#fff' : COLORS.textDim,
-                      opacity: scheduled ? 1 : 0.28,
-                      cursor: day.isToday && scheduled ? 'pointer' : 'default',
-                      display: 'grid', placeItems: 'center'
-                    }}>
-                      {done ? <Check size={14} strokeWidth={3} /> : null}
-                    </button>
-                  );
-                })}
-              </React.Fragment>
-            );
-          })}
-        </div>
-        <div style={{ borderTop: `1px solid ${COLORS.border}`, marginTop: 22, paddingTop: 14 }}>
-          <div style={{ color: COLORS.textDim, fontSize: 10, textTransform: 'uppercase', letterSpacing: '0.14em', marginBottom: 9 }}>Últimos 84 días</div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(42, minmax(7px, 1fr))', gap: 4 }}>
-            {Array.from({ length: 84 }, (_, i) => {
-              const ds = toYYYYMMDD(addDays(new Date(), -83 + i));
-              const expected = activeHabits.filter(h => isExpectedDay(h, ds));
-              const completed = expected.filter(h => records.find(r => r.habitId === h.id && r.date === ds)?.completed).length;
-              const pct = expected.length ? completed / expected.length : 0;
-              return <span key={ds} title={`${ds}: ${completed}/${expected.length}`} style={{ height: 10, borderRadius: 3, background: pct === 0 ? 'rgba(255,255,255,0.055)' : pct >= 1 ? COLORS.primary : `${COLORS.primary}${pct > 0.5 ? 'aa' : '55'}` }} />;
-            })}
-          </div>
-        </div>
-        <div className="habit-pro-footer" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginTop: 20 }}>
-          <div style={{ background: COLORS.card, border: `1px solid ${COLORS.border}`, borderRadius: 16, padding: 15 }}>
-            <div style={{ color: COLORS.textDim, fontSize: 10, textTransform: 'uppercase', letterSpacing: '0.12em' }}>Promedio semanal</div>
-            <div style={{ color: COLORS.text, fontSize: 21, fontWeight: 900, marginTop: 6 }}>{avgWeekly} / {activeHabits.length}</div>
-            <div style={{ height: 5, borderRadius: 99, background: COLORS.bg, marginTop: 10 }}><div style={{ width: `${Math.min(100, (avgWeekly / Math.max(1, activeHabits.length)) * 100)}%`, height: '100%', borderRadius: 99, background: COLORS.success }} /></div>
-          </div>
-          <div style={{ background: COLORS.card, border: `1px solid ${COLORS.border}`, borderRadius: 16, padding: 15 }}>
-            <div style={{ color: COLORS.textDim, fontSize: 10, textTransform: 'uppercase', letterSpacing: '0.12em' }}>Días perfectos</div>
-            <div style={{ color: COLORS.text, fontSize: 21, fontWeight: 900, marginTop: 6 }}>{perfectDays} días</div>
-            <div style={{ height: 5, borderRadius: 99, background: COLORS.bg, marginTop: 10 }}><div style={{ width: `${Math.min(100, (perfectDays / 84) * 100)}%`, height: '100%', borderRadius: 99, background: '#f59e0b' }} /></div>
-          </div>
-        </div>
-        {bestHabit && (
-          <div style={{ marginTop: 14, display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, background: `${COLORS.primary}10`, border: `1px solid ${COLORS.primary}25`, borderRadius: 16, padding: 15 }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-              <span style={{ width: 40, height: 40, borderRadius: 12, background: `${COLORS.primary}18`, display: 'grid', placeItems: 'center' }}>{bestHabit.habit.icon}</span>
-              <div>
-                <div style={{ color: COLORS.text, fontWeight: 900 }}>{bestHabit.habit.name}</div>
-                <div style={{ color: COLORS.textDim, fontSize: 11 }}>Hábito con mejor desempeño</div>
-              </div>
-            </div>
-            <div style={{ color: COLORS.primary, fontWeight: 900, fontSize: 18 }}>🔥 {bestHabit.streak}</div>
-          </div>
-        )}
-      </div>
-    );
-  };
-
   return (
     <div className="habits-mobile-view" style={{ animation: 'fadeIn 0.3s ease-out' }}>
       <div className="habits-toolbar" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 18, flexWrap: 'wrap', gap: 10 }}>
@@ -4406,8 +4293,6 @@ const HabitsView = ({ data, onAddHabit, onUpdateHabit, onDeleteHabit, onToggleHa
       </div>
 
       {viewMode === 'calendar' && <CalendarPicker />}
-
-      <HabitControlPanel />
 
       <div className="habits-filter-row" style={{ display: 'flex', flexWrap: 'wrap', gap: 5, marginBottom: 18 }}>
         {[
@@ -4603,27 +4488,28 @@ const HabitsView = ({ data, onAddHabit, onUpdateHabit, onDeleteHabit, onToggleHa
 const FinanceView = ({ data, onUpdateFinance }) => {
   const finance = data.financeData || getFinanceData();
   const s = { fontFamily: "'Inter', sans-serif" };
-  const ACCOUNT_TYPES = [
+  const ACCOUNT_GROUPS = [
     { id: 'cash', label: 'Efectivo' },
-    { id: 'bank', label: 'Cuenta bancaria' },
-    { id: 'savings', label: 'Cuenta de ahorro' },
-    { id: 'credit', label: 'Tarjeta / crédito' },
-    { id: 'loan', label: 'Crédito / deuda' },
-    { id: 'investment', label: 'Inversión' },
-    { id: 'custom', label: 'Otra cuenta' }
+    { id: 'bank', label: 'Cuentas bancarias' },
+    { id: 'savings', label: 'Ahorros' },
+    { id: 'credit', label: 'Crédito' },
+    { id: 'loan', label: 'Deudas' },
+    { id: 'investment', label: 'Inversiones' },
+    { id: 'custom', label: 'Otros' }
   ];
-  const accountTypeLabel = (type) => ACCOUNT_TYPES.find(item => item.id === type)?.label || 'Cuenta';
+  const groupLabel = (group) => ACCOUNT_GROUPS.find(item => item.id === group)?.label || 'Otros';
   const categories = finance.categories || [];
   const expenseCategories = categories.filter(c => c.id !== 'income');
   const transactions = finance.transactions || [];
   const accounts = finance.accounts || [];
+  const accountTags = finance.accountTags || getFinanceData().accountTags;
   const recurring = finance.recurring || [];
   const goals = finance.goals || [];
   const budgets = finance.budgets || {};
   const today = toYYYYMMDD(new Date());
   const [selectedMonth, setSelectedMonth] = useState(today.slice(0, 7));
   const [form, setForm] = useState({ type: 'expense', amount: '', category: expenseCategories[0]?.id || categories[0]?.id || 'food', accountId: accounts[0]?.id || 'cash', payee: '', note: '', date: today });
-  const [accountForm, setAccountForm] = useState({ name: '', balance: '', type: 'bank' });
+  const [accountForm, setAccountForm] = useState({ name: '', balance: '', tagId: 'checking', customTag: '', customGroup: 'bank' });
   const [recurringForm, setRecurringForm] = useState({ name: '', amount: '', category: expenseCategories[0]?.id || 'food', day: 1, type: 'expense' });
   const [goalForm, setGoalForm] = useState({ name: '', target: '', saved: '', dueDate: '' });
   const [goalAdds, setGoalAdds] = useState({});
@@ -4664,7 +4550,13 @@ const FinanceView = ({ data, onUpdateFinance }) => {
   const money = (n) => formatCurrency(n, currency);
   const catById = (id) => categories.find(c => c.id === id) || { name: 'Sin categoria', color: COLORS.textDim };
   const accountById = (id) => accounts.find(a => a.id === id) || accounts[0] || { name: 'Sin cuenta' };
+  const accountTagById = (id, fallbackType = 'custom') => (
+    accountTags.find(tag => tag.id === id)
+    || accountTags.find(tag => tag.id === fallbackType)
+    || { id: 'custom', name: groupLabel(fallbackType), group: fallbackType || 'custom' }
+  );
   const inputStyle = { padding: '10px 12px', background: COLORS.bg, border: `1px solid ${COLORS.border}`, borderRadius: 10, color: COLORS.text, outline: 'none', boxSizing: 'border-box', ...s };
+  const strongInputStyle = { ...inputStyle, border: `1px solid ${COLORS.primary}55`, boxShadow: `0 0 0 1px ${COLORS.primary}12 inset` };
   const cardStyle = { background: COLORS.card, borderRadius: 18, border: `1px solid ${COLORS.border}`, padding: 20, boxShadow: '0 18px 50px rgba(0,0,0,0.18)', minWidth: 0, overflow: 'hidden' };
   const tooltipStyle = { background: COLORS.card, border: `1px solid ${COLORS.border}`, borderRadius: 10, color: COLORS.text };
 
@@ -4683,8 +4575,13 @@ const FinanceView = ({ data, onUpdateFinance }) => {
 
   const accountBalances = accounts.map(a => {
     const movement = transactions.filter(t => (t.accountId || accounts[0]?.id) === a.id).reduce((sum, t) => sum + (t.type === 'income' ? Number(t.amount || 0) : -Number(t.amount || 0)), 0);
-    return { ...a, current: Number(a.balance || 0) + movement };
+    const tag = accountTagById(a.tagId || a.type, a.type);
+    return { ...a, tag, group: tag.group || a.type || 'custom', current: Number(a.balance || 0) + movement };
   });
+  const groupedAccountBalances = ACCOUNT_GROUPS.map(group => ({
+    ...group,
+    accounts: accountBalances.filter(account => account.group === group.id)
+  })).filter(group => group.accounts.length > 0);
   const netWorth = accountBalances.reduce((sum, a) => sum + Number(a.current || 0), 0);
   const activeRecurring = recurring.filter(r => r.active !== false);
   const recurringExpense = activeRecurring.filter(r => r.type === 'expense').reduce((sum, r) => sum + Number(r.amount || 0), 0);
@@ -4755,8 +4652,26 @@ const FinanceView = ({ data, onUpdateFinance }) => {
   const addAccount = () => {
     const clean = accountForm.name.trim();
     if (!clean) return;
-    onUpdateFinance(prev => ({ ...prev, accounts: [...(prev.accounts || []), { id: `acc_${Date.now()}`, name: clean, type: accountForm.type || 'bank', balance: fromDisplayAmount(accountForm.balance) }] }));
-    setAccountForm({ name: '', balance: '', type: 'bank' });
+    const isCustomTag = accountForm.tagId === '__new__';
+    const cleanTag = accountForm.customTag.trim();
+    if (isCustomTag && !cleanTag) return;
+    const createdAt = Date.now();
+    const tagId = isCustomTag ? `tag_${createdAt}` : accountForm.tagId;
+    const selectedTag = isCustomTag
+      ? { id: tagId, name: cleanTag, group: accountForm.customGroup || 'custom' }
+      : accountTagById(accountForm.tagId, 'bank');
+    onUpdateFinance(prev => ({
+      ...prev,
+      accountTags: isCustomTag ? [...(prev.accountTags || accountTags), selectedTag] : (prev.accountTags || accountTags),
+      accounts: [...(prev.accounts || []), {
+        id: `acc_${createdAt}`,
+        name: clean,
+        type: selectedTag.group || 'custom',
+        tagId,
+        balance: fromDisplayAmount(accountForm.balance)
+      }]
+    }));
+    setAccountForm({ name: '', balance: '', tagId: 'checking', customTag: '', customGroup: 'bank' });
   };
 
   const removeAccount = (id) => {
@@ -5027,34 +4942,50 @@ const FinanceView = ({ data, onUpdateFinance }) => {
 
           <div className="finance-card finance-accounts-card" style={{ ...cardStyle, display: section === 'accounts' ? 'block' : 'none' }}>
             <h3 style={{ fontSize: 16, color: COLORS.text, marginBottom: 12 }}>Cuentas</h3>
-            <div style={{ display: 'grid', gap: 8, marginBottom: 12 }}>
-              {accountBalances.map(a => (
-                <div key={a.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 11px', borderRadius: 12, background: 'rgba(239,239,239,0.035)', border: `1px solid ${COLORS.border}` }}>
-                  <div>
-                    <div style={{ color: COLORS.text, fontSize: 12, fontWeight: 800 }}>{a.name}</div>
-                    <div style={{ color: COLORS.textDim, fontSize: 10 }}>{accountTypeLabel(a.type)}</div>
-                  </div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                    <div style={{ color: a.current >= 0 ? COLORS.text : COLORS.alert, fontWeight: 800, textAlign: 'right' }}>{money(a.current)}</div>
-                    <button
-                      onClick={() => removeAccount(a.id)}
-                      disabled={accounts.length <= 1}
-                      title={accounts.length <= 1 ? 'Debe quedar al menos una cuenta' : 'Eliminar cuenta'}
-                      style={{ width: 30, height: 30, borderRadius: 9, border: `1px solid ${COLORS.border}`, background: accounts.length <= 1 ? 'rgba(255,255,255,0.025)' : `${COLORS.alert}10`, color: accounts.length <= 1 ? COLORS.textDim : COLORS.alert, cursor: accounts.length <= 1 ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-                    >
-                      <Trash2 size={13} />
-                    </button>
-                  </div>
+            <div style={{ display: 'grid', gap: 12, marginBottom: 14 }}>
+              {groupedAccountBalances.map(group => (
+                <div key={group.id} style={{ display: 'grid', gap: 7 }}>
+                  <div style={{ color: COLORS.textDim, fontSize: 9, fontWeight: 900, letterSpacing: '0.14em', textTransform: 'uppercase', ...s }}>{group.label}</div>
+                  {group.accounts.map(a => (
+                    <div key={a.id} style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) auto', gap: 10, alignItems: 'center', padding: '11px 12px', borderRadius: 14, background: 'rgba(239,239,239,0.035)', border: `1px solid ${COLORS.border}` }}>
+                      <div style={{ minWidth: 0 }}>
+                        <div style={{ color: COLORS.text, fontSize: 13, fontWeight: 900, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{a.name}</div>
+                        <div style={{ color: COLORS.textDim, fontSize: 10, marginTop: 2, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{a.tag?.name || group.label}</div>
+                      </div>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                        <div style={{ color: a.current >= 0 ? COLORS.text : COLORS.alert, fontWeight: 900, textAlign: 'right', whiteSpace: 'nowrap' }}>{money(a.current)}</div>
+                        <button
+                          onClick={() => removeAccount(a.id)}
+                          disabled={accounts.length <= 1}
+                          title={accounts.length <= 1 ? 'Debe quedar al menos una cuenta' : 'Eliminar cuenta'}
+                          style={{ width: 30, height: 30, borderRadius: 9, border: `1px solid ${COLORS.border}`, background: accounts.length <= 1 ? 'rgba(255,255,255,0.025)' : `${COLORS.alert}10`, color: accounts.length <= 1 ? COLORS.textDim : COLORS.alert, cursor: accounts.length <= 1 ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                        >
+                          <Trash2 size={13} />
+                        </button>
+                      </div>
+                    </div>
+                  ))}
                 </div>
               ))}
             </div>
-            <div className="finance-compact-form finance-account-form" style={{ display: 'grid', gridTemplateColumns: '1fr 150px 130px auto', gap: 8 }}>
-              <input value={accountForm.name} onChange={e => setAccountForm(f => ({ ...f, name: e.target.value }))} placeholder="Nueva cuenta" style={{ ...inputStyle, padding: '8px 9px', fontSize: 11 }} />
-              <select value={accountForm.type} onChange={e => setAccountForm(f => ({ ...f, type: e.target.value }))} style={{ ...inputStyle, padding: '8px 9px', fontSize: 11 }}>
-                {ACCOUNT_TYPES.map(type => <option key={type.id} value={type.id}>{type.label}</option>)}
+            <div className="finance-compact-form finance-account-form" style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) 150px', gap: 8, marginBottom: 8 }}>
+              <input value={accountForm.name} onChange={e => setAccountForm(f => ({ ...f, name: e.target.value }))} placeholder="Banco o entidad" style={{ ...inputStyle, padding: '9px 10px', fontSize: 11 }} />
+              <select value={accountForm.tagId} onChange={e => setAccountForm(f => ({ ...f, tagId: e.target.value }))} style={{ ...inputStyle, padding: '9px 10px', fontSize: 11 }}>
+                {accountTags.map(tag => <option key={tag.id} value={tag.id}>{tag.name}</option>)}
+                <option value="__new__">+ Nueva etiqueta</option>
               </select>
+            </div>
+            {accountForm.tagId === '__new__' && (
+              <div className="finance-compact-form finance-account-tag-form" style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) 150px', gap: 8, marginBottom: 8 }}>
+                <input value={accountForm.customTag} onChange={e => setAccountForm(f => ({ ...f, customTag: e.target.value }))} placeholder="Nombre etiqueta ej: Cuenta de ahorros" style={{ ...inputStyle, padding: '9px 10px', fontSize: 11 }} />
+                <select value={accountForm.customGroup} onChange={e => setAccountForm(f => ({ ...f, customGroup: e.target.value }))} style={{ ...inputStyle, padding: '9px 10px', fontSize: 11 }}>
+                  {ACCOUNT_GROUPS.map(group => <option key={group.id} value={group.id}>{group.label}</option>)}
+                </select>
+              </div>
+            )}
+            <div className="finance-compact-form finance-account-balance-form" style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) auto', gap: 8 }}>
               <div style={{ position: 'relative' }}>
-                <input type="number" step="0.01" value={accountForm.balance} onChange={e => setAccountForm(f => ({ ...f, balance: e.target.value }))} placeholder={`Saldo inicial ${currency}`} style={{ ...inputStyle, padding: '8px 42px 8px 9px', fontSize: 11, width: '100%' }} />
+                <input type="number" step="0.01" value={accountForm.balance} onChange={e => setAccountForm(f => ({ ...f, balance: e.target.value }))} placeholder={`Saldo inicial ${currency}`} style={{ ...strongInputStyle, padding: '9px 46px 9px 10px', fontSize: 11, width: '100%' }} />
                 <span style={{ position: 'absolute', right: 9, top: '50%', transform: 'translateY(-50%)', color: COLORS.textDim, fontSize: 9, fontWeight: 800 }}>{currency}</span>
               </div>
               <button className="finance-submit-button" onClick={addAccount} style={{ border: 'none', borderRadius: 10, background: COLORS.primary, color: '#fff', padding: '0 12px', cursor: 'pointer', fontWeight: 800, whiteSpace: 'nowrap' }}><Plus size={15} /> Agregar cuenta</button>
@@ -9407,7 +9338,7 @@ const AgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAgendaTo
       if (todoLabel === label) setTodoLabel('');
     };
     return (
-      <div className="agenda-todo-list" style={{ marginTop: 12, paddingTop: 12, borderTop: `1px solid ${COLORS.border}` }}>
+      <div className="agenda-todo-list" style={{ marginTop: 0, paddingTop: 0, borderTop: 'none' }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}>
           <div style={{ color: COLORS.text, fontSize: 12, fontWeight: 700, ...s }}>To-do list</div>
           <button onClick={() => setShowTodoLabels(value => !value)} style={{ ...btnBase, padding: '4px 6px', color: showTodoLabels ? COLORS.primary : COLORS.textDim, background: showTodoLabels ? `${COLORS.primary}12` : 'transparent', fontSize: 9 }}><Hash size={10} /> Etiquetas</button>
@@ -9490,8 +9421,6 @@ const AgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAgendaTo
       </div>
       {sidePanel === 'todos' && (
         <div>
-          <div style={{ color: COLORS.text, fontSize: 12, fontWeight: 700, marginBottom: 3, ...s }}>Pendientes rápidos</div>
-          <div style={{ color: COLORS.textDim, fontSize: 9, marginBottom: 8, lineHeight: 1.45, ...s }}>Lista simple para compras, llamadas y cosas pequeñas del día.</div>
           {renderCompactTodoList()}
         </div>
       )}
@@ -10325,10 +10254,11 @@ const HabitFlowApp = () => {
         { id: 'education', name: 'Educacion', color: '#a0a0b8' },
         { id: 'income', name: 'Ingresos', color: '#10b981' }
       ];
+      const financeAccountTags = getFinanceData().accountTags;
       const financeAccounts = [
-        { id: 'cash', name: 'Efectivo', type: 'cash', balance: moneyAmount(80, 420) },
-        { id: 'bank', name: 'Cuenta principal', type: 'bank', balance: moneyAmount(1400, 4200) },
-        { id: 'card', name: 'Tarjeta', type: 'credit', balance: -moneyAmount(120, 900) }
+        { id: 'cash', name: 'Efectivo', type: 'cash', tagId: 'cash', balance: moneyAmount(80, 420) },
+        { id: 'bank', name: 'Cuenta principal', type: 'bank', tagId: 'checking', balance: moneyAmount(1400, 4200) },
+        { id: 'card', name: 'Tarjeta', type: 'credit', tagId: 'credit_card', balance: -moneyAmount(120, 900) }
       ];
       const payees = {
         food: ['Supermercado', 'Restaurante', 'Cafe'],
@@ -10371,6 +10301,7 @@ const HabitFlowApp = () => {
         monthlyBudget: moneyAmount(1400, 2600),
         categories: financeCategories,
         budgets: { food: moneyAmount(260, 520), home: moneyAmount(500, 900), transport: moneyAmount(100, 260), health: moneyAmount(80, 220), fun: moneyAmount(90, 260), education: moneyAmount(80, 240) },
+        accountTags: financeAccountTags,
         accounts: financeAccounts,
         recurring: [
           { id: `rec_${uid()}_1`, name: 'Renta', type: 'expense', amount: moneyAmount(480, 850), category: 'home', day: 5, active: true },
