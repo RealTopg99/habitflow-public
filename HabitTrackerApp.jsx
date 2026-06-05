@@ -367,10 +367,10 @@ const getFinanceData = () => ({
     { id: 'custom', name: 'Otra cuenta', group: 'custom' }
   ],
   accounts: [
-    { id: 'cash', name: 'Efectivo', type: 'cash', tagId: 'cash', balance: 180 },
-    { id: 'bank', name: 'Cuenta principal', type: 'bank', tagId: 'checking', balance: 2100 },
-    { id: 'savings', name: 'Ahorros', type: 'savings', tagId: 'savings', balance: 650 },
-    { id: 'credit_card', name: 'Tarjeta de crédito', type: 'credit', tagId: 'credit_card', balance: -320 }
+    { id: 'cash', name: 'Efectivo', type: 'cash', tagId: 'cash', currency: 'COP', balance: 180 },
+    { id: 'bank', name: 'Cuenta principal', type: 'bank', tagId: 'checking', currency: 'USD', balance: 2100 },
+    { id: 'savings', name: 'Ahorros', type: 'savings', tagId: 'savings', currency: 'USD', balance: 650 },
+    { id: 'credit_card', name: 'Tarjeta de crédito', type: 'credit', tagId: 'credit_card', currency: 'USD', balance: -320 }
   ],
   recurring: [
     { id: 'rec1', name: 'Renta', type: 'expense', amount: 520, category: 'home', day: 5, active: true },
@@ -583,7 +583,11 @@ const normalizeLoadedData = (parsed) => {
   if (!parsed.financeData.budgets) parsed.financeData.budgets = {};
   if (!parsed.financeData.accountTags) parsed.financeData.accountTags = getFinanceData().accountTags;
   if (!parsed.financeData.accounts || !parsed.financeData.accounts.length) parsed.financeData.accounts = getFinanceData().accounts;
-  parsed.financeData.accounts = parsed.financeData.accounts.map(account => ({ ...account, tagId: account.tagId || (account.type === 'credit' ? 'credit_card' : account.type === 'bank' ? 'checking' : account.type || 'custom') }));
+  parsed.financeData.accounts = parsed.financeData.accounts.map(account => ({
+    ...account,
+    tagId: account.tagId || (account.type === 'credit' ? 'credit_card' : account.type === 'bank' ? 'checking' : account.type || 'custom'),
+    currency: account.currency === 'COP' ? 'COP' : 'USD'
+  }));
   if (!parsed.financeData.recurring) parsed.financeData.recurring = [];
   if (!parsed.financeData.subscriptions) parsed.financeData.subscriptions = [];
   if (!parsed.financeData.goals) parsed.financeData.goals = [];
@@ -4568,7 +4572,7 @@ const FinanceView = ({ data, onUpdateFinance }) => {
   const today = toYYYYMMDD(new Date());
   const [selectedMonth, setSelectedMonth] = useState(today.slice(0, 7));
   const [form, setForm] = useState({ type: 'expense', amount: '', category: expenseCategories[0]?.id || categories[0]?.id || 'food', accountId: accounts[0]?.id || 'cash', payee: '', note: '', date: today });
-  const [accountForm, setAccountForm] = useState({ name: '', balance: '', tagId: 'checking', customTag: '', customGroup: 'bank' });
+  const [accountForm, setAccountForm] = useState({ name: '', balance: '', tagId: 'checking', customTag: '', customGroup: 'bank', currency: 'USD' });
   const [recurringForm, setRecurringForm] = useState({ name: '', amount: '', category: expenseCategories[0]?.id || 'food', day: 1, type: 'expense' });
   const [subscriptionForm, setSubscriptionForm] = useState({ serviceId: 'netflix', name: '', category: 'Streaming de video', amount: '', day: 1, accountId: accounts[0]?.id || 'cash', logoUrl: '' });
   const [search, setSearch] = useState('');
@@ -4586,10 +4590,11 @@ const FinanceView = ({ data, onUpdateFinance }) => {
   const budgetPct = budget > 0 ? Math.min(100, Math.round((expenses / budget) * 100)) : 0;
   const currency = finance.currency || 'USD';
   const copRate = Math.max(1, Number(finance.copRate || 4000));
-  const toDisplayAmount = (n) => currency === 'COP' ? Number(n || 0) * copRate : Number(n || 0);
-  const fromDisplayAmount = (n) => currency === 'COP' ? Number(n || 0) / copRate : Number(n || 0);
-  const cleanDisplayValue = (n) => {
-    const v = toDisplayAmount(n);
+  const normalizeCurrency = (value) => value === 'COP' ? 'COP' : 'USD';
+  const toDisplayAmount = (n, targetCurrency = currency) => normalizeCurrency(targetCurrency) === 'COP' ? Number(n || 0) * copRate : Number(n || 0);
+  const fromDisplayAmount = (n, sourceCurrency = currency) => normalizeCurrency(sourceCurrency) === 'COP' ? Number(n || 0) / copRate : Number(n || 0);
+  const cleanDisplayValue = (n, targetCurrency = currency) => {
+    const v = toDisplayAmount(n, targetCurrency);
     if (!v) return '';
     return Number.isInteger(v) ? String(v) : String(Number(v.toFixed(2)));
   };
@@ -4606,8 +4611,18 @@ const FinanceView = ({ data, onUpdateFinance }) => {
   };
   const moneyUSD = (n) => formatCurrency(n, 'USD');
   const money = (n) => formatCurrency(n, currency);
+  const accountMoney = (n, accountCurrency) => formatCurrency(n, normalizeCurrency(accountCurrency));
+  const switchDraftCurrency = (amount, fromCurrency, toCurrency) => {
+    if (amount === '' || amount === null || amount === undefined) return '';
+    const asUsd = fromDisplayAmount(amount, fromCurrency);
+    return cleanDisplayValue(asUsd, toCurrency);
+  };
   const catById = (id) => categories.find(c => c.id === id) || { name: 'Sin categoria', color: COLORS.textDim };
   const accountById = (id) => accounts.find(a => a.id === id) || accounts[0] || { name: 'Sin cuenta' };
+  const selectedTransactionAccount = accountById(form.accountId);
+  const transactionCurrency = normalizeCurrency(selectedTransactionAccount.currency || currency);
+  const selectedSubscriptionAccount = accountById(subscriptionForm.accountId);
+  const subscriptionCurrency = normalizeCurrency(selectedSubscriptionAccount.currency || currency);
   const accountTagById = (id, fallbackType = 'custom') => (
     accountTags.find(tag => tag.id === id)
     || accountTags.find(tag => tag.id === fallbackType)
@@ -4634,7 +4649,7 @@ const FinanceView = ({ data, onUpdateFinance }) => {
   const accountBalances = accounts.map(a => {
     const movement = transactions.filter(t => (t.accountId || accounts[0]?.id) === a.id).reduce((sum, t) => sum + (t.type === 'income' ? Number(t.amount || 0) : -Number(t.amount || 0)), 0);
     const tag = accountTagById(a.tagId || a.type, a.type);
-    return { ...a, tag, group: tag.group || a.type || 'custom', current: Number(a.balance || 0) + movement };
+    return { ...a, currency: normalizeCurrency(a.currency), tag, group: tag.group || a.type || 'custom', current: Number(a.balance || 0) + movement };
   });
   const groupedAccountBalances = ACCOUNT_GROUPS.map(group => ({
     ...group,
@@ -4688,12 +4703,12 @@ const FinanceView = ({ data, onUpdateFinance }) => {
   ];
 
   const addTransaction = () => {
-    const amount = fromDisplayAmount(form.amount);
+    const amount = fromDisplayAmount(form.amount, transactionCurrency);
     if (!amount || amount <= 0) return;
     const category = form.type === 'income' ? 'income' : form.category;
     onUpdateFinance(prev => ({
       ...prev,
-      transactions: [{ ...form, id: `fin_${Date.now()}`, amount, category, accountId: form.accountId || (prev.accounts || [])[0]?.id || 'cash' }, ...(prev.transactions || [])]
+      transactions: [{ ...form, id: `fin_${Date.now()}`, amount, currency: transactionCurrency, category, accountId: form.accountId || (prev.accounts || [])[0]?.id || 'cash' }, ...(prev.transactions || [])]
     }));
     setForm(f => ({ ...f, amount: '', payee: '', note: '', date: today }));
   };
@@ -4732,10 +4747,11 @@ const FinanceView = ({ data, onUpdateFinance }) => {
         name: clean,
         type: selectedTag.group || 'custom',
         tagId,
-        balance: fromDisplayAmount(accountForm.balance)
+        currency: normalizeCurrency(accountForm.currency),
+        balance: fromDisplayAmount(accountForm.balance, accountForm.currency)
       }]
     }));
-    setAccountForm({ name: '', balance: '', tagId: 'checking', customTag: '', customGroup: 'bank' });
+    setAccountForm({ name: '', balance: '', tagId: 'checking', customTag: '', customGroup: 'bank', currency: 'USD' });
   };
 
   const removeAccount = (id) => {
@@ -4753,6 +4769,23 @@ const FinanceView = ({ data, onUpdateFinance }) => {
 
   const updateBudget = (catId, amount) => {
     onUpdateFinance(prev => ({ ...prev, budgets: { ...(prev.budgets || {}), [catId]: fromDisplayAmount(amount) } }));
+  };
+
+  const updateAccountCurrency = (accountId, nextCurrency) => {
+    const cleanCurrency = normalizeCurrency(nextCurrency);
+    onUpdateFinance(prev => ({
+      ...prev,
+      accounts: (prev.accounts || []).map(account => account.id === accountId ? { ...account, currency: cleanCurrency } : account)
+    }));
+  };
+
+  const updateAccountFormCurrency = (nextCurrency) => {
+    const cleanCurrency = normalizeCurrency(nextCurrency);
+    setAccountForm(prev => ({
+      ...prev,
+      currency: cleanCurrency,
+      balance: switchDraftCurrency(prev.balance, prev.currency, cleanCurrency)
+    }));
   };
 
   const addRecurring = () => {
@@ -4804,7 +4837,7 @@ const FinanceView = ({ data, onUpdateFinance }) => {
   };
 
   const addSubscription = () => {
-    const amount = fromDisplayAmount(subscriptionForm.amount);
+    const amount = fromDisplayAmount(subscriptionForm.amount, subscriptionCurrency);
     const service = selectedSubscriptionService || SUBSCRIPTION_SERVICES[0];
     const name = (subscriptionForm.name || service.name || '').trim();
     const category = subscriptionForm.category || service.category || 'Personalizada';
@@ -4817,6 +4850,7 @@ const FinanceView = ({ data, onUpdateFinance }) => {
         name,
         category,
         amount,
+        currency: subscriptionCurrency,
         day: Math.min(31, Math.max(1, Number(subscriptionForm.day || 1))),
         accountId: subscriptionForm.accountId || (prev.accounts || [])[0]?.id || 'cash',
         logoUrl: (subscriptionForm.logoUrl || '').trim(),
@@ -4875,7 +4909,7 @@ const FinanceView = ({ data, onUpdateFinance }) => {
               </div>
               <input type="number" min="1" step="0.01" value={copRate} onChange={e => onUpdateFinance(prev => ({ ...prev, copRate: Math.max(1, Number(e.target.value || 1)) }))} placeholder="COP por 1 USD" style={{ ...inputStyle, padding: '8px 9px', fontSize: 11 }} />
             </div>
-            <div style={{ color: COLORS.textDim, fontSize: 10, marginTop: 6, ...s }}>Vista activa: {currency}. La tasa solo convierte la visualización.</div>
+            <div style={{ color: COLORS.textDim, fontSize: 10, marginTop: 6, ...s }}>Vista global: {currency}. Cada cuenta puede tener su propia moneda.</div>
           </div>
         </div>
       </div>
@@ -4929,14 +4963,19 @@ const FinanceView = ({ data, onUpdateFinance }) => {
               <select value={form.type} onChange={e => setForm(f => ({ ...f, type: e.target.value, category: e.target.value === 'income' ? 'income' : (expenseCategories[0]?.id || f.category) }))} style={inputStyle}>
                 <option value="expense">Gasto</option><option value="income">Ingreso</option>
               </select>
-              <input type="number" step="0.01" value={form.amount} onChange={e => setForm(f => ({ ...f, amount: e.target.value }))} placeholder={`Monto ${currency}`} style={inputStyle} />
+              <input type="number" step="0.01" value={form.amount} onChange={e => setForm(f => ({ ...f, amount: e.target.value }))} placeholder={`Monto ${transactionCurrency}`} style={inputStyle} />
               <input type="date" value={form.date} onClick={e => openNativeDatePicker(e.currentTarget)} onFocus={e => openNativeDatePicker(e.currentTarget)} onChange={e => setForm(f => ({ ...f, date: e.target.value }))} style={{ ...inputStyle, cursor: 'pointer' }} />
             </div>
             <div className="finance-form-row finance-form-row-4" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr auto', gap: 10 }}>
               <select value={form.category} disabled={form.type === 'income'} onChange={e => setForm(f => ({ ...f, category: e.target.value }))} style={{ ...inputStyle, opacity: form.type === 'income' ? 0.55 : 1 }}>
                 {(form.type === 'income' ? categories.filter(c => c.id === 'income') : expenseCategories).map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
               </select>
-              <select value={form.accountId} onChange={e => setForm(f => ({ ...f, accountId: e.target.value }))} style={inputStyle}>
+              <select value={form.accountId} onChange={e => {
+                const previousCurrency = normalizeCurrency(accountById(form.accountId).currency || currency);
+                const nextAccount = accounts.find(a => a.id === e.target.value) || accounts[0];
+                const nextCurrency = normalizeCurrency(nextAccount?.currency || currency);
+                setForm(f => ({ ...f, accountId: e.target.value, amount: switchDraftCurrency(f.amount, previousCurrency, nextCurrency) }));
+              }} style={inputStyle}>
                 {accounts.map(a => <option key={a.id} value={a.id}>{a.name}</option>)}
               </select>
               <input value={form.payee} onChange={e => setForm(f => ({ ...f, payee: e.target.value }))} placeholder="Comercio / origen" style={inputStyle} />
@@ -5049,9 +5088,14 @@ const FinanceView = ({ data, onUpdateFinance }) => {
               }} style={inputStyle}>
                 {SUBSCRIPTION_SERVICES.map(service => <option key={service.id} value={service.id}>{service.name}</option>)}
               </select>
-              <input type="number" step="0.01" value={subscriptionForm.amount} onChange={e => setSubscriptionForm(f => ({ ...f, amount: e.target.value }))} placeholder={`Monto ${currency}`} style={inputStyle} />
+              <input type="number" step="0.01" value={subscriptionForm.amount} onChange={e => setSubscriptionForm(f => ({ ...f, amount: e.target.value }))} placeholder={`Monto ${subscriptionCurrency}`} style={inputStyle} />
               <input type="number" min="1" max="31" step="1" value={subscriptionForm.day} onChange={e => setSubscriptionForm(f => ({ ...f, day: e.target.value }))} placeholder="Día" style={inputStyle} />
-              <select value={subscriptionForm.accountId} onChange={e => setSubscriptionForm(f => ({ ...f, accountId: e.target.value }))} style={inputStyle}>
+              <select value={subscriptionForm.accountId} onChange={e => {
+                const previousCurrency = normalizeCurrency(accountById(subscriptionForm.accountId).currency || currency);
+                const nextAccount = accounts.find(a => a.id === e.target.value) || accounts[0];
+                const nextCurrency = normalizeCurrency(nextAccount?.currency || currency);
+                setSubscriptionForm(f => ({ ...f, accountId: e.target.value, amount: switchDraftCurrency(f.amount, previousCurrency, nextCurrency) }));
+              }} style={inputStyle}>
                 {accounts.map(account => <option key={account.id} value={account.id}>{account.name}</option>)}
               </select>
             </div>
@@ -5162,7 +5206,28 @@ const FinanceView = ({ data, onUpdateFinance }) => {
                         <div style={{ color: COLORS.textDim, fontSize: 10, marginTop: 2, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{a.tag?.name || group.label}</div>
                       </div>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                        <div style={{ color: a.current >= 0 ? COLORS.text : COLORS.alert, fontWeight: 900, textAlign: 'right', whiteSpace: 'nowrap' }}>{money(a.current)}</div>
+                        <div style={{ textAlign: 'right', minWidth: 94 }}>
+                          <div style={{ color: a.current >= 0 ? COLORS.text : COLORS.alert, fontWeight: 900, whiteSpace: 'nowrap' }}>{accountMoney(a.current, a.currency)}</div>
+                          {normalizeCurrency(a.currency) !== currency && (
+                            <div style={{ color: COLORS.textDim, fontSize: 9, marginTop: 2, whiteSpace: 'nowrap' }}>≈ {money(a.current)}</div>
+                          )}
+                        </div>
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2, padding: 2, borderRadius: 999, background: COLORS.bg, border: `1px solid ${COLORS.border}` }}>
+                          {['USD', 'COP'].map(cur => (
+                            <button key={cur} onClick={() => updateAccountCurrency(a.id, cur)} style={{
+                              border: 'none',
+                              borderRadius: 999,
+                              padding: '5px 7px',
+                              cursor: 'pointer',
+                              background: normalizeCurrency(a.currency) === cur ? COLORS.primary : 'transparent',
+                              color: normalizeCurrency(a.currency) === cur ? '#fff' : COLORS.textDim,
+                              fontSize: 9,
+                              fontWeight: 900,
+                              minHeight: 0,
+                              ...s
+                            }}>{cur}</button>
+                          ))}
+                        </div>
                         <button
                           onClick={() => removeAccount(a.id)}
                           disabled={accounts.length <= 1}
@@ -5177,12 +5242,28 @@ const FinanceView = ({ data, onUpdateFinance }) => {
                 </div>
               ))}
             </div>
-            <div className="finance-compact-form finance-account-form" style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) 150px', gap: 8, marginBottom: 8 }}>
+            <div className="finance-compact-form finance-account-form" style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) 150px 112px', gap: 8, marginBottom: 8 }}>
               <input value={accountForm.name} onChange={e => setAccountForm(f => ({ ...f, name: e.target.value }))} placeholder="Banco o entidad" style={{ ...inputStyle, padding: '9px 10px', fontSize: 11 }} />
               <select value={accountForm.tagId} onChange={e => setAccountForm(f => ({ ...f, tagId: e.target.value }))} style={{ ...inputStyle, padding: '9px 10px', fontSize: 11 }}>
                 {accountTags.map(tag => <option key={tag.id} value={tag.id}>{tag.name}</option>)}
                 <option value="__new__">+ Nueva etiqueta</option>
               </select>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 3, padding: 3, borderRadius: 999, background: COLORS.bg, border: `1px solid ${COLORS.border}` }}>
+                {['USD', 'COP'].map(cur => (
+                  <button key={cur} onClick={() => updateAccountFormCurrency(cur)} style={{
+                    border: 'none',
+                    borderRadius: 999,
+                    padding: '7px 0',
+                    cursor: 'pointer',
+                    background: normalizeCurrency(accountForm.currency) === cur ? COLORS.primary : 'transparent',
+                    color: normalizeCurrency(accountForm.currency) === cur ? '#fff' : COLORS.textDim,
+                    fontSize: 10,
+                    fontWeight: 900,
+                    minHeight: 0,
+                    ...s
+                  }}>{cur}</button>
+                ))}
+              </div>
             </div>
             {accountForm.tagId === '__new__' && (
               <div className="finance-compact-form finance-account-tag-form" style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) 150px', gap: 8, marginBottom: 8 }}>
@@ -5194,8 +5275,8 @@ const FinanceView = ({ data, onUpdateFinance }) => {
             )}
             <div className="finance-compact-form finance-account-balance-form" style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) auto', gap: 8 }}>
               <div style={{ position: 'relative' }}>
-                <input type="number" step="0.01" value={accountForm.balance} onChange={e => setAccountForm(f => ({ ...f, balance: e.target.value }))} placeholder={`Saldo inicial ${currency}`} style={{ ...strongInputStyle, padding: '9px 46px 9px 10px', fontSize: 11, width: '100%' }} />
-                <span style={{ position: 'absolute', right: 9, top: '50%', transform: 'translateY(-50%)', color: COLORS.textDim, fontSize: 9, fontWeight: 800 }}>{currency}</span>
+                <input type="number" step="0.01" value={accountForm.balance} onChange={e => setAccountForm(f => ({ ...f, balance: e.target.value }))} placeholder={`Saldo inicial ${accountForm.currency}`} style={{ ...strongInputStyle, padding: '9px 46px 9px 10px', fontSize: 11, width: '100%' }} />
+                <span style={{ position: 'absolute', right: 9, top: '50%', transform: 'translateY(-50%)', color: COLORS.textDim, fontSize: 9, fontWeight: 800 }}>{accountForm.currency}</span>
               </div>
               <button className="finance-submit-button" onClick={addAccount} style={{ border: 'none', borderRadius: 10, background: COLORS.primary, color: '#fff', padding: '0 12px', cursor: 'pointer', fontWeight: 800, whiteSpace: 'nowrap' }}><Plus size={15} /> Agregar cuenta</button>
             </div>
@@ -10435,9 +10516,9 @@ const HabitFlowApp = () => {
       ];
       const financeAccountTags = getFinanceData().accountTags;
       const financeAccounts = [
-        { id: 'cash', name: 'Efectivo', type: 'cash', tagId: 'cash', balance: moneyAmount(80, 420) },
-        { id: 'bank', name: 'Cuenta principal', type: 'bank', tagId: 'checking', balance: moneyAmount(1400, 4200) },
-        { id: 'card', name: 'Tarjeta', type: 'credit', tagId: 'credit_card', balance: -moneyAmount(120, 900) }
+        { id: 'cash', name: 'Efectivo', type: 'cash', tagId: 'cash', currency: 'COP', balance: moneyAmount(80, 420) },
+        { id: 'bank', name: 'Cuenta principal', type: 'bank', tagId: 'checking', currency: 'USD', balance: moneyAmount(1400, 4200) },
+        { id: 'card', name: 'Tarjeta', type: 'credit', tagId: 'credit_card', currency: 'COP', balance: -moneyAmount(120, 900) }
       ];
       const payees = {
         food: ['Supermercado', 'Restaurante', 'Cafe'],
