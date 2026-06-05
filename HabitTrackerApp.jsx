@@ -1945,6 +1945,10 @@ const injectStyles = () => {
         text-overflow: ellipsis !important;
         white-space: nowrap !important;
       }
+      .finance-budget-category-row {
+        grid-template-columns: minmax(0, 1fr) 96px 34px !important;
+        gap: 8px !important;
+      }
       .finance-currency-controls {
         grid-template-columns: 1fr !important;
       }
@@ -4771,6 +4775,24 @@ const FinanceView = ({ data, onUpdateFinance }) => {
     onUpdateFinance(prev => ({ ...prev, budgets: { ...(prev.budgets || {}), [catId]: fromDisplayAmount(amount) } }));
   };
 
+  const removeBudgetCategory = (catId) => {
+    const fallbackCategory = expenseCategories.find(cat => cat.id !== catId)?.id;
+    if (!fallbackCategory) return;
+    onUpdateFinance(prev => {
+      const nextBudgets = { ...(prev.budgets || {}) };
+      delete nextBudgets[catId];
+      return {
+        ...prev,
+        categories: (prev.categories || []).filter(cat => cat.id !== catId),
+        budgets: nextBudgets,
+        transactions: (prev.transactions || []).map(item => item.category === catId ? { ...item, category: fallbackCategory } : item),
+        recurring: (prev.recurring || []).map(item => item.category === catId ? { ...item, category: fallbackCategory } : item)
+      };
+    });
+    setForm(prev => prev.category === catId ? { ...prev, category: fallbackCategory } : prev);
+    setRecurringForm(prev => prev.category === catId ? { ...prev, category: fallbackCategory } : prev);
+  };
+
   const updateAccountCurrency = (accountId, nextCurrency) => {
     const cleanCurrency = normalizeCurrency(nextCurrency);
     onUpdateFinance(prev => ({
@@ -5050,7 +5072,7 @@ const FinanceView = ({ data, onUpdateFinance }) => {
                 const pct = limit ? Math.min(100, Math.round((spent / limit) * 100)) : 0;
                 return (
                   <div key={cat.id} style={{ padding: 12, borderRadius: 14, background: 'rgba(239,239,239,0.03)', border: `1px solid ${COLORS.border}` }}>
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 110px', gap: 12, alignItems: 'center', marginBottom: 9 }}>
+                    <div className="finance-budget-category-row" style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) 110px 34px', gap: 10, alignItems: 'center', marginBottom: 9 }}>
                       <div>
                         <div style={{ color: COLORS.text, fontSize: 13, fontWeight: 800 }}><span style={{ color: cat.color }}>●</span> {cat.name}</div>
                         <div style={{ color: pct > 90 ? COLORS.alert : COLORS.textDim, fontSize: 11 }}>{money(spent)} usados de {money(limit)}</div>
@@ -5059,6 +5081,15 @@ const FinanceView = ({ data, onUpdateFinance }) => {
                         <input type="number" step="0.01" value={cleanDisplayValue(limit)} onChange={e => updateBudget(cat.id, e.target.value)} placeholder={`Limite ${currency}`} style={{ ...inputStyle, padding: '8px 42px 8px 9px', fontSize: 11, width: '100%' }} />
                         <span style={{ position: 'absolute', right: 9, top: '50%', transform: 'translateY(-50%)', color: COLORS.textDim, fontSize: 9, fontWeight: 800 }}>{currency}</span>
                       </div>
+                      <button
+                        className="finance-icon-button"
+                        onClick={() => removeBudgetCategory(cat.id)}
+                        disabled={expenseCategories.length <= 1}
+                        title="Eliminar categoria"
+                        style={{ border: `1px solid ${COLORS.border}`, borderRadius: 10, background: 'rgba(255,255,255,0.03)', color: expenseCategories.length <= 1 ? COLORS.textDim : COLORS.alert, cursor: expenseCategories.length <= 1 ? 'not-allowed' : 'pointer', opacity: expenseCategories.length <= 1 ? 0.45 : 1 }}
+                      >
+                        <Trash2 size={13} />
+                      </button>
                     </div>
                     <div style={{ height: 7, borderRadius: 99, background: COLORS.bg, overflow: 'hidden' }}>
                       <div style={{ height: '100%', width: `${pct}%`, borderRadius: 99, background: pct > 90 ? COLORS.alert : `linear-gradient(90deg, ${cat.color}, ${COLORS.primary})` }} />
