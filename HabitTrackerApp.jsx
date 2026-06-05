@@ -311,6 +311,33 @@ const getWorkoutData = () => ({
   sessions: genSampleSessions()
 });
 
+const SUBSCRIPTION_SERVICES = [
+  { id: 'netflix', name: 'Netflix', category: 'Streaming de video', badge: 'N', color: '#e50914', bg: '#160305' },
+  { id: 'disney', name: 'Disney+', category: 'Streaming de video', badge: 'D+', color: '#75b8ff', bg: '#071a33' },
+  { id: 'max', name: 'Max', category: 'Streaming de video', badge: 'M', color: '#7c5cff', bg: '#100a28' },
+  { id: 'prime_video', name: 'Amazon Prime Video', category: 'Streaming de video', badge: 'PV', color: '#00a8e1', bg: '#061a22' },
+  { id: 'spotify', name: 'Spotify', category: 'Streaming de música', badge: 'S', color: '#1db954', bg: '#04140a' },
+  { id: 'apple_music', name: 'Apple Music', category: 'Streaming de música', badge: 'AM', color: '#fa2d48', bg: '#19040a' },
+  { id: 'youtube_music', name: 'YouTube Music', category: 'Streaming de música', badge: 'YT', color: '#ff0033', bg: '#1a0308' },
+  { id: 'google_one', name: 'Google One', category: 'Almacenamiento en la nube', badge: 'G1', color: '#4285f4', bg: '#071323' },
+  { id: 'icloud', name: 'iCloud+', category: 'Almacenamiento en la nube', badge: 'i+', color: '#8fd3ff', bg: '#071520' },
+  { id: 'dropbox', name: 'Dropbox', category: 'Almacenamiento en la nube', badge: 'Db', color: '#0061ff', bg: '#06122b' },
+  { id: 'microsoft_365', name: 'Microsoft 365', category: 'Software y productividad', badge: '365', color: '#f25022', bg: '#1b0904' },
+  { id: 'adobe_cc', name: 'Adobe Creative Cloud', category: 'Software y productividad', badge: 'Ai', color: '#ff0000', bg: '#1b0303' },
+  { id: 'canva', name: 'Canva Pro', category: 'Software y productividad', badge: 'C', color: '#00c4cc', bg: '#04191a' },
+  { id: 'chatgpt', name: 'ChatGPT Plus', category: 'Aplicaciones de IA', badge: 'GPT', color: '#10a37f', bg: '#041612' },
+  { id: 'claude', name: 'Claude Pro', category: 'Aplicaciones de IA', badge: 'C', color: '#d97757', bg: '#1a0d08' },
+  { id: 'perplexity', name: 'Perplexity Pro', category: 'Aplicaciones de IA', badge: 'P', color: '#20b8cd', bg: '#04161a' },
+  { id: 'amazon_prime', name: 'Amazon Prime', category: 'Compras y beneficios', badge: 'A', color: '#ff9900', bg: '#1c1000' },
+  { id: 'walmart', name: 'Walmart+', category: 'Compras y beneficios', badge: 'W+', color: '#0071ce', bg: '#061323' },
+  { id: 'gym', name: 'Membresía de gimnasio', category: 'Fitness y salud', badge: 'GYM', color: '#e11d48', bg: '#19030a' },
+  { id: 'strava', name: 'Strava Premium', category: 'Fitness y salud', badge: 'ST', color: '#fc4c02', bg: '#1b0701' },
+  { id: 'fitbit', name: 'Fitbit Premium', category: 'Fitness y salud', badge: 'FB', color: '#00b0b9', bg: '#041719' },
+  { id: 'xbox', name: 'Xbox Game Pass', category: 'Videojuegos', badge: 'X', color: '#107c10', bg: '#041404' },
+  { id: 'playstation', name: 'PlayStation Plus', category: 'Videojuegos', badge: 'PS', color: '#2d64e6', bg: '#071229' },
+  { id: 'nintendo', name: 'Nintendo Switch Online', category: 'Videojuegos', badge: 'NS', color: '#e60012', bg: '#1a0305' }
+];
+
 const getFinanceData = () => ({
   currency: 'USD',
   copRate: 4000,
@@ -350,9 +377,12 @@ const getFinanceData = () => ({
     { id: 'rec2', name: 'Internet', type: 'expense', amount: 45, category: 'home', day: 12, active: true },
     { id: 'rec3', name: 'Ingreso principal', type: 'income', amount: 2500, category: 'income', day: 1, active: true }
   ],
-  goals: [
-    { id: 'goal1', name: 'Fondo de emergencia', target: 2000, saved: 420, dueDate: toYYYYMMDD(addDays(new Date(), 120)) }
+  subscriptions: [
+    { id: 'sub1', serviceId: 'netflix', name: 'Netflix', category: 'Streaming de video', amount: 15.49, day: 7, accountId: 'bank', logoUrl: '', active: true },
+    { id: 'sub2', serviceId: 'spotify', name: 'Spotify', category: 'Streaming de música', amount: 10.99, day: 14, accountId: 'bank', logoUrl: '', active: true },
+    { id: 'sub3', serviceId: 'chatgpt', name: 'ChatGPT Plus', category: 'Aplicaciones de IA', amount: 20, day: 22, accountId: 'bank', logoUrl: '', active: true }
   ],
+  goals: [],
   transactions: [
     { id: 'fin1', type: 'income', amount: 2500, category: 'income', accountId: 'bank', payee: 'Empresa', note: 'Ingreso principal', date: toYYYYMMDD(new Date()) },
     { id: 'fin2', type: 'expense', amount: 86, category: 'food', accountId: 'bank', payee: 'Supermercado', note: 'Compra semanal', date: toYYYYMMDD(new Date()) },
@@ -508,7 +538,7 @@ const getDefaultData = (reset = false) => {
     dailyNotes: reset ? {} : { [toYYYYMMDD(new Date())]: { note: 'Buen día en general, cumplí todos mis hábitos', mood: 4 } },
     challenges: reset ? [] : [{ id: 'ch1', habitId: 'h1', startDate: toYYYYMMDD(addDays(new Date(), -14)), status: 'active' }],
     workoutData: reset ? { exercises: WORKOUT_EXERCISES.map(e => ({ ...e, custom: false })), routines: [], sessions: [] } : getWorkoutData(),
-    financeData: reset ? { ...getFinanceData(), monthlyBudget: 0, transactions: [], recurring: [], goals: [] } : getFinanceData(),
+    financeData: reset ? { ...getFinanceData(), monthlyBudget: 0, transactions: [], recurring: [], subscriptions: [], goals: [] } : getFinanceData(),
     studyData: reset ? { subjects: [], sessions: [] } : getStudyData(),
     readingData: getReadingData(),
     dreamGoals: reset ? [] : getDreamGoals(),
@@ -555,6 +585,7 @@ const normalizeLoadedData = (parsed) => {
   if (!parsed.financeData.accounts || !parsed.financeData.accounts.length) parsed.financeData.accounts = getFinanceData().accounts;
   parsed.financeData.accounts = parsed.financeData.accounts.map(account => ({ ...account, tagId: account.tagId || (account.type === 'credit' ? 'credit_card' : account.type === 'bank' ? 'checking' : account.type || 'custom') }));
   if (!parsed.financeData.recurring) parsed.financeData.recurring = [];
+  if (!parsed.financeData.subscriptions) parsed.financeData.subscriptions = [];
   if (!parsed.financeData.goals) parsed.financeData.goals = [];
   if (!parsed.studyData) parsed.studyData = getStudyData();
   if (!parsed.studyData.subjects) parsed.studyData.subjects = [];
@@ -1801,6 +1832,7 @@ const injectStyles = () => {
         margin-bottom: 9px !important;
       }
       .finance-inline-form,
+      .finance-subscription-form,
       .finance-filter-row {
         display: grid !important;
         grid-template-columns: 1fr !important;
@@ -1831,9 +1863,17 @@ const injectStyles = () => {
       }
       .finance-form-row button,
       .finance-compact-form button,
+      .finance-subscription-form button,
       .finance-goal-form > button,
       .finance-action-button {
         width: 100% !important;
+      }
+      .finance-subscription-body {
+        grid-template-columns: 1fr !important;
+      }
+      .finance-subscription-grid,
+      .finance-recurring-grid {
+        grid-template-columns: 1fr !important;
       }
       .finance-icon-button {
         width: 44px !important;
@@ -3561,32 +3601,6 @@ const DashboardView = ({ data, onCompleteHabit, workoutData, onNavigate, onUpdat
       const cat = getCategoryInfo(h.category);
       return { ...h, completed: rec ? rec.completed : false, categoryInfo: cat, streak: getCurrentStreak(h.id, records) };
     }), [habits, records, today]);
-  const habitGoalProgress = useMemo(() => {
-    const goals = habits.filter(h => h.active).map(h => {
-      const target = Math.max(1, Number(h.targetStreak || 21));
-      const current = Math.min(target, getCurrentStreak(h.id, records, h));
-      const pct = Math.min(100, Math.round((current / target) * 100));
-      return {
-        id: h.id,
-        name: h.name,
-        icon: h.icon,
-        color: getCategoryInfo(h.category).color || COLORS.primary,
-        current,
-        target,
-        remaining: Math.max(0, target - current),
-        pct
-      };
-    }).sort((a, b) => (a.remaining === 0 ? 1 : 0) - (b.remaining === 0 ? 1 : 0) || a.remaining - b.remaining);
-    const totalTarget = goals.reduce((sum, g) => sum + g.target, 0);
-    const totalCurrent = goals.reduce((sum, g) => sum + g.current, 0);
-    const totalRemaining = goals.reduce((sum, g) => sum + g.remaining, 0);
-    return {
-      goals,
-      visible: goals.slice(0, 4),
-      totalRemaining,
-      overallPct: totalTarget ? Math.round((totalCurrent / totalTarget) * 100) : 0
-    };
-  }, [habits, records]);
 
   const isFirstRun = !data.user?.onboardingDone && (habits.length === 0 || records.length === 0);
   const [tourStep, setTourStep] = useState(null);
@@ -3676,53 +3690,6 @@ const DashboardView = ({ data, onCompleteHabit, workoutData, onNavigate, onUpdat
               progress={kpis.rate / 100} />
             <KPICard icon={'\u{1F3C6}'} title="Mejor Racha" value={kpis.bestStreak} subtitle="Récord histórico"
               accent={COLORS.alert} suffix=" días" delay={400} />
-          </div>
-
-          <div style={{ background: COLORS.card, borderRadius: 16, border: `1px solid ${COLORS.border}`, padding: 18, marginBottom: 24, overflow: 'hidden' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 14, marginBottom: 14 }}>
-              <div>
-                <div style={{ color: COLORS.text, fontSize: 16, fontWeight: 900, marginBottom: 4, ...s }}>
-                  <Target size={15} style={{ verticalAlign: 'middle', marginRight: 7, color: COLORS.primary }} />
-                  Metas de hábitos
-                </div>
-                <div style={{ color: COLORS.textDim, fontSize: 11, lineHeight: 1.5, ...s }}>
-                  Visualiza cuánto falta para completar tus rachas objetivo.
-                </div>
-              </div>
-              <div style={{ textAlign: 'right', flexShrink: 0 }}>
-                <div style={{ color: COLORS.text, fontSize: 20, fontWeight: 900, lineHeight: 1, ...s }}>{habitGoalProgress.overallPct}%</div>
-                <div style={{ color: COLORS.textDim, fontSize: 10, marginTop: 4, ...s }}>
-                  {habitGoalProgress.totalRemaining} días faltantes
-                </div>
-              </div>
-            </div>
-            <div style={{ height: 7, borderRadius: 99, background: COLORS.bg, overflow: 'hidden', marginBottom: 14 }}>
-              <div style={{ height: '100%', width: `${habitGoalProgress.overallPct}%`, borderRadius: 99, background: `linear-gradient(90deg, ${COLORS.primary}, ${COLORS.alert})`, transition: 'width 900ms ease', boxShadow: `0 0 18px ${COLORS.primary}55` }} />
-            </div>
-            <div style={{ display: 'grid', gap: 10 }}>
-              {habitGoalProgress.visible.map(goal => (
-                <div key={goal.id} style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) auto', gap: 12, alignItems: 'center' }}>
-                  <div style={{ minWidth: 0 }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
-                      <span className="fire-emoji" style={{ fontSize: 16 }}>{goal.icon}</span>
-                      <span style={{ color: COLORS.text, fontSize: 12, fontWeight: 800, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', ...s }}>{goal.name}</span>
-                    </div>
-                    <div style={{ height: 6, borderRadius: 99, background: COLORS.bg, overflow: 'hidden' }}>
-                      <div style={{ height: '100%', width: `${goal.pct}%`, borderRadius: 99, background: `linear-gradient(90deg, ${goal.color}, ${COLORS.primary})`, transition: 'width 850ms ease' }} />
-                    </div>
-                  </div>
-                  <div style={{ color: goal.remaining === 0 ? COLORS.success : COLORS.textDim, fontSize: 11, fontWeight: 800, textAlign: 'right', minWidth: 80, ...s }}>
-                    {goal.remaining === 0 ? 'Lista' : `faltan ${goal.remaining}d`}
-                    <div style={{ color: COLORS.textDim, fontSize: 9, fontWeight: 600, marginTop: 2 }}>{goal.current}/{goal.target}</div>
-                  </div>
-                </div>
-              ))}
-              {habitGoalProgress.visible.length === 0 && (
-                <div style={{ color: COLORS.textDim, fontSize: 12, padding: '8px 0', ...s }}>
-                  Crea hábitos con meta de racha para ver tu progreso aquí.
-                </div>
-              )}
-            </div>
           </div>
 
           {workoutData?.sessions?.length > 0 && (() => {
@@ -4596,15 +4563,14 @@ const FinanceView = ({ data, onUpdateFinance }) => {
   const accounts = finance.accounts || [];
   const accountTags = finance.accountTags || getFinanceData().accountTags;
   const recurring = finance.recurring || [];
-  const goals = finance.goals || [];
+  const subscriptions = finance.subscriptions || [];
   const budgets = finance.budgets || {};
   const today = toYYYYMMDD(new Date());
   const [selectedMonth, setSelectedMonth] = useState(today.slice(0, 7));
   const [form, setForm] = useState({ type: 'expense', amount: '', category: expenseCategories[0]?.id || categories[0]?.id || 'food', accountId: accounts[0]?.id || 'cash', payee: '', note: '', date: today });
   const [accountForm, setAccountForm] = useState({ name: '', balance: '', tagId: 'checking', customTag: '', customGroup: 'bank' });
   const [recurringForm, setRecurringForm] = useState({ name: '', amount: '', category: expenseCategories[0]?.id || 'food', day: 1, type: 'expense' });
-  const [goalForm, setGoalForm] = useState({ name: '', target: '', saved: '', dueDate: '' });
-  const [goalAdds, setGoalAdds] = useState({});
+  const [subscriptionForm, setSubscriptionForm] = useState({ serviceId: 'netflix', name: '', category: 'Streaming de video', amount: '', day: 1, accountId: accounts[0]?.id || 'cash', logoUrl: '' });
   const [search, setSearch] = useState('');
   const [filterType, setFilterType] = useState('all');
   const [catName, setCatName] = useState('');
@@ -4677,13 +4643,19 @@ const FinanceView = ({ data, onUpdateFinance }) => {
   const netWorth = accountBalances.reduce((sum, a) => sum + Number(a.current || 0), 0);
   const activeRecurring = recurring.filter(r => r.active !== false);
   const recurringExpense = activeRecurring.filter(r => r.type === 'expense').reduce((sum, r) => sum + Number(r.amount || 0), 0);
-  const savingsTarget = goals.reduce((sum, g) => sum + Math.max(0, Number(g.target || 0) - Number(g.saved || 0)), 0);
-  const goalMonthlyNeed = Math.round(goals.reduce((sum, g) => {
-    if (!g.dueDate || !g.target) return sum;
-    const months = Math.max(1, Math.ceil((new Date(g.dueDate + 'T12:00:00') - new Date()) / (1000 * 60 * 60 * 24 * 30)));
-    return sum + Math.max(0, (Number(g.target || 0) - Number(g.saved || 0)) / months);
-  }, 0));
-  const available = income - expenses - recurringExpense - goalMonthlyNeed;
+  const activeSubscriptions = subscriptions.filter(item => item.active !== false);
+  const subscriptionsExpense = activeSubscriptions.reduce((sum, item) => sum + Number(item.amount || 0), 0);
+  const selectedSubscriptionService = SUBSCRIPTION_SERVICES.find(item => item.id === subscriptionForm.serviceId) || SUBSCRIPTION_SERVICES[0];
+  const subscriptionCategories = [...new Set(SUBSCRIPTION_SERVICES.map(item => item.category))];
+  const subscriptionCatalogGroups = subscriptionCategories.map(category => ({
+    category,
+    services: SUBSCRIPTION_SERVICES.filter(item => item.category === category)
+  }));
+  const subscriptionTotalsByCategory = subscriptionCategories.map(category => ({
+    category,
+    total: activeSubscriptions.filter(item => item.category === category).reduce((sum, item) => sum + Number(item.amount || 0), 0)
+  })).filter(item => item.total > 0);
+  const available = income - expenses - recurringExpense - subscriptionsExpense;
   const savingRate = income ? Math.round((balance / income) * 100) : 0;
 
   const monthKeys = Array.from({ length: 6 }, (_, i) => {
@@ -4705,13 +4677,13 @@ const FinanceView = ({ data, onUpdateFinance }) => {
     { id: 'accounts', label: 'Cuentas', icon: CreditCard },
     { id: 'budget', label: 'Presupuesto', icon: Target },
     { id: 'recurring', label: 'Recurrentes', icon: Repeat },
-    { id: 'goals', label: 'Metas', icon: Sparkles }
+    { id: 'subscriptions', label: 'Suscripciones', icon: CreditCard }
   ];
 
   const insights = [
     budgetPct > 90 ? `Alerta: ya usaste ${budgetPct}% del presupuesto mensual.` : `Presupuesto sano: vas en ${budgetPct}% del mes.`,
-    available < 0 ? `Tu disponible proyectado queda negativo: ${money(available)}.` : `Disponible proyectado despues de gastos, recurrentes y metas: ${money(available)}.`,
-    goalMonthlyNeed > 0 ? `Para cumplir tus metas, separa aprox. ${money(goalMonthlyNeed)} este mes.` : 'Crea una meta para empezar a separar dinero con intención.',
+    available < 0 ? `Tu disponible proyectado queda negativo: ${money(available)}.` : `Disponible proyectado despues de gastos, recurrentes y suscripciones: ${money(available)}.`,
+    subscriptionsExpense > 0 ? `Suscripciones activas estimadas este mes: ${money(subscriptionsExpense)}.` : 'Agrega tus suscripciones para ver cuánto consumen al mes.',
     recurringExpense > 0 ? `Pagos recurrentes estimados este mes: ${money(recurringExpense)}.` : 'Agrega pagos recurrentes para anticipar obligaciones.'
   ];
 
@@ -4800,27 +4772,77 @@ const FinanceView = ({ data, onUpdateFinance }) => {
 
   const removeRecurring = (id) => onUpdateFinance(prev => ({ ...prev, recurring: (prev.recurring || []).filter(r => r.id !== id) }));
 
-  const addGoal = () => {
-    const name = goalForm.name.trim();
-    const target = fromDisplayAmount(goalForm.target);
-    if (!name || !target) return;
-    onUpdateFinance(prev => ({ ...prev, goals: [{ ...goalForm, id: `goal_${Date.now()}`, target, saved: fromDisplayAmount(goalForm.saved || 0) }, ...(prev.goals || [])] }));
-    setGoalForm({ name: '', target: '', saved: '', dueDate: '' });
+  const renderSubscriptionLogo = (item, size = 42) => {
+    const service = SUBSCRIPTION_SERVICES.find(svc => svc.id === item.serviceId) || item;
+    const logoUrl = item.logoUrl || '';
+    if (logoUrl) {
+      return (
+        <div style={{ width: size, height: size, borderRadius: 14, overflow: 'hidden', background: COLORS.bg, border: `1px solid ${COLORS.border}`, flexShrink: 0 }}>
+          <img src={logoUrl} alt={item.name || service.name} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+        </div>
+      );
+    }
+    return (
+      <div style={{
+        width: size,
+        height: size,
+        borderRadius: 14,
+        background: service.bg || COLORS.bg,
+        border: `1px solid ${(service.color || COLORS.primary)}55`,
+        color: service.color || COLORS.primary,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        fontSize: size > 36 ? 13 : 11,
+        fontWeight: 950,
+        letterSpacing: '-0.03em',
+        boxShadow: `0 10px 26px ${(service.color || COLORS.primary)}18`,
+        flexShrink: 0,
+        ...s
+      }}>{service.badge || (item.name || '?').slice(0, 2).toUpperCase()}</div>
+    );
   };
 
-  const contributeGoal = (goalId) => {
-    const amount = fromDisplayAmount(goalAdds[goalId] || 0);
-    if (!amount) return;
-    onUpdateFinance(prev => ({ ...prev, goals: (prev.goals || []).map(g => {
-      const target = Number(g.target || 0);
-      const saved = Number(g.saved || 0);
-      if (g.id !== goalId || (target && saved >= target)) return g;
-      return { ...g, saved: Math.min(target, saved + amount) };
-    }) }));
-    setGoalAdds(prev => ({ ...prev, [goalId]: '' }));
+  const addSubscription = () => {
+    const amount = fromDisplayAmount(subscriptionForm.amount);
+    const service = selectedSubscriptionService || SUBSCRIPTION_SERVICES[0];
+    const name = (subscriptionForm.name || service.name || '').trim();
+    const category = subscriptionForm.category || service.category || 'Personalizada';
+    if (!name || !amount) return;
+    onUpdateFinance(prev => ({
+      ...prev,
+      subscriptions: [{
+        id: `sub_${Date.now()}`,
+        serviceId: service.id || 'custom',
+        name,
+        category,
+        amount,
+        day: Math.min(31, Math.max(1, Number(subscriptionForm.day || 1))),
+        accountId: subscriptionForm.accountId || (prev.accounts || [])[0]?.id || 'cash',
+        logoUrl: (subscriptionForm.logoUrl || '').trim(),
+        active: true
+      }, ...(prev.subscriptions || [])]
+    }));
+    setSubscriptionForm(f => ({ ...f, name: '', amount: '', logoUrl: '' }));
   };
 
-  const removeGoal = (id) => onUpdateFinance(prev => ({ ...prev, goals: (prev.goals || []).filter(g => g.id !== id) }));
+  const paySubscription = (item) => {
+    onUpdateFinance(prev => ({
+      ...prev,
+      transactions: [{
+        id: `fin_${Date.now()}`,
+        type: 'expense',
+        amount: Number(item.amount || 0),
+        category: 'fun',
+        accountId: item.accountId || (prev.accounts || [])[0]?.id || 'cash',
+        payee: item.name,
+        note: 'Suscripción',
+        date: `${selectedMonth}-${String(item.day || 1).padStart(2, '0')}`
+      }, ...(prev.transactions || [])]
+    }));
+  };
+
+  const removeSubscription = (id) => onUpdateFinance(prev => ({ ...prev, subscriptions: (prev.subscriptions || []).filter(item => item.id !== id) }));
 
   return (
     <div className="finance-mobile-view" style={{ animation: 'fadeIn 0.3s ease-out' }}>
@@ -4829,7 +4851,7 @@ const FinanceView = ({ data, onUpdateFinance }) => {
           <div>
             <div className="lab-pill" style={{ display: 'inline-flex', padding: '7px 11px', fontSize: 11, marginBottom: 12 }}>FINANZAS PRO</div>
             <h2 className="lab-hero-title" style={{ fontSize: 36, lineHeight: 1.05, marginBottom: 8 }}>Tu centro financiero personal.</h2>
-            <div style={{ color: COLORS.textDim, fontSize: 13, lineHeight: 1.7, maxWidth: 620 }}>Presupuesto por categoria, flujo de caja, metas, cuentas, recurrentes e insights en una sola vista.</div>
+            <div style={{ color: COLORS.textDim, fontSize: 13, lineHeight: 1.7, maxWidth: 620 }}>Presupuesto por categoria, flujo de caja, cuentas, recurrentes, suscripciones e insights en una sola vista.</div>
           </div>
           <div className="finance-available-card" style={{ minWidth: 250 }}>
             <div style={{ fontSize: 11, color: COLORS.textDim, marginBottom: 6, ...s }}>Disponible proyectado</div>
@@ -4897,7 +4919,7 @@ const FinanceView = ({ data, onUpdateFinance }) => {
       </div>
 
       <div className="finance-layout" style={{ display: 'grid', gridTemplateColumns: ['overview', 'accounts', 'budget'].includes(section) ? 'minmax(0, 1.45fr) minmax(330px, 0.9fr)' : '1fr', gap: 18, alignItems: 'start' }}>
-        <div className="finance-main-column" style={{ display: ['overview', 'movements', 'accounts', 'budget'].includes(section) ? 'grid' : 'none', gap: 18 }}>
+        <div className="finance-main-column" style={{ display: ['overview', 'movements', 'accounts', 'budget', 'subscriptions'].includes(section) ? 'grid' : 'none', gap: 18 }}>
           <div className="finance-card finance-transaction-card" style={{ ...cardStyle, display: section === 'movements' ? 'block' : 'none' }}>
             <div className="finance-card-header" style={{ display: 'flex', justifyContent: 'space-between', gap: 12, alignItems: 'center', marginBottom: 14 }}>
               <h3 style={{ fontSize: 17, color: COLORS.text, margin: 0 }}>Registrar movimiento</h3>
@@ -5007,9 +5029,104 @@ const FinanceView = ({ data, onUpdateFinance }) => {
               })}
             </div>
           </div>
+
+          <div className="finance-card finance-subscriptions-card" style={{ ...cardStyle, display: section === 'subscriptions' ? 'block' : 'none' }}>
+            <div className="finance-card-header" style={{ display: 'flex', justifyContent: 'space-between', gap: 12, alignItems: 'flex-start', marginBottom: 18 }}>
+              <div>
+                <h3 style={{ fontSize: 18, color: COLORS.text, margin: 0 }}>Suscripciones</h3>
+                <div style={{ color: COLORS.textDim, fontSize: 12, marginTop: 5, ...s }}>Servicios mensuales con logo, monto y día de cobro.</div>
+              </div>
+              <div style={{ textAlign: 'right' }}>
+                <div style={{ color: COLORS.textDim, fontSize: 10, textTransform: 'uppercase', letterSpacing: '0.08em', ...s }}>Total mensual</div>
+                <div style={{ color: COLORS.primary, fontSize: 24, fontWeight: 900 }}>{money(subscriptionsExpense)}</div>
+              </div>
+            </div>
+
+            <div className="finance-subscription-form" style={{ display: 'grid', gridTemplateColumns: 'minmax(170px, 1.1fr) minmax(120px, 0.8fr) 76px minmax(140px, 0.8fr)', gap: 9, marginBottom: 9 }}>
+              <select value={subscriptionForm.serviceId} onChange={e => {
+                const service = SUBSCRIPTION_SERVICES.find(item => item.id === e.target.value) || SUBSCRIPTION_SERVICES[0];
+                setSubscriptionForm(f => ({ ...f, serviceId: service.id, name: service.name, category: service.category }));
+              }} style={inputStyle}>
+                {SUBSCRIPTION_SERVICES.map(service => <option key={service.id} value={service.id}>{service.name}</option>)}
+              </select>
+              <input type="number" step="0.01" value={subscriptionForm.amount} onChange={e => setSubscriptionForm(f => ({ ...f, amount: e.target.value }))} placeholder={`Monto ${currency}`} style={inputStyle} />
+              <input type="number" min="1" max="31" step="1" value={subscriptionForm.day} onChange={e => setSubscriptionForm(f => ({ ...f, day: e.target.value }))} placeholder="Día" style={inputStyle} />
+              <select value={subscriptionForm.accountId} onChange={e => setSubscriptionForm(f => ({ ...f, accountId: e.target.value }))} style={inputStyle}>
+                {accounts.map(account => <option key={account.id} value={account.id}>{account.name}</option>)}
+              </select>
+            </div>
+            <div className="finance-subscription-form" style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 1fr) auto', gap: 9, marginBottom: 18 }}>
+              <input value={subscriptionForm.name} onChange={e => setSubscriptionForm(f => ({ ...f, name: e.target.value }))} placeholder="Nombre personalizado opcional" style={inputStyle} />
+              <input value={subscriptionForm.logoUrl} onChange={e => setSubscriptionForm(f => ({ ...f, logoUrl: e.target.value }))} placeholder="URL de logo opcional" style={inputStyle} />
+              <button className="finance-submit-button" onClick={addSubscription} style={{ border: 'none', borderRadius: 12, background: COLORS.primary, color: '#fff', padding: '0 16px', cursor: 'pointer', fontWeight: 900, whiteSpace: 'nowrap' }}><Plus size={15} /> Agregar</button>
+            </div>
+
+            <div className="finance-subscription-body" style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) minmax(260px, 0.9fr)', gap: 16 }}>
+              <div>
+                <h4 style={{ color: COLORS.text, fontSize: 13, margin: '0 0 10px', ...s }}>Activas</h4>
+                <div className="finance-subscription-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(230px, 1fr))', gap: 10 }}>
+                  {activeSubscriptions.map(item => (
+                    <div key={item.id} style={{ display: 'grid', gridTemplateColumns: 'auto minmax(0, 1fr)', gap: 12, padding: 13, borderRadius: 16, background: 'rgba(239,239,239,0.035)', border: `1px solid ${COLORS.border}` }}>
+                      {renderSubscriptionLogo(item)}
+                      <div style={{ minWidth: 0 }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', gap: 8, alignItems: 'start' }}>
+                          <div style={{ minWidth: 0 }}>
+                            <div style={{ color: COLORS.text, fontSize: 13, fontWeight: 900, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.name}</div>
+                            <div style={{ color: COLORS.textDim, fontSize: 10, marginTop: 2 }}>{item.category} · Día {item.day}</div>
+                          </div>
+                          <div style={{ color: COLORS.alert, fontWeight: 900, whiteSpace: 'nowrap' }}>{money(item.amount)}</div>
+                        </div>
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 38px', gap: 8, marginTop: 10 }}>
+                          <button className="finance-action-button" onClick={() => paySubscription(item)} style={{ border: 'none', borderRadius: 10, background: `${COLORS.primary}18`, color: COLORS.primary, padding: '8px 10px', cursor: 'pointer', fontSize: 11, fontWeight: 900 }}>Registrar cobro</button>
+                          <button className="finance-icon-button" onClick={() => removeSubscription(item.id)} style={{ border: 'none', borderRadius: 10, background: 'rgba(255,255,255,0.04)', color: COLORS.textDim, cursor: 'pointer' }}><Trash2 size={13} /></button>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                  {!activeSubscriptions.length && <div style={{ color: COLORS.textDim, fontSize: 13, padding: 18, border: `1px dashed ${COLORS.border}`, borderRadius: 16 }}>Aún no tienes suscripciones activas.</div>}
+                </div>
+              </div>
+              <div>
+                <h4 style={{ color: COLORS.text, fontSize: 13, margin: '0 0 10px', ...s }}>Catálogo rápido</h4>
+                <div className="finance-subscription-catalog" style={{ display: 'grid', gap: 10, maxHeight: 430, overflowY: 'auto', paddingRight: 4 }}>
+                  {subscriptionCatalogGroups.map(group => (
+                    <div key={group.category} style={{ display: 'grid', gap: 7 }}>
+                      <div style={{ color: COLORS.textDim, fontSize: 9, fontWeight: 900, letterSpacing: '0.12em', textTransform: 'uppercase', ...s }}>{group.category}</div>
+                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(86px, 1fr))', gap: 7 }}>
+                        {group.services.map(service => (
+                          <button key={service.id} onClick={() => setSubscriptionForm(f => ({ ...f, serviceId: service.id, name: service.name, category: service.category }))} style={{ border: `1px solid ${subscriptionForm.serviceId === service.id ? service.color : COLORS.border}`, background: subscriptionForm.serviceId === service.id ? `${service.color}18` : 'rgba(239,239,239,0.03)', borderRadius: 14, padding: '9px 8px', cursor: 'pointer', color: COLORS.text, display: 'grid', justifyItems: 'center', gap: 6, ...s }}>
+                            {renderSubscriptionLogo(service, 34)}
+                            <span style={{ fontSize: 10, fontWeight: 800, lineHeight: 1.2 }}>{service.name}</span>
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {subscriptionTotalsByCategory.length > 0 && (
+              <div style={{ marginTop: 16, display: 'grid', gap: 8 }}>
+                <h4 style={{ color: COLORS.text, fontSize: 13, margin: 0, ...s }}>Resumen por tipo</h4>
+                {subscriptionTotalsByCategory.map(item => {
+                  const pct = subscriptionsExpense ? Math.round((item.total / subscriptionsExpense) * 100) : 0;
+                  return (
+                    <div key={item.category} style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) auto', gap: 10, alignItems: 'center' }}>
+                      <div>
+                        <div style={{ color: COLORS.textDim, fontSize: 11, marginBottom: 5 }}>{item.category}</div>
+                        <div style={{ height: 7, background: COLORS.bg, borderRadius: 99, overflow: 'hidden' }}><div style={{ width: `${pct}%`, height: '100%', background: `linear-gradient(90deg, ${COLORS.primary}, ${COLORS.secondary})`, borderRadius: 99 }} /></div>
+                      </div>
+                      <div style={{ color: COLORS.text, fontSize: 12, fontWeight: 900 }}>{money(item.total)}</div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
         </div>
 
-        <div className="finance-side-column" style={{ display: ['overview', 'accounts', 'budget', 'recurring', 'goals'].includes(section) ? 'grid' : 'none', gap: 18 }}>
+        <div className="finance-side-column" style={{ display: ['overview', 'accounts', 'budget', 'recurring'].includes(section) ? 'grid' : 'none', gap: 18 }}>
           <div className="finance-card finance-insights-card" style={{ ...cardStyle, display: section === 'overview' ? 'block' : 'none' }}>
             <h3 style={{ fontSize: 16, color: COLORS.text, marginBottom: 12 }}>Insights</h3>
             <div style={{ display: 'grid', gap: 8 }}>
@@ -5097,74 +5214,44 @@ const FinanceView = ({ data, onUpdateFinance }) => {
           </div>
 
           <div className="finance-card finance-recurring-card" style={{ ...cardStyle, display: section === 'recurring' ? 'block' : 'none' }}>
-            <h3 style={{ fontSize: 16, color: COLORS.text, marginBottom: 12 }}>Pagos recurrentes</h3>
-            <div style={{ display: 'grid', gap: 8, marginBottom: 12 }}>
-              {activeRecurring.slice(0, 5).map(r => (
-                <div key={r.id} style={{ padding: '10px 11px', borderRadius: 12, background: 'rgba(239,239,239,0.035)', border: `1px solid ${COLORS.border}` }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', gap: 8, alignItems: 'center' }}>
-                    <div>
-                      <div style={{ color: COLORS.text, fontSize: 12, fontWeight: 800 }}>{r.name}</div>
-                      <div style={{ color: COLORS.textDim, fontSize: 10 }}>Dia {r.day} · {catById(r.category).name}</div>
+            <div className="finance-card-header" style={{ display: 'flex', justifyContent: 'space-between', gap: 12, alignItems: 'flex-start', marginBottom: 16 }}>
+              <div>
+                <h3 style={{ fontSize: 18, color: COLORS.text, margin: 0 }}>Pagos recurrentes</h3>
+                <div style={{ color: COLORS.textDim, fontSize: 12, marginTop: 5, ...s }}>Obligaciones fijas sin saturar la pantalla.</div>
+              </div>
+              <div style={{ textAlign: 'right' }}>
+                <div style={{ color: COLORS.textDim, fontSize: 10, textTransform: 'uppercase', letterSpacing: '0.08em', ...s }}>Estimado</div>
+                <div style={{ color: COLORS.alert, fontSize: 22, fontWeight: 900 }}>{money(recurringExpense)}</div>
+              </div>
+            </div>
+
+            <div className="finance-compact-form" style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) 110px 74px 130px auto', gap: 8, marginBottom: 16 }}>
+              <input value={recurringForm.name} onChange={e => setRecurringForm(f => ({ ...f, name: e.target.value }))} placeholder="Nombre del pago" style={{ ...inputStyle, padding: '9px 10px', fontSize: 12 }} />
+              <input type="number" step="0.01" value={recurringForm.amount} onChange={e => setRecurringForm(f => ({ ...f, amount: e.target.value }))} placeholder={currency} style={{ ...inputStyle, padding: '9px 10px', fontSize: 12 }} />
+              <input type="number" min="1" max="31" step="1" value={recurringForm.day} onChange={e => setRecurringForm(f => ({ ...f, day: e.target.value }))} placeholder="Día" style={{ ...inputStyle, padding: '9px 10px', fontSize: 12 }} />
+              <select value={recurringForm.category} onChange={e => setRecurringForm(f => ({ ...f, category: e.target.value }))} style={{ ...inputStyle, padding: '9px 10px', fontSize: 12 }}>
+                {expenseCategories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+              </select>
+              <button className="finance-submit-button" onClick={addRecurring} style={{ border: 'none', borderRadius: 12, background: COLORS.primary, color: '#fff', padding: '0 14px', cursor: 'pointer', fontWeight: 900, whiteSpace: 'nowrap' }}><Plus size={15} /> Agregar</button>
+            </div>
+
+            <div className="finance-recurring-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(230px, 1fr))', gap: 10 }}>
+              {activeRecurring.map(r => (
+                <div key={r.id} style={{ padding: 13, borderRadius: 16, background: 'rgba(239,239,239,0.035)', border: `1px solid ${COLORS.border}` }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) auto', gap: 10, alignItems: 'start' }}>
+                    <div style={{ minWidth: 0 }}>
+                      <div style={{ color: COLORS.text, fontSize: 13, fontWeight: 900, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{r.name}</div>
+                      <div style={{ color: COLORS.textDim, fontSize: 10, marginTop: 3 }}>Día {r.day} · {catById(r.category).name}</div>
                     </div>
-                    <div style={{ color: r.type === 'income' ? COLORS.success : COLORS.alert, fontWeight: 800 }}>{r.type === 'income' ? '+' : '-'}{money(r.amount)}</div>
+                    <div style={{ color: r.type === 'income' ? COLORS.success : COLORS.alert, fontWeight: 900, whiteSpace: 'nowrap' }}>{r.type === 'income' ? '+' : '-'}{money(r.amount)}</div>
                   </div>
-                  <div className="finance-recurring-actions" style={{ display: 'flex', gap: 7, marginTop: 9 }}>
-                    <button className="finance-action-button" onClick={() => payRecurring(r)} style={{ flex: 1, border: 'none', borderRadius: 9, background: `${COLORS.primary}22`, color: COLORS.primary, padding: '7px 0', cursor: 'pointer', fontSize: 11, fontWeight: 800 }}>Marcar pagado</button>
-                    <button className="finance-icon-button" onClick={() => removeRecurring(r.id)} style={{ border: 'none', borderRadius: 9, background: 'rgba(255,255,255,0.04)', color: COLORS.textDim, padding: '0 10px', cursor: 'pointer' }}><Trash2 size={13} /></button>
+                  <div className="finance-recurring-actions" style={{ display: 'grid', gridTemplateColumns: '1fr 38px', gap: 8, marginTop: 10 }}>
+                    <button className="finance-action-button" onClick={() => payRecurring(r)} style={{ border: 'none', borderRadius: 10, background: `${COLORS.primary}18`, color: COLORS.primary, padding: '8px 10px', cursor: 'pointer', fontSize: 11, fontWeight: 900 }}>Registrar pago</button>
+                    <button className="finance-icon-button" onClick={() => removeRecurring(r.id)} style={{ border: 'none', borderRadius: 10, background: 'rgba(255,255,255,0.04)', color: COLORS.textDim, cursor: 'pointer' }}><Trash2 size={13} /></button>
                   </div>
                 </div>
               ))}
-            </div>
-            <div className="finance-compact-form" style={{ display: 'grid', gridTemplateColumns: '1fr 82px 58px', gap: 7, marginBottom: 7 }}>
-              <input value={recurringForm.name} onChange={e => setRecurringForm(f => ({ ...f, name: e.target.value }))} placeholder="Nombre" style={{ ...inputStyle, padding: '8px 9px', fontSize: 11 }} />
-              <input type="number" step="0.01" value={recurringForm.amount} onChange={e => setRecurringForm(f => ({ ...f, amount: e.target.value }))} placeholder={`Monto ${currency}`} style={{ ...inputStyle, padding: '8px 9px', fontSize: 11 }} />
-              <input type="number" min="1" max="31" step="1" value={recurringForm.day} onChange={e => setRecurringForm(f => ({ ...f, day: e.target.value }))} style={{ ...inputStyle, padding: '8px 9px', fontSize: 11 }} />
-            </div>
-            <div className="finance-compact-form" style={{ display: 'grid', gridTemplateColumns: '1fr auto', gap: 7 }}>
-              <select value={recurringForm.category} onChange={e => setRecurringForm(f => ({ ...f, category: e.target.value }))} style={{ ...inputStyle, padding: '8px 9px', fontSize: 11 }}>
-                {expenseCategories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
-              </select>
-              <button className="finance-submit-button" onClick={addRecurring} style={{ border: 'none', borderRadius: 10, background: COLORS.primary, color: '#fff', padding: '0 12px', cursor: 'pointer', fontWeight: 800, whiteSpace: 'nowrap' }}><Plus size={15} /> Agregar pago</button>
-            </div>
-          </div>
-
-          <div className="finance-card finance-saving-goals-card" style={{ ...cardStyle, display: section === 'goals' ? 'block' : 'none' }}>
-            <h3 style={{ fontSize: 16, color: COLORS.text, marginBottom: 12 }}>Metas de ahorro</h3>
-            <div style={{ display: 'grid', gap: 9, marginBottom: 12 }}>
-              {goals.map(g => {
-                const pct = g.target ? Math.min(100, Math.round((Number(g.saved || 0) / Number(g.target || 1)) * 100)) : 0;
-                const completed = pct >= 100;
-                return (
-                  <div key={g.id} style={{ padding: '11px', borderRadius: 12, background: 'rgba(239,239,239,0.035)', border: `1px solid ${COLORS.border}` }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', gap: 8, marginBottom: 8 }}>
-                      <div>
-                        <div style={{ color: COLORS.text, fontSize: 12, fontWeight: 800 }}>{g.name}</div>
-                        <div style={{ color: COLORS.textDim, fontSize: 10 }}>{money(g.saved)} / {money(g.target)} {g.dueDate ? `· ${g.dueDate}` : ''}</div>
-                      </div>
-                      <button onClick={() => removeGoal(g.id)} style={{ border: 'none', background: 'transparent', color: COLORS.textDim, cursor: 'pointer' }}><X size={13} /></button>
-                    </div>
-                    <div style={{ height: 7, borderRadius: 99, background: COLORS.bg, overflow: 'hidden', marginBottom: 8 }}><div style={{ height: '100%', width: `${pct}%`, background: `linear-gradient(90deg, ${COLORS.success}, ${COLORS.primary})` }} /></div>
-                    <div className="finance-inline-form" style={{ display: 'flex', gap: 7 }}>
-                      {completed ? (
-                        <div style={{ ...inputStyle, flex: 1, padding: '7px 8px', fontSize: 11, color: COLORS.success, fontWeight: 800 }}>Meta completada</div>
-                      ) : (
-                        <>
-                          <input type="number" step="0.01" value={goalAdds[g.id] || ''} onChange={e => setGoalAdds(prev => ({ ...prev, [g.id]: e.target.value }))} placeholder={`Aportar ${currency}`} style={{ ...inputStyle, flex: 1, padding: '7px 8px', fontSize: 11 }} />
-                          <button onClick={() => contributeGoal(g.id)} style={{ border: 'none', borderRadius: 9, background: `${COLORS.success}18`, color: COLORS.success, padding: '0 10px', cursor: 'pointer', fontWeight: 800 }}>+</button>
-                        </>
-                      )}
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-            <div className="finance-goal-form" style={{ display: 'grid', gap: 7 }}>
-              <input value={goalForm.name} onChange={e => setGoalForm(f => ({ ...f, name: e.target.value }))} placeholder="Meta: viaje, emergencia..." style={{ ...inputStyle, padding: '8px 9px', fontSize: 11 }} />
-              <div className="finance-compact-form" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 7 }}>
-                <input type="number" step="0.01" value={goalForm.target} onChange={e => setGoalForm(f => ({ ...f, target: e.target.value }))} placeholder={`Objetivo ${currency}`} style={{ ...inputStyle, padding: '8px 9px', fontSize: 11 }} />
-                <input type="date" value={goalForm.dueDate} onClick={e => openNativeDatePicker(e.currentTarget)} onFocus={e => openNativeDatePicker(e.currentTarget)} onChange={e => setGoalForm(f => ({ ...f, dueDate: e.target.value }))} style={{ ...inputStyle, padding: '8px 9px', fontSize: 11, cursor: 'pointer' }} />
-              </div>
-              <button onClick={addGoal} style={{ border: 'none', borderRadius: 10, background: COLORS.primary, color: '#fff', padding: '9px 0', cursor: 'pointer', fontWeight: 800 }}>Crear meta</button>
+              {!activeRecurring.length && <div style={{ color: COLORS.textDim, fontSize: 13, padding: 18, border: `1px dashed ${COLORS.border}`, borderRadius: 16 }}>Aún no tienes pagos recurrentes activos.</div>}
             </div>
           </div>
 
@@ -5173,7 +5260,7 @@ const FinanceView = ({ data, onUpdateFinance }) => {
             <ResponsiveContainer width="100%" height={210}>
               <PieChart>{byCategory.length ? <Pie data={byCategory} dataKey="value" nameKey="name" outerRadius={78}>{byCategory.map((c, i) => <Cell key={i} fill={c.color} />)}</Pie> : null}<Tooltip formatter={v => money(v)} contentStyle={tooltipStyle} labelStyle={{ color: COLORS.text }} /></PieChart>
             </ResponsiveContainer>
-            <div style={{ color: COLORS.textDim, fontSize: 11, textAlign: 'center' }}>{savingsTarget > 0 ? `Pendiente en metas: ${money(savingsTarget)}` : 'Sin metas pendientes.'}</div>
+            <div style={{ color: COLORS.textDim, fontSize: 11, textAlign: 'center' }}>{byCategory.length ? 'Distribución de gastos del mes.' : 'Aún no hay gastos para graficar.'}</div>
           </div>
         </div>
       </div>
@@ -10401,10 +10488,21 @@ const HabitFlowApp = () => {
           { id: `rec_${uid()}_3`, name: 'Gimnasio', type: 'expense', amount: moneyAmount(30, 90), category: 'health', day: 18, active: true },
           { id: `rec_${uid()}_4`, name: 'Ingreso principal', type: 'income', amount: moneyAmount(2200, 3600), category: 'income', day: 1, active: true }
         ],
-        goals: [
-          { id: `goal_${uid()}_1`, name: 'Fondo de emergencia', target: moneyAmount(1800, 4200), saved: moneyAmount(300, 1200), dueDate: toYYYYMMDD(addDays(new Date(), rand(90, 220))) },
-          { id: `goal_${uid()}_2`, name: 'Viaje', target: moneyAmount(900, 2400), saved: moneyAmount(120, 700), dueDate: toYYYYMMDD(addDays(new Date(), rand(60, 180))) }
-        ],
+        subscriptions: ['netflix', 'spotify', 'chatgpt', 'google_one', 'canva'].slice(0, rand(2, 5)).map((serviceId, index) => {
+          const service = SUBSCRIPTION_SERVICES.find(item => item.id === serviceId) || SUBSCRIPTION_SERVICES[index];
+          return {
+            id: `sub_${uid()}_${index}`,
+            serviceId: service.id,
+            name: service.name,
+            category: service.category,
+            amount: moneyAmount(6, service.id === 'chatgpt' ? 25 : 18),
+            day: rand(1, 28),
+            accountId: 'bank',
+            logoUrl: '',
+            active: true
+          };
+        }),
+        goals: [],
         transactions: financeTransactions.sort((a, b) => b.date.localeCompare(a.date))
       };
 
