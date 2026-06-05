@@ -8792,6 +8792,12 @@ const RECURRENCE_TYPES = [
   { id: 'monthly', label: 'Mensual' }, { id: 'yearly', label: 'Anual' },
   { id: 'custom', label: 'Personalizado' }
 ];
+const INTERVAL_REPEAT_TYPES = [
+  { id: 'none', label: 'Sin repetir alerta' },
+  { id: 'minute', label: 'Cada minuto' },
+  { id: 'hour', label: 'Cada hora' },
+  { id: 'customHours', label: 'Cada cierta cantidad de horas' }
+];
 const REMINDER_OPTIONS = [
   { id: 'exact', label: 'A la hora exacta', mins: 0 },
   { id: '5min', label: '5 minutos antes', mins: 5 },
@@ -8808,6 +8814,65 @@ const MONTH_NAMES = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Jul
 const timeToHour = (t) => { if (!t) return -1; const [h] = t.split(':').map(Number); return h; };
 const timeToMinutes = (t) => { if (!t) return 0; const [h, m] = t.split(':').map(Number); return h * 60 + m; };
 const minutesToTime = (mins) => { const h = Math.floor(mins / 60); const m = mins % 60; return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`; };
+const daysBetweenDateStrings = (start, end) => Math.round((new Date(`${end}T12:00:00`).getTime() - new Date(`${start}T12:00:00`).getTime()) / 86400000);
+const getTaskIntervalMinutes = (task = {}) => {
+  const mode = task.intervalRepeat || 'none';
+  if (mode === 'minute') return 1;
+  if (mode === 'hour') return 60;
+  if (mode === 'customHours') {
+    const hours = Number(task.intervalEvery || 1);
+    return Number.isFinite(hours) && hours > 0 ? Math.max(1, Math.round(hours * 60)) : 60;
+  }
+  return 0;
+};
+const getTaskIntervalLabel = (task = {}) => {
+  const mins = getTaskIntervalMinutes(task);
+  if (!mins) return '';
+  const untilDate = task.repeatUntilDate || task.dueDate;
+  const untilTime = task.repeatUntilTime || '23:59';
+  const cadence = mins === 1 ? 'cada minuto' : mins === 60 ? 'cada hora' : `cada ${Math.round((mins / 60) * 100) / 100}h`;
+  return `${cadence}${untilDate ? ` hasta ${untilDate}${untilTime ? ` ${untilTime}` : ''}` : ''}`;
+};
+const generateIntervalDates = (task, fromDate, count = 31) => {
+  if (!getTaskIntervalMinutes(task)) return [];
+  const endDate = task.repeatUntilDate || fromDate;
+  const dates = [];
+  for (let i = 0; i < count; i++) {
+    const ds = toYYYYMMDD(addDays(new Date(`${fromDate}T12:00:00`), i));
+    if (ds > endDate) break;
+    dates.push(ds);
+  }
+  return dates;
+};
+
+const getIntervalNotificationSlots = (task, now, reminderMins = 0) => {
+  const intervalMins = getTaskIntervalMinutes(task);
+  if (!intervalMins || !task.dueTime) return [];
+  const anchorDate = task._intervalAnchorDate || task.dueDate || toYYYYMMDD(now);
+  const startMins = timeToMinutes(task.dueTime);
+  const endDate = task.repeatUntilDate || anchorDate;
+  const endMins = timeToMinutes(task.repeatUntilTime || '23:59');
+  const today = toYYYYMMDD(now);
+  const startAbs = startMins;
+  const endAbs = daysBetweenDateStrings(anchorDate, endDate) * 1440 + endMins;
+  const nowAbs = daysBetweenDateStrings(anchorDate, today) * 1440 + now.getHours() * 60 + now.getMinutes() + now.getSeconds() / 60;
+  if (endAbs < startAbs || nowAbs < startAbs - reminderMins - 2 || nowAbs > endAbs + 2) return [];
+  const baseIndex = Math.floor((nowAbs + reminderMins - startAbs) / intervalMins);
+  const slots = [];
+  for (let i = Math.max(0, baseIndex - 1); i <= baseIndex + 1; i++) {
+    const occurrenceAbs = startAbs + i * intervalMins;
+    if (occurrenceAbs < startAbs || occurrenceAbs > endAbs) continue;
+    const notifyAbs = occurrenceAbs - reminderMins;
+    const diffMs = (notifyAbs - nowAbs) * 60000;
+    if (diffMs <= 30000 && diffMs >= -10 * 60000) {
+      const dayOffset = Math.floor(occurrenceAbs / 1440);
+      const occurrenceMins = ((Math.round(occurrenceAbs) % 1440) + 1440) % 1440;
+      const occurrenceDate = toYYYYMMDD(addDays(new Date(`${anchorDate}T12:00:00`), dayOffset));
+      slots.push({ date: occurrenceDate, time: minutesToTime(occurrenceMins), key: `${occurrenceDate}:${minutesToTime(occurrenceMins)}` });
+    }
+  }
+  return slots;
+};
 
 const getWeekDays = (date) => {
   const start = new Date(date); start.setDate(start.getDate() - start.getDay());
@@ -8955,15 +9020,22 @@ const AgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAgendaTo
     Object.entries(agenda || {}).forEach(([ds, tasks]) => {
       result[ds] = [...tasks];
       tasks.forEach(task => {
+        const anchorDate = task.dueDate || ds;
         if (task.recurrence && task.recurrence !== 'none') {
-          const dates = generateRecurrenceDates(task, task.dueDate || ds, 90);
+          const dates = generateRecurrenceDates(task, anchorDate, 90);
           dates.forEach(d => {
-            if (d !== (task.dueDate || ds)) {
+            if (d !== anchorDate) {
               if (!result[d]) result[d] = [];
-              if (!result[d].some(e => e.id === task.id)) result[d].push({ ...task, dueDate: d });
+              if (!result[d].some(e => e.id === task.id)) result[d].push({ ...task, dueDate: d, _intervalAnchorDate: anchorDate });
             }
           });
         }
+        generateIntervalDates(task, anchorDate, 31).forEach(d => {
+          if (d !== anchorDate) {
+            if (!result[d]) result[d] = [];
+            if (!result[d].some(e => e.id === task.id)) result[d].push({ ...task, dueDate: d, _intervalAnchorDate: anchorDate });
+          }
+        });
       });
     });
     return result;
@@ -9017,6 +9089,7 @@ const AgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAgendaTo
         text: t.trim(), completed: false, priority: priority || inputPrio,
         category: category || 'Personal', note: '', dueDate: targetDate,
         dueTime: dueTime || '', alarm: false, recurrence: 'none',
+        intervalRepeat: 'none', intervalEvery: 1, repeatUntilDate: targetDate, repeatUntilTime: '23:59',
         reminders: [], tags: [], ...extras, order: prev.length
       };
       return [...prev, newTask];
@@ -9043,19 +9116,25 @@ const AgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAgendaTo
   const startEdit = (task) => { setEditTaskId(task.id); setEditText(task.text); };
   const saveEdit = () => { if (editTaskId && editText.trim()) updateTaskField(editTaskId, 'text', editText.trim()); setEditTaskId(null); };
   const toggleExpand = (taskId) => { setExpandedTaskId(expandedTaskId === taskId ? null : taskId); setEditTaskId(null); };
-  const openTaskModal = (task) => { setEditModalTask(task ? { ...JSON.parse(JSON.stringify(task)), _originalDueDate: task.dueDate || '' } : null); setShowModal(true); };
+  const openTaskModal = (task) => {
+    setEditModalTask(task
+      ? { ...JSON.parse(JSON.stringify(task)), _originalDueDate: task.dueDate || '' }
+      : { text: '', dueDate: dateStr, dueTime: '', priority: inputPrio, category: 'Personal', alarm: false, recurrence: 'none', intervalRepeat: 'none', intervalEvery: 1, repeatUntilDate: dateStr, repeatUntilTime: '23:59', reminders: ['exact'], status: 'pending' }
+    );
+    setShowModal(true);
+  };
   const closeTaskModal = () => { setShowModal(false); setEditModalTask(null); setShowDatePicker(false); setShowTimePicker(false); };
   const saveTaskModal = () => {
     const task = editModalTask;
     if (!task || !task.text?.trim()) { closeTaskModal(); return; }
     if (task.id) {
       const origDate = task._originalDueDate || dateStr;
-      Object.entries({ text: task.text, dueTime: task.dueTime, priority: task.priority, category: task.category, alarm: task.alarm, recurrence: task.recurrence, recurrenceDays: task.recurrenceDays, reminders: task.reminders, tags: task.tags, status: task.status }).forEach(([k, v]) => updateTaskField(task.id, k, v));
+      Object.entries({ text: task.text, dueTime: task.dueTime, priority: task.priority, category: task.category, alarm: task.alarm, recurrence: task.recurrence, recurrenceDays: task.recurrenceDays, intervalRepeat: task.intervalRepeat, intervalEvery: task.intervalEvery, repeatUntilDate: task.repeatUntilDate, repeatUntilTime: task.repeatUntilTime, reminders: task.reminders, tags: task.tags, status: task.status }).forEach(([k, v]) => updateTaskField(task.id, k, v));
       if (task.dueDate && task.dueDate !== origDate) {
         onMoveTaskToDate(task.id, origDate, task.dueDate);
       }
     } else {
-      addTask(task.text, task.priority || 3, task.category || 'Personal', task.dueDate || dateStr, task.dueTime || '', { alarm: task.alarm, recurrence: task.recurrence, recurrenceDays: task.recurrenceDays, reminders: task.reminders, tags: task.tags, status: task.status });
+      addTask(task.text, task.priority || 3, task.category || 'Personal', task.dueDate || dateStr, task.dueTime || '', { alarm: task.alarm, recurrence: task.recurrence, recurrenceDays: task.recurrenceDays, intervalRepeat: task.intervalRepeat, intervalEvery: task.intervalEvery, repeatUntilDate: task.repeatUntilDate, repeatUntilTime: task.repeatUntilTime, reminders: task.reminders, tags: task.tags, status: task.status });
     }
     closeTaskModal();
   };
@@ -9156,8 +9235,9 @@ const AgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAgendaTo
                 {task.endTime && <span style={{ fontSize: 8, color: COLORS.textDim, ...s }}>- {task.endTime} ({formatDuration(task.dueTime, task.endTime)})</span>}
                 {!hideTime && !task.dueTime && <span style={{ fontSize: 8, color: COLORS.textDim + '88', ...s }}>Sin hora</span>}
                 {task.category && <span style={{ fontSize: 8, padding: '1px 5px', borderRadius: 3, background: `${COLORS.textDim}12`, color: COLORS.textDim + 'cc', ...s }}>{task.category}</span>}
-          {task.alarm && <Clock size={10} color={COLORS.primary} />}
+                {task.alarm && <Clock size={10} color={COLORS.primary} />}
                 {task.recurrence && task.recurrence !== 'none' && <Repeat size={10} color={COLORS.primary} />}
+                {getTaskIntervalMinutes(task) > 0 && <span style={{ fontSize: 8, color: COLORS.primary, background: `${COLORS.primary}10`, padding: '1px 5px', borderRadius: 999, ...s }}>{getTaskIntervalLabel(task)}</span>}
                 {task.status === 'in_progress' && <span style={{ fontSize: 8, color: COLORS.primary, fontWeight: 600, ...s }}>{'\u{25CF}'}</span>}
               </div>
             )}
@@ -9516,6 +9596,7 @@ const AgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAgendaTo
             <span style={{ fontSize: 8, color: COLORS.textDim, ...s }}>{task.category || 'Personal'}</span>
             {task.alarm && <Clock size={10} color="#ffd93d" />}
             {task.recurrence && task.recurrence !== 'none' && <Repeat size={10} color={COLORS.primary} />}
+            {getTaskIntervalMinutes(task) > 0 && <span>{getTaskIntervalMinutes(task) === 1 ? 'cada minuto' : getTaskIntervalMinutes(task) === 60 ? 'cada hora' : `cada ${Math.round((getTaskIntervalMinutes(task) / 60) * 100) / 100}h`}</span>}
           </div>
         </div>
         <button onClick={() => openTaskModal(task)} style={{ ...btnBase, width: 26, height: 26, color: COLORS.textDim, background: 'transparent' }} title="Editar"><Edit size={13} /></button>
@@ -9868,6 +9949,53 @@ const AgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAgendaTo
                 </select>
               </div>
             )}
+            <div style={{ padding: 12, borderRadius: 12, border: `1px solid ${COLORS.border}`, background: `${COLORS.primary}08` }}>
+              <div style={{ fontSize: 10, color: COLORS.text, fontWeight: 700, marginBottom: 8, ...s }}>Repetición de alarma</div>
+              <select value={t.intervalRepeat || 'none'} onChange={e => {
+                const value = e.target.value;
+                if (value !== 'none') requestHabitFlowNotifications();
+                const now = new Date();
+                const fallbackTime = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+                setEditModalTask(p => ({
+                  ...p,
+                  intervalRepeat: value,
+                  alarm: value !== 'none' ? true : p.alarm,
+                  reminders: value !== 'none' ? (p.reminders?.length ? p.reminders : ['exact']) : p.reminders,
+                  dueTime: value !== 'none' && !p.dueTime ? fallbackTime : p.dueTime,
+                  repeatUntilDate: p.repeatUntilDate || p.dueDate || dateStr,
+                  repeatUntilTime: p.repeatUntilTime || '23:59',
+                  intervalEvery: p.intervalEvery || 1
+                }));
+              }} style={{ width: '100%', padding: '7px 9px', borderRadius: 8, border: `1px solid ${COLORS.border}`, background: COLORS.bg, color: COLORS.text, fontSize: 10, ...s, outline: 'none' }}>
+                {INTERVAL_REPEAT_TYPES.map(option => <option key={option.id} value={option.id}>{option.label}</option>)}
+              </select>
+              {(t.intervalRepeat || 'none') === 'customHours' && (
+                <div style={{ marginTop: 8 }}>
+                  <div style={{ fontSize: 9, color: COLORS.textDim, marginBottom: 3, ...s }}>Repetir cada cuántas horas</div>
+                  <input type="number" min="0.25" step="0.25" value={t.intervalEvery || 1} onChange={e => setEditModalTask(p => ({ ...p, intervalEvery: e.target.value }))}
+                    style={{ width: '100%', padding: '7px 9px', borderRadius: 8, border: `1px solid ${COLORS.border}`, background: COLORS.bg, color: COLORS.text, fontSize: 10, ...s, outline: 'none' }} />
+                </div>
+              )}
+              {(t.intervalRepeat || 'none') !== 'none' && (
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginTop: 8 }}>
+                  <div>
+                    <div style={{ fontSize: 9, color: COLORS.textDim, marginBottom: 3, ...s }}>Finaliza el día</div>
+                    <input type="date" value={t.repeatUntilDate || t.dueDate || dateStr} min={t.dueDate || dateStr} onClick={e => openNativeDatePicker(e.currentTarget)} onFocus={e => openNativeDatePicker(e.currentTarget)} onChange={e => setEditModalTask(p => ({ ...p, repeatUntilDate: e.target.value }))}
+                      style={{ width: '100%', padding: '7px 9px', borderRadius: 8, border: `1px solid ${COLORS.border}`, background: COLORS.bg, color: COLORS.text, fontSize: 10, ...s, outline: 'none', cursor: 'pointer' }} />
+                  </div>
+                  <div>
+                    <div style={{ fontSize: 9, color: COLORS.textDim, marginBottom: 3, ...s }}>Finaliza a las</div>
+                    <input type="time" value={t.repeatUntilTime || '23:59'} onChange={e => setEditModalTask(p => ({ ...p, repeatUntilTime: e.target.value }))}
+                      style={{ width: '100%', padding: '7px 9px', borderRadius: 8, border: `1px solid ${COLORS.border}`, background: COLORS.bg, color: COLORS.text, fontSize: 10, ...s, outline: 'none' }} />
+                  </div>
+                </div>
+              )}
+              {(t.intervalRepeat || 'none') !== 'none' && (
+                <div style={{ marginTop: 8, fontSize: 9, color: COLORS.textDim, lineHeight: 1.5, ...s }}>
+                  Ejemplo: una tarea a las {t.dueTime || '--:--'} con “cada hora” sonará cada hora hasta {t.repeatUntilDate || t.dueDate || dateStr} {t.repeatUntilTime || '23:59'}.
+                </div>
+              )}
+            </div>
             {t.recurrence === 'custom' && (
               <div>
                 <div style={{ fontSize: 9, color: COLORS.textDim, marginBottom: 4, ...s }}>Repetir estos días</div>
@@ -10109,17 +10237,24 @@ const HabitFlowApp = () => {
       const expanded = {};
       Object.entries(data.agenda || {}).forEach(([ds, ts]) => {
         (ts || []).forEach(t => {
+          const anchorDate = t.dueDate || ds;
           if (!expanded[ds]) expanded[ds] = [];
-          expanded[ds].push(t);
+          expanded[ds].push({ ...t, _intervalAnchorDate: anchorDate });
           if (t.recurrence && t.recurrence !== 'none') {
-            const dates = generateRecurrenceDates(t, t.dueDate || ds, 90);
+            const dates = generateRecurrenceDates(t, anchorDate, 90);
             dates.forEach(d => {
-              if (d !== (t.dueDate || ds)) {
+              if (d !== anchorDate) {
                 if (!expanded[d]) expanded[d] = [];
-                if (!expanded[d].some(e => e.id === t.id)) expanded[d].push({ ...t, dueDate: d });
+                if (!expanded[d].some(e => e.id === t.id)) expanded[d].push({ ...t, dueDate: d, _intervalAnchorDate: anchorDate });
               }
             });
           }
+          generateIntervalDates(t, anchorDate, 31).forEach(d => {
+            if (d !== anchorDate) {
+              if (!expanded[d]) expanded[d] = [];
+              if (!expanded[d].some(e => e.id === t.id)) expanded[d].push({ ...t, dueDate: d, _intervalAnchorDate: anchorDate });
+            }
+          });
         });
       });
       return expanded;
@@ -10136,10 +10271,27 @@ const HabitFlowApp = () => {
       for (let dayOffset = -1; dayOffset <= 7; dayOffset++) {
         const dateStr = toYYYYMMDD(new Date(now.getTime() + dayOffset * 86400000));
         (expandedForAlarms[dateStr] || []).filter(t => t.alarm && t.dueTime && !t.completed).forEach(task => {
-          const alarmTime = new Date(`${dateStr}T${task.dueTime}:00`);
-          if (Number.isNaN(alarmTime.getTime())) return;
           const reminderId = task.reminders?.[0] || 'exact';
           const reminder = REMINDER_OPTIONS.find(option => option.id === reminderId) || REMINDER_OPTIONS[0];
+          const intervalSlots = getIntervalNotificationSlots(task, now, reminder.mins);
+          if (intervalSlots.length) {
+            intervalSlots.forEach(slot => {
+              const key = `${task.id}:interval:${slot.key}:${reminderId}`;
+              if (sentMap[key]) return;
+              sentMap[key] = now.getTime();
+              changed = true;
+              const category = task.category ? ` · ${task.category}` : '';
+              showHabitFlowNotification('HabitFlow • Agenda', {
+                body: `${task.text}\n${reminder.mins > 0 ? `${reminder.label} · ` : 'Es hora · '}${slot.time}${category}`,
+                tag: key,
+                data: { view: 'agenda', taskId: task.id, date: slot.date },
+                renotify: true
+              });
+            });
+            return;
+          }
+          const alarmTime = new Date(`${dateStr}T${task.dueTime}:00`);
+          if (Number.isNaN(alarmTime.getTime())) return;
           const notificationTime = new Date(alarmTime.getTime() - reminder.mins * 60000);
           const diff = notificationTime.getTime() - now.getTime();
           const dueWindow = diff <= 30000 && diff >= -10 * 60000;
