@@ -4407,6 +4407,8 @@ const HabitsView = ({ data, onAddHabit, onUpdateHabit, onDeleteHabit, onToggleHa
 
       {viewMode === 'calendar' && <CalendarPicker />}
 
+      <HabitControlPanel />
+
       <div className="habits-filter-row" style={{ display: 'flex', flexWrap: 'wrap', gap: 5, marginBottom: 18 }}>
         {[
           { id: 'all', label: 'Todos', icon: '', color: COLORS.primary },
@@ -5430,8 +5432,6 @@ const DreamGoalsView = ({ data, onUpdateDreamGoals }) => {
           No solo sueñes. Visualiza el progreso exacto y cuánto te falta para conquistar tus próximos grandes pasos.
         </p>
       </div>
-
-      <HabitControlPanel />
 
       <div style={{
         display: 'grid',
