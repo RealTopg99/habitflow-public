@@ -9481,7 +9481,7 @@ const AgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAgendaTo
     <div className="agenda-side-panel" style={{ background: COLORS.card, borderRadius: 16, border: `1px solid ${COLORS.border}`, padding: 12 }}>
       <div className="agenda-side-tabs" style={{ display: 'flex', gap: 3, marginBottom: 12, padding: 3, background: COLORS.bg, borderRadius: 9 }}>
         {[
-          { id: 'todos', label: 'To-do', icon: <CheckCircle size={11} /> },
+          { id: 'todos', label: 'To-do', icon: <Check size={11} /> },
           { id: 'calendar', label: 'Mes', icon: <Calendar size={11} /> },
           { id: 'upcoming', label: 'Próximo', icon: <List size={11} /> }
         ].map(item => (
