@@ -1,6 +1,6 @@
 ﻿import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import {
-  LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
+  LineChart, Line, AreaChart, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
   BarChart, Bar, PieChart, Pie, Cell, RadarChart, Radar, PolarGrid,
   PolarAngleAxis, PolarRadiusAxis, Legend, Area
 } from 'recharts';
@@ -31,17 +31,15 @@ const BASE_COLORS = {
 
 const COLORS = { ...BASE_COLORS };
 
-const APP_UPDATE_VERSION = '2026-06-04-finance-currency-labels-v3';
+const APP_UPDATE_VERSION = '2026-06-04-pro-ui-audit-v4';
 const APP_UPDATE_NOTES = [
-  'Finanzas ahora etiqueta claramente cada valor como USD y COP.',
-  'Finanzas ahora está separada por secciones para que no se sienta cargada.',
-  'Los valores financieros muestran USD y COP al mismo tiempo.',
-  'Las cuentas permiten tipos como banco, ahorro, crédito, deuda e inversión.',
-  'Ahora puedes eliminar cuentas y los movimientos se reasignan a otra cuenta disponible.',
-  'Las metas completadas al 100% ya no permiten más aportes.',
-  'Nueva tarea en agenda se abre como una tarjeta centrada y más limpia.',
-  'El panel muestra Perspectivas y Recomendaciones, y el scroll se reinicia al cambiar de sección.',
-  'Entreno incluye una vista de progreso general, no solo por ejercicio.'
+  'Pomodoro ya no falla al terminar una sesión y ahora avisa al finalizar enfoque, descanso y descanso largo.',
+  'Finanzas ahora usa un switch global USD/COP para mantener la vista limpia.',
+  'Finanzas acepta decimales en importes, presupuestos, cuentas y metas.',
+  'Agenda elimina descripción y checklist en nueva tarea para crear eventos más rápido.',
+  'Panel cambia la gráfica de últimos 7 días por una curva suave con frase diaria.',
+  'Hábitos recibe una vista semanal más compacta al estilo tracker profesional.',
+  'Los controles de nube y datos aleatorios pasan a Configuración.'
 ];
 
 const CATEGORIES = [
@@ -249,23 +247,29 @@ const MGS = ['Pecho', 'Espalda', 'Piernas', 'Hombros', 'Bíceps', 'Tríceps', 'A
 
 const calcRM = (w, r) => Math.round(w * (1 + r / 30));
 
-const genSampleSessions = () => {
-
-const playBeep = () => {
+const playBeep = (frequency = 880, duration = 0.7) => {
   try {
-    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const AudioCtx = window.AudioContext || window.webkitAudioContext;
+    if (!AudioCtx) return false;
+    const ctx = new AudioCtx();
     const osc = ctx.createOscillator();
     const gain = ctx.createGain();
     osc.connect(gain);
     gain.connect(ctx.destination);
-    osc.frequency.value = 880;
+    osc.frequency.value = frequency;
     osc.type = 'sine';
-    gain.gain.setValueAtTime(0.3, ctx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.6);
+    gain.gain.setValueAtTime(0.32, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + duration);
     osc.start(ctx.currentTime);
-    osc.stop(ctx.currentTime + 0.6);
-  } catch (e) { /* silent fail */ }
+    osc.stop(ctx.currentTime + duration);
+    setTimeout(() => { try { ctx.close(); } catch {} }, Math.ceil(duration * 1000) + 120);
+    return true;
+  } catch {
+    return false;
+  }
 };
+
+const genSampleSessions = () => {
   const sessions = [];
   const sd = new Date();
   const usedDates = new Set();
@@ -3501,6 +3505,16 @@ const DashboardView = ({ data, onCompleteHabit, workoutData, onNavigate, onUpdat
   const today = toYYYYMMDD(new Date());
   const todayCount = getTodayCount(habits, records);
   const greet = greets();
+  const dailyQuotes = [
+    'La disciplina no grita: aparece todos los días.',
+    'Hoy no necesitas hacerlo perfecto, necesitas hacerlo.',
+    'Un hábito cumplido es una promesa que sí te respetaste.',
+    'La constancia convierte días normales en resultados raros.',
+    'Tu futuro se negocia en los minutos pequeños.',
+    'Hazlo simple, hazlo hoy, repítelo mañana.',
+    'El progreso elegante casi siempre parece aburrido al principio.'
+  ];
+  const dailyQuote = dailyQuotes[new Date().getDate() % dailyQuotes.length];
   const insights = useMemo(() => generateInsights(habits, records).slice(0, 4), [habits, records]);
 
   const kpis = useMemo(() => ({
@@ -3539,6 +3553,15 @@ const DashboardView = ({ data, onCompleteHabit, workoutData, onNavigate, onUpdat
         </div>
         <div style={{ fontSize: 14, color: COLORS.textDim }}>
           {formatDateSpanish(new Date())}
+        </div>
+        <div style={{
+          display: 'inline-flex', alignItems: 'center', gap: 8, marginTop: 12,
+          padding: '9px 13px', borderRadius: 999, border: `1px solid ${COLORS.border}`,
+          background: `${COLORS.primary}0d`, color: COLORS.text, fontSize: 12,
+          fontFamily: "'Inter', sans-serif", maxWidth: 620
+        }}>
+          <Sparkles size={14} color={COLORS.primary} />
+          {dailyQuote}
         </div>
       </div>
 
@@ -3624,11 +3647,11 @@ const DashboardView = ({ data, onCompleteHabit, workoutData, onNavigate, onUpdat
             {(() => {
               const dailyData = getDailyCompletionData(habits, records, 7);
               return (
-                <ResponsiveContainer width="100%" height={200}>
-                  <BarChart data={dailyData} margin={{ top: 5, right: 5, bottom: 5, left: -20 }}>
+                <ResponsiveContainer width="100%" height={210}>
+                  <AreaChart data={dailyData} margin={{ top: 8, right: 10, bottom: 5, left: -18 }}>
                     <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.04)" vertical={false} />
                     <XAxis dataKey="label" tick={{ fill: '#8888a0', fontSize: 11 }} axisLine={false} tickLine={false} />
-                    <YAxis tick={{ fill: '#8888a0', fontSize: 10 }} axisLine={false} tickLine={false} allowDecimals={false} />
+                    <YAxis tick={{ fill: '#8888a0', fontSize: 10 }} axisLine={false} tickLine={false} allowDecimals={false} domain={[0, 100]} tickFormatter={v => `${v}%`} />
                     <Tooltip content={({ active, payload }) => {
                       if (!active || !payload || !payload[0]) return null;
                       const d = payload[0].payload;
@@ -3640,14 +3663,14 @@ const DashboardView = ({ data, onCompleteHabit, workoutData, onNavigate, onUpdat
                         </div>
                       );
                     }} />
-                    <Bar dataKey="completed" name="Completados" fill="url(#weeklyGrad)" radius={[4, 4, 0, 0]} maxBarSize={32} />
                     <defs>
                       <linearGradient id="weeklyGrad" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="0%" stopColor={COLORS.primary} />
-                        <stop offset="100%" stopColor={COLORS.secondary} />
+                        <stop offset="0%" stopColor={COLORS.primary} stopOpacity={0.45} />
+                        <stop offset="100%" stopColor={COLORS.primary} stopOpacity={0.03} />
                       </linearGradient>
                     </defs>
-                  </BarChart>
+                    <Area type="monotone" dataKey="pct" name="Progreso" stroke={COLORS.primary} strokeWidth={3} fill="url(#weeklyGrad)" dot={{ r: 4, fill: COLORS.bg, stroke: COLORS.primary, strokeWidth: 2 }} activeDot={{ r: 6, fill: COLORS.primary, stroke: COLORS.text, strokeWidth: 2 }} animationDuration={900} />
+                  </AreaChart>
                 </ResponsiveContainer>
               );
             })()}
@@ -3862,6 +3885,7 @@ const ChallengesView = ({ data, onCompleteChallenge, onJoinChallenge, records })
 
 const HabitsView = ({ data, onAddHabit, onUpdateHabit, onDeleteHabit, onToggleHabit, onCompleteHabit, onUpdateRecord, records }) => {
   const { habits } = data;
+  const today = toYYYYMMDD(new Date());
   const [filter, setFilter] = useState('all');
   const [showForm, setShowForm] = useState(false);
   const [editHabit, setEditHabit] = useState(null);
@@ -4164,6 +4188,130 @@ const HabitsView = ({ data, onAddHabit, onUpdateHabit, onDeleteHabit, onToggleHa
       </div>
     </div>
   );
+
+  const HabitControlPanel = () => {
+    const activeHabits = habits.filter(h => h.active);
+    const weekTotal = weekDays.reduce((sum, day) => sum + activeHabits.filter(h => isExpectedDay(h, day.date)).length, 0);
+    const weekDone = weekDays.reduce((sum, day) => sum + activeHabits.filter(h => {
+      const rec = records.find(r => r.habitId === h.id && r.date === day.date);
+      return isExpectedDay(h, day.date) && rec?.completed;
+    }).length, 0);
+    const todayExpected = activeHabits.filter(h => isExpectedDay(h, today));
+    const todayDone = todayExpected.filter(h => records.find(r => r.habitId === h.id && r.date === today)?.completed).length;
+    const monthlyRate = getWeeklyRate(habits, records);
+    const bestGlobal = getGlobalBestStreak(habits, records);
+    const avgWeekly = activeHabits.length ? Math.round((weekDone / Math.max(1, activeHabits.length)) * 10) / 10 : 0;
+    const perfectDays = Array.from({ length: 84 }, (_, i) => toYYYYMMDD(addDays(new Date(), -83 + i))).filter(ds => {
+      const expected = activeHabits.filter(h => isExpectedDay(h, ds));
+      return expected.length > 0 && expected.every(h => records.find(r => r.habitId === h.id && r.date === ds)?.completed);
+    }).length;
+    const bestHabit = activeHabits
+      .map(h => ({ habit: h, score: getCompletionRate(h.id, records, 30, h), streak: getCurrentStreak(h.id, records, h) }))
+      .sort((a, b) => b.score - a.score || b.streak - a.streak)[0];
+
+    return (
+      <div className="habit-control-panel" style={{
+        background: 'linear-gradient(145deg, rgba(255,255,255,0.045), rgba(255,255,255,0.015))',
+        border: `1px solid ${COLORS.border}`,
+        borderRadius: 28,
+        padding: 26,
+        marginBottom: 20,
+        boxShadow: '0 26px 80px rgba(0,0,0,0.24)'
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 22, color: COLORS.text, fontSize: 12, fontWeight: 900 }}>
+          <span style={{ width: 28, height: 28, borderRadius: 10, background: `${COLORS.primary}18`, border: `1px solid ${COLORS.primary}30`, display: 'grid', placeItems: 'center', color: COLORS.primary }}><Calendar size={15} /></span>
+          Habit Tracker · Full Control
+        </div>
+        <div className="habit-pro-kpis" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 14, marginBottom: 24 }}>
+          {[
+            ['Progreso de hoy', `${todayExpected.length ? Math.round((todayDone / todayExpected.length) * 100) : 0}%`, `${todayDone} de ${todayExpected.length} listos`, COLORS.text],
+            ['Mejor racha', `${bestGlobal} 🔥`, 'días seguidos', COLORS.text],
+            ['Tasa mensual', `${monthlyRate}%`, `${monthlyRate >= 70 ? '+' : ''}${monthlyRate - 65}% vs mes ant.`, COLORS.success]
+          ].map(([label, value, sub, color]) => (
+            <div key={label} style={{ background: COLORS.card, border: `1px solid ${COLORS.border}`, borderRadius: 16, padding: 16 }}>
+              <div style={{ color: COLORS.textDim, fontSize: 10, textTransform: 'uppercase', letterSpacing: '0.12em', marginBottom: 7 }}>{label}</div>
+              <div style={{ color, fontSize: 22, fontWeight: 900 }}>{value}</div>
+              <div style={{ color: label === 'Tasa mensual' ? COLORS.success : COLORS.textDim, fontSize: 11, marginTop: 4 }}>{sub}</div>
+            </div>
+          ))}
+        </div>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
+          <div style={{ color: COLORS.text, fontSize: 15, fontWeight: 900 }}>Esta semana <span style={{ marginLeft: 8, fontSize: 11, color: COLORS.alert, background: `${COLORS.alert}15`, borderRadius: 999, padding: '4px 9px' }}>🔥 {getGlobalCurrentStreak(habits, records)} días de racha</span></div>
+          <div style={{ display: 'flex', gap: 6 }}>
+            <button onClick={() => navigate(-1)} style={{ width: 28, height: 28, borderRadius: 999, border: `1px solid ${COLORS.border}`, background: COLORS.bg, color: COLORS.textDim, cursor: 'pointer' }}><ChevronLeft size={14} /></button>
+            <button onClick={() => navigate(1)} style={{ width: 28, height: 28, borderRadius: 999, border: `1px solid ${COLORS.border}`, background: COLORS.bg, color: COLORS.textDim, cursor: 'pointer' }}><ChevronRight size={14} /></button>
+          </div>
+        </div>
+        <div className="habit-week-matrix" style={{ display: 'grid', gridTemplateColumns: '150px repeat(7, 34px)', gap: '9px 10px', alignItems: 'center', overflowX: 'auto', paddingBottom: 4 }}>
+          <div />
+          {weekDays.map(d => <div key={d.date} style={{ color: d.isToday ? COLORS.primary : COLORS.text, textAlign: 'center', fontSize: 12, fontWeight: 900 }}>{d.dayNum}<div style={{ fontSize: 9, color: COLORS.textDim, fontWeight: 700 }}>{d.label}</div></div>)}
+          {activeHabits.slice(0, 7).map(h => {
+            const cat = getCategoryInfo(h.category);
+            return (
+              <React.Fragment key={h.id}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8, color: COLORS.text, fontSize: 13, minWidth: 0 }}>
+                  <span className="fire-emoji">{h.icon}</span>
+                  <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{h.name}</span>
+                </div>
+                {weekDays.map(day => {
+                  const scheduled = isExpectedDay(h, day.date);
+                  const done = records.find(r => r.habitId === h.id && r.date === day.date)?.completed;
+                  return (
+                    <button key={day.date} onClick={day.isToday && scheduled ? () => onCompleteHabit(h.id) : undefined} style={{
+                      width: 30, height: 30, borderRadius: '50%', border: done ? 'none' : `1px solid ${scheduled ? COLORS.primary : COLORS.border}`,
+                      background: done ? COLORS.primary : scheduled ? `${COLORS.primary}0d` : 'transparent',
+                      color: done ? '#fff' : COLORS.textDim,
+                      opacity: scheduled ? 1 : 0.28,
+                      cursor: day.isToday && scheduled ? 'pointer' : 'default',
+                      display: 'grid', placeItems: 'center'
+                    }}>
+                      {done ? <Check size={14} strokeWidth={3} /> : null}
+                    </button>
+                  );
+                })}
+              </React.Fragment>
+            );
+          })}
+        </div>
+        <div style={{ borderTop: `1px solid ${COLORS.border}`, marginTop: 22, paddingTop: 14 }}>
+          <div style={{ color: COLORS.textDim, fontSize: 10, textTransform: 'uppercase', letterSpacing: '0.14em', marginBottom: 9 }}>Últimos 84 días</div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(42, minmax(7px, 1fr))', gap: 4 }}>
+            {Array.from({ length: 84 }, (_, i) => {
+              const ds = toYYYYMMDD(addDays(new Date(), -83 + i));
+              const expected = activeHabits.filter(h => isExpectedDay(h, ds));
+              const completed = expected.filter(h => records.find(r => r.habitId === h.id && r.date === ds)?.completed).length;
+              const pct = expected.length ? completed / expected.length : 0;
+              return <span key={ds} title={`${ds}: ${completed}/${expected.length}`} style={{ height: 10, borderRadius: 3, background: pct === 0 ? 'rgba(255,255,255,0.055)' : pct >= 1 ? COLORS.primary : `${COLORS.primary}${pct > 0.5 ? 'aa' : '55'}` }} />;
+            })}
+          </div>
+        </div>
+        <div className="habit-pro-footer" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginTop: 20 }}>
+          <div style={{ background: COLORS.card, border: `1px solid ${COLORS.border}`, borderRadius: 16, padding: 15 }}>
+            <div style={{ color: COLORS.textDim, fontSize: 10, textTransform: 'uppercase', letterSpacing: '0.12em' }}>Promedio semanal</div>
+            <div style={{ color: COLORS.text, fontSize: 21, fontWeight: 900, marginTop: 6 }}>{avgWeekly} / {activeHabits.length}</div>
+            <div style={{ height: 5, borderRadius: 99, background: COLORS.bg, marginTop: 10 }}><div style={{ width: `${Math.min(100, (avgWeekly / Math.max(1, activeHabits.length)) * 100)}%`, height: '100%', borderRadius: 99, background: COLORS.success }} /></div>
+          </div>
+          <div style={{ background: COLORS.card, border: `1px solid ${COLORS.border}`, borderRadius: 16, padding: 15 }}>
+            <div style={{ color: COLORS.textDim, fontSize: 10, textTransform: 'uppercase', letterSpacing: '0.12em' }}>Días perfectos</div>
+            <div style={{ color: COLORS.text, fontSize: 21, fontWeight: 900, marginTop: 6 }}>{perfectDays} días</div>
+            <div style={{ height: 5, borderRadius: 99, background: COLORS.bg, marginTop: 10 }}><div style={{ width: `${Math.min(100, (perfectDays / 84) * 100)}%`, height: '100%', borderRadius: 99, background: '#f59e0b' }} /></div>
+          </div>
+        </div>
+        {bestHabit && (
+          <div style={{ marginTop: 14, display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, background: `${COLORS.primary}10`, border: `1px solid ${COLORS.primary}25`, borderRadius: 16, padding: 15 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+              <span style={{ width: 40, height: 40, borderRadius: 12, background: `${COLORS.primary}18`, display: 'grid', placeItems: 'center' }}>{bestHabit.habit.icon}</span>
+              <div>
+                <div style={{ color: COLORS.text, fontWeight: 900 }}>{bestHabit.habit.name}</div>
+                <div style={{ color: COLORS.textDim, fontSize: 11 }}>Hábito con mejor desempeño</div>
+              </div>
+            </div>
+            <div style={{ color: COLORS.primary, fontWeight: 900, fontSize: 18 }}>🔥 {bestHabit.streak}</div>
+          </div>
+        )}
+      </div>
+    );
+  };
 
   return (
     <div className="habits-mobile-view" style={{ animation: 'fadeIn 0.3s ease-out' }}>
@@ -4497,11 +4645,21 @@ const FinanceView = ({ data, onUpdateFinance }) => {
   const cleanDisplayValue = (n) => {
     const v = toDisplayAmount(n);
     if (!v) return '';
-    return Number.isInteger(v) ? String(v) : v.toFixed(2);
+    return Number.isInteger(v) ? String(v) : String(Number(v.toFixed(2)));
   };
-  const moneyUSD = (n) => `USD ${Number(n || 0).toLocaleString('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 })}`;
-  const moneyCOP = (n) => `COP ${Number(Number(n || 0) * copRate).toLocaleString('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 })}`;
-  const money = (n) => `${moneyUSD(n)} · ${moneyCOP(n)}`;
+  const formatCurrency = (n, targetCurrency = currency) => {
+    const amount = targetCurrency === 'COP' ? Number(n || 0) * copRate : Number(n || 0);
+    const locale = targetCurrency === 'COP' ? 'es-CO' : 'en-US';
+    const decimals = Number.isInteger(amount) ? 0 : 2;
+    return amount.toLocaleString(locale, {
+      style: 'currency',
+      currency: targetCurrency,
+      minimumFractionDigits: decimals,
+      maximumFractionDigits: 2
+    });
+  };
+  const moneyUSD = (n) => formatCurrency(n, 'USD');
+  const money = (n) => formatCurrency(n, currency);
   const catById = (id) => categories.find(c => c.id === id) || { name: 'Sin categoria', color: COLORS.textDim };
   const accountById = (id) => accounts.find(a => a.id === id) || accounts[0] || { name: 'Sin cuenta' };
   const inputStyle = { padding: '10px 12px', background: COLORS.bg, border: `1px solid ${COLORS.border}`, borderRadius: 10, color: COLORS.text, outline: 'none', boxSizing: 'border-box', ...s };
@@ -4668,14 +4826,25 @@ const FinanceView = ({ data, onUpdateFinance }) => {
             <div style={{ fontSize: 11, color: COLORS.textDim, marginBottom: 6, ...s }}>Disponible proyectado</div>
             <div style={{ fontSize: 34, color: available >= 0 ? COLORS.success : COLORS.alert, fontFamily: "'DM Serif Display', serif" }}>{money(available)}</div>
             <div style={{ color: COLORS.textDim, fontSize: 11, ...s }}>Mes: {monthDate.toLocaleDateString('es-ES', { month: 'long', year: 'numeric' })}</div>
-            <div className="finance-currency-controls" style={{ display: 'grid', gridTemplateColumns: '92px 1fr', gap: 8, marginTop: 12 }}>
-              <select value={currency} onChange={e => onUpdateFinance(prev => ({ ...prev, currency: e.target.value }))} style={{ ...inputStyle, padding: '8px 9px', fontSize: 11 }}>
-                <option value="USD">USD</option>
-                <option value="COP">COP</option>
-              </select>
-              <input type="number" min="1" value={copRate} onChange={e => onUpdateFinance(prev => ({ ...prev, copRate: Math.max(1, Number(e.target.value || 1)) }))} placeholder="COP por 1 USD" style={{ ...inputStyle, padding: '8px 9px', fontSize: 11 }} />
+            <div className="finance-currency-controls" style={{ display: 'grid', gridTemplateColumns: '116px 1fr', gap: 8, marginTop: 12, alignItems: 'center' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 3, padding: 3, borderRadius: 999, background: COLORS.bg, border: `1px solid ${COLORS.border}` }}>
+                {['USD', 'COP'].map(cur => (
+                  <button key={cur} onClick={() => onUpdateFinance(prev => ({ ...prev, currency: cur }))} style={{
+                    border: 'none',
+                    borderRadius: 999,
+                    padding: '7px 0',
+                    cursor: 'pointer',
+                    background: currency === cur ? COLORS.primary : 'transparent',
+                    color: currency === cur ? '#fff' : COLORS.textDim,
+                    fontSize: 10,
+                    fontWeight: 900,
+                    ...s
+                  }}>{cur}</button>
+                ))}
+              </div>
+              <input type="number" min="1" step="0.01" value={copRate} onChange={e => onUpdateFinance(prev => ({ ...prev, copRate: Math.max(1, Number(e.target.value || 1)) }))} placeholder="COP por 1 USD" style={{ ...inputStyle, padding: '8px 9px', fontSize: 11 }} />
             </div>
-            <div style={{ color: COLORS.textDim, fontSize: 10, marginTop: 6, ...s }}>Tasa editable para convertir tus datos entre USD y COP.</div>
+            <div style={{ color: COLORS.textDim, fontSize: 10, marginTop: 6, ...s }}>Vista activa: {currency}. La tasa solo convierte la visualización.</div>
           </div>
         </div>
       </div>
@@ -4729,7 +4898,7 @@ const FinanceView = ({ data, onUpdateFinance }) => {
               <select value={form.type} onChange={e => setForm(f => ({ ...f, type: e.target.value, category: e.target.value === 'income' ? 'income' : (expenseCategories[0]?.id || f.category) }))} style={inputStyle}>
                 <option value="expense">Gasto</option><option value="income">Ingreso</option>
               </select>
-              <input type="number" value={form.amount} onChange={e => setForm(f => ({ ...f, amount: e.target.value }))} placeholder={`Monto ${currency}`} style={inputStyle} />
+              <input type="number" step="0.01" value={form.amount} onChange={e => setForm(f => ({ ...f, amount: e.target.value }))} placeholder={`Monto ${currency}`} style={inputStyle} />
               <input type="date" value={form.date} onClick={e => openNativeDatePicker(e.currentTarget)} onFocus={e => openNativeDatePicker(e.currentTarget)} onChange={e => setForm(f => ({ ...f, date: e.target.value }))} style={{ ...inputStyle, cursor: 'pointer' }} />
             </div>
             <div className="finance-form-row finance-form-row-4" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr auto', gap: 10 }}>
@@ -4795,7 +4964,7 @@ const FinanceView = ({ data, onUpdateFinance }) => {
               <BarChart data={accountChartData}>
                 <CartesianGrid stroke="rgba(255,255,255,0.05)" vertical={false} />
                 <XAxis dataKey="name" stroke={COLORS.textDim} tick={{ fontSize: 11 }} />
-                <YAxis stroke={COLORS.textDim} tick={{ fontSize: 11 }} tickFormatter={v => moneyUSD(v)} />
+                <YAxis stroke={COLORS.textDim} tick={{ fontSize: 11 }} tickFormatter={v => money(v)} />
                 <Tooltip formatter={v => money(v)} contentStyle={tooltipStyle} labelStyle={{ color: COLORS.text }} />
                 <Bar dataKey="balance" fill={COLORS.primary} radius={[8, 8, 0, 0]} />
               </BarChart>
@@ -4817,7 +4986,7 @@ const FinanceView = ({ data, onUpdateFinance }) => {
                         <div style={{ color: pct > 90 ? COLORS.alert : COLORS.textDim, fontSize: 11 }}>{money(spent)} usados de {money(limit)}</div>
                       </div>
                       <div style={{ position: 'relative' }}>
-                        <input type="number" value={cleanDisplayValue(limit)} onChange={e => updateBudget(cat.id, e.target.value)} placeholder={`Limite ${currency}`} style={{ ...inputStyle, padding: '8px 42px 8px 9px', fontSize: 11, width: '100%' }} />
+                        <input type="number" step="0.01" value={cleanDisplayValue(limit)} onChange={e => updateBudget(cat.id, e.target.value)} placeholder={`Limite ${currency}`} style={{ ...inputStyle, padding: '8px 42px 8px 9px', fontSize: 11, width: '100%' }} />
                         <span style={{ position: 'absolute', right: 9, top: '50%', transform: 'translateY(-50%)', color: COLORS.textDim, fontSize: 9, fontWeight: 800 }}>{currency}</span>
                       </div>
                     </div>
@@ -4847,7 +5016,7 @@ const FinanceView = ({ data, onUpdateFinance }) => {
           <div className="finance-card finance-monthly-budget-card" style={{ ...cardStyle, display: section === 'budget' ? 'block' : 'none' }}>
             <h3 style={{ fontSize: 16, color: COLORS.text, marginBottom: 12 }}>Presupuesto mensual</h3>
             <div style={{ position: 'relative', marginBottom: 12 }}>
-              <input type="number" value={cleanDisplayValue(finance.monthlyBudget)} onChange={e => onUpdateFinance(prev => ({ ...prev, monthlyBudget: fromDisplayAmount(e.target.value || 0) }))} placeholder={`Presupuesto ${currency}`} style={{ ...inputStyle, width: '100%', paddingRight: 52 }} />
+              <input type="number" step="0.01" value={cleanDisplayValue(finance.monthlyBudget)} onChange={e => onUpdateFinance(prev => ({ ...prev, monthlyBudget: fromDisplayAmount(e.target.value || 0) }))} placeholder={`Presupuesto ${currency}`} style={{ ...inputStyle, width: '100%', paddingRight: 52 }} />
               <span style={{ position: 'absolute', right: 12, top: '50%', transform: 'translateY(-50%)', color: COLORS.textDim, fontSize: 10, fontWeight: 800 }}>{currency}</span>
             </div>
             <div style={{ height: 8, background: COLORS.bg, borderRadius: 99, overflow: 'hidden' }}><div style={{ height: '100%', width: `${budgetPct}%`, background: `linear-gradient(90deg, ${COLORS.primary}, ${COLORS.alert})`, borderRadius: 99 }} /></div>
@@ -4883,7 +5052,7 @@ const FinanceView = ({ data, onUpdateFinance }) => {
                 {ACCOUNT_TYPES.map(type => <option key={type.id} value={type.id}>{type.label}</option>)}
               </select>
               <div style={{ position: 'relative' }}>
-                <input type="number" value={accountForm.balance} onChange={e => setAccountForm(f => ({ ...f, balance: e.target.value }))} placeholder={`Saldo inicial ${currency}`} style={{ ...inputStyle, padding: '8px 42px 8px 9px', fontSize: 11, width: '100%' }} />
+                <input type="number" step="0.01" value={accountForm.balance} onChange={e => setAccountForm(f => ({ ...f, balance: e.target.value }))} placeholder={`Saldo inicial ${currency}`} style={{ ...inputStyle, padding: '8px 42px 8px 9px', fontSize: 11, width: '100%' }} />
                 <span style={{ position: 'absolute', right: 9, top: '50%', transform: 'translateY(-50%)', color: COLORS.textDim, fontSize: 9, fontWeight: 800 }}>{currency}</span>
               </div>
               <button className="finance-submit-button" onClick={addAccount} style={{ border: 'none', borderRadius: 10, background: COLORS.primary, color: '#fff', padding: '0 12px', cursor: 'pointer', fontWeight: 800, whiteSpace: 'nowrap' }}><Plus size={15} /> Agregar cuenta</button>
@@ -4923,8 +5092,8 @@ const FinanceView = ({ data, onUpdateFinance }) => {
             </div>
             <div className="finance-compact-form" style={{ display: 'grid', gridTemplateColumns: '1fr 82px 58px', gap: 7, marginBottom: 7 }}>
               <input value={recurringForm.name} onChange={e => setRecurringForm(f => ({ ...f, name: e.target.value }))} placeholder="Nombre" style={{ ...inputStyle, padding: '8px 9px', fontSize: 11 }} />
-              <input type="number" value={recurringForm.amount} onChange={e => setRecurringForm(f => ({ ...f, amount: e.target.value }))} placeholder={`Monto ${currency}`} style={{ ...inputStyle, padding: '8px 9px', fontSize: 11 }} />
-              <input type="number" min="1" max="31" value={recurringForm.day} onChange={e => setRecurringForm(f => ({ ...f, day: e.target.value }))} style={{ ...inputStyle, padding: '8px 9px', fontSize: 11 }} />
+              <input type="number" step="0.01" value={recurringForm.amount} onChange={e => setRecurringForm(f => ({ ...f, amount: e.target.value }))} placeholder={`Monto ${currency}`} style={{ ...inputStyle, padding: '8px 9px', fontSize: 11 }} />
+              <input type="number" min="1" max="31" step="1" value={recurringForm.day} onChange={e => setRecurringForm(f => ({ ...f, day: e.target.value }))} style={{ ...inputStyle, padding: '8px 9px', fontSize: 11 }} />
             </div>
             <div className="finance-compact-form" style={{ display: 'grid', gridTemplateColumns: '1fr auto', gap: 7 }}>
               <select value={recurringForm.category} onChange={e => setRecurringForm(f => ({ ...f, category: e.target.value }))} style={{ ...inputStyle, padding: '8px 9px', fontSize: 11 }}>
@@ -4955,7 +5124,7 @@ const FinanceView = ({ data, onUpdateFinance }) => {
                         <div style={{ ...inputStyle, flex: 1, padding: '7px 8px', fontSize: 11, color: COLORS.success, fontWeight: 800 }}>Meta completada</div>
                       ) : (
                         <>
-                          <input type="number" value={goalAdds[g.id] || ''} onChange={e => setGoalAdds(prev => ({ ...prev, [g.id]: e.target.value }))} placeholder="Aportar" style={{ ...inputStyle, flex: 1, padding: '7px 8px', fontSize: 11 }} />
+                          <input type="number" step="0.01" value={goalAdds[g.id] || ''} onChange={e => setGoalAdds(prev => ({ ...prev, [g.id]: e.target.value }))} placeholder={`Aportar ${currency}`} style={{ ...inputStyle, flex: 1, padding: '7px 8px', fontSize: 11 }} />
                           <button onClick={() => contributeGoal(g.id)} style={{ border: 'none', borderRadius: 9, background: `${COLORS.success}18`, color: COLORS.success, padding: '0 10px', cursor: 'pointer', fontWeight: 800 }}>+</button>
                         </>
                       )}
@@ -4967,7 +5136,7 @@ const FinanceView = ({ data, onUpdateFinance }) => {
             <div className="finance-goal-form" style={{ display: 'grid', gap: 7 }}>
               <input value={goalForm.name} onChange={e => setGoalForm(f => ({ ...f, name: e.target.value }))} placeholder="Meta: viaje, emergencia..." style={{ ...inputStyle, padding: '8px 9px', fontSize: 11 }} />
               <div className="finance-compact-form" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 7 }}>
-                <input type="number" value={goalForm.target} onChange={e => setGoalForm(f => ({ ...f, target: e.target.value }))} placeholder={`Objetivo ${currency}`} style={{ ...inputStyle, padding: '8px 9px', fontSize: 11 }} />
+                <input type="number" step="0.01" value={goalForm.target} onChange={e => setGoalForm(f => ({ ...f, target: e.target.value }))} placeholder={`Objetivo ${currency}`} style={{ ...inputStyle, padding: '8px 9px', fontSize: 11 }} />
                 <input type="date" value={goalForm.dueDate} onClick={e => openNativeDatePicker(e.currentTarget)} onFocus={e => openNativeDatePicker(e.currentTarget)} onChange={e => setGoalForm(f => ({ ...f, dueDate: e.target.value }))} style={{ ...inputStyle, padding: '8px 9px', fontSize: 11, cursor: 'pointer' }} />
               </div>
               <button onClick={addGoal} style={{ border: 'none', borderRadius: 10, background: COLORS.primary, color: '#fff', padding: '9px 0', cursor: 'pointer', fontWeight: 800 }}>Crear meta</button>
@@ -5261,6 +5430,8 @@ const DreamGoalsView = ({ data, onUpdateDreamGoals }) => {
           No solo sueñes. Visualiza el progreso exacto y cuánto te falta para conquistar tus próximos grandes pasos.
         </p>
       </div>
+
+      <HabitControlPanel />
 
       <div style={{
         display: 'grid',
@@ -5584,6 +5755,18 @@ const StatisticsView = ({ data }) => {
       .sort((a, b) => b.streak - a.streak),
     [habits, records]
   );
+  const statsUseful = useMemo(() => {
+    const active = habits.filter(h => h.active);
+    const today = toYYYYMMDD(new Date());
+    const todayExpected = active.filter(h => isExpectedDay(h, today));
+    const todayDone = todayExpected.filter(h => records.find(r => r.habitId === h.id && r.date === today)?.completed).length;
+    const rates = active.map(h => ({ ...h, rate: getCompletionRate(h.id, records, period, h), streak: getCurrentStreak(h.id, records, h) }));
+    const weak = rates.filter(h => h.rate < 55).sort((a, b) => a.rate - b.rate).slice(0, 3);
+    const best = rates.sort((a, b) => b.rate - a.rate)[0];
+    const perfectDays = dailyData.filter(d => d.total > 0 && d.completed === d.total).length;
+    const avg = dailyData.length ? Math.round(dailyData.reduce((sum, d) => sum + d.pct, 0) / dailyData.length) : 0;
+    return { todayDone, todayTotal: todayExpected.length, weak, best, perfectDays, avg };
+  }, [habits, records, period, dailyData]);
 
   const stackedHabits = habits.filter(h => h.active);
 
@@ -5611,6 +5794,36 @@ const StatisticsView = ({ data }) => {
       </div>
 
       <div style={{ display: 'grid', gap: 24 }}>
+        <div className="stats-useful-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: 12 }}>
+          {[
+            ['Hoy', `${statsUseful.todayDone}/${statsUseful.todayTotal}`, 'Hábitos esperados completados', COLORS.primary],
+            ['Promedio', `${statsUseful.avg}%`, `Últimos ${period} días`, statsUseful.avg >= 70 ? COLORS.success : COLORS.alert],
+            ['Días perfectos', statsUseful.perfectDays, 'Días con todo completado', '#f59e0b'],
+            ['Mejor hábito', statsUseful.best?.name || '--', `${statsUseful.best?.rate || 0}% cumplimiento`, COLORS.success]
+          ].map(([label, value, sub, color]) => (
+            <div key={label} style={{ background: COLORS.card, border: `1px solid ${COLORS.border}`, borderRadius: 16, padding: 18 }}>
+              <div style={{ color: COLORS.textDim, fontSize: 10, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 8 }}>{label}</div>
+              <div style={{ color, fontSize: 22, fontWeight: 900, lineHeight: 1.15 }}>{value}</div>
+              <div style={{ color: COLORS.textDim, fontSize: 11, marginTop: 6 }}>{sub}</div>
+            </div>
+          ))}
+        </div>
+        <div style={{ background: COLORS.card, borderRadius: 18, border: `1px solid ${COLORS.border}`, padding: 20 }}>
+          <h3 style={{ fontSize: 16, color: COLORS.text, marginBottom: 12, fontFamily: "'DM Serif Display', serif" }}>Qué ajustar ahora</h3>
+          <div style={{ display: 'grid', gap: 9 }}>
+            {(statsUseful.weak.length ? statsUseful.weak : [{ id: 'ok', name: 'Vas bien', rate: statsUseful.avg, icon: '✨' }]).map(h => (
+              <div key={h.id} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: 12, borderRadius: 14, background: `${COLORS.primary}0b`, border: `1px solid ${COLORS.border}` }}>
+                <span className="fire-emoji" style={{ fontSize: 20 }}>{h.icon}</span>
+                <div style={{ flex: 1 }}>
+                  <div style={{ color: COLORS.text, fontWeight: 900, fontSize: 13 }}>{h.name}</div>
+                  <div style={{ color: COLORS.textDim, fontSize: 11 }}>{h.rate < 55 ? 'Está flojo: reduce dificultad, cambia horario o pon recordatorio.' : 'No hay hábitos críticos en este periodo.'}</div>
+                </div>
+                <div style={{ color: h.rate < 55 ? COLORS.alert : COLORS.success, fontWeight: 900 }}>{h.rate}%</div>
+              </div>
+            ))}
+          </div>
+        </div>
+
         <div style={{ background: COLORS.card, borderRadius: 16, border: `1px solid ${COLORS.border}`, padding: 24 }}>
           <h3 style={{ fontSize: 16, color: COLORS.text, marginBottom: 16, fontFamily: "'DM Serif Display', serif" }}>
             Progreso Diario
@@ -5794,7 +6007,7 @@ const StatisticsView = ({ data }) => {
   );
 };
 
-const SettingsView = ({ data, onUpdateUser, onResetData }) => {
+const SettingsView = ({ data, onUpdateUser, onResetData, cloudSync, onGenerateRandomData }) => {
   const { user, habits, records } = data;
   const s = { fontFamily: "'Inter', sans-serif" };
   const fileInputRef = useRef(null);
@@ -5920,6 +6133,31 @@ const SettingsView = ({ data, onUpdateUser, onResetData }) => {
       </h2>
 
       <div className="settings-stack" style={{ display: 'grid', gap: 18, maxWidth: 760 }}>
+        <div style={{ background: COLORS.card, borderRadius: 16, border: `1px solid ${COLORS.border}`, padding: 22 }}>
+          <h3 style={{ fontSize: 16, color: COLORS.text, marginBottom: 12, fontFamily: "'DM Serif Display', serif" }}>
+            <Sparkles size={16} style={{ verticalAlign: 'middle', marginRight: 6, color: COLORS.primary }} />
+            Sistema
+          </h3>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr auto', gap: 12, alignItems: 'center' }}>
+            <div>
+              <div style={{ color: COLORS.text, fontSize: 13, fontWeight: 900, marginBottom: 4 }}>
+                {cloudSync?.status === 'active' ? '☁️ Nube activa' : cloudSync?.status === 'saving' ? '↻ Guardando en nube' : '💾 Guardado local'}
+              </div>
+              <div style={{ color: COLORS.textDim, fontSize: 11, lineHeight: 1.45 }}>
+                {cloudSync?.reason || cloudSync?.label || 'Estado de guardado de HabitFlow.'}
+              </div>
+            </div>
+            <button onClick={onGenerateRandomData} style={{
+              padding: '10px 14px', borderRadius: 999, border: `1px solid ${COLORS.border}`,
+              background: `${COLORS.primary}12`, color: COLORS.primary, cursor: 'pointer',
+              fontSize: 12, fontWeight: 900, ...s
+            }}>
+              <Sparkles size={14} style={{ verticalAlign: 'middle', marginRight: 6 }} />
+              Datos aleatorios
+            </button>
+          </div>
+        </div>
+
         <div style={{ background: COLORS.card, borderRadius: 16, border: `1px solid ${COLORS.border}`, padding: 24 }}>
           <h3 style={{ fontSize: 16, color: COLORS.text, marginBottom: 16, fontFamily: "'DM Serif Display', serif" }}>
             <User size={16} style={{ verticalAlign: 'middle', marginRight: 6, color: COLORS.primary }} />
@@ -5971,6 +6209,7 @@ const SettingsView = ({ data, onUpdateUser, onResetData }) => {
           </h3>
           <div style={{ fontSize: 11, color: COLORS.textDim, marginBottom: 14, lineHeight: 1.55 }}>
             Recibe alarmas de agenda, recordatorios de habitos pendientes y mensajes de disciplina en todos los dispositivos de tu cuenta.
+            En Mac revisa también Ajustes del sistema > Notificaciones > tu navegador y activa sonidos/banners.
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
             <span style={{
@@ -6524,6 +6763,7 @@ const PomodoroView = ({ data, onUpdateUser, onUpdatePomodoro }) => {
   const [timeLeft, setTimeLeft] = useState(settings.focus * 60);
   const [isRunning, setIsRunning] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
+  const [showGuide, setShowGuide] = useState(false);
   const [localSettings, setLocalSettings] = useState(settings);
   const intervalRef = useRef(null);
   const ambientCtxRef = useRef(null);
@@ -6556,6 +6796,11 @@ const PomodoroView = ({ data, onUpdateUser, onUpdatePomodoro }) => {
   const [duration, setDuration] = useState(0);
   const seekIntervalRef = useRef(null);
   const durations = { focus: settings.focus * 60, shortBreak: settings.shortBreak * 60, longBreak: settings.longBreak * 60 };
+  const modeCopy = {
+    focus: { label: 'sesión de enfoque', next: 'Toma un descanso corto. Levántate, respira y vuelve con calma.', tone: 880 },
+    shortBreak: { label: 'descanso corto', next: 'Vuelve al enfoque. El siguiente bloque cuenta.', tone: 660 },
+    longBreak: { label: 'descanso largo', next: 'Tu ciclo largo terminó. Revisa energía y empieza otro ciclo si quieres.', tone: 520 }
+  };
   const youtubeContainerRef = useRef(null);
   const youtubePlayerRef = useRef(null);
   const youtubeApiLoadedRef = useRef(false);
@@ -6714,6 +6959,21 @@ const PomodoroView = ({ data, onUpdateUser, onUpdatePomodoro }) => {
   const switchMode = (m) => { setIsRunning(false); setMode(m); };
 
   const totalFocusToday = todaySessions.reduce((sum, s) => sum + s.focusTime, 0);
+
+  const notifyPomodoroDone = useCallback((finishedMode) => {
+    const copy = modeCopy[finishedMode] || modeCopy.focus;
+    playBeep(copy.tone, 0.75);
+    setTimeout(() => playBeep(copy.tone * 1.18, 0.45), 180);
+    requestHabitFlowNotifications().then(() => {
+      showHabitFlowNotification('HabitFlow • Pomodoro terminado', {
+        body: `Terminó tu ${copy.label}. ${copy.next}`,
+        tag: `habitflow-pomodoro-${finishedMode}-${Date.now()}`,
+        renotify: true,
+        requireInteraction: true,
+        data: { url: window.location.href, type: 'pomodoro', mode: finishedMode }
+      });
+    }).catch(() => {});
+  }, [settings.focus, settings.shortBreak, settings.longBreak]);
 
   const weeklyRecords = records.filter(r => {
     const d = new Date(r.date);
@@ -6932,7 +7192,7 @@ const PomodoroView = ({ data, onUpdateUser, onUpdatePomodoro }) => {
           clearInterval(intervalRef.current);
           setIsRunning(false);
           stopAmbient();
-          playBeep();
+          notifyPomodoroDone(mode);
           if (mode === 'focus') {
             const newRecord = { date: today, completedAt: new Date().toISOString(), focusTime: settings.focus };
             onUpdatePomodoro(prev => [...prev, newRecord]);
@@ -6943,7 +7203,7 @@ const PomodoroView = ({ data, onUpdateUser, onUpdatePomodoro }) => {
       });
     }, 1000);
     return () => { clearInterval(intervalRef.current); stopAmbient(); };
-  }, [isRunning, mode, settings.ambientSound, settings.ambientVolume]);
+  }, [isRunning, mode, settings.ambientSound, settings.ambientVolume, settings.focus, today, notifyPomodoroDone]);
 
   return (
     <div className="pomodoro-mobile-view" style={{ animation: 'fadeIn 0.3s ease-out' }}>
@@ -7033,6 +7293,15 @@ const PomodoroView = ({ data, onUpdateUser, onUpdatePomodoro }) => {
               display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 18
             }}><Settings size={18} /></button>
           </div>
+
+          <button onClick={() => setShowGuide(true)} style={{
+            marginTop: 16, padding: '9px 14px', borderRadius: 999, border: `1px solid ${COLORS.border}`,
+            background: `${COLORS.primary}10`, color: COLORS.text, cursor: 'pointer',
+            fontSize: 12, fontFamily: "'Inter', sans-serif", fontWeight: 800
+          }}>
+            <Sparkles size={14} style={{ verticalAlign: 'middle', marginRight: 6, color: COLORS.primary }} />
+            Cómo usar Pomodoro
+          </button>
 
           <div style={{ display: 'flex', gap: 20, marginTop: 20, fontSize: 12, color: COLORS.textDim }}>
             <span>Enfoque: <span style={{ color: COLORS.text, fontFamily: "'Inter', sans-serif", fontWeight: 500 }}>{settings.focus}m</span></span>
@@ -7306,6 +7575,33 @@ const PomodoroView = ({ data, onUpdateUser, onUpdatePomodoro }) => {
           </div>
         </Modal>
       )}
+
+      {showGuide && (
+        <Modal isOpen={showGuide} onClose={() => setShowGuide(false)} title="Guía Pomodoro Pro" width={620}>
+          <div style={{ display: 'grid', gap: 14, color: COLORS.textDim, fontSize: 13, lineHeight: 1.6 }}>
+            <div style={{ background: COLORS.bg, border: `1px solid ${COLORS.border}`, borderRadius: 14, padding: 14 }}>
+              <div style={{ color: COLORS.text, fontWeight: 900, marginBottom: 6 }}>Configuración recomendada</div>
+              <div>25 min enfoque + 5 min descanso corto + 15 min descanso largo cada 4 bloques. Si una tarea es pesada, usa 50/10; si estás empezando, usa 15/5.</div>
+            </div>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: 10 }}>
+              {[
+                ['1', 'Define una sola tarea antes de iniciar.'],
+                ['2', 'Durante enfoque no revises mensajes, redes ni correo.'],
+                ['3', 'En descanso levántate, toma agua y evita pantallas.'],
+                ['4', 'Después de 4 ciclos toma un descanso largo real.']
+              ].map(([n, text]) => (
+                <div key={n} style={{ background: COLORS.card, border: `1px solid ${COLORS.border}`, borderRadius: 14, padding: 13 }}>
+                  <div style={{ color: COLORS.primary, fontWeight: 900, marginBottom: 5 }}>{n}</div>
+                  <div>{text}</div>
+                </div>
+              ))}
+            </div>
+            <div style={{ color: COLORS.textDim }}>
+              La técnica sirve para proteger tu atención: convierte el trabajo en bloques medibles, reduce la fricción para empezar y te obliga a descansar antes de quemarte.
+            </div>
+          </div>
+        </Modal>
+      )}
     </div>
   );
 };
@@ -7354,6 +7650,7 @@ const WorkoutTrainTab = ({ workoutData, onUpdateData, setGymMode, awardXp, onCom
   const [showNewRoutine, setShowNewRoutine] = useState(false);
   const [editRoutine, setEditRoutine] = useState(null);
   const [showExManager, setShowExManager] = useState(false);
+  const [showAdvisor, setShowAdvisor] = useState(false);
   const getEx = (id) => exercises.find(e => e.id === id);
 
   const startFreeWorkout = () => setGymMode({ type: 'free', routine: null, exercises: [] });
@@ -7391,6 +7688,7 @@ const WorkoutTrainTab = ({ workoutData, onUpdateData, setGymMode, awardXp, onCom
       <div className="workout-routine-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
         <h3 style={{ fontSize: 18, color: COLORS.text, fontFamily: "'DM Serif Display', serif" }}>Mis Rutinas</h3>
         <div style={{ display: 'flex', gap: 8 }}>
+          <button onClick={() => setShowAdvisor(true)} style={{ padding: '8px 14px', borderRadius: 8, border: 'none', background: `${COLORS.success}12`, color: COLORS.success, cursor: 'pointer', fontSize: 12, fontFamily: "'Inter', sans-serif", fontWeight: 800 }}><Sparkles size={14} style={{ verticalAlign: 'middle', marginRight: 5 }} /> Asesor IA</button>
           <button onClick={() => setShowExManager(true)} style={{ padding: '8px 14px', borderRadius: 8, border: 'none', background: COLORS.card, color: COLORS.textDim, cursor: 'pointer', fontSize: 12, fontFamily: "'Inter', sans-serif" }}>Gestionar Ejercicios</button>
           <button onClick={() => { setEditRoutine(null); setShowNewRoutine(true); }} style={{ padding: '8px 14px', borderRadius: 8, border: 'none', background: `${COLORS.primary}15`, color: COLORS.primary, cursor: 'pointer', fontSize: 12, fontFamily: "'Inter', sans-serif", display: 'flex', alignItems: 'center', gap: 4 }}><Plus size={14} /> Nueva Rutina</button>
         </div>
@@ -7423,8 +7721,93 @@ const WorkoutTrainTab = ({ workoutData, onUpdateData, setGymMode, awardXp, onCom
       </div>
 
       {showNewRoutine && <RoutineModal exercises={exercises} initial={editRoutine} onSave={saveRoutine} onCreateExercise={createRoutineExercise} onClose={() => { setShowNewRoutine(false); setEditRoutine(null); }} />}
+      {showAdvisor && <WorkoutAdvisorModal exercises={exercises} onSave={(routine) => { saveRoutine(routine); setShowAdvisor(false); }} onClose={() => setShowAdvisor(false)} />}
       {showExManager && <ExerciseManager exercises={exercises} workoutData={workoutData} onUpdateData={onUpdateData} onClose={() => setShowExManager(false)} />}
     </div>
+  );
+};
+
+const WorkoutAdvisorModal = ({ exercises, onSave, onClose }) => {
+  const [profile, setProfile] = useState({ goal: 'muscle', level: 'intermediate', sex: 'male', days: 4, equipment: 'gym', time: 60 });
+  const s = { fontFamily: "'Inter', sans-serif" };
+  const input = { padding: '10px 12px', borderRadius: 10, border: `1px solid ${COLORS.border}`, background: COLORS.bg, color: COLORS.text, outline: 'none', ...s };
+  const goalMuscles = {
+    muscle: ['Pecho', 'Espalda', 'Piernas', 'Hombros', 'Bíceps', 'Tríceps'],
+    strength: ['Pecho', 'Espalda', 'Piernas', 'Hombros'],
+    fatloss: ['Cardio', 'Piernas', 'Espalda', 'Pecho', 'Abdomen'],
+    glutes: ['Piernas', 'Abdomen', 'Espalda'],
+    health: ['Cardio', 'Piernas', 'Espalda', 'Abdomen']
+  };
+  const buildPlan = () => {
+    const muscles = goalMuscles[profile.goal] || goalMuscles.muscle;
+    const pool = exercises.filter(ex => muscles.includes(ex.mg) || (profile.equipment === 'home' && ['Peso Corporal', 'Mancuernas'].includes(ex.equip)));
+    const preferred = pool.length ? pool : exercises;
+    const totalExercises = profile.days <= 3 ? 5 : 6;
+    const selected = preferred.slice(0, Math.max(totalExercises, Math.min(preferred.length, totalExercises + 2)));
+    const reps = profile.goal === 'strength' ? 6 : profile.goal === 'fatloss' ? 12 : 10;
+    const sets = profile.level === 'beginner' ? 3 : profile.level === 'advanced' ? 4 : 3;
+    const rest = profile.goal === 'strength' ? 120 : profile.goal === 'fatloss' ? 60 : 90;
+    const nameMap = {
+      muscle: 'Rutina hipertrofia personalizada',
+      strength: 'Rutina fuerza progresiva',
+      fatloss: 'Rutina recomposición y cardio',
+      glutes: 'Rutina glúteos y piernas',
+      health: 'Rutina salud y energía'
+    };
+    return {
+      name: nameMap[profile.goal] || 'Rutina personalizada',
+      createdExercises: [],
+      exercises: selected.map(ex => ({
+        eid: ex.id,
+        sets,
+        reps,
+        weight: 0,
+        rest
+      }))
+    };
+  };
+  const save = () => onSave(buildPlan());
+
+  return (
+    <Modal isOpen onClose={onClose} title="Asesor IA de Entreno" width={720}>
+      <div style={{ display: 'grid', gap: 16 }}>
+        <div style={{ color: COLORS.textDim, fontSize: 13, lineHeight: 1.6 }}>
+          Responde tu objetivo y HabitFlow crea una rutina inicial. Luego ajusta pesos en el primer entreno y sube progresivamente cuando completes todas las reps.
+        </div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(170px, 1fr))', gap: 10 }}>
+          <select value={profile.goal} onChange={e => setProfile(p => ({ ...p, goal: e.target.value }))} style={input}>
+            <option value="muscle">Ganar músculo</option>
+            <option value="strength">Fuerza</option>
+            <option value="fatloss">Perder grasa</option>
+            <option value="glutes">Pierna / glúteos</option>
+            <option value="health">Salud general</option>
+          </select>
+          <select value={profile.level} onChange={e => setProfile(p => ({ ...p, level: e.target.value }))} style={input}>
+            <option value="beginner">Principiante</option>
+            <option value="intermediate">Intermedio</option>
+            <option value="advanced">Avanzado</option>
+          </select>
+          <select value={profile.sex} onChange={e => setProfile(p => ({ ...p, sex: e.target.value }))} style={input}>
+            <option value="male">Hombre</option>
+            <option value="female">Mujer</option>
+            <option value="other">Prefiero no decir</option>
+          </select>
+          <select value={profile.equipment} onChange={e => setProfile(p => ({ ...p, equipment: e.target.value }))} style={input}>
+            <option value="gym">Gimnasio completo</option>
+            <option value="home">Casa / básico</option>
+          </select>
+          <input type="number" min="2" max="6" value={profile.days} onChange={e => setProfile(p => ({ ...p, days: Number(e.target.value || 4) }))} placeholder="Días por semana" style={input} />
+          <input type="number" min="25" max="100" value={profile.time} onChange={e => setProfile(p => ({ ...p, time: Number(e.target.value || 60) }))} placeholder="Minutos por sesión" style={input} />
+        </div>
+        <div style={{ background: COLORS.bg, border: `1px solid ${COLORS.border}`, borderRadius: 14, padding: 14, color: COLORS.textDim, fontSize: 12, lineHeight: 1.6 }}>
+          Instrucciones: empieza con un peso que te deje 1-2 repeticiones en reserva. Si completas todas las series dos entrenos seguidos, sube 2.5 kg en tren superior o 5 kg en tren inferior. Descansa bien y no sacrifiques técnica.
+        </div>
+        <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end' }}>
+          <button onClick={onClose} style={{ padding: '11px 16px', borderRadius: 10, border: `1px solid ${COLORS.border}`, background: 'transparent', color: COLORS.textDim, cursor: 'pointer' }}>Cancelar</button>
+          <button onClick={save} className="lab-cta" style={{ padding: '11px 18px', borderRadius: 999, cursor: 'pointer' }}><Sparkles size={15} /><span>Crear rutina automática</span></button>
+        </div>
+      </div>
+    </Modal>
   );
 };
 
@@ -8027,20 +8410,20 @@ const WorkoutCalTab = ({ workoutData }) => {
 
   return (
     <div style={{ animation: 'fadeIn 0.3s ease-out' }}>
-      <div style={{ background: COLORS.card, borderRadius: 16, border: `1px solid ${COLORS.border}`, padding: 24, marginBottom: 24 }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+      <div style={{ background: COLORS.card, borderRadius: 18, border: `1px solid ${COLORS.border}`, padding: 18, marginBottom: 18, maxWidth: 780, marginInline: 'auto' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
           <button onClick={prevMonth} style={{ background: 'none', border: 'none', color: COLORS.textDim, cursor: 'pointer' }}><ChevronLeft size={20} /></button>
           <div style={{ fontSize: 16, color: COLORS.text, fontFamily: "'DM Serif Display', serif" }}>{monthNames[currentMonth]} {currentYear}</div>
           <button onClick={nextMonth} style={{ background: 'none', border: 'none', color: COLORS.textDim, cursor: 'pointer' }}><ChevronRight size={20} /></button>
         </div>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: 4, marginBottom: 8 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: 3, marginBottom: 6 }}>
           {dayLabels.map(d => <div key={d} style={{ fontSize: 10, color: COLORS.textDim, textAlign: 'center', padding: '4px 0' }}>{d}</div>)}
         </div>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: 4 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: 3 }}>
           {Array.from({ length: firstDay }, (_, i) => <div key={`e${i}`} />)}
           {days.map(d => {
             const isToday = d.dateStr === toYYYYMMDD(new Date());
-            return <div key={d.day} onClick={() => d.session && setSelectedDay(d.session)} style={{ aspectRatio: '1', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: 8, background: d.session ? MUSCLE_COLORS[d.session.exercises?.[0]?.muscleGroup] || COLORS.primary : 'transparent', cursor: d.session ? 'pointer' : 'default', border: isToday ? `2px solid ${COLORS.primary}` : 'none', fontSize: 12, color: d.session ? '#000' : COLORS.textDim, fontFamily: "'Inter', sans-serif", fontWeight: d.session ? 600 : 400 }}>{d.day}</div>;
+            return <div key={d.day} onClick={() => d.session && setSelectedDay(d.session)} style={{ height: 34, display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: 9, background: d.session ? `${MUSCLE_COLORS[d.session.exercises?.[0]?.muscleGroup] || COLORS.primary}dd` : 'rgba(255,255,255,0.018)', cursor: d.session ? 'pointer' : 'default', border: isToday ? `2px solid ${COLORS.primary}` : `1px solid ${COLORS.border}`, fontSize: 12, color: d.session ? '#000' : COLORS.textDim, fontFamily: "'Inter', sans-serif", fontWeight: d.session ? 800 : 500 }}>{d.day}</div>;
           })}
         </div>
       </div>
@@ -8057,7 +8440,7 @@ const WorkoutCalTab = ({ workoutData }) => {
         </div>
       )}
 
-      <div style={{ background: COLORS.card, borderRadius: 16, border: `1px solid ${COLORS.border}`, padding: 20 }}>
+      <div style={{ background: COLORS.card, borderRadius: 16, border: `1px solid ${COLORS.border}`, padding: 18, maxWidth: 780, marginInline: 'auto' }}>
         <div style={{ fontSize: 14, color: COLORS.text, fontFamily: "'DM Serif Display', serif", marginBottom: 12 }}>Resumen del Mes</div>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))', gap: 12 }}>
           <div style={{ background: COLORS.bg, borderRadius: 8, padding: '12px', textAlign: 'center' }}><div style={{ fontSize: 24, color: COLORS.primary, fontFamily: "'Inter', sans-serif" }}>{thisMonthSessions.length}</div><div style={{ fontSize: 10, color: COLORS.textDim }}>Sesiones</div></div>
@@ -8319,10 +8702,9 @@ const AgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAgendaTo
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showTimePicker, setShowTimePicker] = useState(false);
   const [quickText, setQuickText] = useState('');
-  const [newSubtask, setNewSubtask] = useState('');
   const [showFilters, setShowFilters] = useState(false);
   const [dayLayout, setDayLayout] = useState('list');
-  const [sidePanel, setSidePanel] = useState('notes');
+  const [sidePanel, setSidePanel] = useState('todos');
   const [todoText, setTodoText] = useState('');
   const [todoLabel, setTodoLabel] = useState('');
   const [newTodoLabel, setNewTodoLabel] = useState('');
@@ -8404,7 +8786,7 @@ const AgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAgendaTo
         text: t.trim(), completed: false, priority: priority || inputPrio,
         category: category || 'Personal', note: '', dueDate: targetDate,
         dueTime: dueTime || '', alarm: false, recurrence: 'none',
-        reminders: [], subtasks: [], tags: [], ...extras, order: prev.length
+        reminders: [], tags: [], ...extras, order: prev.length
       };
       return [...prev, newTask];
     });
@@ -8431,23 +8813,18 @@ const AgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAgendaTo
   const saveEdit = () => { if (editTaskId && editText.trim()) updateTaskField(editTaskId, 'text', editText.trim()); setEditTaskId(null); };
   const toggleExpand = (taskId) => { setExpandedTaskId(expandedTaskId === taskId ? null : taskId); setEditTaskId(null); };
   const openTaskModal = (task) => { setEditModalTask(task ? { ...JSON.parse(JSON.stringify(task)), _originalDueDate: task.dueDate || '' } : null); setShowModal(true); };
-  const closeTaskModal = () => { setShowModal(false); setEditModalTask(null); setShowDatePicker(false); setShowTimePicker(false); setNewSubtask(''); };
-  const addModalSubtask = () => {
-    if (!newSubtask.trim()) return;
-    setEditModalTask(prev => ({ ...prev, subtasks: [...(prev?.subtasks || []), { text: newSubtask.trim(), completed: false }] }));
-    setNewSubtask('');
-  };
+  const closeTaskModal = () => { setShowModal(false); setEditModalTask(null); setShowDatePicker(false); setShowTimePicker(false); };
   const saveTaskModal = () => {
     const task = editModalTask;
     if (!task || !task.text?.trim()) { closeTaskModal(); return; }
     if (task.id) {
       const origDate = task._originalDueDate || dateStr;
-      Object.entries({ text: task.text, dueTime: task.dueTime, priority: task.priority, category: task.category, alarm: task.alarm, note: task.note, recurrence: task.recurrence, recurrenceDays: task.recurrenceDays, reminders: task.reminders, subtasks: task.subtasks, tags: task.tags, status: task.status }).forEach(([k, v]) => updateTaskField(task.id, k, v));
+      Object.entries({ text: task.text, dueTime: task.dueTime, priority: task.priority, category: task.category, alarm: task.alarm, recurrence: task.recurrence, recurrenceDays: task.recurrenceDays, reminders: task.reminders, tags: task.tags, status: task.status }).forEach(([k, v]) => updateTaskField(task.id, k, v));
       if (task.dueDate && task.dueDate !== origDate) {
         onMoveTaskToDate(task.id, origDate, task.dueDate);
       }
     } else {
-      addTask(task.text, task.priority || 3, task.category || 'Personal', task.dueDate || dateStr, task.dueTime || '', { alarm: task.alarm, recurrence: task.recurrence, recurrenceDays: task.recurrenceDays, note: task.note, reminders: task.reminders, subtasks: task.subtasks, tags: task.tags, status: task.status });
+      addTask(task.text, task.priority || 3, task.category || 'Personal', task.dueDate || dateStr, task.dueTime || '', { alarm: task.alarm, recurrence: task.recurrence, recurrenceDays: task.recurrenceDays, reminders: task.reminders, tags: task.tags, status: task.status });
     }
     closeTaskModal();
   };
@@ -8548,7 +8925,7 @@ const AgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAgendaTo
                 {task.endTime && <span style={{ fontSize: 8, color: COLORS.textDim, ...s }}>- {task.endTime} ({formatDuration(task.dueTime, task.endTime)})</span>}
                 {!hideTime && !task.dueTime && <span style={{ fontSize: 8, color: COLORS.textDim + '88', ...s }}>Sin hora</span>}
                 {task.category && <span style={{ fontSize: 8, padding: '1px 5px', borderRadius: 3, background: `${COLORS.textDim}12`, color: COLORS.textDim + 'cc', ...s }}>{task.category}</span>}
-                {task.alarm && <Clock size={10} color="#ffd93d" />}
+          {task.alarm && <Clock size={10} color={COLORS.primary} />}
                 {task.recurrence && task.recurrence !== 'none' && <Repeat size={10} color={COLORS.primary} />}
                 {task.status === 'in_progress' && <span style={{ fontSize: 8, color: COLORS.primary, fontWeight: 600, ...s }}>{'\u{25CF}'}</span>}
               </div>
@@ -8892,21 +9269,6 @@ const AgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAgendaTo
     </div>
   );
 
-  const renderDailyNotes = () => (
-    <div style={{ background: COLORS.card, borderRadius: 16, border: `1px solid ${COLORS.border}`, padding: 12, marginBottom: 12 }}>
-      <div style={{ display: 'flex', gap: 7, alignItems: 'center', marginBottom: 7 }}>
-        <BookOpen size={14} color={COLORS.primary} />
-        <div>
-          <div style={{ fontSize: 11, fontWeight: 700, color: COLORS.text, ...s }}>Notas del día</div>
-          <div style={{ fontSize: 9, color: COLORS.textDim, ...s }}>Ideas, llamadas o cosas que no quieres olvidar.</div>
-        </div>
-      </div>
-      <textarea value={agendaNotes[dateStr] || ''} onChange={e => onUpdateAgendaNote(dateStr, e.target.value)}
-        placeholder="Escribe aquí tus anotaciones..."
-        style={{ width: '100%', minHeight: 108, resize: 'vertical', boxSizing: 'border-box', padding: '9px 10px', borderRadius: 9, border: `1px solid ${COLORS.border}`, background: COLORS.bg, color: COLORS.text, fontSize: 11, lineHeight: 1.5, ...s, outline: 'none' }} />
-    </div>
-  );
-
   const renderCleanTaskRow = (task) => {
     const priorityColor = PRIORITY_COLORS[task.priority || 3];
     return (
@@ -8923,7 +9285,6 @@ const AgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAgendaTo
             <span style={{ fontSize: 8, color: COLORS.textDim, ...s }}>{task.category || 'Personal'}</span>
             {task.alarm && <Clock size={10} color="#ffd93d" />}
             {task.recurrence && task.recurrence !== 'none' && <Repeat size={10} color={COLORS.primary} />}
-            {task.subtasks?.length > 0 && <span style={{ fontSize: 8, color: COLORS.textDim, ...s }}>{task.subtasks.filter(st => st.completed).length}/{task.subtasks.length}</span>}
           </div>
         </div>
         <button onClick={() => openTaskModal(task)} style={{ ...btnBase, width: 26, height: 26, color: COLORS.textDim, background: 'transparent' }} title="Editar"><Edit size={13} /></button>
@@ -9120,19 +9481,17 @@ const AgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAgendaTo
     <div className="agenda-side-panel" style={{ background: COLORS.card, borderRadius: 16, border: `1px solid ${COLORS.border}`, padding: 12 }}>
       <div className="agenda-side-tabs" style={{ display: 'flex', gap: 3, marginBottom: 12, padding: 3, background: COLORS.bg, borderRadius: 9 }}>
         {[
-          { id: 'notes', label: 'Notas', icon: <BookOpen size={11} /> },
+          { id: 'todos', label: 'To-do', icon: <CheckCircle size={11} /> },
           { id: 'calendar', label: 'Mes', icon: <Calendar size={11} /> },
           { id: 'upcoming', label: 'Próximo', icon: <List size={11} /> }
         ].map(item => (
           <button key={item.id} onClick={() => setSidePanel(item.id)} style={{ ...btnBase, flex: 1, padding: '6px 3px', background: sidePanel === item.id ? COLORS.card : 'transparent', color: sidePanel === item.id ? COLORS.text : COLORS.textDim, fontSize: 9 }}>{item.icon}{item.label}</button>
         ))}
       </div>
-      {sidePanel === 'notes' && (
+      {sidePanel === 'todos' && (
         <div>
-          <div style={{ color: COLORS.text, fontSize: 12, fontWeight: 700, marginBottom: 3, ...s }}>Notas del día</div>
-          <div style={{ color: COLORS.textDim, fontSize: 9, marginBottom: 8, lineHeight: 1.45, ...s }}>Apunta ideas rápidas sin convertirlas en tareas.</div>
-          <textarea value={agendaNotes[dateStr] || ''} onChange={e => onUpdateAgendaNote(dateStr, e.target.value)} placeholder="Escribe una nota..."
-            style={{ width: '100%', minHeight: 210, resize: 'vertical', boxSizing: 'border-box', padding: 10, borderRadius: 9, border: `1px solid ${COLORS.border}`, background: COLORS.bg, color: COLORS.text, fontSize: 11, lineHeight: 1.5, ...s, outline: 'none' }} />
+          <div style={{ color: COLORS.text, fontSize: 12, fontWeight: 700, marginBottom: 3, ...s }}>Pendientes rápidos</div>
+          <div style={{ color: COLORS.textDim, fontSize: 9, marginBottom: 8, lineHeight: 1.45, ...s }}>Lista simple para compras, llamadas y cosas pequeñas del día.</div>
           {renderCompactTodoList()}
         </div>
       )}
@@ -9166,8 +9525,6 @@ const AgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAgendaTo
           <div style={{ display: 'flex', flexDirection: 'column', gap: 16, flex: 1, minHeight: 0, overflowY: 'auto', paddingRight: 2 }}>
             <input value={t.text || ''} onChange={e => setEditModalTask(p => ({ ...p, text: e.target.value }))} placeholder="Título de la tarea"
               style={{ width: '100%', height: 44, flexShrink: 0, boxSizing: 'border-box', padding: '0 14px', borderRadius: 10, border: `1px solid ${COLORS.border}`, background: COLORS.bg, color: COLORS.text, fontSize: 14, fontWeight: 500, ...s, outline: 'none' }} />
-            <textarea value={t.note || ''} onChange={e => setEditModalTask(p => ({ ...p, note: e.target.value }))} placeholder="Añadir descripción..."
-              style={{ width: '100%', padding: '11px 12px', borderRadius: 10, border: `1px solid ${COLORS.border}`, background: COLORS.bg, color: COLORS.text, fontSize: 11, ...s, outline: 'none', resize: 'vertical', minHeight: 86, boxSizing: 'border-box' }} />
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
               <div><div style={{ fontSize: 9, color: COLORS.textDim, marginBottom: 3, ...s }}>Fecha</div>
                 <div style={{ position: 'relative' }}>
@@ -9294,26 +9651,6 @@ const AgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAgendaTo
                 </div>
               </div>
             )}
-            <div>
-              <div style={{ fontSize: 10, fontWeight: 600, color: COLORS.text, ...s, marginBottom: 4 }}>Checklist</div>
-              <div style={{ display: 'flex', gap: 5, marginBottom: 5 }}>
-                <input value={newSubtask} onChange={e => setNewSubtask(e.target.value)} onKeyDown={e => { if (e.key === 'Enter') addModalSubtask(); }}
-                  placeholder="Añadir un paso..."
-                  style={{ flex: 1, padding: '6px 8px', borderRadius: 6, border: `1px solid ${COLORS.border}`, background: COLORS.bg, color: COLORS.text, fontSize: 10, ...s, outline: 'none' }} />
-                <button onClick={addModalSubtask} style={{ ...btnBase, padding: '0 9px', background: `${COLORS.primary}18`, color: COLORS.primary }}><Plus size={12} /></button>
-              </div>
-              {t.subtasks?.length > 0 && <>
-              {t.subtasks.map((st, idx) => (
-                <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: 4, marginBottom: 2 }}>
-                  <input type="checkbox" checked={st.completed} onChange={() => { const s = [...(t.subtasks||[])]; s[idx] = { ...s[idx], completed: !s[idx].completed }; setEditModalTask(p => ({ ...p, subtasks: s })); }}
-                    style={{ accentColor: COLORS.primary }} />
-                  <span style={{ flex: 1, fontSize: 10, color: st.completed ? COLORS.textDim : COLORS.text, textDecoration: st.completed ? 'line-through' : 'none', ...s }}>{st.text}</span>
-                  <button onClick={() => setEditModalTask(p => ({ ...p, subtasks: p.subtasks.filter((_, i) => i !== idx) }))}
-                    style={{ ...btnBase, background: 'transparent', color: COLORS.textDim, padding: 1 }}><X size={11} /></button>
-                </div>
-              ))}
-              </>}
-            </div>
             <div style={{ display: 'flex', gap: 8, marginTop: 'auto', paddingTop: 18, borderTop: `1px solid ${COLORS.border}` }}>
               {t.id ? (
                 <>
@@ -10183,7 +10520,7 @@ const HabitFlowApp = () => {
       case 'dreams': return <DreamGoalsView data={data} onUpdateDreamGoals={onUpdateDreamGoals} />;
       case 'finance': return <FinanceView data={data} onUpdateFinance={onUpdateFinance} />;
       case 'stats': return <StatisticsView data={data} />;
-      case 'settings': return <SettingsView data={data} onUpdateUser={onUpdateUser} onResetData={onResetData} />;
+      case 'settings': return <SettingsView data={data} onUpdateUser={onUpdateUser} onResetData={onResetData} cloudSync={cloudSync} onGenerateRandomData={onGenerateRandomData} />;
       default: return <DashboardView data={data} onCompleteHabit={onCompleteHabit} workoutData={data.workoutData} onNavigate={navigateTo} onUpdateUser={onUpdateUser} />;
     }
   };
@@ -10229,7 +10566,6 @@ const HabitFlowApp = () => {
         height: '100vh', zIndex: 100, transition: 'width 0.3s ease'
       }}>
         <div className="user-info" style={{ padding: sidebarOpen ? '20px 16px' : '16px 8px', borderBottom: `1px solid ${COLORS.border}`, transition: 'padding 0.3s ease', textAlign: sidebarOpen ? 'left' : 'center' }}>
-          <BrandLogo size="sm" compact={!sidebarOpen} center={!sidebarOpen} />
           <div style={{ display: sidebarOpen ? 'block' : 'none', fontSize: 11, color: COLORS.textDim, lineHeight: 1.4, marginTop: 4 }}>
               {data.user.motto}
           </div>
@@ -10306,32 +10642,6 @@ const HabitFlowApp = () => {
             </div>
           </div>
           <div className="top-actions" style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-            {(() => {
-              const syncColor = cloudSync.status === 'active' ? COLORS.success : cloudSync.status === 'saving' ? theme.primary : COLORS.textDim;
-              const syncBg = cloudSync.status === 'active' ? `${COLORS.success}10` : cloudSync.status === 'saving' ? `${theme.primary}14` : `${COLORS.alert}0f`;
-              const syncBorder = cloudSync.status === 'active' ? COLORS.success : cloudSync.status === 'saving' ? `${theme.primary}80` : COLORS.border;
-              const syncIcon = cloudSync.status === 'active' ? '\u{2601}\u{FE0F}' : cloudSync.status === 'saving' ? '\u{21BB}' : '\u{1F4BE}';
-              return (
-                <div className="top-sync" title={cloudSync.reason || cloudSync.label} style={{
-                  padding: '6px 10px', borderRadius: 999,
-                  border: `1px solid ${syncBorder}`,
-                  background: syncBg,
-                  color: syncColor,
-                  fontSize: 10, fontFamily: "'Inter', sans-serif", fontWeight: 600,
-                  whiteSpace: 'nowrap'
-                }}>
-                  {syncIcon} {cloudSync.label}
-                </div>
-              );
-            })()}
-            <button className="top-random" onClick={onGenerateRandomData} title="Generar datos aleatorios" style={{
-              padding: '6px 12px', borderRadius: 8, border: 'none',
-              background: `${theme.primary}12`, color: theme.primary,
-              cursor: 'pointer', fontSize: 11, fontFamily: "'Inter', sans-serif",
-              display: 'flex', alignItems: 'center', gap: 4
-            }}>
-              <Sparkles size={13} /> Aleatorio
-            </button>
             <div className="top-streak" style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, color: COLORS.alert }}>
               <Flame size={16} /> {getGlobalCurrentStreak(data.habits, data.records)}
             </div>

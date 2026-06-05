@@ -15,6 +15,7 @@ self.addEventListener('message', (event) => {
       badge: './icon-192-20260603.png',
       tag: data.tag || 'habitflow-notification',
       renotify: Boolean(data.renotify),
+      requireInteraction: Boolean(data.requireInteraction),
       body: data.body || '',
       data: data.data || {}
     })
@@ -26,11 +27,11 @@ self.addEventListener('push', (event) => {
   try {
     payload = event.data ? event.data.json() : {};
   } catch {
-    payload = { title: '🔔 HabitFlow', body: 'Tienes una alerta pendiente.' };
+    payload = { title: 'HabitFlow', body: 'Tienes una alerta pendiente.' };
   }
-  const title = payload.title || '🔔 HabitFlow';
+
   event.waitUntil(
-    self.registration.showNotification(title, {
+    self.registration.showNotification(payload.title || 'HabitFlow', {
       icon: './icon-192-20260603.png',
       badge: './icon-192-20260603.png',
       tag: payload.tag || `habitflow-push-${Date.now()}`,
