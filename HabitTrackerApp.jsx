@@ -10566,6 +10566,9 @@ const HabitFlowApp = () => {
         height: '100vh', zIndex: 100, transition: 'width 0.3s ease'
       }}>
         <div className="user-info" style={{ padding: sidebarOpen ? '20px 16px' : '16px 8px', borderBottom: `1px solid ${COLORS.border}`, transition: 'padding 0.3s ease', textAlign: sidebarOpen ? 'left' : 'center' }}>
+          <div style={{ display: sidebarOpen ? 'block' : 'none', marginBottom: 6 }}>
+            <BrandLogo size="sm" />
+          </div>
           <div style={{ display: sidebarOpen ? 'block' : 'none', fontSize: 11, color: COLORS.textDim, lineHeight: 1.4, marginTop: 4 }}>
               {data.user.motto}
           </div>
