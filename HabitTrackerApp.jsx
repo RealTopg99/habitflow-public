@@ -1035,6 +1035,14 @@ const injectStyles = () => {
     .kpi-card { transition: all 0.3s ease; }
     .kpi-card:hover { transform: translateY(-1px); }
     .kpi-grid { display: grid !important; grid-template-columns: repeat(5, 1fr) !important; gap: 12px !important; }
+    @media (max-width: 1380px) {
+      .dashboard-layout-grid {
+        grid-template-columns: minmax(0, 1fr) minmax(360px, 0.52fr) !important;
+      }
+      .today-habits-grid {
+        grid-template-columns: 1fr !important;
+      }
+    }
     .habit-card { transition: all 0.3s ease; }
     .habit-card:hover { transform: translateY(-1px); box-shadow: 0 4px 18px rgba(var(--icon-rgb,225,29,72),0.09); }
     .btn-ripple { position: relative; overflow: hidden; }
@@ -1619,6 +1627,7 @@ const injectStyles = () => {
         border-radius: 20px !important;
       }
       [style*="grid-template-columns: 1fr 280px"],
+      [style*="grid-template-columns: minmax(0, 1fr) minmax(420px, 0.62fr)"],
       [style*="grid-template-columns: minmax(0, 1.45fr) minmax(330px, 0.9fr)"],
       [style*="grid-template-columns: minmax(0, 1fr) 270px"],
       [style*="grid-template-columns: minmax(0, 1fr) 340px"],
@@ -3643,7 +3652,7 @@ const DashboardView = ({ data, onCompleteHabit, workoutData, onNavigate, onUpdat
         </div>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 280px', gap: 24, alignItems: 'start' }}>
+      <div className="dashboard-layout-grid" style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) minmax(420px, 0.62fr)', gap: 24, alignItems: 'start' }}>
         <div style={{ minWidth: 0 }}>
           {isFirstRun && (
             <div style={{
@@ -3779,14 +3788,14 @@ const DashboardView = ({ data, onCompleteHabit, workoutData, onNavigate, onUpdat
           <AchievementsSection habits={habits} records={records} />
         </div>
 
-        <div style={{
+        <div className="today-habits-panel" style={{
           background: COLORS.card, borderRadius: 16, border: `1px solid ${COLORS.border}`,
           padding: 20, position: 'sticky', top: 16
         }}>
           <h3 style={{ fontSize: 15, color: COLORS.text, marginBottom: 16, fontFamily: "'DM Serif Display', serif" }}>
             Hábitos de Hoy
           </h3>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+          <div className="today-habits-grid" style={{ display: 'grid', gridTemplateColumns: habitsToday.length > 8 ? 'repeat(2, minmax(0, 1fr))' : '1fr', gap: 7 }}>
             {habitsToday.length === 0 && (
               <div style={{ fontSize: 12, color: COLORS.textDim, textAlign: 'center', padding: 16 }}>
                 No hay hábitos activos
