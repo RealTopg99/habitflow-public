@@ -2832,6 +2832,13 @@ const ClerkSignInScreen = ({ clerk }) => {
 };
 
 const ClerkUserButtonMount = () => {
+  if (isHabitFlowLocalDev()) {
+    return (
+      <div title="Vista local de prueba" style={{ width: 34, height: 34, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: `linear-gradient(135deg, ${COLORS.primary}, ${COLORS.alert})`, color: '#fff', fontSize: 10, fontWeight: 900, fontFamily: "'Inter', sans-serif", boxShadow: `0 0 0 1px ${COLORS.border}` }}>
+        DEV
+      </div>
+    );
+  }
   const ref = useRef(null);
   useEffect(() => {
     if (!window.Clerk || !ref.current) return;
@@ -2845,7 +2852,18 @@ const ClerkUserButtonMount = () => {
   return <div ref={ref} style={{ width: 34, height: 34, display: 'flex', alignItems: 'center', justifyContent: 'center' }} />;
 };
 
+const isHabitFlowLocalDev = () => {
+  try {
+    const host = window.location.hostname;
+    return !!window.HABITFLOW_DEV_AUTH_BYPASS && ['localhost', '127.0.0.1', ''].includes(host);
+  } catch {
+    return false;
+  }
+};
+
 const AuthGate = ({ children }) => {
+  if (isHabitFlowLocalDev()) return children;
+
   const [publishableKey, setPublishableKey] = useState(getStoredClerkKey);
   const [clerk, setClerk] = useState(null);
   const [status, setStatus] = useState(publishableKey ? 'loading' : 'setup');
@@ -3542,13 +3560,39 @@ const DashboardView = ({ data, onCompleteHabit, workoutData, onNavigate, onUpdat
       const cat = getCategoryInfo(h.category);
       return { ...h, completed: rec ? rec.completed : false, categoryInfo: cat, streak: getCurrentStreak(h.id, records) };
     }), [habits, records, today]);
+  const habitGoalProgress = useMemo(() => {
+    const goals = habits.filter(h => h.active).map(h => {
+      const target = Math.max(1, Number(h.targetStreak || 21));
+      const current = Math.min(target, getCurrentStreak(h.id, records, h));
+      const pct = Math.min(100, Math.round((current / target) * 100));
+      return {
+        id: h.id,
+        name: h.name,
+        icon: h.icon,
+        color: getCategoryInfo(h.category).color || COLORS.primary,
+        current,
+        target,
+        remaining: Math.max(0, target - current),
+        pct
+      };
+    }).sort((a, b) => (a.remaining === 0 ? 1 : 0) - (b.remaining === 0 ? 1 : 0) || a.remaining - b.remaining);
+    const totalTarget = goals.reduce((sum, g) => sum + g.target, 0);
+    const totalCurrent = goals.reduce((sum, g) => sum + g.current, 0);
+    const totalRemaining = goals.reduce((sum, g) => sum + g.remaining, 0);
+    return {
+      goals,
+      visible: goals.slice(0, 4),
+      totalRemaining,
+      overallPct: totalTarget ? Math.round((totalCurrent / totalTarget) * 100) : 0
+    };
+  }, [habits, records]);
 
   const isFirstRun = !data.user?.onboardingDone && (habits.length === 0 || records.length === 0);
   const [tourStep, setTourStep] = useState(null);
   const tourSteps = [
     { title: 'Crea tus primeros hábitos', text: 'Empieza con 3 hábitos simples. Mejor poco y constante que una lista enorme imposible de cumplir.', view: 'habits' },
     { title: 'Organiza tu día', text: 'Usa Agenda para anotar tareas, poner etiquetas, fechas y alertas. Aquí aterrizas lo que tienes que hacer.', view: 'agenda' },
-    { title: 'Enfócate y mide progreso', text: 'Pomodoro te ayuda a trabajar por bloques. Estadísticas te muestra qué está funcionando y qué debes ajustar.', view: 'pomodoro' }
+    { title: 'Enfócate y mide progreso', text: 'Pomodoro te ayuda a trabajar por bloques. El Panel te muestra qué está funcionando y qué debes ajustar.', view: 'pomodoro' }
   ];
   const finishTour = (view = 'habits') => {
     onUpdateUser?.({ onboardingDone: true });
@@ -3631,6 +3675,53 @@ const DashboardView = ({ data, onCompleteHabit, workoutData, onNavigate, onUpdat
               progress={kpis.rate / 100} />
             <KPICard icon={'\u{1F3C6}'} title="Mejor Racha" value={kpis.bestStreak} subtitle="Récord histórico"
               accent={COLORS.alert} suffix=" días" delay={400} />
+          </div>
+
+          <div style={{ background: COLORS.card, borderRadius: 16, border: `1px solid ${COLORS.border}`, padding: 18, marginBottom: 24, overflow: 'hidden' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 14, marginBottom: 14 }}>
+              <div>
+                <div style={{ color: COLORS.text, fontSize: 16, fontWeight: 900, marginBottom: 4, ...s }}>
+                  <Target size={15} style={{ verticalAlign: 'middle', marginRight: 7, color: COLORS.primary }} />
+                  Metas de hábitos
+                </div>
+                <div style={{ color: COLORS.textDim, fontSize: 11, lineHeight: 1.5, ...s }}>
+                  Visualiza cuánto falta para completar tus rachas objetivo.
+                </div>
+              </div>
+              <div style={{ textAlign: 'right', flexShrink: 0 }}>
+                <div style={{ color: COLORS.text, fontSize: 20, fontWeight: 900, lineHeight: 1, ...s }}>{habitGoalProgress.overallPct}%</div>
+                <div style={{ color: COLORS.textDim, fontSize: 10, marginTop: 4, ...s }}>
+                  {habitGoalProgress.totalRemaining} días faltantes
+                </div>
+              </div>
+            </div>
+            <div style={{ height: 7, borderRadius: 99, background: COLORS.bg, overflow: 'hidden', marginBottom: 14 }}>
+              <div style={{ height: '100%', width: `${habitGoalProgress.overallPct}%`, borderRadius: 99, background: `linear-gradient(90deg, ${COLORS.primary}, ${COLORS.alert})`, transition: 'width 900ms ease', boxShadow: `0 0 18px ${COLORS.primary}55` }} />
+            </div>
+            <div style={{ display: 'grid', gap: 10 }}>
+              {habitGoalProgress.visible.map(goal => (
+                <div key={goal.id} style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) auto', gap: 12, alignItems: 'center' }}>
+                  <div style={{ minWidth: 0 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
+                      <span className="fire-emoji" style={{ fontSize: 16 }}>{goal.icon}</span>
+                      <span style={{ color: COLORS.text, fontSize: 12, fontWeight: 800, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', ...s }}>{goal.name}</span>
+                    </div>
+                    <div style={{ height: 6, borderRadius: 99, background: COLORS.bg, overflow: 'hidden' }}>
+                      <div style={{ height: '100%', width: `${goal.pct}%`, borderRadius: 99, background: `linear-gradient(90deg, ${goal.color}, ${COLORS.primary})`, transition: 'width 850ms ease' }} />
+                    </div>
+                  </div>
+                  <div style={{ color: goal.remaining === 0 ? COLORS.success : COLORS.textDim, fontSize: 11, fontWeight: 800, textAlign: 'right', minWidth: 80, ...s }}>
+                    {goal.remaining === 0 ? 'Lista' : `faltan ${goal.remaining}d`}
+                    <div style={{ color: COLORS.textDim, fontSize: 9, fontWeight: 600, marginTop: 2 }}>{goal.current}/{goal.target}</div>
+                  </div>
+                </div>
+              ))}
+              {habitGoalProgress.visible.length === 0 && (
+                <div style={{ color: COLORS.textDim, fontSize: 12, padding: '8px 0', ...s }}>
+                  Crea hábitos con meta de racha para ver tu progreso aquí.
+                </div>
+              )}
+            </div>
           </div>
 
           {workoutData?.sessions?.length > 0 && (() => {
@@ -9728,7 +9819,7 @@ const HabitFlowApp = () => {
   const [data, setData] = useState(null);
   const [view, setView] = useState(() => {
     const saved = localStorage.getItem('habitflow_active_view');
-    return saved && saved !== 'reading' ? saved : 'dashboard';
+    return saved && !['reading', 'stats'].includes(saved) ? saved : 'dashboard';
   });
   const [confetti, setConfetti] = useState(null);
   const [mobileMenu, setMobileMenu] = useState(false);
@@ -9885,7 +9976,7 @@ const HabitFlowApp = () => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
 
   const navigateTo = useCallback((nextView) => {
-    const safeView = nextView === 'reading' ? 'dashboard' : nextView;
+    const safeView = ['reading', 'stats'].includes(nextView) ? 'dashboard' : nextView;
     setView(safeView);
     localStorage.setItem('habitflow_active_view', safeView);
     requestAnimationFrame(() => {
@@ -10437,7 +10528,6 @@ const HabitFlowApp = () => {
     { id: 'agenda', label: 'Agenda', icon: <List size={20} /> },
     { id: 'dreams', label: 'Metas', icon: <Sparkles size={20} /> },
     { id: 'finance', label: 'Finanzas', icon: <CreditCard size={20} /> },
-    { id: 'stats', label:  'Estadísticas', icon: <BarChart3 size={20} /> },
     { id: 'settings', label:  'Configuración', icon: <Settings size={20} /> }
   ];
 
@@ -10450,7 +10540,6 @@ const HabitFlowApp = () => {
       case 'agenda': return <AgendaView data={data} onUpdateAgenda={onUpdateAgenda} onUpdateAgendaNote={onUpdateAgendaNote} onUpdateAgendaTodos={onUpdateAgendaTodos} onUpdateAgendaTodoLabels={onUpdateAgendaTodoLabels} onMoveTaskToDate={onMoveTaskToDate} onCompleteHabit={onCompleteHabit} />;
       case 'dreams': return <DreamGoalsView data={data} onUpdateDreamGoals={onUpdateDreamGoals} />;
       case 'finance': return <FinanceView data={data} onUpdateFinance={onUpdateFinance} />;
-      case 'stats': return <StatisticsView data={data} />;
       case 'settings': return <SettingsView data={data} onUpdateUser={onUpdateUser} onResetData={onResetData} cloudSync={cloudSync} onGenerateRandomData={onGenerateRandomData} />;
       default: return <DashboardView data={data} onCompleteHabit={onCompleteHabit} workoutData={data.workoutData} onNavigate={navigateTo} onUpdateUser={onUpdateUser} />;
     }
