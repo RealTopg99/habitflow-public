@@ -3531,6 +3531,7 @@ const StatsTooltip = ({ active, payload, label }) => {
 
 const DashboardView = ({ data, onCompleteHabit, workoutData, onNavigate, onUpdateUser }) => {
   const { habits, records } = data;
+  const s = { fontFamily: "'Inter', sans-serif" };
   const today = toYYYYMMDD(new Date());
   const todayCount = getTodayCount(habits, records);
   const greet = greets();
