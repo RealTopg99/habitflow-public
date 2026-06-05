@@ -8834,15 +8834,20 @@ const getTaskIntervalLabel = (task = {}) => {
   return `${cadence}${untilDate ? ` hasta ${untilDate}${untilTime ? ` ${untilTime}` : ''}` : ''}`;
 };
 const generateIntervalDates = (task, fromDate, count = 31) => {
-  if (!getTaskIntervalMinutes(task)) return [];
+  const intervalMins = getTaskIntervalMinutes(task);
+  if (!intervalMins || !task.dueTime) return [];
   const endDate = task.repeatUntilDate || fromDate;
-  const dates = [];
-  for (let i = 0; i < count; i++) {
-    const ds = toYYYYMMDD(addDays(new Date(`${fromDate}T12:00:00`), i));
-    if (ds > endDate) break;
-    dates.push(ds);
+  const startMins = timeToMinutes(task.dueTime);
+  const endMins = timeToMinutes(task.repeatUntilTime || '23:59');
+  const endAbs = daysBetweenDateStrings(fromDate, endDate) * 1440 + endMins;
+  if (endAbs < startMins) return [];
+  const dates = new Set();
+  for (let occurrenceAbs = startMins; occurrenceAbs <= endAbs; occurrenceAbs += intervalMins) {
+    const dayOffset = Math.floor(occurrenceAbs / 1440);
+    if (dayOffset >= count) break;
+    dates.add(toYYYYMMDD(addDays(new Date(`${fromDate}T12:00:00`), dayOffset)));
   }
-  return dates;
+  return Array.from(dates);
 };
 
 const getIntervalNotificationSlots = (task, now, reminderMins = 0) => {
@@ -9021,7 +9026,8 @@ const AgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAgendaTo
       result[ds] = [...tasks];
       tasks.forEach(task => {
         const anchorDate = task.dueDate || ds;
-        if (task.recurrence && task.recurrence !== 'none') {
+        const hasIntervalRepeat = getTaskIntervalMinutes(task) > 0;
+        if (!hasIntervalRepeat && task.recurrence && task.recurrence !== 'none') {
           const dates = generateRecurrenceDates(task, anchorDate, 90);
           dates.forEach(d => {
             if (d !== anchorDate) {
@@ -9030,7 +9036,7 @@ const AgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAgendaTo
             }
           });
         }
-        generateIntervalDates(task, anchorDate, 31).forEach(d => {
+        if (hasIntervalRepeat) generateIntervalDates(task, anchorDate, 31).forEach(d => {
           if (d !== anchorDate) {
             if (!result[d]) result[d] = [];
             if (!result[d].some(e => e.id === task.id)) result[d].push({ ...task, dueDate: d, _intervalAnchorDate: anchorDate });
@@ -9125,8 +9131,23 @@ const AgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAgendaTo
   };
   const closeTaskModal = () => { setShowModal(false); setEditModalTask(null); setShowDatePicker(false); setShowTimePicker(false); };
   const saveTaskModal = () => {
-    const task = editModalTask;
+    let task = editModalTask;
     if (!task || !task.text?.trim()) { closeTaskModal(); return; }
+    const taskStartDate = task.dueDate || dateStr;
+    if (getTaskIntervalMinutes(task) > 0) {
+      task = {
+        ...task,
+        recurrence: 'none',
+        repeatUntilDate: !task.repeatUntilDate || task.repeatUntilDate < taskStartDate ? taskStartDate : task.repeatUntilDate,
+        repeatUntilTime: task.repeatUntilTime || '23:59',
+        intervalEvery: task.intervalEvery || 1,
+        reminders: task.reminders?.length ? task.reminders : ['exact'],
+        alarm: true
+      };
+      if (task.repeatUntilDate === taskStartDate && task.dueTime && task.repeatUntilTime < task.dueTime) {
+        task.repeatUntilTime = task.dueTime;
+      }
+    }
     if (task.id) {
       const origDate = task._originalDueDate || dateStr;
       Object.entries({ text: task.text, dueTime: task.dueTime, priority: task.priority, category: task.category, alarm: task.alarm, recurrence: task.recurrence, recurrenceDays: task.recurrenceDays, intervalRepeat: task.intervalRepeat, intervalEvery: task.intervalEvery, repeatUntilDate: task.repeatUntilDate, repeatUntilTime: task.repeatUntilTime, reminders: task.reminders, tags: task.tags, status: task.status }).forEach(([k, v]) => updateTaskField(task.id, k, v));
@@ -9864,7 +9885,7 @@ const AgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAgendaTo
                               const isSel = ds === (t.dueDate || dateStr);
                               const isT = ds === todayStr;
                               return (
-                                <button key={i} onClick={() => { setEditModalTask(p => ({ ...p, dueDate: ds })); setShowDatePicker(false); }}
+                                <button key={i} onClick={() => { setEditModalTask(p => ({ ...p, dueDate: ds, repeatUntilDate: !p.repeatUntilDate || p.repeatUntilDate < ds ? ds : p.repeatUntilDate })); setShowDatePicker(false); }}
                                   style={{ padding: '2px 0', border: 'none', background: isSel ? COLORS.primary : isT ? `${COLORS.primary}15` : 'transparent', color: isSel ? '#fff' : isT ? COLORS.primary : isCurr ? COLORS.text : COLORS.textDim + '40', fontSize: 9, fontWeight: isSel || isT ? 700 : 400, borderRadius: 4, cursor: 'pointer', ...s }}>{d.getDate()}</button>
                               );
                             })}
@@ -9931,8 +9952,8 @@ const AgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAgendaTo
                   style={{ accentColor: COLORS.primary }} />
                 <span style={{ fontSize: 10, ...s }}>Alerta</span>
               </label>
-              <select value={t.recurrence || 'none'} onChange={e => setEditModalTask(p => ({ ...p, recurrence: e.target.value }))}
-                style={{ padding: '4px 8px', borderRadius: 6, border: `1px solid ${COLORS.border}`, background: COLORS.bg, color: COLORS.text, fontSize: 9, ...s, outline: 'none' }}>
+              <select value={getTaskIntervalMinutes(t) > 0 ? 'none' : (t.recurrence || 'none')} disabled={getTaskIntervalMinutes(t) > 0} onChange={e => setEditModalTask(p => ({ ...p, recurrence: e.target.value }))}
+                style={{ padding: '4px 8px', borderRadius: 6, border: `1px solid ${COLORS.border}`, background: COLORS.bg, color: getTaskIntervalMinutes(t) > 0 ? COLORS.textDim : COLORS.text, fontSize: 9, ...s, outline: 'none', opacity: getTaskIntervalMinutes(t) > 0 ? 0.6 : 1 }}>
                 {RECURRENCE_TYPES.map(r => <option key={r.id} value={r.id}>{r.label}</option>)}
               </select>
               <select value={t.status || 'pending'} onChange={e => setEditModalTask(p => ({ ...p, status: e.target.value }))}
@@ -9959,6 +9980,8 @@ const AgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAgendaTo
                 setEditModalTask(p => ({
                   ...p,
                   intervalRepeat: value,
+                  recurrence: value !== 'none' ? 'none' : p.recurrence,
+                  recurrenceDays: value !== 'none' ? [] : p.recurrenceDays,
                   alarm: value !== 'none' ? true : p.alarm,
                   reminders: value !== 'none' ? (p.reminders?.length ? p.reminders : ['exact']) : p.reminders,
                   dueTime: value !== 'none' && !p.dueTime ? fallbackTime : p.dueTime,
@@ -10240,7 +10263,8 @@ const HabitFlowApp = () => {
           const anchorDate = t.dueDate || ds;
           if (!expanded[ds]) expanded[ds] = [];
           expanded[ds].push({ ...t, _intervalAnchorDate: anchorDate });
-          if (t.recurrence && t.recurrence !== 'none') {
+          const hasIntervalRepeat = getTaskIntervalMinutes(t) > 0;
+          if (!hasIntervalRepeat && t.recurrence && t.recurrence !== 'none') {
             const dates = generateRecurrenceDates(t, anchorDate, 90);
             dates.forEach(d => {
               if (d !== anchorDate) {
@@ -10249,7 +10273,7 @@ const HabitFlowApp = () => {
               }
             });
           }
-          generateIntervalDates(t, anchorDate, 31).forEach(d => {
+          if (hasIntervalRepeat) generateIntervalDates(t, anchorDate, 31).forEach(d => {
             if (d !== anchorDate) {
               if (!expanded[d]) expanded[d] = [];
               if (!expanded[d].some(e => e.id === t.id)) expanded[d].push({ ...t, dueDate: d, _intervalAnchorDate: anchorDate });
