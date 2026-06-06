@@ -10,7 +10,8 @@ import {
   Sparkles, Eye, EyeOff, BarChart3, Calendar, BookOpen,
   Clock, Play, Pause, StopCircle, Award, ChevronLeft, ChevronRight,
   Dumbbell, SkipBack, SkipForward, Timer, Repeat, Maximize, Minimize,
-  List, Search, ArrowUp, ArrowDown, Hash, GripVertical, CreditCard
+  List, Search, ArrowUp, ArrowDown, Hash, GripVertical, CreditCard,
+  Heart, Pill, Bell
 } from 'lucide-react';
 
 const supabase = window.supabaseClient;
@@ -390,6 +391,141 @@ const getFinanceData = () => ({
   ]
 });
 
+const MEDICATION_FORMS = [
+  'Tableta / Cápsula', 'Jarabe', 'Inyección', 'Gotas', 'Crema', 'Inhalador', 'Otro'
+];
+
+const MEDICATION_COLORS = [
+  { id: 'red', label: 'Rojo', color: '#e11d48', icon: '\u{1F48A}' },
+  { id: 'blue', label: 'Azul', color: '#7dd3fc', icon: '\u{1F48A}' },
+  { id: 'white', label: 'Blanco', color: '#f8fafc', icon: '\u{26AA}' },
+  { id: 'yellow', label: 'Amarillo', color: '#facc15', icon: '\u{1F7E1}' },
+  { id: 'green', label: 'Verde', color: '#22c55e', icon: '\u{1F7E2}' },
+  { id: 'purple', label: 'Morado', color: '#8b5cf6', icon: '\u{1F7E3}' },
+  { id: 'custom', label: 'Personalizado', color: '#fb7185', icon: '\u{1FA7A}' }
+];
+
+const MEDICATION_FREQUENCIES = [
+  'Una vez al día', 'Cada 6 horas', 'Cada 8 horas', 'Cada 12 horas', 'Cada 24 horas', 'Días específicos', 'Personalizado'
+];
+
+const MEAL_TIMING_OPTIONS = [
+  'Antes de las comidas', 'Después de las comidas', 'Con comida', 'En ayunas', 'No importa', 'Según indicación médica'
+];
+
+const MEDICATION_DURATIONS = [
+  '3 días', '5 días', '7 días', '10 días', '15 días', '30 días', '60 días', 'Permanente', 'Personalizado'
+];
+
+const makeMedication = (data) => ({
+  id: data.id || `med_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`,
+  name: data.name || '',
+  dose: data.dose || '',
+  form: data.form || 'Tableta / Cápsula',
+  color: data.color || 'red',
+  frequency: data.frequency || 'Cada 8 horas',
+  times: Array.isArray(data.times) && data.times.length ? data.times : ['08:00'],
+  mealTiming: data.mealTiming || 'No importa',
+  duration: data.duration || '7 días',
+  startDate: data.startDate || toYYYYMMDD(new Date()),
+  endDate: data.endDate || '',
+  instructions: data.instructions || '',
+  notes: data.notes || '',
+  isActive: data.isActive !== false,
+  createdAt: data.createdAt || new Date().toISOString(),
+  updatedAt: data.updatedAt || new Date().toISOString()
+});
+
+const getHealthData = () => ({
+  medications: [
+    makeMedication({ id: 'med_ibuprofen', name: 'Ibuprofeno', dose: '400 mg', form: 'Tableta / Cápsula', color: 'red', frequency: 'Cada 8 horas', times: ['08:00', '16:00', '00:00'], mealTiming: 'Después de las comidas', duration: '7 días', startDate: toYYYYMMDD(new Date()), endDate: toYYYYMMDD(addDays(new Date(), 6)), notes: 'Analgésico / AINE', instructions: 'Tomar con un vaso grande de agua.' }),
+    makeMedication({ id: 'med_amoxicillin', name: 'Amoxicilina', dose: '500 mg', form: 'Tableta / Cápsula', color: 'blue', frequency: 'Cada 12 horas', times: ['08:00', '20:00'], mealTiming: 'Según indicación médica', duration: '10 días', startDate: toYYYYMMDD(new Date()), endDate: toYYYYMMDD(addDays(new Date(), 9)), notes: 'Antibiótico' }),
+    makeMedication({ id: 'med_omeprazole', name: 'Omeprazol', dose: '20 mg', form: 'Tableta / Cápsula', color: 'white', frequency: 'Cada 24 horas', times: ['07:00'], mealTiming: 'En ayunas', duration: '30 días', startDate: toYYYYMMDD(new Date()), endDate: toYYYYMMDD(addDays(new Date(), 29)), notes: 'Protector gástrico' }),
+    makeMedication({ id: 'med_vitamind', name: 'Vitamina D3', dose: '1000 UI', form: 'Tableta / Cápsula', color: 'yellow', frequency: 'Cada 24 horas', times: ['08:00'], mealTiming: 'Con comida', duration: '60 días', startDate: toYYYYMMDD(new Date()), endDate: toYYYYMMDD(addDays(new Date(), 59)), notes: 'Suplemento' }),
+    makeMedication({ id: 'med_loratadine', name: 'Loratadina', dose: '10 mg', form: 'Tableta / Cápsula', color: 'custom', frequency: 'Cada 24 horas', times: ['21:00'], mealTiming: 'No importa', duration: '15 días', startDate: toYYYYMMDD(new Date()), endDate: toYYYYMMDD(addDays(new Date(), 14)), notes: 'Antihistamínico' })
+  ],
+  takenLogs: []
+});
+
+const normalizeHealthData = (health) => {
+  const base = health || {};
+  return {
+    medications: (base.medications || []).map(makeMedication),
+    takenLogs: Array.isArray(base.takenLogs) ? base.takenLogs : []
+  };
+};
+
+const medicationColorMeta = (colorId) => MEDICATION_COLORS.find(item => item.id === colorId) || MEDICATION_COLORS[0];
+
+const isMedicationActiveOnDate = (med, dateStr) => {
+  if (!med?.isActive) return false;
+  if (med.startDate && dateStr < med.startDate) return false;
+  if (med.endDate && dateStr > med.endDate) return false;
+  return true;
+};
+
+const medicationTakenKey = (medicationId, date, time) => `${medicationId}:${date}:${time}`;
+
+const isMedicationDoseTaken = (health, medicationId, date, time) =>
+  (health?.takenLogs || []).some(log => log.medicationId === medicationId && log.date === date && log.scheduledTime === time && log.status === 'taken');
+
+const getTodayMedicationDoses = (health, dateStr = toYYYYMMDD(new Date())) => {
+  const meds = (health?.medications || []).filter(med => isMedicationActiveOnDate(med, dateStr));
+  return meds.flatMap(med => (med.times || []).map(time => ({ medication: med, time })))
+    .sort((a, b) => String(a.time).localeCompare(String(b.time)));
+};
+
+const getNextMedicationDose = (health, now = new Date()) => {
+  const today = toYYYYMMDD(now);
+  const nowMins = now.getHours() * 60 + now.getMinutes();
+  for (let dayOffset = 0; dayOffset <= 7; dayOffset++) {
+    const dateStr = toYYYYMMDD(addDays(now, dayOffset));
+    const doses = getTodayMedicationDoses(health, dateStr);
+    for (const dose of doses) {
+      const doseMins = timeToMinutes(dose.time);
+      if (dayOffset === 0 && doseMins < nowMins) continue;
+      if (isMedicationDoseTaken(health, dose.medication.id, dateStr, dose.time)) continue;
+      return { ...dose, date: dateStr };
+    }
+  }
+  return null;
+};
+
+const getWeeklyHealthStats = (health, endDate = toYYYYMMDD(new Date())) => {
+  let total = 0;
+  let taken = 0;
+  for (let i = 0; i < 7; i++) {
+    const date = toYYYYMMDD(addDays(new Date(`${endDate}T12:00:00`), -i));
+    const doses = getTodayMedicationDoses(health, date);
+    total += doses.length;
+    taken += doses.filter(dose => isMedicationDoseTaken(health, dose.medication.id, date, dose.time)).length;
+  }
+  return { total, taken, pct: total ? Math.round((taken / total) * 100) : 0 };
+};
+
+const getMedicationDurationText = (med) => {
+  if (med.duration === 'Permanente') return 'Permanente';
+  if (!med.startDate || !med.endDate) return med.duration || 'Sin fin';
+  const total = Math.max(1, Math.round((new Date(`${med.endDate}T12:00:00`).getTime() - new Date(`${med.startDate}T12:00:00`).getTime()) / 86400000) + 1);
+  const elapsed = Math.min(total, Math.max(1, Math.round((new Date(`${toYYYYMMDD(new Date())}T12:00:00`).getTime() - new Date(`${med.startDate}T12:00:00`).getTime()) / 86400000) + 1));
+  return `${total} días (Día ${elapsed}/${total})`;
+};
+
+const groupMedicationDosesByDaypart = (doses) => {
+  const groups = [
+    { id: 'morning', label: 'Mañana', icon: '\u2600\uFE0F', start: 6, end: 12, items: [] },
+    { id: 'afternoon', label: 'Tarde', icon: '\u{1F305}', start: 12, end: 18, items: [] },
+    { id: 'night', label: 'Noche', icon: '\u{1F319}', start: 18, end: 24, items: [] },
+    { id: 'dawn', label: 'Madrugada', icon: '\u{1F311}', start: 0, end: 6, items: [] }
+  ];
+  doses.forEach(dose => {
+    const hour = Number(String(dose.time).split(':')[0]);
+    const group = groups.find(item => hour >= item.start && hour < item.end) || groups[0];
+    group.items.push(dose);
+  });
+  return groups;
+};
+
 const getReadingData = () => ({
   books: [],
   activeBookId: null
@@ -539,6 +675,7 @@ const getDefaultData = (reset = false) => {
     challenges: reset ? [] : [{ id: 'ch1', habitId: 'h1', startDate: toYYYYMMDD(addDays(new Date(), -14)), status: 'active' }],
     workoutData: reset ? { exercises: WORKOUT_EXERCISES.map(e => ({ ...e, custom: false })), routines: [], sessions: [] } : getWorkoutData(),
     financeData: reset ? { ...getFinanceData(), monthlyBudget: 0, transactions: [], recurring: [], subscriptions: [], goals: [] } : getFinanceData(),
+    healthData: reset ? { medications: [], takenLogs: [] } : getHealthData(),
     studyData: reset ? { subjects: [], sessions: [] } : getStudyData(),
     readingData: getReadingData(),
     dreamGoals: reset ? [] : getDreamGoals(),
@@ -591,6 +728,7 @@ const normalizeLoadedData = (parsed) => {
   if (!parsed.financeData.recurring) parsed.financeData.recurring = [];
   if (!parsed.financeData.subscriptions) parsed.financeData.subscriptions = [];
   if (!parsed.financeData.goals) parsed.financeData.goals = [];
+  parsed.healthData = normalizeHealthData(parsed.healthData || getHealthData());
   if (!parsed.studyData) parsed.studyData = getStudyData();
   if (!parsed.studyData.subjects) parsed.studyData.subjects = [];
   if (!parsed.studyData.sessions) parsed.studyData.sessions = [];
@@ -1311,6 +1449,21 @@ const injectStyles = () => {
     .kpi-grid-2col { display: grid !important; grid-template-columns: 1fr 1fr !important; gap: 16px !important; }
     .app-main { padding: 24px 28px; max-width: 1280px; margin: 0 auto; width: 100%; }
     .mobile-only { display: none !important; }
+    .health-layout { align-items: start; }
+    .health-med-row { transition: border-color 0.2s, background 0.2s; }
+    .health-med-row:hover { border-color: rgba(var(--icon-rgb,225,29,72),0.28) !important; background: rgba(var(--icon-rgb,225,29,72),0.055) !important; }
+    @media (max-width: 1450px) {
+      .health-layout { grid-template-columns: minmax(280px, 0.8fr) minmax(0, 1.2fr) !important; }
+      .health-side { grid-column: 1 / -1; grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
+      .health-kpis { grid-template-columns: repeat(3, minmax(0, 1fr)) !important; }
+      .health-med-row { grid-template-columns: minmax(180px, 1fr) 80px 120px 1fr !important; }
+      .health-med-row > div:nth-child(5) { display: none !important; }
+    }
+    @media (max-width: 1080px) {
+      .health-layout { grid-template-columns: 1fr !important; }
+      .health-side { grid-template-columns: 1fr !important; }
+      .health-kpis { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
+    }
 
     :root {
       --hf-radius-xs: 10px;
@@ -1868,6 +2021,51 @@ const injectStyles = () => {
         align-items: center !important;
         justify-content: center !important;
         gap: 7px !important;
+      }
+      .health-mobile-view {
+        max-width: 100% !important;
+        overflow-x: hidden !important;
+      }
+      .health-hero {
+        padding: 20px !important;
+        border-radius: 22px !important;
+      }
+      .health-hero h2 {
+        font-size: clamp(28px, 9vw, 38px) !important;
+      }
+      .health-kpis {
+        grid-template-columns: 1fr !important;
+        gap: 10px !important;
+      }
+      .health-kpis .kpi-card {
+        min-height: auto !important;
+        padding: 14px !important;
+      }
+      .health-layout,
+      .health-side {
+        display: grid !important;
+        grid-template-columns: 1fr !important;
+        gap: 12px !important;
+      }
+      .health-card {
+        padding: 16px !important;
+        border-radius: 18px !important;
+      }
+      .health-form-grid,
+      .health-card [style*="grid-template-columns: 1fr 0.72fr"],
+      .health-card [style*="grid-template-columns: 1fr 1.2fr"] {
+        grid-template-columns: 1fr !important;
+      }
+      .health-med-row {
+        grid-template-columns: 1fr !important;
+        gap: 7px !important;
+      }
+      .health-med-row > div {
+        min-width: 0 !important;
+      }
+      .health-med-row > div:last-child {
+        justify-content: flex-start !important;
+        flex-wrap: wrap !important;
       }
       body .finance-mobile-view .finance-submit-button svg:not(.recharts-surface):not(.kpi-progress-ring):not(.soft-check),
       body .finance-mobile-view .finance-icon-button svg:not(.recharts-surface):not(.kpi-progress-ring):not(.soft-check) {
@@ -4557,6 +4755,381 @@ const HabitsView = ({ data, onAddHabit, onUpdateHabit, onDeleteHabit, onToggleHa
         message={`¿estás seguro de eliminar "${confirmDelete?.name}"? Se perdern todos sus registros.`}
         danger onConfirm={() => { onDeleteHabit(confirmDelete.id); setConfirmDelete(null); }}
         onCancel={() => setConfirmDelete(null)} />
+    </div>
+  );
+};
+
+const HealthView = ({ data, onUpdateHealth }) => {
+  const health = normalizeHealthData(data.healthData || getHealthData());
+  const today = toYYYYMMDD(new Date());
+  const todayDoses = getTodayMedicationDoses(health, today);
+  const nextDose = getNextMedicationDose(health);
+  const weekly = getWeeklyHealthStats(health, today);
+  const activeMeds = health.medications.filter(med => isMedicationActiveOnDate(med, today));
+  const activeTreatments = activeMeds.filter(med => med.duration !== 'Permanente').length;
+  const groupedDoses = groupMedicationDosesByDaypart(todayDoses);
+  const takenToday = todayDoses.filter(dose => isMedicationDoseTaken(health, dose.medication.id, today, dose.time)).length;
+
+  const emptyForm = {
+    name: '',
+    dose: '',
+    form: 'Tableta / Cápsula',
+    color: 'red',
+    frequency: 'Cada 8 horas',
+    times: ['08:00'],
+    mealTiming: 'No importa',
+    duration: '7 días',
+    startDate: today,
+    endDate: '',
+    instructions: '',
+    notes: ''
+  };
+  const [form, setForm] = useState(emptyForm);
+  const [editingId, setEditingId] = useState(null);
+  const [timeDraft, setTimeDraft] = useState('08:00');
+  const [error, setError] = useState('');
+
+  const inputStyle = {
+    width: '100%',
+    padding: '11px 12px',
+    background: COLORS.bg,
+    border: `1px solid ${COLORS.border}`,
+    borderRadius: 10,
+    color: COLORS.text,
+    fontSize: 13,
+    outline: 'none',
+    fontFamily: "'Inter', sans-serif"
+  };
+  const labelStyle = { display: 'block', fontSize: 10, color: COLORS.textDim, marginBottom: 6, letterSpacing: '0.05em', textTransform: 'uppercase' };
+  const cardStyle = { background: COLORS.card, borderRadius: 18, border: `1px solid ${COLORS.border}`, padding: 18 };
+
+  const updateForm = (key, value) => {
+    setError('');
+    setForm(prev => ({ ...prev, [key]: value }));
+  };
+
+  const addTime = () => {
+    if (!timeDraft) return;
+    setForm(prev => ({ ...prev, times: [...new Set([...(prev.times || []), timeDraft])].sort() }));
+  };
+
+  const removeTime = (time) => {
+    setForm(prev => ({ ...prev, times: (prev.times || []).filter(item => item !== time) }));
+  };
+
+  const resetForm = () => {
+    setForm(emptyForm);
+    setEditingId(null);
+    setError('');
+  };
+
+  const saveMedication = () => {
+    if (!form.name.trim()) { setError('El nombre del medicamento es obligatorio.'); return; }
+    if (!form.dose.trim()) { setError('La dosis es obligatoria.'); return; }
+    if (!form.frequency) { setError('Selecciona una frecuencia.'); return; }
+    if (!form.times?.length) { setError('Agrega al menos una hora de toma.'); return; }
+    if (!form.startDate) { setError('Selecciona la fecha de inicio.'); return; }
+
+    const medication = makeMedication({ ...form, id: editingId || undefined, name: form.name.trim(), dose: form.dose.trim() });
+    onUpdateHealth(prev => {
+      const current = normalizeHealthData(prev);
+      const medications = editingId
+        ? current.medications.map(item => item.id === editingId ? { ...medication, updatedAt: new Date().toISOString() } : item)
+        : [medication, ...current.medications];
+      return { ...current, medications };
+    });
+    requestHabitFlowNotifications().catch(() => {});
+    resetForm();
+  };
+
+  const editMedication = (med) => {
+    setEditingId(med.id);
+    setForm({
+      name: med.name,
+      dose: med.dose,
+      form: med.form,
+      color: med.color,
+      frequency: med.frequency,
+      times: med.times || ['08:00'],
+      mealTiming: med.mealTiming,
+      duration: med.duration,
+      startDate: med.startDate || today,
+      endDate: med.endDate || '',
+      instructions: med.instructions || '',
+      notes: med.notes || ''
+    });
+    setTimeDraft((med.times || ['08:00'])[0] || '08:00');
+  };
+
+  const deleteMedication = (id) => {
+    if (!window.confirm('¿Eliminar este medicamento y sus registros?')) return;
+    onUpdateHealth(prev => {
+      const current = normalizeHealthData(prev);
+      return {
+        ...current,
+        medications: current.medications.filter(item => item.id !== id),
+        takenLogs: current.takenLogs.filter(log => log.medicationId !== id)
+      };
+    });
+  };
+
+  const markDoseTaken = (medication, scheduledTime = '') => {
+    const time = scheduledTime || `${String(new Date().getHours()).padStart(2, '0')}:${String(new Date().getMinutes()).padStart(2, '0')}`;
+    onUpdateHealth(prev => {
+      const current = normalizeHealthData(prev);
+      const key = medicationTakenKey(medication.id, today, time);
+      if (current.takenLogs.some(log => medicationTakenKey(log.medicationId, log.date, log.scheduledTime) === key)) return current;
+      return {
+        ...current,
+        takenLogs: [
+          ...current.takenLogs,
+          {
+            id: `dose_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`,
+            medicationId: medication.id,
+            scheduledTime: time,
+            takenAt: new Date().toISOString(),
+            date: today,
+            status: 'taken'
+          }
+        ]
+      };
+    });
+  };
+
+  const heroStats = [
+    { icon: <Pill size={22} />, label: 'Medicamentos activos', value: activeMeds.length, sub: 'Medicamentos', color: '#8b5cf6' },
+    { icon: <Clock size={22} />, label: 'Próxima toma', value: nextDose?.time || '--:--', sub: nextDose ? `${nextDose.medication.name} ${nextDose.medication.dose}` : 'Sin tomas pendientes', color: COLORS.primary },
+    { icon: <Activity size={22} />, label: 'Adherencia (semana)', value: `${weekly.pct}%`, sub: weekly.pct >= 80 ? 'Excelente' : weekly.pct >= 50 ? 'En progreso' : 'Por construir', color: COLORS.success },
+    { icon: <Bell size={22} />, label: 'Recordatorios hoy', value: todayDoses.length, sub: nextDose ? `Próxima en ${nextDose.time}` : 'Día completo', color: '#8b5cf6' },
+    { icon: <Calendar size={22} />, label: 'Tratamientos activos', value: activeTreatments, sub: 'En curso', color: COLORS.primary }
+  ];
+
+  return (
+    <div className="health-mobile-view" style={{ animation: 'fadeIn 0.3s ease-out' }}>
+      <div className="lab-shell-card health-hero" style={{ borderRadius: 22, padding: 28, marginBottom: 14, position: 'relative', overflow: 'hidden' }}>
+        <div style={{ position: 'absolute', inset: 0, background: `radial-gradient(circle at 72% 45%, ${COLORS.primary}80, transparent 20%), radial-gradient(circle at 76% 48%, ${COLORS.primary}22, transparent 36%)`, opacity: 0.55 }} />
+        <div style={{ position: 'absolute', right: '9%', top: '18%', width: 150, height: 46, borderRadius: 999, background: `linear-gradient(135deg, #ffedf2, ${COLORS.primary})`, boxShadow: `0 0 55px ${COLORS.primary}90`, transform: 'rotate(-28deg)' }} />
+        <div style={{ position: 'relative', zIndex: 1, maxWidth: 620 }}>
+          <div className="lab-pill" style={{ display: 'inline-flex', padding: '7px 12px', fontSize: 11, fontWeight: 900, marginBottom: 14 }}>SALUD PRO</div>
+          <h2 className="lab-hero-title" style={{ fontSize: 38, lineHeight: 1.04, marginBottom: 10 }}>Tu centro de salud personal.</h2>
+          <p style={{ color: COLORS.textDim, fontSize: 16, maxWidth: 620, lineHeight: 1.5 }}>
+            Controla tus medicamentos, recordatorios, tratamientos y adherencia para cuidar lo más importante: tú.
+          </p>
+        </div>
+      </div>
+
+      <div className="health-kpis" style={{ display: 'grid', gridTemplateColumns: 'repeat(5, minmax(0, 1fr))', gap: 12, marginBottom: 16 }}>
+        {heroStats.map(stat => (
+          <div key={stat.label} className="kpi-card" style={{ ...cardStyle, display: 'flex', gap: 13, alignItems: 'center', minHeight: 94 }}>
+            <div style={{ width: 48, height: 48, borderRadius: 999, background: `${stat.color}16`, border: `1px solid ${stat.color}40`, color: stat.color, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>{stat.icon}</div>
+            <div>
+              <div style={{ fontSize: 10, color: COLORS.textDim, letterSpacing: '0.08em', textTransform: 'uppercase', fontWeight: 800 }}>{stat.label}</div>
+              <div style={{ color: COLORS.text, fontSize: 25, fontWeight: 900, marginTop: 4 }}>{stat.value}</div>
+              <div style={{ color: COLORS.textDim, fontSize: 12 }}>{stat.sub}</div>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div className="health-layout" style={{ display: 'grid', gridTemplateColumns: '350px minmax(0, 1fr) 330px', gap: 14, alignItems: 'start' }}>
+        <div className="health-card" style={cardStyle}>
+          <h3 style={{ color: COLORS.text, fontSize: 18, marginBottom: 4, display: 'flex', alignItems: 'center', gap: 8 }}><Plus size={17} color={COLORS.primary} /> Agregar medicamento</h3>
+          <p style={{ color: COLORS.textDim, fontSize: 12, marginBottom: 16 }}>Crea un nuevo medicamento o tratamiento.</p>
+
+          <div className="health-form-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 0.72fr', gap: 10 }}>
+            <div>
+              <label style={labelStyle}>Nombre del medicamento</label>
+              <input value={form.name} onChange={e => updateForm('name', e.target.value)} placeholder="Ej. Ibuprofeno" style={inputStyle} />
+            </div>
+            <div>
+              <label style={labelStyle}>Dosis</label>
+              <input value={form.dose} onChange={e => updateForm('dose', e.target.value)} placeholder="Ej. 400 mg" style={inputStyle} />
+            </div>
+            <div>
+              <label style={labelStyle}>Forma</label>
+              <select value={form.form} onChange={e => updateForm('form', e.target.value)} style={inputStyle}>
+                {MEDICATION_FORMS.map(item => <option key={item} value={item}>{item}</option>)}
+              </select>
+            </div>
+            <div>
+              <label style={labelStyle}>Color / tipo</label>
+              <select value={form.color} onChange={e => updateForm('color', e.target.value)} style={inputStyle}>
+                {MEDICATION_COLORS.map(item => <option key={item.id} value={item.id}>{item.label}</option>)}
+              </select>
+            </div>
+          </div>
+
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1.2fr', gap: 10, marginTop: 10 }}>
+            <div>
+              <label style={labelStyle}>Frecuencia</label>
+              <select value={form.frequency} onChange={e => updateForm('frequency', e.target.value)} style={inputStyle}>
+                {MEDICATION_FREQUENCIES.map(item => <option key={item} value={item}>{item}</option>)}
+              </select>
+            </div>
+            <div>
+              <label style={labelStyle}>Horas de toma</label>
+              <div style={{ display: 'flex', gap: 6 }}>
+                <input type="time" value={timeDraft} onChange={e => setTimeDraft(e.target.value)} style={{ ...inputStyle, cursor: 'pointer' }} />
+                <button onClick={addTime} style={{ width: 42, borderRadius: 10, border: `1px solid ${COLORS.border}`, background: `${COLORS.primary}18`, color: COLORS.primary, cursor: 'pointer' }}><Plus size={16} /></button>
+              </div>
+            </div>
+          </div>
+
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginTop: 9 }}>
+            {(form.times || []).map(time => (
+              <button key={time} onClick={() => removeTime(time)} className="lab-pill" style={{ padding: '6px 9px', fontSize: 11, cursor: 'pointer', color: COLORS.text }}>
+                {time} <X size={11} style={{ verticalAlign: 'middle', marginLeft: 4 }} />
+              </button>
+            ))}
+          </div>
+
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 0.72fr', gap: 10, marginTop: 10 }}>
+            <div>
+              <label style={labelStyle}>Comidas</label>
+              <select value={form.mealTiming} onChange={e => updateForm('mealTiming', e.target.value)} style={inputStyle}>
+                {MEAL_TIMING_OPTIONS.map(item => <option key={item} value={item}>{item}</option>)}
+              </select>
+            </div>
+            <div>
+              <label style={labelStyle}>Duración</label>
+              <select value={form.duration} onChange={e => updateForm('duration', e.target.value)} style={inputStyle}>
+                {MEDICATION_DURATIONS.map(item => <option key={item} value={item}>{item}</option>)}
+              </select>
+            </div>
+            <div>
+              <label style={labelStyle}>Fecha de inicio</label>
+              <input type="date" value={form.startDate} onClick={e => openNativeDatePicker(e.currentTarget)} onFocus={e => openNativeDatePicker(e.currentTarget)} onChange={e => updateForm('startDate', e.target.value)} style={{ ...inputStyle, cursor: 'pointer' }} />
+            </div>
+            <div>
+              <label style={labelStyle}>Fecha de fin</label>
+              <input type="date" value={form.endDate} min={form.startDate} onClick={e => openNativeDatePicker(e.currentTarget)} onFocus={e => openNativeDatePicker(e.currentTarget)} onChange={e => updateForm('endDate', e.target.value)} style={{ ...inputStyle, cursor: 'pointer' }} />
+            </div>
+          </div>
+
+          <div style={{ marginTop: 10 }}>
+            <label style={labelStyle}>Instrucciones</label>
+            <textarea value={form.instructions} onChange={e => updateForm('instructions', e.target.value)} placeholder="Ej. Tomar con un vaso grande de agua." rows={2} style={{ ...inputStyle, resize: 'vertical' }} />
+          </div>
+          <div style={{ marginTop: 10 }}>
+            <label style={labelStyle}>Notas</label>
+            <textarea value={form.notes} onChange={e => updateForm('notes', e.target.value)} placeholder="Ej. Para seguimiento personal." rows={2} style={{ ...inputStyle, resize: 'vertical' }} />
+          </div>
+          {error && <div style={{ color: COLORS.alert, fontSize: 12, marginTop: 10 }}>{error}</div>}
+          <div style={{ display: 'grid', gridTemplateColumns: editingId ? '1fr 1fr' : '1fr', gap: 8, marginTop: 14 }}>
+            {editingId && <button onClick={resetForm} style={{ border: `1px solid ${COLORS.border}`, borderRadius: 12, background: 'transparent', color: COLORS.textDim, padding: '12px 14px', cursor: 'pointer', fontWeight: 800 }}>Cancelar</button>}
+            <button onClick={saveMedication} style={{ border: 'none', borderRadius: 12, background: `linear-gradient(135deg, ${COLORS.primary}, #9f1239)`, color: '#fff', padding: '12px 14px', cursor: 'pointer', fontWeight: 900 }}>
+              <Plus size={16} style={{ verticalAlign: 'middle', marginRight: 8 }} /> {editingId ? 'Guardar cambios' : 'Guardar medicamento'}
+            </button>
+          </div>
+        </div>
+
+        <div className="health-card" style={{ ...cardStyle, minHeight: 430 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 10, marginBottom: 14 }}>
+            <div>
+              <h3 style={{ color: COLORS.text, fontSize: 18, display: 'flex', alignItems: 'center', gap: 8 }}><Pill size={17} color={COLORS.primary} /> Medicamentos activos</h3>
+              <div style={{ color: COLORS.textDim, fontSize: 12 }}>{activeMeds.length} activos</div>
+            </div>
+            <button onClick={() => requestHabitFlowNotifications()} className="lab-pill" style={{ padding: '8px 11px', cursor: 'pointer', fontSize: 11 }}>Activar avisos</button>
+          </div>
+
+          <div className="health-med-list" style={{ display: 'grid', gap: 9 }}>
+            {health.medications.length === 0 && <EmptyState icon="\u{1F48A}" title="Sin medicamentos" subtitle="Agrega tu primer medicamento para activar horarios y recordatorios." compact />}
+            {health.medications.map(med => {
+              const color = medicationColorMeta(med.color);
+              const upcoming = getNextMedicationDose({ ...health, medications: [med] });
+              return (
+                <div key={med.id} className="health-med-row" style={{ display: 'grid', gridTemplateColumns: 'minmax(170px, 1.2fr) 90px 120px 105px 120px 118px', gap: 10, alignItems: 'center', padding: '12px 12px', borderRadius: 14, background: 'rgba(255,255,255,0.028)', border: `1px solid ${COLORS.border}` }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                    <div style={{ width: 36, height: 36, borderRadius: 999, background: `${color.color}22`, color: color.color, display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: `0 0 18px ${color.color}30` }}>{color.icon}</div>
+                    <div>
+                      <div style={{ color: COLORS.text, fontWeight: 900, fontSize: 13 }}>{med.name}</div>
+                      <div style={{ color: COLORS.textDim, fontSize: 11 }}>{med.notes || med.form}</div>
+                    </div>
+                  </div>
+                  <div style={{ color: COLORS.text, fontSize: 12 }}>{med.dose}</div>
+                  <div style={{ color: COLORS.textDim, fontSize: 12 }}>{(med.times || []).join(' / ')}</div>
+                  <div style={{ color: COLORS.textDim, fontSize: 12 }}>{med.frequency}</div>
+                  <div style={{ color: COLORS.textDim, fontSize: 12 }}>{getMedicationDurationText(med)}</div>
+                  <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 5 }}>
+                    <button onClick={() => markDoseTaken(med, upcoming?.time || (med.times || [])[0])} style={{ border: `1px solid ${COLORS.primary}40`, background: `${COLORS.primary}16`, color: COLORS.primary, borderRadius: 9, padding: '8px 9px', cursor: 'pointer', fontSize: 11, fontWeight: 900 }}>Tomar ahora</button>
+                    <button onClick={() => editMedication(med)} style={{ width: 32, borderRadius: 9, border: `1px solid ${COLORS.border}`, background: 'transparent', color: COLORS.textDim, cursor: 'pointer' }}><Edit size={13} /></button>
+                    <button onClick={() => deleteMedication(med.id)} style={{ width: 32, borderRadius: 9, border: `1px solid ${COLORS.border}`, background: 'transparent', color: COLORS.primary, cursor: 'pointer' }}><Trash2 size={13} /></button>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+          <div style={{ marginTop: 14, color: COLORS.textDim, fontSize: 11, display: 'flex', gap: 8, alignItems: 'center' }}>
+            <AlertTriangle size={14} /> Esta herramienta es solo para seguimiento personal y no reemplaza la indicación de un profesional de salud.
+          </div>
+        </div>
+
+        <div className="health-side" style={{ display: 'grid', gap: 14 }}>
+          <div className="health-card" style={cardStyle}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 12 }}>
+              <h3 style={{ color: COLORS.text, fontSize: 17, display: 'flex', gap: 8, alignItems: 'center' }}><Calendar size={16} color={COLORS.primary} /> Horario de tomas</h3>
+              <span style={{ color: COLORS.primary, fontSize: 12, fontWeight: 800 }}>Plan del día</span>
+            </div>
+            <div style={{ display: 'grid', gap: 9 }}>
+              {groupedDoses.map(group => (
+                <div key={group.id} style={{ padding: 11, borderRadius: 13, background: 'rgba(255,255,255,0.035)', border: `1px solid ${COLORS.border}` }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8, color: COLORS.text, fontWeight: 900, fontSize: 13 }}>
+                    <span>{group.icon} {group.label}</span>
+                    <span style={{ color: COLORS.textDim }}>{group.items.length}</span>
+                  </div>
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+                    {group.items.length === 0 && <span style={{ color: COLORS.textDim, fontSize: 11 }}>Sin tomas</span>}
+                    {group.items.map(dose => {
+                      const taken = isMedicationDoseTaken(health, dose.medication.id, today, dose.time);
+                      return (
+                        <button key={`${dose.medication.id}-${dose.time}`} onClick={() => markDoseTaken(dose.medication, dose.time)} style={{ border: `1px solid ${taken ? COLORS.success : COLORS.primary}30`, borderRadius: 999, background: taken ? `${COLORS.success}14` : `${COLORS.primary}10`, color: taken ? COLORS.success : COLORS.text, padding: '6px 8px', fontSize: 11, cursor: 'pointer' }}>
+                          {taken ? <Check size={11} style={{ verticalAlign: 'middle', marginRight: 4 }} /> : null}{dose.time} · {dose.medication.name} {dose.medication.dose}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              ))}
+            </div>
+            <div style={{ color: COLORS.textDim, fontSize: 12, textAlign: 'right', marginTop: 10 }}>Total de tomas hoy: {todayDoses.length}</div>
+          </div>
+
+          <div className="health-card" style={cardStyle}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 12 }}>
+              <h3 style={{ color: COLORS.text, fontSize: 17, display: 'flex', gap: 8, alignItems: 'center' }}><Heart size={16} color={COLORS.primary} /> Resumen de salud</h3>
+              <span style={{ color: COLORS.primary, fontSize: 12, fontWeight: 800 }}>Insights</span>
+            </div>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+              <div style={{ padding: 12, borderRadius: 13, background: 'rgba(255,255,255,0.035)', border: `1px solid ${COLORS.border}` }}>
+                <div style={{ color: COLORS.textDim, fontSize: 11 }}>Adherencia semanal</div>
+                <div style={{ color: COLORS.text, fontSize: 26 }}>{weekly.pct}%</div>
+                <div style={{ color: COLORS.success, fontSize: 11 }}>{weekly.pct >= 80 ? 'Excelente' : 'En seguimiento'}</div>
+              </div>
+              <div style={{ padding: 12, borderRadius: 13, background: 'rgba(255,255,255,0.035)', border: `1px solid ${COLORS.border}` }}>
+                <div style={{ color: COLORS.textDim, fontSize: 11 }}>Dosis tomadas</div>
+                <div style={{ color: COLORS.text, fontSize: 26 }}>{weekly.taken} / {weekly.total}</div>
+                <div style={{ color: COLORS.textDim, fontSize: 11 }}>Esta semana</div>
+              </div>
+              <div style={{ padding: 12, borderRadius: 13, background: 'rgba(255,255,255,0.035)', border: `1px solid ${COLORS.border}` }}>
+                <div style={{ color: COLORS.textDim, fontSize: 11 }}>Hoy</div>
+                <div style={{ color: COLORS.text, fontSize: 22 }}>{takenToday} / {todayDoses.length}</div>
+                <div style={{ color: COLORS.textDim, fontSize: 11 }}>Tomas completadas</div>
+              </div>
+              <div style={{ padding: 12, borderRadius: 13, background: 'rgba(255,255,255,0.035)', border: `1px solid ${COLORS.border}` }}>
+                <div style={{ color: COLORS.textDim, fontSize: 11 }}>Tratamientos</div>
+                <div style={{ color: COLORS.text, fontSize: 22 }}>{activeTreatments}</div>
+                <div style={{ color: COLORS.textDim, fontSize: 11 }}>En curso</div>
+              </div>
+            </div>
+            <div style={{ marginTop: 12, padding: 11, borderRadius: 12, background: `${COLORS.primary}0c`, color: COLORS.textDim, fontSize: 12, lineHeight: 1.45 }}>
+              Consejo seguro del día: bebe suficiente agua, descansa bien y sigue siempre las indicaciones de tu profesional de salud.
+            </div>
+            <div style={{ marginTop: 10, color: COLORS.textDim, fontSize: 11, lineHeight: 1.45 }}>
+              Importante: si tienes síntomas fuertes, reacciones adversas o dudas sobre un medicamento, consulta con un profesional.
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 };
@@ -8966,9 +9539,11 @@ const generateRecurrenceDates = (task, fromDate, count = 90) => {
   const dates = [];
   const start = new Date(fromDate + 'T12:00:00');
   const r = task.recurrence;
+  const untilDate = task.recurrenceUntilDate || '';
   for (let i = 0; i < count; i++) {
     const d = new Date(start); d.setDate(d.getDate() + i);
     const ds = toYYYYMMDD(d);
+    if (untilDate && ds > untilDate) break;
     if (r === 'daily') dates.push(ds);
     else if (r === 'weekdays' && d.getDay() >= 1 && d.getDay() <= 5) dates.push(ds);
     else if (r === 'weekends' && (d.getDay() === 0 || d.getDay() === 6)) dates.push(ds);
@@ -9011,6 +9586,7 @@ const AgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAgendaTo
   const [newTodoLabel, setNewTodoLabel] = useState('');
   const [showTodoLabels, setShowTodoLabels] = useState(false);
   const [editingTodoLabelId, setEditingTodoLabelId] = useState(null);
+  const [deleteChoiceTask, setDeleteChoiceTask] = useState(null);
   const dragRef = useRef(null);
 
   const s = { fontFamily: "'Inter', sans-serif" };
@@ -9022,26 +9598,23 @@ const AgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAgendaTo
 
   const expandedAgenda = useMemo(() => {
     const result = {};
+    const pushOccurrence = (targetDate, task, anchorDate) => {
+      if ((task.deletedDates || []).includes(targetDate)) return;
+      if (!result[targetDate]) result[targetDate] = [];
+      if (!result[targetDate].some(e => e.id === task.id)) {
+        result[targetDate].push({ ...task, dueDate: targetDate, _seriesAnchorDate: anchorDate, _intervalAnchorDate: anchorDate });
+      }
+    };
     Object.entries(agenda || {}).forEach(([ds, tasks]) => {
-      result[ds] = [...tasks];
       tasks.forEach(task => {
         const anchorDate = task.dueDate || ds;
+        pushOccurrence(anchorDate, task, anchorDate);
         const hasIntervalRepeat = getTaskIntervalMinutes(task) > 0;
         if (!hasIntervalRepeat && task.recurrence && task.recurrence !== 'none') {
           const dates = generateRecurrenceDates(task, anchorDate, 90);
-          dates.forEach(d => {
-            if (d !== anchorDate) {
-              if (!result[d]) result[d] = [];
-              if (!result[d].some(e => e.id === task.id)) result[d].push({ ...task, dueDate: d, _intervalAnchorDate: anchorDate });
-            }
-          });
+          dates.forEach(d => pushOccurrence(d, task, anchorDate));
         }
-        if (hasIntervalRepeat) generateIntervalDates(task, anchorDate, 31).forEach(d => {
-          if (d !== anchorDate) {
-            if (!result[d]) result[d] = [];
-            if (!result[d].some(e => e.id === task.id)) result[d].push({ ...task, dueDate: d, _intervalAnchorDate: anchorDate });
-          }
-        });
+        if (hasIntervalRepeat) generateIntervalDates(task, anchorDate, 31).forEach(d => pushOccurrence(d, task, anchorDate));
       });
     });
     return result;
@@ -9050,7 +9623,7 @@ const AgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAgendaTo
   const tasks = useMemo(() => {
     return (expandedAgenda[dateStr] || []).map(t => ({ ...t, dueDate: t.dueDate || dateStr, dueTime: t.dueTime || t.time || '' }))
       .sort((a, b) => (a.order ?? 999) - (b.order ?? 999));
-  }, [agenda, dateStr]);
+  }, [expandedAgenda, dateStr]);
 
   const dayHabits = useMemo(() => {
     return habits.filter(h => h.active && isExpectedDay(h, dateStr)).map(h => {
@@ -9116,7 +9689,66 @@ const AgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAgendaTo
   };
 
   const toggleTask = (taskId) => { updateTasks(prev => prev.map(t => t.id === taskId ? { ...t, completed: !t.completed } : t)); };
-  const deleteTask = (taskId) => { updateTasks(prev => prev.filter(t => t.id !== taskId)); };
+  const findStoredTaskLocation = useCallback((task) => {
+    const candidates = [task?._seriesAnchorDate, task?._intervalAnchorDate, task?._originalDueDate, task?.dueDate, dateStr].filter(Boolean);
+    for (const ds of candidates) {
+      const found = (agenda?.[ds] || []).find(t => t.id === task?.id);
+      if (found) return { date: ds, task: found };
+    }
+    for (const [ds, tasksForDay] of Object.entries(agenda || {})) {
+      const found = (tasksForDay || []).find(t => t.id === task?.id);
+      if (found) return { date: ds, task: found };
+    }
+    return null;
+  }, [agenda, dateStr]);
+  const isTaskSeries = (task) => getTaskIntervalMinutes(task) > 0 || (task?.recurrence && task.recurrence !== 'none');
+  const deleteStoredTask = (task) => {
+    const loc = findStoredTaskLocation(task);
+    if (loc) onUpdateAgenda(loc.date, prev => prev.filter(t => t.id !== task.id));
+    else updateTasks(prev => prev.filter(t => t.id !== task?.id));
+  };
+  const deleteSingleOccurrence = (task) => {
+    const occurrenceDate = task?.dueDate || dateStr;
+    const loc = findStoredTaskLocation(task);
+    if (!loc || !isTaskSeries(loc.task)) {
+      deleteStoredTask(task);
+      return;
+    }
+    onUpdateAgenda(loc.date, prev => prev.map(t => {
+      if (t.id !== task.id) return t;
+      const deletedDates = Array.from(new Set([...(t.deletedDates || []), occurrenceDate])).sort();
+      return { ...t, deletedDates };
+    }));
+  };
+  const deleteFutureOccurrences = (task) => {
+    const occurrenceDate = task?.dueDate || dateStr;
+    const loc = findStoredTaskLocation(task);
+    if (!loc) {
+      updateTasks(prev => prev.filter(t => t.id !== task?.id));
+      return;
+    }
+    const anchorDate = loc.task.dueDate || loc.date;
+    if (occurrenceDate <= anchorDate) {
+      onUpdateAgenda(loc.date, prev => prev.filter(t => t.id !== task.id));
+      return;
+    }
+    const previousDate = toYYYYMMDD(addDays(new Date(`${occurrenceDate}T12:00:00`), -1));
+    onUpdateAgenda(loc.date, prev => prev.map(t => {
+      if (t.id !== task.id) return t;
+      if (getTaskIntervalMinutes(t) > 0) return { ...t, repeatUntilDate: previousDate };
+      return { ...t, recurrenceUntilDate: previousDate };
+    }));
+  };
+  const requestDeleteTask = (task) => {
+    const loc = findStoredTaskLocation(task);
+    const storedTask = loc?.task || task;
+    if (isTaskSeries(storedTask)) {
+      setDeleteChoiceTask({ ...task, _storedDate: loc?.date || dateStr, _occurrenceDate: task?.dueDate || dateStr });
+      return true;
+    }
+    deleteStoredTask(task);
+    return false;
+  };
   const updateTaskField = (taskId, field, value) => { updateTasks(prev => prev.map(t => t.id === taskId ? { ...t, [field]: value } : t)); };
   const removeTaskTime = (taskId) => { updateTasks(prev => prev.map(t => t.id === taskId ? { ...t, dueTime: '' } : t)); };
   const startEdit = (task) => { setEditTaskId(task.id); setEditText(task.text); };
@@ -9150,7 +9782,7 @@ const AgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAgendaTo
     }
     if (task.id) {
       const origDate = task._originalDueDate || dateStr;
-      Object.entries({ text: task.text, dueTime: task.dueTime, priority: task.priority, category: task.category, alarm: task.alarm, recurrence: task.recurrence, recurrenceDays: task.recurrenceDays, intervalRepeat: task.intervalRepeat, intervalEvery: task.intervalEvery, repeatUntilDate: task.repeatUntilDate, repeatUntilTime: task.repeatUntilTime, reminders: task.reminders, tags: task.tags, status: task.status }).forEach(([k, v]) => updateTaskField(task.id, k, v));
+      Object.entries({ text: task.text, dueTime: task.dueTime, priority: task.priority, category: task.category, alarm: task.alarm, recurrence: task.recurrence, recurrenceDays: task.recurrenceDays, intervalRepeat: task.intervalRepeat, intervalEvery: task.intervalEvery, repeatUntilDate: task.repeatUntilDate, repeatUntilTime: task.repeatUntilTime, recurrenceUntilDate: task.recurrenceUntilDate, deletedDates: task.deletedDates, reminders: task.reminders, tags: task.tags, status: task.status }).forEach(([k, v]) => updateTaskField(task.id, k, v));
       if (task.dueDate && task.dueDate !== origDate) {
         onMoveTaskToDate(task.id, origDate, task.dueDate);
       }
@@ -9269,7 +9901,7 @@ const AgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAgendaTo
                 style={{ ...btnBase, width: 22, height: 22, background: 'transparent', color: COLORS.primary + '99', fontSize: 10 }}><Clock size={11} /></button>}
               <button onClick={e => { e.stopPropagation(); openTaskModal(task); }}
                 style={{ ...btnBase, width: 22, height: 22, background: 'transparent', color: COLORS.textDim + '77', fontSize: 10 }}><Edit size={11} /></button>
-              <button onClick={e => { e.stopPropagation(); deleteTask(task.id); }}
+              <button onClick={e => { e.stopPropagation(); requestDeleteTask(task); }}
                 style={{ ...btnBase, width: 22, height: 22, background: 'transparent', color: COLORS.textDim + '55', fontSize: 10 }}><X size={11} /></button>
             </div>
           )}
@@ -9842,6 +10474,40 @@ const AgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAgendaTo
     </div>
   );
 
+  const renderDeleteChoiceModal = () => {
+    if (!deleteChoiceTask) return null;
+    const occurrenceDate = deleteChoiceTask._occurrenceDate || deleteChoiceTask.dueDate || dateStr;
+    const formattedOccurrence = new Date(`${occurrenceDate}T12:00:00`).toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long' });
+    const close = () => setDeleteChoiceTask(null);
+    return (
+      <div onClick={close} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.62)', zIndex: 1200, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20, boxSizing: 'border-box', backdropFilter: 'blur(8px)' }}>
+        <div onClick={e => e.stopPropagation()} style={{ width: 'min(92vw, 420px)', borderRadius: 22, border: `1px solid ${COLORS.border}`, background: COLORS.card, padding: 22, boxShadow: '0 28px 90px rgba(0,0,0,0.55)' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
+            <div style={{ width: 34, height: 34, borderRadius: 12, background: `${COLORS.primary}16`, color: COLORS.primary, display: 'flex', alignItems: 'center', justifyContent: 'center' }}><Repeat size={16} /></div>
+            <div>
+              <div style={{ color: COLORS.text, fontSize: 18, fontFamily: "'DM Serif Display', serif", lineHeight: 1.1 }}>Eliminar tarea recurrente</div>
+              <div style={{ color: COLORS.textDim, fontSize: 11, ...s, marginTop: 3 }}>{formattedOccurrence}</div>
+            </div>
+          </div>
+          <div style={{ color: COLORS.textDim, fontSize: 12, lineHeight: 1.6, ...s, margin: '14px 0 18px' }}>
+            “{deleteChoiceTask.text}” pertenece a una repetición. Elige si quieres borrar solo esta aparición o cortar la serie desde aquí.
+          </div>
+          <div style={{ display: 'grid', gap: 8 }}>
+            <button onClick={() => { deleteSingleOccurrence(deleteChoiceTask); close(); closeTaskModal(); }} style={{ ...btnBase, width: '100%', padding: '11px 12px', background: COLORS.bg, border: `1px solid ${COLORS.border}`, color: COLORS.text, fontWeight: 700, justifyContent: 'flex-start' }}>
+              Eliminar solo esta
+            </button>
+            <button onClick={() => { deleteFutureOccurrences(deleteChoiceTask); close(); closeTaskModal(); }} style={{ ...btnBase, width: '100%', padding: '11px 12px', background: `${COLORS.primary}12`, border: `1px solid ${COLORS.primary}35`, color: COLORS.primary, fontWeight: 800, justifyContent: 'flex-start' }}>
+              Eliminar esta y todas las futuras
+            </button>
+            <button onClick={close} style={{ ...btnBase, width: '100%', padding: '9px 12px', background: 'transparent', color: COLORS.textDim, fontWeight: 600 }}>
+              Cancelar
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   const renderTaskModal = () => {
     if (!showModal) return null;
     const t = editModalTask || {};
@@ -10036,7 +10702,7 @@ const AgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAgendaTo
                 <>
                   <button onClick={saveTaskModal}
                     style={{ flex: 1, padding: '9px 0', borderRadius: 8, border: 'none', background: `linear-gradient(135deg, ${COLORS.primary}, #7f1028)`, color: '#fff', cursor: 'pointer', fontSize: 11, fontWeight: 600, ...s }}>Guardar cambios</button>
-                  <button onClick={() => { deleteTask(t.id); closeTaskModal(); }}
+                  <button onClick={() => { if (!requestDeleteTask(t)) closeTaskModal(); }}
                     style={{ padding: '9px 16px', borderRadius: 8, border: 'none', background: `${COLORS.alert}10`, color: COLORS.alert, cursor: 'pointer', fontSize: 11, fontWeight: 500, ...s }}>Eliminar</button>
                 </>
               ) : (
@@ -10170,6 +10836,7 @@ const AgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAgendaTo
       )}
 
       {/* === TASK MODAL === */}
+      {renderDeleteChoiceModal()}
       {renderTaskModal()}
     </div>
   );
@@ -10258,27 +10925,23 @@ const HabitFlowApp = () => {
 
     const buildExpandedForAlarms = () => {
       const expanded = {};
+      const pushAlarmOccurrence = (targetDate, task, anchorDate) => {
+        if ((task.deletedDates || []).includes(targetDate)) return;
+        if (!expanded[targetDate]) expanded[targetDate] = [];
+        if (!expanded[targetDate].some(e => e.id === task.id)) {
+          expanded[targetDate].push({ ...task, dueDate: targetDate, _seriesAnchorDate: anchorDate, _intervalAnchorDate: anchorDate });
+        }
+      };
       Object.entries(data.agenda || {}).forEach(([ds, ts]) => {
         (ts || []).forEach(t => {
           const anchorDate = t.dueDate || ds;
-          if (!expanded[ds]) expanded[ds] = [];
-          expanded[ds].push({ ...t, _intervalAnchorDate: anchorDate });
+          pushAlarmOccurrence(anchorDate, t, anchorDate);
           const hasIntervalRepeat = getTaskIntervalMinutes(t) > 0;
           if (!hasIntervalRepeat && t.recurrence && t.recurrence !== 'none') {
             const dates = generateRecurrenceDates(t, anchorDate, 90);
-            dates.forEach(d => {
-              if (d !== anchorDate) {
-                if (!expanded[d]) expanded[d] = [];
-                if (!expanded[d].some(e => e.id === t.id)) expanded[d].push({ ...t, dueDate: d, _intervalAnchorDate: anchorDate });
-              }
-            });
+            dates.forEach(d => pushAlarmOccurrence(d, t, anchorDate));
           }
-          if (hasIntervalRepeat) generateIntervalDates(t, anchorDate, 31).forEach(d => {
-            if (d !== anchorDate) {
-              if (!expanded[d]) expanded[d] = [];
-              if (!expanded[d].some(e => e.id === t.id)) expanded[d].push({ ...t, dueDate: d, _intervalAnchorDate: anchorDate });
-            }
-          });
+          if (hasIntervalRepeat) generateIntervalDates(t, anchorDate, 31).forEach(d => pushAlarmOccurrence(d, t, anchorDate));
         });
       });
       return expanded;
@@ -10349,6 +11012,54 @@ const HabitFlowApp = () => {
       document.removeEventListener('visibilitychange', onWake);
     };
   }, [data?.agenda]);
+
+  useEffect(() => {
+    if (!data?.healthData) return;
+    if (typeof Notification === 'undefined') return;
+    if (Notification.permission !== 'granted') return;
+
+    const checkHealthNotifications = () => {
+      const now = new Date();
+      const dateStr = toYYYYMMDD(now);
+      const health = normalizeHealthData(data.healthData);
+      const sentMap = getSentNotificationMap();
+      const keepAfter = now.getTime() - 7 * 86400000;
+      Object.keys(sentMap).forEach(key => { if (sentMap[key] < keepAfter) delete sentMap[key]; });
+      let changed = false;
+
+      getTodayMedicationDoses(health, dateStr).forEach(dose => {
+        if (isMedicationDoseTaken(health, dose.medication.id, dateStr, dose.time)) return;
+        const doseMinutes = timeToMinutes(dose.time);
+        const nowMinutes = now.getHours() * 60 + now.getMinutes();
+        const diff = doseMinutes * 60000 - (nowMinutes * 60000 + now.getSeconds() * 1000);
+        if (diff > 30000 || diff < -10 * 60000) return;
+        const key = `health:${dose.medication.id}:${dateStr}:${dose.time}`;
+        if (sentMap[key]) return;
+        sentMap[key] = now.getTime();
+        changed = true;
+        showHabitFlowNotification('HabitFlow • Salud', {
+          body: `${dose.medication.name} · ${dose.medication.dose}\nEs hora · ${dose.time}${dose.medication.instructions ? ` · ${dose.medication.instructions}` : ''}`,
+          tag: key,
+          data: { view: 'health', medicationId: dose.medication.id, date: dateStr },
+          renotify: true,
+          requireInteraction: true
+        });
+      });
+
+      if (changed) saveSentNotificationMap(sentMap);
+    };
+
+    checkHealthNotifications();
+    const interval = setInterval(checkHealthNotifications, 30000);
+    const onWake = () => checkHealthNotifications();
+    window.addEventListener('focus', onWake);
+    document.addEventListener('visibilitychange', onWake);
+    return () => {
+      clearInterval(interval);
+      window.removeEventListener('focus', onWake);
+      document.removeEventListener('visibilitychange', onWake);
+    };
+  }, [data?.healthData]);
 
   const persist = useCallback((newData) => {
     setData(newData);
@@ -10527,6 +11238,14 @@ const HabitFlowApp = () => {
   const onUpdateFinance = useCallback((updater) => {
     setData(prev => {
       const newData = { ...prev, financeData: updater(prev.financeData || getFinanceData()) };
+      saveData(newData);
+      return newData;
+    });
+  }, []);
+
+  const onUpdateHealth = useCallback((updater) => {
+    setData(prev => {
+      const newData = { ...prev, healthData: updater(prev.healthData || getHealthData()) };
       saveData(newData);
       return newData;
     });
@@ -10842,6 +11561,7 @@ const HabitFlowApp = () => {
           current: moneyAmount(Math.round(target * 0.18), Math.round(target * 0.88))
         };
       });
+      const healthData = getHealthData();
       const dailyNotes = {};
       Array.from({ length: 20 }, (_, i) => {
         const ds = toYYYYMMDD(addDays(new Date(), -i));
@@ -10854,6 +11574,7 @@ const HabitFlowApp = () => {
         records: newRecords,
         workoutData: newWorkout,
         financeData,
+        healthData,
         readingData: getReadingData(),
         studyData,
         agenda,
@@ -10924,6 +11645,7 @@ const HabitFlowApp = () => {
     { id: 'agenda', label: 'Agenda', icon: <List size={20} /> },
     { id: 'dreams', label: 'Metas', icon: <Sparkles size={20} /> },
     { id: 'finance', label: 'Finanzas', icon: <CreditCard size={20} /> },
+    { id: 'health', label: 'Salud', icon: <Heart size={20} /> },
     { id: 'settings', label:  'Configuración', icon: <Settings size={20} /> }
   ];
 
@@ -10936,6 +11658,7 @@ const HabitFlowApp = () => {
       case 'agenda': return <AgendaView data={data} onUpdateAgenda={onUpdateAgenda} onUpdateAgendaNote={onUpdateAgendaNote} onUpdateAgendaTodos={onUpdateAgendaTodos} onUpdateAgendaTodoLabels={onUpdateAgendaTodoLabels} onMoveTaskToDate={onMoveTaskToDate} onCompleteHabit={onCompleteHabit} />;
       case 'dreams': return <DreamGoalsView data={data} onUpdateDreamGoals={onUpdateDreamGoals} />;
       case 'finance': return <FinanceView data={data} onUpdateFinance={onUpdateFinance} />;
+      case 'health': return <HealthView data={data} onUpdateHealth={onUpdateHealth} />;
       case 'settings': return <SettingsView data={data} onUpdateUser={onUpdateUser} onResetData={onResetData} cloudSync={cloudSync} onGenerateRandomData={onGenerateRandomData} />;
       default: return <DashboardView data={data} onCompleteHabit={onCompleteHabit} workoutData={data.workoutData} onNavigate={navigateTo} onUpdateUser={onUpdateUser} />;
     }
