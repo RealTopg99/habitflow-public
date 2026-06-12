@@ -167,28 +167,103 @@ const THEME_MODES = [
   { id: 'pureDark', name: 'Dark puro', desc: 'Negro profundo, menos brillo y bordes más finos.', colors: {
     ...BASE_COLORS,
     bg: '#000000',
-    surface: '#070708',
-    card: '#0d0d10',
-    cardHover: '#151519',
-    text: '#f2f2f4',
-    textDim: '#8c8c96',
-    border: 'rgba(255,255,255,0.095)'
+    surface: '#060607',
+    card: '#0d0d0f',
+    cardHover: '#17171b',
+    text: '#f7f7f8',
+    textDim: '#a1a1aa',
+    border: 'rgba(255,255,255,0.11)'
   } },
   { id: 'pinkLight', name: 'Claro rosa', desc: 'Fondo claro, tarjetas blancas, acentos rosa y contraste suave.', defaultAccent: 'roseQuartz', defaultIconColor: 'rose', colors: {
     ...BASE_COLORS,
-    bg: '#fff7fb',
-    surface: '#fff0f6',
+    bg: '#f8f4f6',
+    surface: '#fff9fb',
     card: '#ffffff',
-    cardHover: '#ffe4ef',
+    cardHover: '#fff0f5',
     primary: '#e11d48',
     secondary: '#fb7185',
     success: '#059669',
     alert: '#be123c',
-    text: '#30202a',
-    textDim: '#8a5b70',
-    border: 'rgba(190,18,60,0.16)'
+    text: '#291820',
+    textDim: '#705564',
+    border: 'rgba(104,60,77,0.16)'
   } }
 ];
+
+const getThemeVisualTokens = (themeModeId, colors) => {
+  if (themeModeId === 'pinkLight') {
+    return {
+      '--hf-canvas': '#f8f4f6',
+      '--hf-canvas-raised': '#fffafb',
+      '--hf-surface': 'rgba(255,250,252,0.90)',
+      '--hf-surface-strong': '#ffffff',
+      '--hf-surface-soft': '#fff6f9',
+      '--hf-card-border': 'rgba(104,60,77,0.15)',
+      '--hf-card-border-strong': 'rgba(190,18,60,0.24)',
+      '--hf-card-highlight': 'rgba(255,255,255,0.92)',
+      '--hf-text': '#291820',
+      '--hf-muted': '#705564',
+      '--hf-subtle': '#927382',
+      '--hf-glass': 'linear-gradient(145deg, rgba(255,255,255,0.98), rgba(255,246,249,0.94))',
+      '--hf-glass-quiet': 'linear-gradient(145deg, rgba(255,255,255,0.96), rgba(250,242,246,0.90))',
+      '--hf-shadow': '14px 16px 38px rgba(99,57,73,0.11), -8px -8px 24px rgba(255,255,255,0.82), inset 0 1px 0 rgba(255,255,255,0.95)',
+      '--hf-shadow-soft': '0 12px 30px rgba(99,57,73,0.10), inset 0 1px 0 rgba(255,255,255,0.92)',
+      '--hf-shadow-raised': '0 20px 54px rgba(99,57,73,0.14), inset 0 1px 0 rgba(255,255,255,0.96)',
+      '--hf-input-bg': 'rgba(255,255,255,0.88)',
+      '--hf-input-hover': '#ffffff',
+      '--hf-hover': 'rgba(225,29,72,0.065)',
+      '--hf-pressed': 'rgba(225,29,72,0.12)',
+      '--hf-overlay': 'rgba(52,31,40,0.38)',
+      '--hf-grid': 'rgba(92,58,72,0.13)',
+      '--hf-track': 'rgba(92,58,72,0.10)',
+      '--hf-header': 'rgba(255,250,252,0.86)',
+      '--hf-nav': 'rgba(255,249,251,0.94)',
+      '--hf-glow': 'rgba(225,29,72,0.16)',
+      '--hf-heading-start': '#291820',
+      '--hf-heading-end': '#b42352'
+    };
+  }
+
+  const pure = themeModeId === 'pureDark';
+  return {
+    '--hf-canvas': colors.bg,
+    '--hf-canvas-raised': pure ? '#040405' : colors.surface,
+    '--hf-surface': pure ? 'rgba(13,13,15,0.88)' : 'rgba(18,18,26,0.88)',
+    '--hf-surface-strong': pure ? '#101013' : colors.card,
+    '--hf-surface-soft': pure ? '#08080a' : colors.surface,
+    '--hf-card-border': pure ? 'rgba(255,255,255,0.105)' : colors.border,
+    '--hf-card-border-strong': 'rgba(255,255,255,0.17)',
+    '--hf-card-highlight': 'rgba(255,255,255,0.055)',
+    '--hf-text': colors.text,
+    '--hf-muted': colors.textDim,
+    '--hf-subtle': pure ? '#767680' : colors.textDim,
+    '--hf-glass': pure
+      ? 'linear-gradient(145deg, rgba(20,20,23,0.92), rgba(7,7,9,0.96))'
+      : 'linear-gradient(145deg, rgba(30,30,43,0.90), rgba(13,13,20,0.94))',
+    '--hf-glass-quiet': pure
+      ? 'linear-gradient(145deg, rgba(16,16,19,0.88), rgba(6,6,8,0.94))'
+      : 'linear-gradient(145deg, rgba(25,25,36,0.86), rgba(11,11,17,0.92))',
+    '--hf-shadow': pure
+      ? '0 24px 64px rgba(0,0,0,0.52), inset 0 1px 0 rgba(255,255,255,0.052)'
+      : '0 22px 58px rgba(0,0,0,0.34), inset 0 1px 0 rgba(255,255,255,0.045)',
+    '--hf-shadow-soft': pure
+      ? '0 12px 34px rgba(0,0,0,0.40), inset 0 1px 0 rgba(255,255,255,0.04)'
+      : '0 12px 32px rgba(0,0,0,0.24), inset 0 1px 0 rgba(255,255,255,0.04)',
+    '--hf-shadow-raised': '0 28px 76px rgba(0,0,0,0.58), inset 0 1px 0 rgba(255,255,255,0.065)',
+    '--hf-input-bg': pure ? 'rgba(255,255,255,0.045)' : 'rgba(255,255,255,0.055)',
+    '--hf-input-hover': pure ? 'rgba(255,255,255,0.065)' : 'rgba(255,255,255,0.075)',
+    '--hf-hover': 'rgba(255,255,255,0.055)',
+    '--hf-pressed': 'rgba(225,29,72,0.16)',
+    '--hf-overlay': 'rgba(0,0,0,0.72)',
+    '--hf-grid': 'rgba(255,255,255,0.075)',
+    '--hf-track': 'rgba(255,255,255,0.08)',
+    '--hf-header': pure ? 'rgba(3,3,4,0.86)' : 'rgba(8,8,12,0.88)',
+    '--hf-nav': pure ? 'rgba(6,6,8,0.94)' : 'rgba(12,12,18,0.94)',
+    '--hf-glow': 'rgba(225,29,72,0.18)',
+    '--hf-heading-start': '#ffffff',
+    '--hf-heading-end': pure ? '#c9c9d0' : colors.text
+  };
+};
 
 const PREDEFINED_CHALLENGES = [
   { id: 'challenge1', name: 'Hidratación 30 días', icon: '\u{1F4A7}', desc: 'Tomar 2L de agua diario por 30 días', duration: 30, difficulty: 'Fácil', diffColor: COLORS.success, target: { name: 'Tomar 2L de agua', category: 'salud', icon: '\u{1F4A7}', frequency: 'Diario', targetStreak: 30 } },
@@ -3354,6 +3429,343 @@ const injectStyles = () => {
 
       .dashboard-layout-grid .kpi-grid > .kpi-card:last-child {
         grid-column: auto;
+      }
+    }
+
+    /* Premium dual-theme system: Dark puro + Claro rosa. */
+    :root {
+      color-scheme: dark;
+      --hf-focus-ring: 0 0 0 4px rgba(var(--icon-rgb,225,29,72),0.14);
+      --hf-control-radius: 13px;
+      --hf-pill-radius: 999px;
+    }
+    html[data-theme-mode="pinkLight"] { color-scheme: light; }
+    html,
+    body,
+    #root {
+      background: var(--hf-canvas, var(--app-bg)) !important;
+      color: var(--hf-text, var(--app-text)) !important;
+    }
+    body {
+      background:
+        radial-gradient(circle at 12% 7%, var(--hf-glow), transparent 28%),
+        radial-gradient(circle at 86% 13%, var(--hf-card-highlight), transparent 24%),
+        var(--hf-canvas, var(--app-bg)) !important;
+      transition: background-color 0.24s ease, color 0.24s ease;
+    }
+    * {
+      scrollbar-color: rgba(var(--icon-rgb,225,29,72),0.42) transparent;
+    }
+    *::-webkit-scrollbar { width: 10px; height: 10px; }
+    *::-webkit-scrollbar-track { background: transparent; }
+    *::-webkit-scrollbar-thumb {
+      background: rgba(var(--icon-rgb,225,29,72),0.34);
+      border: 3px solid transparent;
+      border-radius: 999px;
+      background-clip: padding-box;
+    }
+    *::-webkit-scrollbar-thumb:hover {
+      background: rgba(var(--icon-rgb,225,29,72),0.52);
+      border: 3px solid transparent;
+      background-clip: padding-box;
+    }
+    ::selection {
+      background: rgba(var(--icon-rgb,225,29,72),0.24);
+      color: var(--hf-text);
+    }
+    .content-area {
+      background: transparent !important;
+      min-width: 0;
+    }
+    .content-area > header {
+      background: var(--hf-header) !important;
+      border-color: var(--hf-card-border) !important;
+      box-shadow: 0 10px 34px rgba(0,0,0,0.08);
+    }
+    .sidebar {
+      background:
+        radial-gradient(circle at 30% 0%, var(--hf-glow), transparent 25%),
+        var(--hf-nav) !important;
+      border-color: var(--hf-card-border) !important;
+      box-shadow: 14px 0 42px rgba(0,0,0,0.10);
+    }
+    .sidebar nav > button,
+    .mobile-bottom-nav button,
+    .mobile-more-popover button {
+      border: 1px solid transparent !important;
+    }
+    .sidebar nav > button:hover,
+    .mobile-more-popover button:hover {
+      background: var(--hf-hover) !important;
+      border-color: var(--hf-card-border) !important;
+    }
+    .sidebar nav > button[style*="background: rgba"],
+    .mobile-bottom-nav button[style*="background: rgba"],
+    .mobile-more-popover button[style*="background: rgba"] {
+      box-shadow: inset 0 1px 0 var(--hf-card-highlight);
+    }
+    .sidebar-toggle,
+    .top-sync,
+    .top-random,
+    .top-actions > button {
+      background: var(--hf-glass-quiet) !important;
+      border-color: var(--hf-card-border) !important;
+      box-shadow: var(--hf-shadow-soft) !important;
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+    }
+    .mobile-bottom-nav {
+      background: var(--hf-nav) !important;
+      border-color: var(--hf-card-border) !important;
+      box-shadow: 0 -16px 44px rgba(0,0,0,0.18), inset 0 1px 0 var(--hf-card-highlight) !important;
+      backdrop-filter: blur(22px);
+      -webkit-backdrop-filter: blur(22px);
+    }
+    .mobile-more-popover {
+      background: var(--hf-surface-strong) !important;
+      border-color: var(--hf-card-border-strong) !important;
+      box-shadow: var(--hf-shadow-raised) !important;
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+    }
+    .app-main h1,
+    .app-main h2,
+    .app-main h3,
+    .app-main h4 {
+      color: var(--hf-text) !important;
+    }
+    .app-main h1,
+    .app-main h2,
+    .lab-hero-title {
+      background: linear-gradient(145deg, var(--hf-heading-start), var(--hf-heading-end));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent !important;
+    }
+    .brand-word {
+      background: linear-gradient(120deg, var(--hf-heading-start) 0%, var(--hf-heading-end) 54%, var(--icon-primary) 82%, var(--hf-heading-start) 100%);
+      background-size: 220% 220%;
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent !important;
+    }
+    .brand-mark {
+      background: var(--hf-surface-strong) !important;
+      box-shadow: 0 0 0 1px var(--hf-card-border), var(--hf-shadow-soft) !important;
+    }
+    .lab-shell-card,
+    .finance-card,
+    .kpi-card,
+    .habit-card,
+    .today-habits-panel,
+    .hf-modal-panel,
+    .auth-hero-card,
+    .auth-form-card,
+    .dream-goal-form-card {
+      background: var(--hf-glass) !important;
+      border-color: var(--hf-card-border) !important;
+      box-shadow: var(--hf-shadow) !important;
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+    }
+    .app-main [style*="border-radius: 16px"][style*="border: 1px solid"],
+    .app-main [style*="border-radius: 18px"][style*="border: 1px solid"],
+    .app-main [style*="border-radius: 20px"][style*="border: 1px solid"],
+    .app-main [style*="border-radius: 24px"][style*="border: 1px solid"] {
+      border-color: var(--hf-card-border) !important;
+      box-shadow: var(--hf-shadow-soft);
+    }
+    .finance-card,
+    .habit-card,
+    .kpi-card {
+      isolation: isolate;
+    }
+    @media (min-width: 1101px) and (max-width: 1599px) {
+      .dashboard-layout-grid {
+        grid-template-columns: minmax(0, 1fr) minmax(320px, 0.42fr) !important;
+        gap: 20px !important;
+      }
+      .dashboard-layout-grid .kpi-grid {
+        gap: 10px !important;
+      }
+      .dashboard-layout-grid .kpi-card {
+        padding: 14px !important;
+      }
+    }
+    @media (hover: hover) and (pointer: fine) {
+      .lab-shell-card:hover,
+      .finance-card:hover,
+      .habit-card:hover,
+      .kpi-card:hover {
+        border-color: var(--hf-card-border-strong) !important;
+        box-shadow: var(--hf-shadow-raised) !important;
+      }
+      button:not(:disabled):hover {
+        filter: brightness(1.035);
+      }
+    }
+    input,
+    textarea,
+    select {
+      background: var(--hf-input-bg) !important;
+      color: var(--hf-text) !important;
+      border-color: var(--hf-card-border) !important;
+      border-radius: var(--hf-control-radius) !important;
+      box-shadow: inset 0 1px 0 var(--hf-card-highlight) !important;
+    }
+    input:hover,
+    textarea:hover,
+    select:hover {
+      background: var(--hf-input-hover) !important;
+      border-color: var(--hf-card-border-strong) !important;
+    }
+    input:focus,
+    textarea:focus,
+    select:focus {
+      background: var(--hf-input-hover) !important;
+      border-color: rgba(var(--icon-rgb,225,29,72),0.58) !important;
+      box-shadow: var(--hf-focus-ring), inset 0 1px 0 var(--hf-card-highlight) !important;
+      outline: none !important;
+    }
+    input::placeholder,
+    textarea::placeholder {
+      color: var(--hf-subtle) !important;
+      opacity: 0.9 !important;
+    }
+    button:focus-visible,
+    [role="button"]:focus-visible,
+    a:focus-visible {
+      outline: 2px solid rgba(var(--icon-rgb,225,29,72),0.82) !important;
+      outline-offset: 3px !important;
+      box-shadow: var(--hf-focus-ring) !important;
+    }
+    button:not(:disabled):active {
+      transform: translateY(1px) scale(0.985);
+      box-shadow: inset 0 2px 8px rgba(0,0,0,0.14) !important;
+    }
+    .lab-cta {
+      border-radius: var(--hf-pill-radius) !important;
+      border-color: rgba(var(--icon-rgb,225,29,72),0.30) !important;
+      background: linear-gradient(135deg, var(--icon-primary), var(--icon-deep)) !important;
+      box-shadow: 0 12px 28px var(--hf-glow), inset 0 1px 0 rgba(255,255,255,0.22) !important;
+    }
+    .lab-pill {
+      border-color: var(--hf-card-border) !important;
+      background: var(--hf-glass-quiet) !important;
+      color: var(--hf-text) !important;
+      box-shadow: inset 0 1px 0 var(--hf-card-highlight);
+    }
+    .skeleton {
+      background: linear-gradient(90deg, var(--hf-surface-soft) 25%, var(--hf-hover) 50%, var(--hf-surface-soft) 75%) !important;
+      background-size: 200% 100% !important;
+    }
+    .hf-modal-backdrop {
+      background: var(--hf-overlay) !important;
+      backdrop-filter: blur(14px) saturate(0.92) !important;
+      -webkit-backdrop-filter: blur(14px) saturate(0.92) !important;
+    }
+    .hf-modal-panel {
+      border-radius: var(--hf-radius-lg) !important;
+      box-shadow: var(--hf-shadow-raised) !important;
+    }
+    .hf-modal-header {
+      border-color: var(--hf-card-border) !important;
+    }
+    .recharts-cartesian-grid line {
+      stroke: var(--hf-grid) !important;
+      stroke-opacity: 1 !important;
+    }
+    .recharts-cartesian-axis-line,
+    .recharts-cartesian-axis-tick-line {
+      stroke: var(--hf-grid) !important;
+    }
+    .recharts-tooltip-cursor {
+      fill: transparent !important;
+      stroke: var(--hf-card-border-strong) !important;
+    }
+    .recharts-default-tooltip {
+      background: var(--hf-surface-strong) !important;
+      border-color: var(--hf-card-border-strong) !important;
+      box-shadow: var(--hf-shadow-raised) !important;
+      color: var(--hf-text) !important;
+      backdrop-filter: blur(20px);
+    }
+    .recharts-text {
+      fill: var(--hf-muted) !important;
+    }
+    .kpi-progress-ring > circle:first-child,
+    progress {
+      color: var(--hf-track);
+    }
+    html[data-theme-mode="pureDark"] body {
+      background:
+        radial-gradient(circle at 11% 4%, rgba(var(--icon-rgb,225,29,72),0.095), transparent 26%),
+        radial-gradient(circle at 88% 10%, rgba(255,255,255,0.035), transparent 22%),
+        #000 !important;
+    }
+    html[data-theme-mode="pinkLight"] body {
+      background:
+        radial-gradient(circle at 10% 4%, rgba(225,29,72,0.10), transparent 28%),
+        radial-gradient(circle at 88% 12%, rgba(255,255,255,0.92), transparent 26%),
+        linear-gradient(145deg, #f8f4f6, #fff9fb 48%, #f4eff2) !important;
+    }
+    html[data-theme-mode="pinkLight"] .content-area > header,
+    html[data-theme-mode="pinkLight"] .sidebar,
+    html[data-theme-mode="pinkLight"] .mobile-bottom-nav {
+      background: var(--hf-nav) !important;
+      border-color: var(--hf-card-border) !important;
+    }
+    html[data-theme-mode="pinkLight"] .app-main [style*="background: rgb(0, 0, 0)"],
+    html[data-theme-mode="pinkLight"] .app-main [style*="background: #000"] {
+      background: var(--hf-surface-strong) !important;
+    }
+    html[data-theme-mode="pinkLight"] .auth-screen {
+      background:
+        radial-gradient(circle at 15% 12%, rgba(225,29,72,0.13), transparent 30%),
+        radial-gradient(circle at 82% 18%, rgba(255,255,255,0.92), transparent 27%),
+        linear-gradient(145deg, #f5eff2, #fff9fb) !important;
+    }
+    html[data-theme-mode="pinkLight"] .auth-feature-pill,
+    html[data-theme-mode="pinkLight"] .auth-form-card .cl-socialButtonsBlockButton {
+      background: rgba(255,255,255,0.74) !important;
+      color: var(--hf-text) !important;
+      border-color: var(--hf-card-border) !important;
+    }
+    html[data-theme-mode="pinkLight"] .auth-form-card .cl-headerTitle {
+      color: var(--hf-text) !important;
+    }
+    html[data-theme-mode="pinkLight"] .auth-form-card .cl-headerSubtitle,
+    html[data-theme-mode="pinkLight"] .auth-form-card .cl-footerActionText,
+    html[data-theme-mode="pinkLight"] .auth-form-card .cl-formFieldLabel,
+    html[data-theme-mode="pinkLight"] .auth-form-card .cl-dividerText,
+    html[data-theme-mode="pinkLight"] .auth-form-card .cl-footerPagesLink {
+      color: var(--hf-muted) !important;
+    }
+    html[data-theme-mode="pinkLight"] .auth-form-card .cl-formFieldInput {
+      background: var(--hf-input-bg) !important;
+      color: var(--hf-text) !important;
+      border-color: var(--hf-card-border) !important;
+    }
+    html[data-theme-mode="pinkLight"] .auth-form-card .cl-footer {
+      background: rgba(255,247,250,0.84) !important;
+      border-color: var(--hf-card-border) !important;
+    }
+    @media (max-width: 768px) {
+      .lab-shell-card,
+      .finance-card,
+      .kpi-card,
+      .habit-card,
+      .today-habits-panel,
+      .dream-goal-form-card {
+        border-radius: 20px !important;
+        box-shadow: var(--hf-shadow-soft) !important;
+      }
+      .mobile-bottom-nav button {
+        min-height: 48px !important;
+        border-radius: 14px !important;
+      }
+      .mobile-more-popover {
+        border-radius: 22px !important;
       }
     }
   `;
@@ -12147,11 +12559,15 @@ const HabitFlowApp = () => {
   Object.assign(COLORS, themeMode.colors);
   const theme = THEME_VARIANTS.find(t => t.id === accentColor) || THEME_VARIANTS[0];
   const iconTheme = ICON_COLOR_PALETTE.find(t => t.id === (data?.user?.iconColor || 'fire')) || ICON_COLOR_PALETTE[0];
+  const visualTokens = getThemeVisualTokens(themeMode.id, COLORS);
   COLORS.primary = theme.primary;
   COLORS.secondary = theme.secondary;
 
   useEffect(() => {
     if (theme) {
+      Object.entries(visualTokens).forEach(([token, value]) => {
+        document.documentElement.style.setProperty(token, value);
+      });
       document.documentElement.style.setProperty('--primary', theme.primary);
       document.documentElement.style.setProperty('--app-bg', COLORS.bg);
       document.documentElement.style.setProperty('--app-text', COLORS.text);
@@ -12161,9 +12577,9 @@ const HabitFlowApp = () => {
       document.documentElement.style.setProperty('--app-border', COLORS.border);
       document.documentElement.style.setProperty('--tooltip-bg', COLORS.card);
       document.documentElement.style.setProperty('--tooltip-border', COLORS.border);
-      document.documentElement.style.setProperty('--header-bg', themeMode.id === 'pinkLight' ? 'rgba(255,247,251,0.92)' : 'rgba(0,0,0,0.92)');
-      document.documentElement.style.setProperty('--mobile-nav-bg', themeMode.id === 'pinkLight' ? 'rgba(255,240,246,0.94)' : 'rgba(5,5,5,0.94)');
-      document.documentElement.style.setProperty('--mobile-nav-shadow', themeMode.id === 'pinkLight' ? 'rgba(190,18,60,0.12)' : 'rgba(0,0,0,0.42)');
+      document.documentElement.style.setProperty('--header-bg', visualTokens['--hf-header']);
+      document.documentElement.style.setProperty('--mobile-nav-bg', visualTokens['--hf-nav']);
+      document.documentElement.style.setProperty('--mobile-nav-shadow', visualTokens['--hf-glow']);
       document.documentElement.style.setProperty('--icon-primary', iconTheme.primary);
       document.documentElement.style.setProperty('--icon-hover', iconTheme.hover);
       document.documentElement.style.setProperty('--icon-deep', iconTheme.deep);
@@ -12172,7 +12588,7 @@ const HabitFlowApp = () => {
       document.body.style.background = COLORS.bg;
       document.body.style.color = COLORS.text;
     }
-  }, [theme, themeMode, iconTheme]);
+  }, [theme, themeMode, iconTheme, visualTokens]);
 
   if (!data) {
     return (
