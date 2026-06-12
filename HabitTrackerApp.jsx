@@ -1704,6 +1704,56 @@ const injectStyles = () => {
       }
     }
 
+    /* El Panel conserva movimiento visual sin alterar posiciones ni volver a montar tarjetas. */
+    .dashboard-view-enter,
+    .dashboard-view {
+      animation: none !important;
+      transform: none !important;
+    }
+    .dashboard-view .dashboard-kpi-card {
+      animation: none !important;
+      transform: none !important;
+      transition: border-color 0.18s ease, background-color 0.18s ease, box-shadow 0.18s ease !important;
+    }
+    .dashboard-view .dashboard-kpi-card:hover {
+      transform: none !important;
+    }
+    .dashboard-counter {
+      display: inline-block;
+      min-width: 1ch;
+      font-variant-numeric: tabular-nums;
+      white-space: nowrap;
+    }
+    .dashboard-view .fire-emoji {
+      animation: none !important;
+      transform: none !important;
+    }
+    .dashboard-kpi-icon,
+    .dashboard-achievement-icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex: 0 0 auto;
+      line-height: 1;
+      vertical-align: middle;
+    }
+    .dashboard-kpi-icon {
+      width: 16px;
+      height: 16px;
+    }
+    .dashboard-achievement-icon {
+      width: 28px;
+      height: 28px;
+    }
+    .dashboard-achievement-card,
+    .dashboard-today-habit {
+      animation: none !important;
+      transform: none !important;
+    }
+    .dashboard-today-habit {
+      transition: background-color 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease !important;
+    }
+
     @media (max-width: 768px) {
       .mobile-only { display: flex !important; }
       .desktop-only { display: none !important; }
@@ -3856,34 +3906,33 @@ const Skeleton = ({ width = '100%', height = 20, style = {} }) => (
 
 const AnimatedCounter = ({ value, duration = 1000, prefix = '', suffix = '', style = {} }) => {
   const [display, setDisplay] = useState(0);
+  const numericValue = Number.isFinite(Number(value)) ? Number(value) : 0;
 
   useEffect(() => {
     const start = performance.now();
+    let frameId = null;
+    let cancelled = false;
+
     const animate = (now) => {
+      if (cancelled) return;
       const elapsed = now - start;
       const progress = Math.min(elapsed / duration, 1);
       const eased = 1 - Math.pow(1 - progress, 3);
-      setDisplay(Math.round(eased * value));
-      if (progress < 1) requestAnimationFrame(animate);
+      setDisplay(Math.round(eased * numericValue));
+      if (progress < 1) frameId = requestAnimationFrame(animate);
     };
-    requestAnimationFrame(animate);
-  }, [value, duration]);
+    frameId = requestAnimationFrame(animate);
 
-  return <span style={style}>{prefix}{display}{suffix}</span>;
+    return () => {
+      cancelled = true;
+      if (frameId !== null) cancelAnimationFrame(frameId);
+    };
+  }, [numericValue, duration]);
+
+  return <span className="dashboard-counter" style={style}>{prefix}{display}{suffix}</span>;
 };
 
 const KPICard = ({ icon, title, value, subtitle, accent, suffix = '', delay = 0, progress }) => {
-  const [visible, setVisible] = useState(false);
-  useEffect(() => {
-    const t = setTimeout(() => setVisible(true), delay);
-    return () => clearTimeout(t);
-  }, [delay]);
-
-  if (!visible) return <div className="kpi-card" style={{
-    background: COLORS.card, borderRadius: 12, padding: 16,
-    border: `1px solid ${COLORS.border}`, opacity: 0, transform: 'translateY(10px)'
-  }}><Skeleton height={20} /><Skeleton height={10} width="60%" style={{ marginTop: 6 }} /></div>;
-
   const progressCircle = progress !== undefined ? (
     <svg className="kpi-progress-ring" width="38" height="38" viewBox="0 0 38 38" style={{ flexShrink: 0, opacity: 0.82 }}>
       <circle cx="19" cy="19" r="15" fill="none" stroke={COLORS.border} strokeWidth="2" opacity="0.75" />
@@ -3902,17 +3951,16 @@ const KPICard = ({ icon, title, value, subtitle, accent, suffix = '', delay = 0,
   ) : null;
 
   return (
-    <div className="kpi-card" style={{
+    <div className="kpi-card dashboard-kpi-card" style={{
       background: COLORS.card, borderRadius: 12, padding: 16,
-      border: `1px solid ${COLORS.border}`,
-      animation: `fadeIn 0.4s ease-out ${delay}ms both`
+      border: `1px solid ${COLORS.border}`
     }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 8 }}>
         <div>
           <div style={{ fontSize: 10, color: COLORS.textDim, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 2 }}>
-            <span className="fire-emoji">{icon}</span> {title}
+            <span className="fire-emoji dashboard-kpi-icon">{icon}</span> {title}
           </div>
-          <div style={{ fontSize: 24, fontWeight: 500, color: COLORS.text, fontFamily: "'Inter', sans-serif", lineHeight: 1.2 }}>
+          <div style={{ fontSize: 24, fontWeight: 500, color: COLORS.text, fontFamily: "'Inter', sans-serif", lineHeight: 1.2, minHeight: '1.2em' }}>
             <AnimatedCounter value={typeof value === 'number' ? value : parseInt(value)} duration={1200} suffix={suffix} />
           </div>
         </div>
@@ -4678,21 +4726,20 @@ const AchievementsSection = ({ habits, records }) => {
   }, [habits, records]);
 
   return (
-    <div style={{ background: COLORS.card, borderRadius: 16, border: `1px solid ${COLORS.border}`, padding: 24 }}>
+    <div className="dashboard-achievements" style={{ background: COLORS.card, borderRadius: 16, border: `1px solid ${COLORS.border}`, padding: 24 }}>
       <h3 style={{ fontSize: 18, color: COLORS.text, marginBottom: 16, fontFamily: "'DM Serif Display', serif" }}>
         <Sparkles size={18} style={{ verticalAlign: 'middle', marginRight: 8, color: COLORS.primary }} />
         Logros Recientes
       </h3>
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12 }}>
         {achievements.map((a, i) => (
-          <div key={a.id} style={{
+          <div key={a.id} className="dashboard-achievement-card" style={{
             display: 'flex', alignItems: 'center', gap: 10,
             padding: '10px 16px', borderRadius: 12,
             background: `${a.color}12`, border: `1px solid ${a.color}30`,
-            animation: `fadeIn 0.4s ease-out ${i * 80}ms both`,
             cursor: 'default'
           }}>
-            <span className="fire-emoji" style={{ fontSize: 24, animation: 'float 2s ease-in-out infinite' }}>{a.icon}</span>
+            <span className="fire-emoji dashboard-achievement-icon" style={{ fontSize: 24 }}>{a.icon}</span>
             <div>
               <div style={{ fontSize: 14, color: COLORS.text, fontWeight: 500 }}>{a.label}</div>
               <div style={{ fontSize: 11, color: COLORS.textDim }}>{a.desc}</div>
@@ -4785,7 +4832,7 @@ const DashboardView = ({ data, onCompleteHabit, workoutData, onNavigate, onUpdat
   };
 
   return (
-    <div style={{ animation: 'fadeIn 0.3s ease-out' }}>
+    <div className="dashboard-view">
       <div style={{ marginBottom: 24 }}>
         <div style={{ fontSize: 28, color: COLORS.text, fontFamily: "'DM Serif Display', serif", marginBottom: 4 }}>
           {greet.text} {greet.emoji}
@@ -4953,14 +5000,13 @@ const DashboardView = ({ data, onCompleteHabit, workoutData, onNavigate, onUpdat
                 No hay hábitos activos
               </div>
             )}
-            {habitsToday.map((h, i) => (
-              <div key={h.id} style={{
+            {habitsToday.map(h => (
+              <div key={h.id} className="dashboard-today-habit" style={{
                 display: 'flex', alignItems: 'center', gap: 10,
                 padding: '10px 12px', borderRadius: 10,
                 background: h.completed ? 'rgba(0,255,157,0.06)' : 'transparent',
                 border: `1px solid ${h.completed ? 'rgba(0,255,157,0.12)' : 'transparent'}`,
-                animation: `fadeIn 0.3s ease-out ${i * 50}ms both`,
-                cursor: 'pointer', transition: 'all 0.2s'
+                cursor: 'pointer'
               }} onClick={() => onCompleteHabit(h.id)}>
                 <span className="fire-emoji" style={{ fontSize: 18, width: 28, textAlign: 'center', flexShrink: 0 }}>{h.icon}</span>
                 <div style={{ flex: 1, minWidth: 0 }}>
@@ -12778,7 +12824,7 @@ const HabitFlowApp = () => {
         </header>
 
         <main id="habitflow-main" className="app-main" tabIndex="-1">
-          <div className="view-enter" key={view}>
+          <div className={`view-enter ${view === 'dashboard' ? 'dashboard-view-enter' : ''}`} key={view}>
             <ErrorBoundary>
               {renderView()}
             </ErrorBoundary>
