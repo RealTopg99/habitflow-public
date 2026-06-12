@@ -1452,12 +1452,15 @@ const injectStyles = () => {
     .health-layout { align-items: start; }
     .health-med-row { transition: border-color 0.2s, background 0.2s; }
     .health-med-row:hover { border-color: rgba(var(--icon-rgb,225,29,72),0.28) !important; background: rgba(var(--icon-rgb,225,29,72),0.055) !important; }
+    .health-med-meta { display: grid; grid-template-columns: repeat(4, minmax(88px, 1fr)); gap: 8px; min-width: 0; }
+    .health-med-chip { min-width: 0; padding: 8px 9px; border-radius: 11px; background: rgba(255,255,255,0.035); border: 1px solid var(--border); }
+    .health-med-chip-label { color: var(--text-dim); font-size: 9px; letter-spacing: 0.08em; text-transform: uppercase; font-weight: 800; margin-bottom: 3px; }
+    .health-med-chip-value { color: var(--text); font-size: 12px; line-height: 1.25; overflow-wrap: anywhere; }
     @media (max-width: 1450px) {
       .health-layout { grid-template-columns: minmax(280px, 0.8fr) minmax(0, 1.2fr) !important; }
       .health-side { grid-column: 1 / -1; grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
       .health-kpis { grid-template-columns: repeat(3, minmax(0, 1fr)) !important; }
-      .health-med-row { grid-template-columns: minmax(180px, 1fr) 80px 120px 1fr !important; }
-      .health-med-row > div:nth-child(5) { display: none !important; }
+      .health-med-meta { grid-template-columns: repeat(2, minmax(120px, 1fr)); }
     }
     @media (max-width: 1080px) {
       .health-layout { grid-template-columns: 1fr !important; }
@@ -2060,10 +2063,13 @@ const injectStyles = () => {
         grid-template-columns: 1fr !important;
         gap: 7px !important;
       }
+      .health-med-meta {
+        grid-template-columns: 1fr 1fr !important;
+      }
       .health-med-row > div {
         min-width: 0 !important;
       }
-      .health-med-row > div:last-child {
+      .health-med-actions {
         justify-content: flex-start !important;
         flex-wrap: wrap !important;
       }
@@ -5038,19 +5044,33 @@ const HealthView = ({ data, onUpdateHealth }) => {
               const color = medicationColorMeta(med.color);
               const upcoming = getNextMedicationDose({ ...health, medications: [med] });
               return (
-                <div key={med.id} className="health-med-row" style={{ display: 'grid', gridTemplateColumns: 'minmax(170px, 1.2fr) 90px 120px 105px 120px 118px', gap: 10, alignItems: 'center', padding: '12px 12px', borderRadius: 14, background: 'rgba(255,255,255,0.028)', border: `1px solid ${COLORS.border}` }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                <div key={med.id} className="health-med-row" style={{ display: 'grid', gridTemplateColumns: 'minmax(150px, 0.85fr) minmax(0, 1.45fr) auto', gap: 12, alignItems: 'center', padding: '12px 12px', borderRadius: 14, background: 'rgba(255,255,255,0.028)', border: `1px solid ${COLORS.border}` }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 10, minWidth: 0 }}>
                     <div style={{ width: 36, height: 36, borderRadius: 999, background: `${color.color}22`, color: color.color, display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: `0 0 18px ${color.color}30` }}>{color.icon}</div>
-                    <div>
-                      <div style={{ color: COLORS.text, fontWeight: 900, fontSize: 13 }}>{med.name}</div>
-                      <div style={{ color: COLORS.textDim, fontSize: 11 }}>{med.notes || med.form}</div>
+                    <div style={{ minWidth: 0 }}>
+                      <div style={{ color: COLORS.text, fontWeight: 900, fontSize: 13, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{med.name}</div>
+                      <div style={{ color: COLORS.textDim, fontSize: 11, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{med.notes || med.form}</div>
                     </div>
                   </div>
-                  <div style={{ color: COLORS.text, fontSize: 12 }}>{med.dose}</div>
-                  <div style={{ color: COLORS.textDim, fontSize: 12 }}>{(med.times || []).join(' / ')}</div>
-                  <div style={{ color: COLORS.textDim, fontSize: 12 }}>{med.frequency}</div>
-                  <div style={{ color: COLORS.textDim, fontSize: 12 }}>{getMedicationDurationText(med)}</div>
-                  <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 5 }}>
+                  <div className="health-med-meta">
+                    <div className="health-med-chip">
+                      <div className="health-med-chip-label">Dosis</div>
+                      <div className="health-med-chip-value">{med.dose}</div>
+                    </div>
+                    <div className="health-med-chip">
+                      <div className="health-med-chip-label">Horas</div>
+                      <div className="health-med-chip-value">{(med.times || []).join(' / ')}</div>
+                    </div>
+                    <div className="health-med-chip">
+                      <div className="health-med-chip-label">Frecuencia</div>
+                      <div className="health-med-chip-value">{med.frequency}</div>
+                    </div>
+                    <div className="health-med-chip">
+                      <div className="health-med-chip-label">Duración</div>
+                      <div className="health-med-chip-value">{getMedicationDurationText(med)}</div>
+                    </div>
+                  </div>
+                  <div className="health-med-actions" style={{ display: 'flex', justifyContent: 'flex-end', gap: 5 }}>
                     <button onClick={() => markDoseTaken(med, upcoming?.time || (med.times || [])[0])} style={{ border: `1px solid ${COLORS.primary}40`, background: `${COLORS.primary}16`, color: COLORS.primary, borderRadius: 9, padding: '8px 9px', cursor: 'pointer', fontSize: 11, fontWeight: 900 }}>Tomar ahora</button>
                     <button onClick={() => editMedication(med)} style={{ width: 32, borderRadius: 9, border: `1px solid ${COLORS.border}`, background: 'transparent', color: COLORS.textDim, cursor: 'pointer' }}><Edit size={13} /></button>
                     <button onClick={() => deleteMedication(med.id)} style={{ width: 32, borderRadius: 9, border: `1px solid ${COLORS.border}`, background: 'transparent', color: COLORS.primary, cursor: 'pointer' }}><Trash2 size={13} /></button>
