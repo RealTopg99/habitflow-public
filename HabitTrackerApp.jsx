@@ -3592,6 +3592,18 @@ const injectStyles = () => {
         padding: 14px !important;
       }
     }
+    @media (min-width: 1101px) and (max-width: 1250px) {
+      .dashboard-layout-grid {
+        grid-template-columns: minmax(0, 1fr) !important;
+      }
+      .dashboard-layout-grid > .today-habits-panel {
+        width: 100% !important;
+        max-width: none !important;
+      }
+      .dashboard-layout-grid .today-habits-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+      }
+    }
     @media (hover: hover) and (pointer: fine) {
       .lab-shell-card:hover,
       .finance-card:hover,
