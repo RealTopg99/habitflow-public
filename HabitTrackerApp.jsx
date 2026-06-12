@@ -2835,6 +2835,527 @@ const injectStyles = () => {
       .mobile-bottom-nav { display: none !important; }
       .mobile-header-btn { display: none !important; }
     }
+
+    /* HabitFlow responsive UI audit */
+    *, *::before, *::after { box-sizing: border-box; }
+    body, button, input, select, textarea {
+      font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
+    }
+    button, input, select, textarea {
+      transition: border-color 160ms ease, background-color 160ms ease, color 160ms ease, box-shadow 160ms ease, transform 160ms ease;
+    }
+    button:focus-visible,
+    a:focus-visible,
+    input:focus-visible,
+    select:focus-visible,
+    textarea:focus-visible,
+    [tabindex]:focus-visible {
+      outline: 2px solid var(--app-primary, #e11d48) !important;
+      outline-offset: 3px;
+    }
+    button:not(:disabled):active { transform: translateY(1px); }
+    button:disabled,
+    input:disabled,
+    select:disabled,
+    textarea:disabled {
+      cursor: not-allowed !important;
+      opacity: 0.55;
+    }
+    .app-main {
+      max-width: 1440px;
+      min-width: 0;
+      padding-inline: clamp(18px, 2.2vw, 34px);
+    }
+    .app-main > .view-enter,
+    .app-main > .view-enter > div,
+    .dashboard-layout-grid > *,
+    .health-layout > *,
+    .agenda-day-grid > * {
+      min-width: 0;
+    }
+    .app-main h1,
+    .app-main h2,
+    .app-main h3,
+    .app-main h4,
+    .app-main p,
+    .app-main span,
+    .app-main strong {
+      overflow-wrap: anywhere;
+    }
+    .recharts-responsive-container,
+    .recharts-wrapper,
+    .recharts-surface {
+      max-width: 100% !important;
+    }
+    .chart-container {
+      width: 100%;
+      min-width: 0;
+      overflow: hidden;
+    }
+    .chart-container > * { min-width: 0 !important; }
+    .hf-modal-backdrop { padding: clamp(12px, 3vw, 28px); }
+    body:has(.hf-modal-backdrop) {
+      overflow: hidden !important;
+    }
+    body:has(.hf-modal-backdrop) .content-area {
+      z-index: 220 !important;
+    }
+    body:has(.hf-modal-backdrop) .mobile-bottom-nav {
+      visibility: hidden !important;
+      pointer-events: none !important;
+    }
+    body:has(.hf-modal-backdrop) .content-area > header {
+      visibility: hidden !important;
+      pointer-events: none !important;
+    }
+    .hf-modal-panel {
+      width: min(100%, var(--modal-width, 720px)) !important;
+      overscroll-behavior: contain;
+      scrollbar-gutter: stable;
+      box-shadow: 0 28px 90px rgba(0,0,0,0.58);
+    }
+    .hf-modal-header h2 { margin: 0; }
+    .hf-modal-header button {
+      width: 40px;
+      height: 40px;
+      align-items: center;
+      justify-content: center;
+    }
+    .dream-goal-form-card input,
+    .dream-goal-form-card button,
+    .settings-clerk-row input {
+      min-width: 0;
+      max-width: 100%;
+    }
+    .settings-clerk-row input {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    @media (min-width: 769px) {
+      .sidebar-open + .content-area {
+        flex: 0 0 calc(100% - 240px) !important;
+        width: calc(100% - 240px) !important;
+        max-width: calc(100% - 240px) !important;
+      }
+      .sidebar-collapsed + .content-area {
+        flex: 0 0 calc(100% - 64px) !important;
+        width: calc(100% - 64px) !important;
+        max-width: calc(100% - 64px) !important;
+      }
+    }
+
+    @media (max-width: 1180px) and (min-width: 769px) {
+      .dashboard-layout-grid {
+        grid-template-columns: 1fr !important;
+        gap: 18px !important;
+      }
+      .today-habits-panel {
+        width: 100% !important;
+        max-width: none !important;
+        position: static !important;
+      }
+      .today-habits-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+      }
+      .kpi-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+      }
+      .agenda-day-grid {
+        grid-template-columns: minmax(0, 1fr) minmax(220px, 250px) !important;
+      }
+      .dream-goal-fields {
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+      }
+      .dream-goal-url-row {
+        grid-template-columns: minmax(0, 1fr) auto !important;
+      }
+      .dream-goal-url-row .lab-cta {
+        min-width: 124px !important;
+        white-space: nowrap !important;
+      }
+    }
+
+    @media (max-width: 980px) and (min-width: 769px) {
+      .settings-mobile-view,
+      .settings-stack,
+      .settings-stack > div {
+        width: 100% !important;
+        min-width: 0 !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+      }
+      .settings-stack > div {
+        overflow: hidden !important;
+      }
+      .settings-stack > div > [style*="display: grid"] {
+        grid-template-columns: minmax(0, 1fr) !important;
+        align-items: stretch !important;
+      }
+      .settings-stack > div > [style*="display: grid"] > * {
+        min-width: 0 !important;
+        max-width: 100% !important;
+      }
+      .settings-stack > div > [style*="display: grid"] > button {
+        width: fit-content !important;
+        max-width: 100% !important;
+      }
+      .settings-theme-row {
+        display: grid !important;
+        grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+        gap: 10px !important;
+      }
+      .settings-theme-row > button {
+        width: 100% !important;
+        min-width: 0 !important;
+      }
+      .pomodoro-head {
+        display: grid !important;
+        grid-template-columns: 1fr !important;
+        gap: 14px !important;
+      }
+      .pomodoro-modes {
+        width: 100% !important;
+        display: grid !important;
+        grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+      }
+      .pomodoro-modes button {
+        min-width: 0 !important;
+        white-space: normal !important;
+      }
+      .pomodoro-kpis {
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+      }
+      .pomodoro-main-grid {
+        grid-template-columns: minmax(0, 1fr) !important;
+        gap: 16px !important;
+      }
+      .finance-layout {
+        grid-template-columns: minmax(0, 1fr) !important;
+      }
+      .finance-kpis {
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+      }
+      .finance-chart-card .recharts-responsive-container {
+        min-width: 0 !important;
+        width: 100% !important;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .app-main,
+      .app-main > .view-enter,
+      .app-main > .view-enter > div {
+        width: 100% !important;
+        min-width: 0 !important;
+        max-width: 100% !important;
+        overflow-x: clip !important;
+      }
+      .content-area > header {
+        padding-inline: 12px !important;
+      }
+      .top-identity,
+      .top-actions {
+        min-width: 0 !important;
+      }
+      .dashboard-layout-grid {
+        display: flex !important;
+        flex-direction: column !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        gap: 14px !important;
+      }
+      .dashboard-layout-grid > * {
+        width: 100% !important;
+        max-width: 100% !important;
+        min-width: 0 !important;
+        margin-inline: 0 !important;
+      }
+      .today-habits-panel {
+        position: static !important;
+        inset: auto !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        min-width: 0 !important;
+        margin: 0 !important;
+      }
+      .today-habits-grid {
+        grid-template-columns: 1fr !important;
+      }
+      .kpi-grid {
+        width: 100% !important;
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+        gap: 9px !important;
+        overflow: visible !important;
+      }
+      .kpi-grid > * {
+        width: auto !important;
+        min-width: 0 !important;
+      }
+      .chart-container {
+        margin-inline: 0 !important;
+        overflow: hidden !important;
+      }
+      .chart-container > * {
+        width: 100% !important;
+        min-width: 0 !important;
+        max-width: 100% !important;
+      }
+      .recharts-responsive-container {
+        width: 100% !important;
+        min-width: 0 !important;
+      }
+      .agenda-mobile-view,
+      .workout-mobile-view,
+      .finance-mobile-view,
+      .health-mobile-view,
+      .settings-mobile-view,
+      .dreams-mobile-view {
+        width: 100% !important;
+        min-width: 0 !important;
+        max-width: 100% !important;
+        margin-inline: 0 !important;
+        overflow-x: clip !important;
+      }
+      .workout-mobile-view .workout-tabs {
+        width: 100% !important;
+        max-width: 100% !important;
+        margin-right: 0 !important;
+        padding-right: 0 !important;
+      }
+      .agenda-view-tabs {
+        display: flex !important;
+        flex-wrap: wrap !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        margin-right: 0 !important;
+        padding-right: 0 !important;
+        overflow: visible !important;
+        gap: 6px !important;
+      }
+      .agenda-view-tabs > div { display: none !important; }
+      .agenda-view-tabs > button {
+        min-width: 0 !important;
+        min-height: 40px !important;
+        justify-content: center !important;
+        white-space: normal !important;
+      }
+      .agenda-view-tabs > button:nth-of-type(-n+4) {
+        flex: 1 1 calc(25% - 6px) !important;
+      }
+      .agenda-view-tabs > button:nth-of-type(n+5) {
+        flex: 1 1 calc(50% - 6px) !important;
+      }
+      .agenda-day-grid {
+        width: 100% !important;
+        grid-template-columns: minmax(0, 1fr) !important;
+      }
+      .agenda-sidebar {
+        width: 100% !important;
+        min-width: 0 !important;
+      }
+      .dreams-mobile-view > div:first-child {
+        margin-bottom: 32px !important;
+      }
+      .dreams-mobile-view h1 {
+        font-size: clamp(35px, 11vw, 48px) !important;
+        line-height: 1 !important;
+        letter-spacing: -0.055em !important;
+      }
+      .dream-goal-form-card {
+        width: 100% !important;
+        min-width: 0 !important;
+        padding: 16px !important;
+      }
+      .dream-goal-fields,
+      .dream-goal-url-row {
+        grid-template-columns: minmax(0, 1fr) !important;
+      }
+      .dream-goal-fields > *,
+      .dream-goal-url-row > * {
+        width: 100% !important;
+        min-width: 0 !important;
+      }
+      .settings-clerk-row {
+        display: grid !important;
+        grid-template-columns: minmax(0, 1fr) auto auto !important;
+        align-items: stretch !important;
+      }
+      .settings-clerk-row input {
+        width: 100% !important;
+        min-width: 0 !important;
+      }
+      .health-med-meta {
+        width: 100% !important;
+        min-width: 0 !important;
+      }
+      .health-med-row button {
+        min-height: 40px;
+      }
+      .hf-modal-backdrop {
+        align-items: flex-end !important;
+        padding: 8px !important;
+      }
+      .hf-modal-panel {
+        width: 100% !important;
+        max-width: 100% !important;
+        max-height: calc(100dvh - 16px) !important;
+        padding: 18px !important;
+        border-radius: 22px 22px 14px 14px !important;
+      }
+      .hf-modal-header {
+        position: sticky;
+        top: -18px;
+        z-index: 2;
+        margin: -18px -18px 16px !important;
+        padding: 18px;
+        background: inherit;
+        border-bottom: 1px solid var(--app-border, rgba(255,255,255,.1));
+      }
+      .mobile-bottom-nav button {
+        min-height: 52px !important;
+      }
+    }
+
+    @media (max-width: 430px) {
+      .kpi-grid { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
+      .kpi-card { padding: 14px !important; }
+      .agenda-view-tabs > button {
+        font-size: 10px !important;
+        padding-inline: 5px !important;
+      }
+      .settings-clerk-row {
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+      }
+      .settings-clerk-row input {
+        grid-column: 1 / -1;
+      }
+      .settings-clerk-row button {
+        width: 100% !important;
+      }
+      .settings-usage-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+        gap: 7px !important;
+      }
+      .settings-usage-grid > div {
+        min-width: 0 !important;
+        padding: 10px 5px !important;
+      }
+      .settings-usage-grid > div > div:last-child {
+        font-size: 9px !important;
+        line-height: 1.25 !important;
+        overflow-wrap: anywhere !important;
+      }
+      .dream-goal-form-card { border-radius: 18px !important; }
+    }
+
+    /* Mobile dashboard: keep the desktop side panel in normal document flow. */
+    @media (max-width: 768px) {
+      .dashboard-layout-grid {
+        display: grid !important;
+        grid-template-columns: minmax(0, 1fr) !important;
+        grid-template-areas:
+          "dashboard-main"
+          "dashboard-today" !important;
+        align-items: stretch !important;
+        gap: 16px !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        min-width: 0 !important;
+        isolation: isolate;
+      }
+
+      .dashboard-main-column {
+        grid-area: dashboard-main;
+        display: block !important;
+        position: relative !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        min-width: 0 !important;
+        overflow: visible !important;
+      }
+
+      .dashboard-layout-grid > .today-habits-panel {
+        grid-area: dashboard-today;
+        position: relative !important;
+        inset: auto !important;
+        top: auto !important;
+        right: auto !important;
+        bottom: auto !important;
+        left: auto !important;
+        z-index: 0 !important;
+        transform: none !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        min-width: 0 !important;
+        height: auto !important;
+        margin: 0 !important;
+        box-sizing: border-box !important;
+      }
+
+      .dashboard-layout-grid .kpi-grid {
+        display: grid !important;
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+        grid-auto-flow: row !important;
+        grid-auto-rows: minmax(100px, auto) !important;
+        align-items: stretch !important;
+        gap: 10px !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        min-width: 0 !important;
+        margin: 0 0 18px !important;
+        overflow: visible !important;
+      }
+
+      .dashboard-layout-grid .kpi-grid > .kpi-card {
+        position: relative !important;
+        inset: auto !important;
+        display: block !important;
+        width: 100% !important;
+        max-width: none !important;
+        min-width: 0 !important;
+        height: 100% !important;
+        margin: 0 !important;
+        opacity: 1 !important;
+        transform: none !important;
+        animation: none !important;
+        box-sizing: border-box !important;
+        overflow: hidden !important;
+      }
+
+      .dashboard-layout-grid .kpi-grid > .kpi-card:last-child {
+        grid-column: 1 / -1;
+      }
+
+      .dashboard-layout-grid .kpi-card > div:first-child {
+        min-width: 0 !important;
+        gap: 8px !important;
+      }
+
+      .dashboard-layout-grid .kpi-card > div:first-child > div:first-child {
+        min-width: 0 !important;
+      }
+
+      .dashboard-layout-grid .kpi-card > div:first-child > div:first-child > div {
+        overflow-wrap: anywhere;
+      }
+
+      .dashboard-layout-grid .today-habits-grid {
+        grid-template-columns: 1fr !important;
+        width: 100% !important;
+        min-width: 0 !important;
+      }
+    }
+
+    @media (max-width: 360px) {
+      .dashboard-layout-grid .kpi-grid {
+        grid-template-columns: minmax(0, 1fr) !important;
+      }
+
+      .dashboard-layout-grid .kpi-grid > .kpi-card:last-child {
+        grid-column: auto;
+      }
+    }
   `;
   document.head.appendChild(style);
 };
@@ -2981,21 +3502,21 @@ const KPICard = ({ icon, title, value, subtitle, accent, suffix = '', delay = 0,
 const Modal = ({ isOpen, onClose, title, children, width = 480 }) => {
   if (!isOpen) return null;
   return (
-    <div style={{
+    <div className="hf-modal-backdrop" role="presentation" style={{
       position: 'fixed', inset: 0, zIndex: 1000,
       display: 'flex', alignItems: 'center', justifyContent: 'center',
       background: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(8px)',
       animation: 'fadeIn 0.2s ease-out'
     }} onClick={onClose}>
-      <div style={{
+      <div className="hf-modal-panel" role="dialog" aria-modal="true" aria-label={title} style={{
         background: COLORS.surface, borderRadius: 16,
         border: `1px solid ${COLORS.border}`, padding: 32,
         width: '90%', maxWidth: width, maxHeight: '85vh', overflowY: 'auto',
         animation: 'slideIn 0.3s ease-out'
       }} onClick={e => e.stopPropagation()}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
+        <div className="hf-modal-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
           <h2 style={{ fontSize: 22, color: COLORS.text, fontFamily: "'DM Serif Display', serif" }}>{title}</h2>
-          <button onClick={onClose} style={{
+          <button aria-label="Cerrar" onClick={onClose} style={{
             background: 'none', border: 'none', color: COLORS.textDim, cursor: 'pointer',
             padding: 4, borderRadius: 8, display: 'flex'
           }}><X size={20} /></button>
@@ -3860,7 +4381,7 @@ const DashboardView = ({ data, onCompleteHabit, workoutData, onNavigate, onUpdat
       </div>
 
       <div className="dashboard-layout-grid" style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) minmax(420px, 0.62fr)', gap: 24, alignItems: 'start' }}>
-        <div style={{ minWidth: 0 }}>
+        <div className="dashboard-main-column" style={{ minWidth: 0 }}>
           {isFirstRun && (
             <div style={{
               background: COLORS.card, borderRadius: 18, border: `1px solid ${COLORS.border}`,
@@ -6252,7 +6773,7 @@ const DreamGoalsView = ({ data, onUpdateDreamGoals }) => {
   const removeGoal = (id) => onUpdateDreamGoals(prev => (prev || []).filter(goal => goal.id !== id));
 
   return (
-    <div style={{ animation: 'fadeIn 0.3s ease-out', maxWidth: 1160, margin: '0 auto' }}>
+    <div className="dreams-mobile-view" style={{ animation: 'fadeIn 0.3s ease-out', maxWidth: 1160, margin: '0 auto' }}>
       <div style={{ textAlign: 'center', marginBottom: 54, paddingTop: 6 }}>
         <div className="lab-pill" style={{ display: 'inline-flex', gap: 8, alignItems: 'center', padding: '8px 14px', fontSize: 12, color: COLORS.text, borderColor: `${COLORS.primary}44`, background: `${COLORS.primary}10`, marginBottom: 22 }}>
           <Target size={13} /> Ecosistema de Metas
@@ -6331,9 +6852,9 @@ const DreamGoalsView = ({ data, onUpdateDreamGoals }) => {
         })}
       </div>
 
-      <div style={{ background: COLORS.card, borderRadius: 20, border: `1px solid ${COLORS.border}`, padding: 20, display: 'grid', gap: 12 }}>
+      <div className="dream-goal-form-card" style={{ background: COLORS.card, borderRadius: 20, border: `1px solid ${COLORS.border}`, padding: 20, display: 'grid', gap: 12 }}>
         <div style={{ color: COLORS.text, fontSize: 17, fontWeight: 800, ...s }}>Crear nueva meta visual</div>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: 10 }}>
+        <div className="dream-goal-fields" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: 10 }}>
           <input value={form.title} onChange={e => setForm(f => ({ ...f, title: e.target.value }))} placeholder="Ej: Comprar casa, viaje, negocio..." style={inputStyle} />
           <input type="number" value={form.target} onChange={e => setForm(f => ({ ...f, target: e.target.value }))} placeholder="Objetivo" style={inputStyle} />
           <input type="number" value={form.current} onChange={e => setForm(f => ({ ...f, current: e.target.value }))} placeholder="Actual" style={inputStyle} />
@@ -6390,7 +6911,7 @@ const DreamGoalsView = ({ data, onUpdateDreamGoals }) => {
             </div>
           )}
         </div>
-        <div style={{ display: 'grid', gridTemplateColumns: 'minmax(220px, 1fr) minmax(160px, 0.6fr)', gap: 10, alignItems: 'center' }}>
+        <div className="dream-goal-url-row" style={{ display: 'grid', gridTemplateColumns: 'minmax(220px, 1fr) minmax(160px, 0.6fr)', gap: 10, alignItems: 'center' }}>
           <input value={form.image} onChange={e => setForm(f => ({ ...f, image: e.target.value }))} placeholder="URL de imagen opcional (no se almacena la foto)" style={inputStyle} />
           <button className="lab-cta" onClick={addGoal} style={{ borderRadius: 999, padding: '10px 18px', cursor: 'pointer', fontWeight: 800 }}><span>Crear meta</span></button>
         </div>
@@ -7109,7 +7630,7 @@ const SettingsView = ({ data, onUpdateUser, onResetData, cloudSync, onGenerateRa
           <div style={{ fontSize: 11, color: COLORS.textDim, marginBottom: 12, lineHeight: 1.45 }}>
             Actualiza la Publishable Key si cambias de proyecto en Clerk.
           </div>
-          <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+          <div className="settings-clerk-row" style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
             <input value={clerkKey} onChange={e => setClerkKey(e.target.value)} placeholder="pk_test_..." style={{
               flex: 1, minWidth: 0, padding: '10px 12px', background: COLORS.bg,
               border: `1px solid ${COLORS.border}`, borderRadius: 8, color: COLORS.text,
@@ -7134,7 +7655,7 @@ const SettingsView = ({ data, onUpdateUser, onResetData, cloudSync, onGenerateRa
             <Target size={16} style={{ verticalAlign: 'middle', marginRight: 6, color: COLORS.primary }} />
             Tema de Color
           </h3>
-          <div style={{ display: 'flex', gap: 12 }}>
+          <div className="settings-theme-row" style={{ display: 'flex', gap: 12 }}>
             {THEME_VARIANTS.map(t => (
               <button key={t.id} onClick={() => onUpdateUser({ accentColor: t.id })} style={{
                 flex: 1, padding: '14px 16px', borderRadius: 12, cursor: 'pointer',
@@ -7192,7 +7713,7 @@ const SettingsView = ({ data, onUpdateUser, onResetData, cloudSync, onGenerateRa
             <TrendingUp size={16} style={{ verticalAlign: 'middle', marginRight: 6, color: COLORS.primary }} />
            Estadísticas de Uso
           </h3>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12 }}>
+          <div className="settings-usage-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12 }}>
             <div style={{ background: COLORS.bg, borderRadius: 8, padding: '12px 16px', textAlign: 'center' }}>
               <div style={{ fontSize: 24, color: COLORS.secondary, fontFamily: "'Inter', sans-serif" }}>{daysRegistered}</div>
               <div style={{ fontSize: 11, color: COLORS.textDim }}>días Registrando</div>
@@ -11828,7 +12349,7 @@ const HabitFlowApp = () => {
           </div>
         </header>
 
-        <main className="app-main">
+        <main id="habitflow-main" className="app-main" tabIndex="-1">
           <div className="view-enter" key={view}>
             <ErrorBoundary>
               {renderView()}
