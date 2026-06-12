@@ -1452,15 +1452,18 @@ const injectStyles = () => {
     .health-layout { align-items: start; }
     .health-med-row { transition: border-color 0.2s, background 0.2s; }
     .health-med-row:hover { border-color: rgba(var(--icon-rgb,225,29,72),0.28) !important; background: rgba(var(--icon-rgb,225,29,72),0.055) !important; }
-    .health-med-meta { display: grid; grid-template-columns: repeat(4, minmax(88px, 1fr)); gap: 8px; min-width: 0; }
-    .health-med-chip { min-width: 0; padding: 8px 9px; border-radius: 11px; background: rgba(255,255,255,0.035); border: 1px solid var(--border); }
+    .health-med-row { grid-template-columns: 1fr !important; align-items: stretch !important; }
+    .health-med-meta { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; min-width: 0; }
+    .health-med-chip { min-width: 0; padding: 9px 10px; border-radius: 11px; background: rgba(255,255,255,0.035); border: 1px solid var(--border); }
     .health-med-chip-label { color: var(--text-dim); font-size: 9px; letter-spacing: 0.08em; text-transform: uppercase; font-weight: 800; margin-bottom: 3px; }
     .health-med-chip-value { color: var(--text); font-size: 12px; line-height: 1.25; overflow-wrap: anywhere; }
+    .health-med-actions { justify-content: flex-start !important; flex-wrap: wrap; }
+    .health-med-take { min-width: 128px; }
     @media (max-width: 1450px) {
       .health-layout { grid-template-columns: minmax(280px, 0.8fr) minmax(0, 1.2fr) !important; }
       .health-side { grid-column: 1 / -1; grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
       .health-kpis { grid-template-columns: repeat(3, minmax(0, 1fr)) !important; }
-      .health-med-meta { grid-template-columns: repeat(2, minmax(120px, 1fr)); }
+      .health-med-meta { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     }
     @media (max-width: 1080px) {
       .health-layout { grid-template-columns: 1fr !important; }
@@ -5043,13 +5046,19 @@ const HealthView = ({ data, onUpdateHealth }) => {
             {health.medications.map(med => {
               const color = medicationColorMeta(med.color);
               const upcoming = getNextMedicationDose({ ...health, medications: [med] });
+              const nextLabel = upcoming ? `${upcoming.date === today ? 'Hoy' : 'Próxima'} ${upcoming.time}` : 'Sin tomas pendientes';
               return (
-                <div key={med.id} className="health-med-row" style={{ display: 'grid', gridTemplateColumns: 'minmax(150px, 0.85fr) minmax(0, 1.45fr) auto', gap: 12, alignItems: 'center', padding: '12px 12px', borderRadius: 14, background: 'rgba(255,255,255,0.028)', border: `1px solid ${COLORS.border}` }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 10, minWidth: 0 }}>
-                    <div style={{ width: 36, height: 36, borderRadius: 999, background: `${color.color}22`, color: color.color, display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: `0 0 18px ${color.color}30` }}>{color.icon}</div>
-                    <div style={{ minWidth: 0 }}>
-                      <div style={{ color: COLORS.text, fontWeight: 900, fontSize: 13, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{med.name}</div>
-                      <div style={{ color: COLORS.textDim, fontSize: 11, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{med.notes || med.form}</div>
+                <div key={med.id} className="health-med-row" style={{ display: 'grid', gap: 11, padding: '14px 14px', borderRadius: 16, background: 'rgba(255,255,255,0.028)', border: `1px solid ${COLORS.border}`, overflow: 'hidden' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 12, minWidth: 0 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 10, minWidth: 0 }}>
+                      <div style={{ width: 38, height: 38, flex: '0 0 38px', borderRadius: 999, background: `${color.color}22`, color: color.color, display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: `0 0 18px ${color.color}30` }}>{color.icon}</div>
+                      <div style={{ minWidth: 0 }}>
+                        <div style={{ color: COLORS.text, fontWeight: 900, fontSize: 14, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{med.name}</div>
+                        <div style={{ color: COLORS.textDim, fontSize: 11, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{med.notes || med.form}</div>
+                      </div>
+                    </div>
+                    <div style={{ color: COLORS.textDim, fontSize: 11, fontWeight: 800, whiteSpace: 'nowrap', paddingTop: 3 }}>
+                      {nextLabel}
                     </div>
                   </div>
                   <div className="health-med-meta">
@@ -5070,10 +5079,10 @@ const HealthView = ({ data, onUpdateHealth }) => {
                       <div className="health-med-chip-value">{getMedicationDurationText(med)}</div>
                     </div>
                   </div>
-                  <div className="health-med-actions" style={{ display: 'flex', justifyContent: 'flex-end', gap: 5 }}>
-                    <button onClick={() => markDoseTaken(med, upcoming?.time || (med.times || [])[0])} style={{ border: `1px solid ${COLORS.primary}40`, background: `${COLORS.primary}16`, color: COLORS.primary, borderRadius: 9, padding: '8px 9px', cursor: 'pointer', fontSize: 11, fontWeight: 900 }}>Tomar ahora</button>
-                    <button onClick={() => editMedication(med)} style={{ width: 32, borderRadius: 9, border: `1px solid ${COLORS.border}`, background: 'transparent', color: COLORS.textDim, cursor: 'pointer' }}><Edit size={13} /></button>
-                    <button onClick={() => deleteMedication(med.id)} style={{ width: 32, borderRadius: 9, border: `1px solid ${COLORS.border}`, background: 'transparent', color: COLORS.primary, cursor: 'pointer' }}><Trash2 size={13} /></button>
+                  <div className="health-med-actions" style={{ display: 'flex', gap: 7 }}>
+                    <button className="health-med-take" onClick={() => markDoseTaken(med, upcoming?.time || (med.times || [])[0])} style={{ border: `1px solid ${COLORS.primary}40`, background: `${COLORS.primary}16`, color: COLORS.primary, borderRadius: 10, padding: '9px 11px', cursor: 'pointer', fontSize: 11, fontWeight: 900 }}>Tomar ahora</button>
+                    <button aria-label={`Editar ${med.name}`} onClick={() => editMedication(med)} style={{ width: 34, height: 34, borderRadius: 10, border: `1px solid ${COLORS.border}`, background: 'transparent', color: COLORS.textDim, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}><Edit size={13} /></button>
+                    <button aria-label={`Eliminar ${med.name}`} onClick={() => deleteMedication(med.id)} style={{ width: 34, height: 34, borderRadius: 10, border: `1px solid ${COLORS.border}`, background: 'transparent', color: COLORS.primary, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}><Trash2 size={13} /></button>
                   </div>
                 </div>
               );
