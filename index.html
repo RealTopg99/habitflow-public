@@ -19,13 +19,19 @@
   <link rel="apple-touch-icon" href="./apple-touch-icon-20260603.png">
   <link rel="apple-touch-icon" sizes="180x180" href="./apple-touch-icon-20260603.png">
   <link rel="manifest" href="./manifest.webmanifest">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <title>HabitFlow - Habit Tracker</title>
   <style>
-    body { margin: 0; background: #0a0a0f; }
+    html { scroll-behavior: smooth; }
+    body { margin: 0; background: #0a0a0f; font-family: 'Plus Jakarta Sans', 'Inter', sans-serif; }
     #root { min-height: 100vh; }
-    .loading { display: flex; align-items: center; justify-content: center; height: 100vh; flex-direction: column; gap: 16px; color: #8888a0; font-family: 'Inter', sans-serif; }
+    .skip-link { position: fixed; left: 16px; top: 12px; z-index: 10000; padding: 10px 14px; border-radius: 10px; background: #e11d48; color: #fff; font-weight: 700; text-decoration: none; transform: translateY(-160%); transition: transform .2s ease; }
+    .skip-link:focus { transform: translateY(0); }
+    .loading { display: flex; align-items: center; justify-content: center; height: 100vh; flex-direction: column; gap: 16px; color: #8888a0; font-family: 'Plus Jakarta Sans', 'Inter', sans-serif; }
     .loading-logo { width: 72px; height: 72px; border-radius: 18px; box-shadow: 0 0 0 1px rgba(255,255,255,0.10), 0 18px 46px rgba(0,0,0,0.42), 0 0 28px rgba(225,29,72,0.16); }
-    .spinner { width: 40px; height: 40px; border-radius: 50%; border: 3px solid #1a1a26; border-top-color: #6c63ff; animation: spin 0.8s linear infinite; }
+    .spinner { width: 40px; height: 40px; border-radius: 50%; border: 3px solid #1a1a26; border-top-color: #e11d48; animation: spin 0.8s linear infinite; }
     @keyframes spin { to { transform: rotate(360deg); } }
     .error { color: #ff6b6b; padding: 40px; font-family: 'Inter', sans-serif; max-width: 800px; margin: 40px auto; line-height: 1.6; }
     .error h2 { margin-bottom: 16px; color: #ff6b6b; }
@@ -33,6 +39,7 @@
   </style>
 </head>
 <body>
+  <a class="skip-link" href="#habitflow-main">Saltar al contenido</a>
   <div id="root">
     <div class="loading">
       <img class="loading-logo" src="./brand-logo.svg" alt="HabitFlow">

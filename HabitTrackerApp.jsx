@@ -11,7 +11,11 @@ import {
   Clock, Play, Pause, StopCircle, Award, ChevronLeft, ChevronRight,
   Dumbbell, SkipBack, SkipForward, Timer, Repeat, Maximize, Minimize,
   List, Search, ArrowUp, ArrowDown, Hash, GripVertical, CreditCard,
-  Heart, Pill, Bell, Droplet, Pencil, MoreHorizontal
+  Heart, Pill, Bell, Droplet, Pencil, MoreHorizontal, Brain,
+  PersonStanding, Apple, Coffee, Smile, Image: ImageIcon, Moon, Sun,
+  Rocket, Laptop, FileText, SquareCheck, AlarmClock, Lightbulb, Music,
+  Palette, Camera, Leaf, Zap, Trophy, Medal, Star, Gift, Bookmark,
+  Flower2, ChevronDown, RefreshCw
 } from 'lucide-react';
 
 const supabase = window.supabaseClient;
@@ -122,6 +126,118 @@ const ICONS = [
   '\u{1F4AD}', '\u{1F4A4}', '\u{1F4A6}', '\u{1F4A8}', '\u{1F4AF}', '\u{1F4A5}',
   '\u{1F4A2}', '\u{1F4A3}', '\u{1F4AC}', '\u{1F441}\u{FE0F}', '\u{1F9FF}', '\u{1FAAC}'
 ];
+
+const HABIT_ICONS = [
+  { id: 'droplet', label: 'Agua y salud', icon: Droplet },
+  { id: 'heart', label: 'Bienestar', icon: Heart },
+  { id: 'brain', label: 'Mente', icon: Brain },
+  { id: 'book-open', label: 'Lectura', icon: BookOpen },
+  { id: 'target', label: 'Objetivo', icon: Target },
+  { id: 'running', label: 'Correr', icon: PersonStanding },
+  { id: 'dumbbell', label: 'Ejercicio', icon: Dumbbell },
+  { id: 'meditation', label: 'Meditación', icon: Flower2 },
+  { id: 'leaf', label: 'Naturaleza', icon: Leaf },
+  { id: 'apple', label: 'Alimentación', icon: Apple },
+  { id: 'coffee', label: 'Rutina', icon: Coffee },
+  { id: 'smile', label: 'Ánimo', icon: Smile },
+  { id: 'image', label: 'Creatividad visual', icon: ImageIcon },
+  { id: 'moon', label: 'Descanso', icon: Moon },
+  { id: 'sun', label: 'Mañana', icon: Sun },
+  { id: 'rocket', label: 'Productividad', icon: Rocket },
+  { id: 'laptop', label: 'Trabajo digital', icon: Laptop },
+  { id: 'file-text', label: 'Escritura', icon: FileText },
+  { id: 'check-square', label: 'Tarea', icon: SquareCheck },
+  { id: 'calendar', label: 'Calendario', icon: Calendar },
+  { id: 'alarm', label: 'Alarma', icon: AlarmClock },
+  { id: 'lightbulb', label: 'Idea', icon: Lightbulb },
+  { id: 'music', label: 'Música', icon: Music },
+  { id: 'palette', label: 'Arte', icon: Palette },
+  { id: 'camera', label: 'Fotografía', icon: Camera },
+  { id: 'flame', label: 'Racha', icon: Flame },
+  { id: 'zap', label: 'Energía', icon: Zap },
+  { id: 'trophy', label: 'Logro', icon: Trophy },
+  { id: 'medal', label: 'Disciplina', icon: Medal },
+  { id: 'star', label: 'Favorito', icon: Star },
+  { id: 'gift', label: 'Recompensa', icon: Gift },
+  { id: 'pill', label: 'Medicamento', icon: Pill },
+  { id: 'bookmark', label: 'Marcador', icon: Bookmark },
+  { id: 'clock', label: 'Tiempo', icon: Clock },
+  { id: 'activity', label: 'Actividad', icon: Activity },
+  { id: 'sparkles', label: 'Cuidado personal', icon: Sparkles }
+];
+
+const HABIT_ICON_MAP = HABIT_ICONS.reduce((map, item) => {
+  map[item.id] = item;
+  return map;
+}, {});
+
+const LEGACY_HABIT_ICON_MAP = {
+  '\u{1F4A7}': 'droplet',
+  '\u{2764}\u{FE0F}': 'heart',
+  '\u{1F9E0}': 'brain',
+  '\u{1F4DA}': 'book-open',
+  '\u{1F4D6}': 'book-open',
+  '\u{1F3AF}': 'target',
+  '\u{1F3C3}': 'running',
+  '\u{1F4AA}': 'dumbbell',
+  '\u{1F9D8}': 'meditation',
+  '\u{1F34E}': 'apple',
+  '\u{2615}': 'coffee',
+  '\u{1F60A}': 'smile',
+  '\u{1F319}': 'moon',
+  '\u{2600}\u{FE0F}': 'sun',
+  '\u{1F680}': 'rocket',
+  '\u{1F4BB}': 'laptop',
+  '\u{1F4DD}': 'file-text',
+  '\u{2705}': 'check-square',
+  '\u{1F4C5}': 'calendar',
+  '\u{23F0}': 'alarm',
+  '\u{1F4A1}': 'lightbulb',
+  '\u{1F3B5}': 'music',
+  '\u{1F3A8}': 'palette',
+  '\u{1F4F7}': 'camera',
+  '\u{1F33F}': 'leaf',
+  '\u{1F525}': 'flame',
+  '\u{26A1}': 'zap',
+  '\u{1F3C6}': 'trophy',
+  '\u{1F947}': 'medal',
+  '\u{2B50}': 'star',
+  '\u{1F381}': 'gift',
+  '\u{1F48A}': 'pill'
+};
+
+const CATEGORY_DEFAULT_ICON = {
+  salud: 'droplet',
+  fitness: 'dumbbell',
+  mente: 'brain',
+  productividad: 'rocket',
+  social: 'heart',
+  creatividad: 'palette',
+  otro: 'star'
+};
+
+const normalizeHabitIconId = (icon, category = 'otro', name = '') => {
+  if (HABIT_ICON_MAP[icon]) return icon;
+  if (LEGACY_HABIT_ICON_MAP[icon]) return LEGACY_HABIT_ICON_MAP[icon];
+  const text = `${name} ${category}`.toLowerCase();
+  if (/agua|hidrat/.test(text)) return 'droplet';
+  if (/leer|libro|biblia|estudi/.test(text)) return 'book-open';
+  if (/ejercicio|gym|entreno|correr/.test(text)) return 'dumbbell';
+  if (/meditar|respirar/.test(text)) return 'meditation';
+  if (/escribir|diario/.test(text)) return 'file-text';
+  if (/dibu|pint|creativ/.test(text)) return 'palette';
+  if (/medic|pastilla/.test(text)) return 'pill';
+  return CATEGORY_DEFAULT_ICON[category] || 'star';
+};
+
+const getHabitIconDefinition = (icon, category, name) =>
+  HABIT_ICON_MAP[normalizeHabitIconId(icon, category, name)] || HABIT_ICON_MAP.star;
+
+const HabitIconGlyph = ({ habit, icon, category, name, size = 20, strokeWidth = 1.7, className = '' }) => {
+  const definition = getHabitIconDefinition(icon || habit?.icon, category || habit?.category, name || habit?.name);
+  const IconComponent = definition?.icon || Sparkles;
+  return <IconComponent size={size} strokeWidth={strokeWidth} className={className} aria-hidden="true" />;
+};
 
 const getCategoryIcon = (category) => CATEGORIES.find(c => c.id === category)?.icon || CATEGORIES[0].icon;
 const isBrokenHabitIcon = (icon) => !icon || /^\?+$/.test(icon) || icon.includes('\uFFFD');
@@ -701,11 +817,11 @@ const daysAgo = (dateStr) => {
 const getDayOfWeek = (d) => d.getDay();
 
 const genSampleHabits = () => [
-  { id: 'h1', name: 'Beber 2L de agua', description: 'Mantenerse hidratado durante el día', category: 'salud', icon: '\u{1F4A7}', color: '#00ff9d', frequency: 'Diario', targetStreak: 30, active: true, createdAt: toYYYYMMDD(addDays(new Date(), -60)) },
-  { id: 'h2', name: 'Ejercicio 30 min', description: 'Actividad física diaria', category: 'fitness', icon: '\u{1F4AA}', color: '#ff6b6b', frequency: 'Diario', targetStreak: 21, active: true, createdAt: toYYYYMMDD(addDays(new Date(), -60)) },
-  { id: 'h3', name: 'Leer 20 páginas', description: 'Lectura diaria para desarrollo personal', category: 'mente', icon: '\u{1F4DA}', color: '#e11d48', frequency: 'Diario', targetStreak: 30, active: true, createdAt: toYYYYMMDD(addDays(new Date(), -60)) },
-  { id: 'h4', name: 'Meditar 10 min', description: 'Meditación de atención plena', category: 'mente', icon: '\u{1F9D8}', color: '#efefef', frequency: 'Diario', targetStreak: 14, active: true, createdAt: toYYYYMMDD(addDays(new Date(), -60)) },
-  { id: 'h5', name: 'Aprender algo nuevo', description: 'Estudiar o practicar una nueva habilidad', category: 'productividad', icon: '\u{1F680}', color: '#ffd93d', frequency: 'Diario', targetStreak: 21, active: true, createdAt: toYYYYMMDD(addDays(new Date(), -60)) }
+  { id: 'h1', name: 'Beber 2L de agua', description: 'Mantenerse hidratado durante el día', category: 'salud', icon: 'droplet', color: '#00ff9d', frequency: 'Diario', targetStreak: 30, active: true, createdAt: toYYYYMMDD(addDays(new Date(), -60)) },
+  { id: 'h2', name: 'Ejercicio 30 min', description: 'Actividad física diaria', category: 'fitness', icon: 'dumbbell', color: '#ff6b6b', frequency: 'Diario', targetStreak: 21, active: true, createdAt: toYYYYMMDD(addDays(new Date(), -60)) },
+  { id: 'h3', name: 'Leer 20 páginas', description: 'Lectura diaria para desarrollo personal', category: 'mente', icon: 'book-open', color: '#e11d48', frequency: 'Diario', targetStreak: 30, active: true, createdAt: toYYYYMMDD(addDays(new Date(), -60)) },
+  { id: 'h4', name: 'Meditar 10 min', description: 'Meditación de atención plena', category: 'mente', icon: 'meditation', color: '#efefef', frequency: 'Diario', targetStreak: 14, active: true, createdAt: toYYYYMMDD(addDays(new Date(), -60)) },
+  { id: 'h5', name: 'Aprender algo nuevo', description: 'Estudiar o practicar una nueva habilidad', category: 'productividad', icon: 'rocket', color: '#ffd93d', frequency: 'Diario', targetStreak: 21, active: true, createdAt: toYYYYMMDD(addDays(new Date(), -60)) }
 ];
 
 const genSampleRecords = (habits) => {
@@ -738,7 +854,8 @@ const genSampleRecords = (habits) => {
 const getDefaultData = (reset = false) => {
   const habits = reset ? [] : genSampleHabits().map(h => ({
     ...h,
-    icon: isBrokenHabitIcon(h.icon) ? getCategoryIcon(h.category) : h.icon
+    icon: normalizeHabitIconId(h.icon, h.category, h.name),
+    reminder: { enabled: false, time: '08:00', days: [0, 1, 2, 3, 4, 5, 6], message: '' }
   }));
   const records = reset ? [] : genSampleRecords(habits);
   const xp = reset ? 0 : records.filter(r => r.completed).length * 10;
@@ -758,7 +875,11 @@ const getDefaultData = (reset = false) => {
     agenda: {},
     agendaNotes: {},
     agendaTodos: {},
-    agendaTodoLabels: []
+    agendaTodoLabels: [],
+    customHabitCategories: [],
+    xpAwards: Object.fromEntries(
+      records.filter(record => record.completed).map(record => [`habit:${record.habitId}:${record.date}`, 0])
+    )
   };
 };
 
@@ -777,9 +898,29 @@ const normalizeLoadedData = (parsed) => {
   }
   if (!parsed.dailyNotes) parsed.dailyNotes = {};
   if (!parsed.challenges) parsed.challenges = [];
+  if (!parsed.customHabitCategories) parsed.customHabitCategories = [];
+  if (!parsed.xpAwards) {
+    parsed.xpAwards = Object.fromEntries(
+      parsed.records.filter(record => record.completed).map(record => [`habit:${record.habitId}:${record.date}`, 0])
+    );
+  }
+  parsed.records.filter(record => record.completed).forEach(record => {
+    const awardKey = `habit:${record.habitId}:${record.date}`;
+    if (!Object.prototype.hasOwnProperty.call(parsed.xpAwards, awardKey)) {
+      parsed.xpAwards[awardKey] = 0;
+    }
+  });
   parsed.habits.forEach(h => {
     if (!h.lastFocusSession) h.lastFocusSession = null;
-    if (isBrokenHabitIcon(h.icon)) h.icon = getCategoryIcon(h.category);
+    h.icon = normalizeHabitIconId(h.icon, h.category, h.name);
+    if (!h.reminder) {
+      h.reminder = {
+        enabled: false,
+        time: '08:00',
+        days: h.frequencyDays?.length ? [...h.frequencyDays] : [0, 1, 2, 3, 4, 5, 6],
+        message: ''
+      };
+    }
   });
   parsed.records.forEach(r => { if (r.mood === undefined) r.mood = 0; });
   if (!parsed.workoutData) parsed.workoutData = getWorkoutData();
@@ -2017,7 +2158,7 @@ const injectStyles = () => {
       outline: 2px solid color-mix(in srgb, var(--habits-accent) 22%, transparent);
       outline-offset: 3px;
     }
-    .habit-week-dots button.is-today:not(:disabled) {
+    .habit-week-dots button:not(:disabled) {
       cursor: pointer;
     }
     .habit-row-streak {
@@ -2370,6 +2511,486 @@ const injectStyles = () => {
       .habits-minimal-row { padding-left: 0; padding-right: 0; }
       .habit-row-main strong { font-size: 14px; }
       .habit-week-dots { padding: 0 2px; }
+    }
+
+    /* Nuevo hábito: modal editorial con iconografía Lucide y controles táctiles. */
+    .hf-modal-panel.habit-form-modal {
+      --habit-modal-bg: #0b0e12;
+      --habit-modal-surface: #10141a;
+      --habit-modal-hover: #151a21;
+      --habit-modal-border: #303640;
+      --habit-modal-divider: #252b33;
+      --habit-modal-text: #f4f1ea;
+      --habit-modal-muted: #9ca1aa;
+      --habit-modal-subtle: #747a84;
+      --habit-modal-accent: #ff5f7f;
+      --habit-modal-accent-hover: #ff7691;
+      --habit-modal-track: #343a43;
+      width: min(94vw, 900px) !important;
+      max-width: 900px !important;
+      max-height: min(92vh, 1040px) !important;
+      padding: clamp(24px, 4vw, 50px) !important;
+      color: var(--habit-modal-text) !important;
+      background: #0b0e12 !important;
+      border: 1px solid var(--habit-modal-border) !important;
+      border-radius: 24px !important;
+      box-shadow: 0 30px 90px rgba(0,0,0,0.58) !important;
+      scrollbar-color: var(--habit-modal-accent) transparent;
+    }
+    html[data-theme-mode="pinkLight"] .hf-modal-panel.habit-form-modal {
+      --habit-modal-bg: #fffafb;
+      --habit-modal-surface: #ffffff;
+      --habit-modal-hover: #fff2f5;
+      --habit-modal-border: #e7d8dc;
+      --habit-modal-divider: #eadde0;
+      --habit-modal-text: #221a1d;
+      --habit-modal-muted: #71656a;
+      --habit-modal-subtle: #96898e;
+      --habit-modal-accent: #d96b7d;
+      --habit-modal-accent-hover: #c95a70;
+      --habit-modal-track: #eadde0;
+      background: #fffafb !important;
+      box-shadow: 0 28px 78px rgba(99,57,73,0.18) !important;
+    }
+    .habit-form-modal .hf-modal-header {
+      margin-bottom: 34px !important;
+    }
+    .habit-form-modal .hf-modal-header h2 {
+      margin: 0 !important;
+      color: var(--habit-modal-text) !important;
+      background: none !important;
+      font: 400 clamp(38px, 5vw, 52px)/1 'DM Serif Display', Georgia, serif !important;
+      letter-spacing: -0.025em !important;
+    }
+    .habit-form-modal .hf-modal-header button {
+      width: 44px;
+      height: 44px;
+      padding: 0 !important;
+      align-items: center;
+      justify-content: center;
+      color: var(--habit-modal-muted) !important;
+      border: 1px solid transparent !important;
+      transition: color 160ms ease, background-color 160ms ease, border-color 160ms ease;
+    }
+    .habit-form-modal .hf-modal-header button:hover {
+      color: var(--habit-modal-text) !important;
+      border-color: var(--habit-modal-border) !important;
+      background: var(--habit-modal-hover) !important;
+    }
+    .habit-form-premium {
+      display: grid;
+      gap: 25px;
+      color: var(--habit-modal-text);
+      font-family: 'Inter', sans-serif;
+    }
+    .habit-form-columns {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 20px;
+    }
+    .habit-form-field {
+      min-width: 0;
+    }
+    .habit-form-field > label,
+    .habit-icon-heading label {
+      display: block;
+      margin-bottom: 9px;
+      color: var(--habit-modal-muted);
+      font-size: 12px;
+      font-weight: 650;
+      letter-spacing: 0.075em;
+      text-transform: uppercase;
+    }
+    .habit-form-field input:not([type="range"]):not([type="color"]),
+    .habit-category-creator input:not([type="color"]),
+    .habit-select-shell {
+      width: 100%;
+      min-height: 54px;
+      box-sizing: border-box;
+      border: 1px solid var(--habit-modal-border);
+      border-radius: 12px;
+      color: var(--habit-modal-text);
+      background: var(--habit-modal-surface);
+      font: 500 14px/1.3 'Inter', sans-serif;
+      transition: border-color 160ms ease, background-color 160ms ease, box-shadow 160ms ease;
+    }
+    .habit-form-field input:not([type="range"]):not([type="color"]),
+    .habit-category-creator input:not([type="color"]) {
+      padding: 0 16px;
+      outline: none;
+    }
+    .habit-form-field input::placeholder,
+    .habit-category-creator input::placeholder {
+      color: var(--habit-modal-subtle);
+    }
+    .habit-form-field input:focus,
+    .habit-category-creator input:focus,
+    .habit-select-shell:focus-within {
+      border-color: var(--habit-modal-accent);
+      box-shadow: 0 0 0 3px color-mix(in srgb, var(--habit-modal-accent) 15%, transparent);
+    }
+    .habit-select-shell {
+      padding: 0 15px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .habit-select-shell > svg:first-child {
+      color: var(--habit-modal-accent);
+      flex: 0 0 auto;
+    }
+    .habit-select-shell.no-leading-icon > svg:first-child {
+      margin-left: auto;
+    }
+    .habit-select-shell select {
+      min-width: 0;
+      flex: 1;
+      height: 52px;
+      padding: 0;
+      color: var(--habit-modal-text);
+      background: transparent;
+      border: 0;
+      outline: 0;
+      appearance: none;
+      font: 500 14px/1 'Inter', sans-serif;
+    }
+    .habit-select-shell option {
+      color: var(--habit-modal-text);
+      background: var(--habit-modal-bg);
+    }
+    .habit-select-shell > svg:last-child {
+      flex: 0 0 auto;
+      color: var(--habit-modal-muted);
+      pointer-events: none;
+    }
+    .habit-category-creator {
+      padding: 17px;
+      display: grid;
+      gap: 14px;
+      border: 1px solid var(--habit-modal-border);
+      border-radius: 14px;
+      background: var(--habit-modal-surface);
+    }
+    .habit-category-creator > div:first-child {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .habit-category-creator strong {
+      color: var(--habit-modal-text);
+      font-size: 13px;
+    }
+    .habit-category-creator span {
+      color: var(--habit-modal-muted);
+      font-size: 11px;
+    }
+    .habit-category-creator-controls {
+      display: grid;
+      grid-template-columns: minmax(180px, 1fr) 48px auto auto;
+      gap: 9px;
+    }
+    .habit-category-creator-controls input[type="color"] {
+      width: 48px;
+      height: 48px;
+      padding: 4px;
+      border: 1px solid var(--habit-modal-border);
+      border-radius: 10px;
+      background: var(--habit-modal-bg);
+      cursor: pointer;
+    }
+    .habit-category-creator-controls button {
+      min-height: 48px;
+      padding: 0 15px;
+      border: 1px solid var(--habit-modal-accent);
+      border-radius: 10px;
+      color: #111;
+      background: var(--habit-modal-accent);
+      font-weight: 750;
+      cursor: pointer;
+    }
+    .habit-category-creator-controls button.is-quiet {
+      color: var(--habit-modal-muted);
+      border-color: var(--habit-modal-border);
+      background: transparent;
+    }
+    .habit-form-days > div {
+      display: grid;
+      grid-template-columns: repeat(7, minmax(38px, 1fr));
+      gap: 8px;
+    }
+    .habit-form-days button {
+      min-height: 39px;
+      border: 1px solid var(--habit-modal-border);
+      border-radius: 9px;
+      color: var(--habit-modal-muted);
+      background: transparent;
+      cursor: pointer;
+      transition: color 160ms ease, background-color 160ms ease, border-color 160ms ease;
+    }
+    .habit-form-days button:hover {
+      color: var(--habit-modal-text);
+      background: var(--habit-modal-hover);
+    }
+    .habit-form-days button.is-active {
+      color: #111;
+      border-color: var(--habit-modal-accent);
+      background: var(--habit-modal-accent);
+      font-weight: 800;
+    }
+    .habit-icon-section {
+      min-width: 0;
+    }
+    .habit-icon-heading {
+      margin-bottom: 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      gap: 20px;
+    }
+    .habit-icon-heading label {
+      margin-bottom: 5px;
+    }
+    .habit-icon-heading span {
+      color: var(--habit-modal-muted);
+      font-size: 12px;
+    }
+    .habit-icon-grid {
+      max-height: 255px;
+      padding: 2px 8px 2px 1px;
+      display: grid;
+      grid-template-columns: repeat(9, minmax(46px, 1fr));
+      gap: 10px;
+      overflow-y: auto;
+      scrollbar-width: thin;
+      scrollbar-color: var(--habit-modal-accent) transparent;
+    }
+    .habit-icon-grid button {
+      aspect-ratio: 1;
+      min-width: 0;
+      min-height: 52px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--habit-modal-muted);
+      border: 1px solid var(--habit-modal-border);
+      border-radius: 11px;
+      background: transparent;
+      cursor: pointer;
+      transition: color 160ms ease, border-color 160ms ease, background-color 160ms ease, transform 160ms ease;
+    }
+    .habit-icon-grid button:hover {
+      color: var(--habit-modal-text);
+      border-color: var(--habit-modal-subtle);
+      background: var(--habit-modal-hover);
+      transform: translateY(-1px);
+    }
+    .habit-icon-grid button.is-selected {
+      color: var(--habit-modal-accent);
+      border-color: var(--habit-modal-accent);
+      background: color-mix(in srgb, var(--habit-modal-accent) 8%, transparent);
+    }
+    .habit-form-streak > div {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 86px auto;
+      align-items: center;
+      gap: 14px;
+    }
+    .habit-form-streak input[type="range"] {
+      width: 100%;
+      accent-color: var(--habit-modal-accent);
+      cursor: pointer;
+    }
+    .habit-form-streak input[type="number"] {
+      min-height: 46px !important;
+      padding: 0 10px !important;
+      text-align: center;
+    }
+    .habit-form-streak span {
+      color: var(--habit-modal-muted);
+      font-size: 13px;
+    }
+    .habit-reminder-card {
+      padding: 18px;
+      border: 1px solid var(--habit-modal-border);
+      border-radius: 15px;
+      background: var(--habit-modal-surface);
+      transition: border-color 160ms ease, background-color 160ms ease;
+    }
+    .habit-reminder-card.is-enabled {
+      border-color: color-mix(in srgb, var(--habit-modal-accent) 55%, var(--habit-modal-border));
+    }
+    .habit-reminder-header,
+    .habit-reminder-header > div:first-child {
+      display: flex;
+      align-items: center;
+    }
+    .habit-reminder-header {
+      justify-content: space-between;
+      gap: 18px;
+    }
+    .habit-reminder-header > div:first-child {
+      min-width: 0;
+      gap: 12px;
+    }
+    .habit-reminder-header > div:first-child > svg {
+      color: var(--habit-modal-accent);
+      flex: 0 0 auto;
+    }
+    .habit-reminder-header strong,
+    .habit-reminder-header span {
+      display: block;
+    }
+    .habit-reminder-header strong {
+      color: var(--habit-modal-text);
+      font-size: 13px;
+    }
+    .habit-reminder-header span {
+      margin-top: 3px;
+      color: var(--habit-modal-muted);
+      font-size: 11px;
+      line-height: 1.45;
+    }
+    .habit-switch {
+      width: 46px;
+      height: 26px;
+      padding: 3px;
+      flex: 0 0 46px;
+      border: 1px solid var(--habit-modal-border);
+      border-radius: 999px;
+      background: var(--habit-modal-track);
+      cursor: pointer;
+      transition: background-color 160ms ease, border-color 160ms ease;
+    }
+    .habit-switch > span {
+      width: 18px;
+      height: 18px;
+      display: block;
+      border-radius: 50%;
+      background: var(--habit-modal-text);
+      transition: transform 180ms ease;
+    }
+    .habit-switch.is-on {
+      border-color: var(--habit-modal-accent);
+      background: var(--habit-modal-accent);
+    }
+    .habit-switch.is-on > span {
+      transform: translateX(20px);
+      background: #111;
+    }
+    .habit-reminder-content {
+      margin-top: 18px;
+      padding-top: 18px;
+      display: grid;
+      grid-template-columns: 150px minmax(0, 1fr);
+      gap: 18px;
+      border-top: 1px solid var(--habit-modal-divider);
+    }
+    .habit-reminder-days {
+      grid-column: 1 / -1;
+    }
+    .habit-form-error {
+      padding: 11px 13px;
+      color: #ffb2c0;
+      border: 1px solid rgba(255,95,127,0.32);
+      border-radius: 10px;
+      background: rgba(255,95,127,0.08);
+      font-size: 12px;
+    }
+    html[data-theme-mode="pinkLight"] .habit-form-error {
+      color: #a9344c;
+    }
+    .habit-form-footer {
+      margin-top: 4px;
+      padding-top: 23px;
+      display: flex;
+      justify-content: flex-end;
+      gap: 12px;
+      border-top: 1px solid var(--habit-modal-divider);
+    }
+    .habit-form-footer button {
+      min-height: 50px;
+      padding: 0 27px;
+      border-radius: 11px;
+      font: 700 14px/1 'Inter', sans-serif;
+      cursor: pointer;
+      transition: background-color 160ms ease, border-color 160ms ease, transform 160ms ease;
+    }
+    .habit-form-cancel {
+      color: var(--habit-modal-muted);
+      border: 1px solid var(--habit-modal-border);
+      background: transparent;
+    }
+    .habit-form-cancel:hover {
+      color: var(--habit-modal-text);
+      background: var(--habit-modal-hover);
+    }
+    .habit-form-submit {
+      min-width: 180px;
+      color: #111;
+      border: 1px solid var(--habit-modal-accent);
+      background: var(--habit-modal-accent);
+    }
+    .habit-form-submit:hover {
+      border-color: var(--habit-modal-accent-hover);
+      background: var(--habit-modal-accent-hover);
+      transform: translateY(-1px);
+    }
+    @media (max-width: 760px) {
+      .hf-modal-backdrop:has(.habit-form-modal) {
+        align-items: flex-end !important;
+        padding: 0 !important;
+      }
+      .hf-modal-panel.habit-form-modal {
+        width: 100% !important;
+        max-width: 100% !important;
+        max-height: 96vh !important;
+        margin-top: auto;
+        padding: 25px 18px calc(22px + env(safe-area-inset-bottom)) !important;
+        border-radius: 22px 22px 0 0 !important;
+      }
+      .habit-form-modal .hf-modal-header {
+        margin-bottom: 25px !important;
+      }
+      .habit-form-modal .hf-modal-header h2 {
+        font-size: 37px !important;
+      }
+      .habit-form-columns,
+      .habit-reminder-content {
+        grid-template-columns: 1fr;
+      }
+      .habit-reminder-days { grid-column: auto; }
+      .habit-icon-grid {
+        grid-template-columns: repeat(6, minmax(42px, 1fr));
+        gap: 8px;
+      }
+      .habit-category-creator-controls {
+        grid-template-columns: minmax(0, 1fr) 48px;
+      }
+      .habit-category-creator-controls button {
+        grid-column: auto;
+      }
+    }
+    @media (max-width: 430px) {
+      .habit-form-premium { gap: 21px; }
+      .habit-icon-grid {
+        max-height: 232px;
+        grid-template-columns: repeat(5, minmax(42px, 1fr));
+      }
+      .habit-icon-grid button { min-height: 48px; }
+      .habit-form-streak > div {
+        grid-template-columns: minmax(0, 1fr) 72px auto;
+        gap: 9px;
+      }
+      .habit-form-days > div { gap: 5px; }
+      .habit-form-days button { min-height: 36px; }
+      .habit-form-footer {
+        display: grid;
+        grid-template-columns: 1fr 1.35fr;
+      }
+      .habit-form-footer button {
+        min-width: 0;
+        padding: 0 12px;
+      }
     }
 
     /* El Panel conserva movimiento visual sin alterar posiciones ni volver a montar tarjetas. */
@@ -4646,7 +5267,7 @@ const KPICard = ({ icon, title, value, subtitle, accent, suffix = '', delay = 0,
   );
 };
 
-const Modal = ({ isOpen, onClose, title, children, width = 480 }) => {
+const Modal = ({ isOpen, onClose, title, children, width = 480, className = '' }) => {
   if (!isOpen) return null;
   return (
     <div className="hf-modal-backdrop" role="presentation" style={{
@@ -4655,7 +5276,7 @@ const Modal = ({ isOpen, onClose, title, children, width = 480 }) => {
       background: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(8px)',
       animation: 'fadeIn 0.2s ease-out'
     }} onClick={onClose}>
-      <div className="hf-modal-panel" role="dialog" aria-modal="true" aria-label={title} style={{
+      <div className={`hf-modal-panel ${className}`.trim()} role="dialog" aria-modal="true" aria-label={title} style={{
         background: COLORS.surface, borderRadius: 16,
         border: `1px solid ${COLORS.border}`, padding: 32,
         width: '90%', maxWidth: width, maxHeight: '85vh', overflowY: 'auto',
@@ -4841,7 +5462,8 @@ const AuthGate = ({ children }) => {
   return children;
 };
 
-const getCategoryInfo = (catId) => CATEGORIES.find(c => c.id === catId) || CATEGORIES[6];
+const getCategoryInfo = (catId, customCategories = []) =>
+  [...CATEGORIES, ...(customCategories || [])].find(c => c.id === catId) || CATEGORIES[6];
 
 const isExpectedDay = (habit, date) => {
   if (!habit || !habit.frequency || habit.frequency === 'Diario') return true;
@@ -5209,145 +5831,324 @@ const HabitHeatMap30 = ({ habitId, records }) => {
 
 const DAY_LABELS = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'sáb'];
 
-const HabitForm = ({ initial, onSave, onCancel }) => {
-  const [form, setForm] = useState(initial || {
-    name: '', description: '', category: 'salud', icon: getCategoryIcon('salud'),
-    frequency: 'Diario', frequencyDays: [1, 2, 3, 4, 5], targetStreak: 21, active: true
+const HabitForm = ({ initial, onSave, onCancel, categories = CATEGORIES, onCreateCategory }) => {
+  const initialCategory = initial?.category || 'salud';
+  const initialReminder = initial?.reminder || {};
+  const [form, setForm] = useState({
+    name: '',
+    description: '',
+    category: initialCategory,
+    icon: normalizeHabitIconId(initial?.icon, initialCategory, initial?.name),
+    color: getCategoryInfo(initialCategory, categories.filter(c => !CATEGORIES.some(base => base.id === c.id))).color,
+    frequency: 'Diario',
+    frequencyDays: [1, 2, 3, 4, 5],
+    targetStreak: 21,
+    active: true,
+    ...initial,
+    reminder: {
+      enabled: false,
+      time: '08:00',
+      days: [0, 1, 2, 3, 4, 5, 6],
+      message: '',
+      ...initialReminder
+    }
   });
   const [error, setError] = useState('');
+  const [showCategoryCreator, setShowCategoryCreator] = useState(false);
+  const [newCategory, setNewCategory] = useState({ name: '', color: '#ff7d95', icon: 'target' });
 
-  const handleChange = (k, v) => setForm(f => ({ ...f, [k]: v }));
-  const uniqueIcons = useMemo(() => [...new Set(ICONS)], []);
+  const handleChange = (key, value) => setForm(current => ({ ...current, [key]: value }));
+  const updateReminder = (key, value) => setForm(current => ({
+    ...current,
+    reminder: { ...current.reminder, [key]: value }
+  }));
 
   const toggleDay = (day) => {
     const current = form.frequencyDays || [1, 2, 3, 4, 5];
     if (current.includes(day)) {
-      if (current.length > 1) handleChange('frequencyDays', current.filter(d => d !== day));
+      if (current.length > 1) handleChange('frequencyDays', current.filter(item => item !== day));
     } else {
       handleChange('frequencyDays', [...current, day].sort());
     }
   };
 
-  const handleSubmit = () => {
-    if (!form.name.trim()) { setError('El nombre es obligatorio'); return; }
-    onSave({ ...form, name: form.name.trim() });
+  const toggleReminderDay = (day) => {
+    const current = form.reminder?.days || [];
+    updateReminder('days', current.includes(day)
+      ? current.filter(item => item !== day)
+      : [...current, day].sort());
   };
 
+  const handleCategorySelection = (categoryId) => {
+    if (categoryId === '__new__') {
+      setShowCategoryCreator(true);
+      return;
+    }
+    const category = categories.find(item => item.id === categoryId);
+    handleChange('category', categoryId);
+    if (category) {
+      handleChange('color', category.color);
+      if (!initial || form.category !== categoryId) handleChange('icon', normalizeHabitIconId(category.icon, categoryId));
+    }
+  };
+
+  const createCategory = () => {
+    const label = newCategory.name.trim();
+    if (!label) return;
+    const category = {
+      id: `custom_${Date.now().toString(36)}`,
+      label,
+      color: newCategory.color,
+      icon: newCategory.icon,
+      custom: true
+    };
+    onCreateCategory?.(category);
+    handleChange('category', category.id);
+    handleChange('color', category.color);
+    handleChange('icon', category.icon);
+    setShowCategoryCreator(false);
+    setNewCategory({ name: '', color: '#ff7d95', icon: 'target' });
+  };
+
+  const handleReminderToggle = async () => {
+    const enabled = !form.reminder?.enabled;
+    updateReminder('enabled', enabled);
+    if (enabled) {
+      try { await requestHabitFlowNotifications(); } catch {}
+    }
+  };
+
+  const handleSubmit = () => {
+    if (!form.name.trim()) {
+      setError('El nombre es obligatorio');
+      return;
+    }
+    if (form.reminder?.enabled && (!form.reminder.time || !form.reminder.days?.length)) {
+      setError('El recordatorio necesita una hora y al menos un día.');
+      return;
+    }
+    onSave({
+      ...form,
+      name: form.name.trim(),
+      description: form.description.trim(),
+      icon: normalizeHabitIconId(form.icon, form.category, form.name),
+      reminder: {
+        ...form.reminder,
+        message: form.reminder.message.trim()
+      }
+    });
+  };
+
+  const SelectedCategoryIcon = getHabitIconDefinition(
+    categories.find(category => category.id === form.category)?.icon,
+    form.category
+  ).icon;
+
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
-      <div>
-        <label style={{ display: 'block', fontSize: 12, color: COLORS.textDim, marginBottom: 6, letterSpacing: '0.05em' }}>NOMBRE</label>
-        <input value={form.name} onChange={e => { handleChange('name', e.target.value); setError(''); }}
-          placeholder="Ej: 'Leer 20 páginas"
-          style={{
-            width: '100%', padding: '12px 16px', background: COLORS.bg, border: `1px solid ${error ? COLORS.alert : COLORS.border}`,
-            borderRadius: 8, color: COLORS.text, fontSize: 14, outline: 'none', fontFamily: "'Inter', sans-serif"
-          }} />
-        {error && <div style={{ color: COLORS.alert, fontSize: 12, marginTop: 4 }}>{error}</div>}
+    <div className="habit-form-premium">
+      <div className="habit-form-field habit-form-field-wide">
+        <label htmlFor="habit-name">Nombre</label>
+        <input
+          id="habit-name"
+          autoFocus
+          value={form.name}
+          onChange={event => { handleChange('name', event.target.value); setError(''); }}
+          placeholder="Ej: Leer 20 páginas"
+          aria-invalid={!!error}
+        />
       </div>
 
-      <div>
-        <label style={{ display: 'block', fontSize: 12, color: COLORS.textDim, marginBottom: 6, letterSpacing: '0.05em' }}>DESCRIPCIÓN</label>
-        <input value={form.description} onChange={e => handleChange('description', e.target.value)}
-          placeholder="Opcional - Describe tu hábito"
-          style={{
-            width: '100%', padding: '12px 16px', background: COLORS.bg, border: `1px solid ${COLORS.border}`,
-            borderRadius: 8, color: COLORS.text, fontSize: 14, outline: 'none', fontFamily: "'Inter', sans-serif"
-          }} />
+      <div className="habit-form-field habit-form-field-wide">
+        <label htmlFor="habit-description">Descripción</label>
+        <input
+          id="habit-description"
+          value={form.description}
+          onChange={event => handleChange('description', event.target.value)}
+          placeholder="Opcional · Describe tu hábito"
+        />
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
-        <div>
-          <label style={{ display: 'block', fontSize: 12, color: COLORS.textDim, marginBottom: 6, letterSpacing: '0.05em' }}>CATEGORÍA</label>
-          <select value={form.category} onChange={e => {
-            const cat = CATEGORIES.find(c => c.id === e.target.value);
-            handleChange('category', e.target.value);
-            handleChange('icon', cat.icon);
-            handleChange('color', cat.color);
-          }} style={{
-            width: '100%', padding: '12px 16px', background: COLORS.bg, border: `1px solid ${COLORS.border}`,
-            borderRadius: 8, color: COLORS.text, fontSize: 14, outline: 'none', fontFamily: "'Inter', sans-serif"
-          }}>
-            {CATEGORIES.map(c => <option key={c.id} value={c.id}>{c.icon} {c.label}</option>)}
-          </select>
+      <div className="habit-form-columns">
+        <div className="habit-form-field">
+          <label htmlFor="habit-category">Categoría</label>
+          <div className="habit-select-shell">
+            <SelectedCategoryIcon size={20} strokeWidth={1.7} />
+            <select id="habit-category" value={form.category} onChange={event => handleCategorySelection(event.target.value)}>
+              {categories.map(category => <option key={category.id} value={category.id}>{category.label}</option>)}
+              <option value="__new__">+ Crear categoría</option>
+            </select>
+            <ChevronDown size={17} />
+          </div>
         </div>
+        <div className="habit-form-field">
+          <label htmlFor="habit-frequency">Frecuencia</label>
+          <div className="habit-select-shell no-leading-icon">
+            <select id="habit-frequency" value={form.frequency} onChange={event => {
+              const value = event.target.value;
+              handleChange('frequency', value);
+              if (value === 'Personalizado' && !form.frequencyDays?.length) handleChange('frequencyDays', [1, 2, 3, 4, 5]);
+            }}>
+              {FREQUENCIES.map(frequency => <option key={frequency} value={frequency}>{frequency}</option>)}
+            </select>
+            <ChevronDown size={17} />
+          </div>
+        </div>
+      </div>
+
+      {showCategoryCreator && (
+        <div className="habit-category-creator">
+          <div>
+            <strong>Nueva categoría</strong>
+            <span>Se guardará y aparecerá también en los filtros.</span>
+          </div>
+          <div className="habit-category-creator-controls">
+            <input
+              value={newCategory.name}
+              onChange={event => setNewCategory(current => ({ ...current, name: event.target.value }))}
+              placeholder="Ej: Espiritualidad"
+            />
+            <input
+              type="color"
+              value={newCategory.color}
+              onChange={event => setNewCategory(current => ({ ...current, color: event.target.value }))}
+              aria-label="Color de la categoría"
+            />
+            <button type="button" onClick={createCategory} disabled={!newCategory.name.trim()}>Crear</button>
+            <button type="button" className="is-quiet" onClick={() => setShowCategoryCreator(false)}>Cancelar</button>
+          </div>
+        </div>
+      )}
+
+      {form.frequency === 'Personalizado' && (
+        <div className="habit-form-field habit-form-days">
+          <label>Días del hábito</label>
+          <div>
+            {DAY_LABELS.map((label, day) => (
+              <button
+                key={label}
+                type="button"
+                className={(form.frequencyDays || []).includes(day) ? 'is-active' : ''}
+                onClick={() => toggleDay(day)}
+              >
+                {label.slice(0, 1)}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
+      <div className="habit-icon-section">
+        <div className="habit-icon-heading">
+          <div>
+            <label>Ícono</label>
+            <span>Elige uno de los iconos disponibles</span>
+          </div>
+          <span>{HABIT_ICONS.length} iconos</span>
+        </div>
+        <div className="habit-icon-grid">
+          {HABIT_ICONS.map(item => {
+            const IconComponent = item.icon || Sparkles;
+            const selected = normalizeHabitIconId(form.icon, form.category, form.name) === item.id;
+            return (
+              <button
+                key={item.id}
+                type="button"
+                className={selected ? 'is-selected' : ''}
+                onClick={() => handleChange('icon', item.id)}
+                title={item.label}
+                aria-label={item.label}
+                aria-pressed={selected}
+              >
+                <IconComponent size={24} strokeWidth={1.65} />
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      <div className="habit-form-field habit-form-streak">
+        <label htmlFor="habit-streak">Meta de racha</label>
         <div>
-          <label style={{ display: 'block', fontSize: 12, color: COLORS.textDim, marginBottom: 6, letterSpacing: '0.05em' }}>FRECUENCIA</label>
-          <select value={form.frequency} onChange={e => {
-            handleChange('frequency', e.target.value);
-            if (e.target.value === 'Personalizado' && (!form.frequencyDays || form.frequencyDays.length === 0)) {
-              handleChange('frequencyDays', [1, 2, 3, 4, 5]);
-            }
-          }} style={{
-            width: '100%', padding: '12px 16px', background: COLORS.bg, border: `1px solid ${COLORS.border}`,
-            borderRadius: 8, color: COLORS.text, fontSize: 14, outline: 'none', fontFamily: "'Inter', sans-serif"
-          }}>
-            {FREQUENCIES.map(f => <option key={f} value={f}>{f}</option>)}
-          </select>
-          {form.frequency === 'Personalizado' && (
-            <div style={{ display: 'flex', gap: 4, marginTop: 8 }}>
-              {DAY_LABELS.map((label, di) => (
-                <button key={di} onClick={() => toggleDay(di)} style={{
-                  flex: 1, padding: '6px 0', borderRadius: 6, border: 'none',
-                  background: (form.frequencyDays || []).includes(di) ? COLORS.primary : COLORS.bg,
-                  color: (form.frequencyDays || []).includes(di) ? '#fff' : COLORS.textDim,
-                  cursor: 'pointer', fontSize: 10, fontFamily: "'Inter', sans-serif",
-                  fontWeight: 500, transition: 'all 0.15s'
-                }}>{label}</button>
-              ))}
+          <input
+            id="habit-streak"
+            type="range"
+            min="3"
+            max="365"
+            value={form.targetStreak}
+            onChange={event => handleChange('targetStreak', Number(event.target.value))}
+          />
+          <input
+            type="number"
+            min="3"
+            max="365"
+            value={form.targetStreak}
+            onChange={event => handleChange('targetStreak', Math.max(3, Math.min(365, Number(event.target.value) || 3)))}
+            aria-label="Días objetivo"
+          />
+          <span>días</span>
+        </div>
+      </div>
+
+      <section className={`habit-reminder-card ${form.reminder?.enabled ? 'is-enabled' : ''}`}>
+        <div className="habit-reminder-header">
+          <div>
+            <Bell size={20} strokeWidth={1.7} />
+            <div>
+              <strong>Recordatorio</strong>
+              <span>Avisa en tus dispositivos con notificaciones activas.</span>
             </div>
-          )}
-        </div>
-      </div>
-
-      <div>
-        <label style={{ display: 'block', fontSize: 12, color: COLORS.textDim, marginBottom: 6, letterSpacing: '0.05em' }}>ÍCONO</label>
-        <div style={{ display: 'grid', gap: 8 }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 8 }}>
-            <span style={{ fontSize: 12, color: COLORS.textDim }}>Elige uno de los iconos disponibles</span>
-            <span style={{ fontSize: 11, color: COLORS.textDim, whiteSpace: 'nowrap' }}>{uniqueIcons.length} iconos</span>
           </div>
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, maxHeight: 220, overflowY: 'auto', paddingRight: 4 }}>
-          {uniqueIcons.map(ic => (
-            <button key={ic} onClick={() => handleChange('icon', ic)} style={{
-              width: 36, height: 36, borderRadius: 8, border: `2px solid ${form.icon === ic ? COLORS.primary : COLORS.border}`,
-              background: form.icon === ic ? `${COLORS.primary}14` : 'transparent',
-              cursor: 'pointer', fontSize: 16, display: 'flex', alignItems: 'center', justifyContent: 'center',
-              transition: 'all 0.2s'
-            }}>{ic}</button>
-          ))}
+          <button
+            type="button"
+            className={`habit-switch ${form.reminder?.enabled ? 'is-on' : ''}`}
+            onClick={handleReminderToggle}
+            role="switch"
+            aria-checked={!!form.reminder?.enabled}
+          >
+            <span />
+          </button>
+        </div>
+        {form.reminder?.enabled && (
+          <div className="habit-reminder-content">
+            <div className="habit-form-field">
+              <label htmlFor="habit-reminder-time">Hora</label>
+              <input id="habit-reminder-time" type="time" value={form.reminder.time} onChange={event => updateReminder('time', event.target.value)} />
+            </div>
+            <div className="habit-form-field">
+              <label htmlFor="habit-reminder-message">Mensaje</label>
+              <input
+                id="habit-reminder-message"
+                value={form.reminder.message}
+                onChange={event => updateReminder('message', event.target.value)}
+                placeholder={`Es hora de ${form.name || 'tu hábito'}`}
+              />
+            </div>
+            <div className="habit-form-field habit-form-days habit-reminder-days">
+              <label>Días de aviso</label>
+              <div>
+                {DAY_LABELS.map((label, day) => (
+                  <button
+                    key={label}
+                    type="button"
+                    className={(form.reminder.days || []).includes(day) ? 'is-active' : ''}
+                    onClick={() => toggleReminderDay(day)}
+                  >
+                    {label.slice(0, 1)}
+                  </button>
+                ))}
+              </div>
+            </div>
           </div>
-        </div>
-      </div>
+        )}
+      </section>
 
-      <div>
-        <label style={{ display: 'block', fontSize: 12, color: COLORS.textDim, marginBottom: 6, letterSpacing: '0.05em' }}>
-          META DE RACHA
-        </label>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <input type="range" min="3" max="365" value={form.targetStreak}
-            onChange={e => handleChange('targetStreak', parseInt(e.target.value))}
-            style={{ flex: 1, accentColor: COLORS.primary }} />
-          <input type="number" min="3" max="365" value={form.targetStreak}
-            onChange={e => handleChange('targetStreak', Math.max(3, Math.min(365, parseInt(e.target.value) || 3)))}
-            style={{ width: 64, padding: '6px 8px', background: COLORS.card, border: `1px solid ${COLORS.border}`, borderRadius: 6, color: COLORS.text, fontSize: 13, textAlign: 'center', fontFamily: "'Inter', sans-serif" }} />
-          <span style={{ fontSize: 12, color: COLORS.textDim }}>días</span>
-        </div>
-      </div>
+      {error && <div className="habit-form-error" role="alert">{error}</div>}
 
-      <div style={{ display: 'flex', gap: 12, justifyContent: 'flex-end', marginTop: 8 }}>
-        <button onClick={onCancel} style={{
-          padding: '10px 24px', borderRadius: 8, border: `1px solid ${COLORS.border}`,
-          background: 'transparent', color: COLORS.textDim, cursor: 'pointer', fontSize: 14, fontFamily: "'Inter', sans-serif"
-        }}>Cancelar</button>
-        <RippleButton onClick={handleSubmit} style={{
-          padding: '10px 24px', borderRadius: 8, border: 'none',
-          background: `linear-gradient(135deg, ${COLORS.primary}, #7f1028)`, color: '#fff',
-          fontSize: 14, fontFamily: "'Inter', sans-serif", fontWeight: 500
-        }}>
-          <Plus size={16} style={{ marginRight: 6, verticalAlign: 'middle' }} />
-          {initial ? 'Guardar Cambios' : 'Crear Hábito'}
-        </RippleButton>
+      <div className="habit-form-footer">
+        <button type="button" className="habit-form-cancel" onClick={onCancel}>Cancelar</button>
+        <button type="button" className="habit-form-submit" onClick={handleSubmit}>
+          {initial ? 'Guardar cambios' : 'Crear hábito'}
+        </button>
       </div>
     </div>
   );
@@ -5683,7 +6484,9 @@ const DashboardView = ({ data, onCompleteHabit, workoutData, onNavigate, onUpdat
                 border: `1px solid ${h.completed ? 'rgba(0,255,157,0.12)' : 'transparent'}`,
                 cursor: 'pointer'
               }} onClick={() => onCompleteHabit(h.id)}>
-                <span className="fire-emoji" style={{ fontSize: 18, width: 28, textAlign: 'center', flexShrink: 0 }}>{h.icon}</span>
+                <span className="fire-emoji" style={{ width: 28, display: 'grid', placeItems: 'center', flexShrink: 0 }}>
+                  <HabitIconGlyph habit={h} size={19} strokeWidth={1.75} />
+                </span>
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <div style={{
                     fontSize: 13, color: COLORS.text, fontWeight: 500,
@@ -5843,8 +6646,12 @@ const ChallengesView = ({ data, onCompleteChallenge, onJoinChallenge, records })
   );
 };
 
-const HabitsView = ({ data, onAddHabit, onUpdateHabit, onDeleteHabit, onToggleHabit, onCompleteHabit, onUpdateRecord, records }) => {
+const HabitsView = ({ data, onAddHabit, onUpdateHabit, onDeleteHabit, onToggleHabit, onCompleteHabit, onUpdateRecord, onCreateHabitCategory, records }) => {
   const { habits } = data;
+  const habitCategories = useMemo(
+    () => [...CATEGORIES, ...(data.customHabitCategories || [])],
+    [data.customHabitCategories]
+  );
   const today = toYYYYMMDD(new Date());
   const [filter, setFilter] = useState('all');
   const [showForm, setShowForm] = useState(false);
@@ -6031,14 +6838,14 @@ const HabitsView = ({ data, onAddHabit, onUpdateHabit, onDeleteHabit, onToggleHa
               const isPast = new Date(wd.date + 'T00:00:00') <= new Date();
               return (
                 <div key={wi} style={{ textAlign: 'center', padding: '4px 0', position: 'relative' }}>
-                  <div onClick={isToday ? () => onCompleteHabit(h.id) : undefined} style={{
+                  <div onClick={isPast && isScheduled && h.active ? () => onCompleteHabit(h.id, wd.date) : undefined} style={{
                     width: 28, height: 28, borderRadius: '50%', margin: '0 auto 4px',
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                     background: done ? `linear-gradient(135deg, ${COLORS.success}, #9f1239)` : isSkipped ? `${COLORS.textDim}15` : isScheduled ? `${COLORS.primary}12` : 'transparent',
                     border: done ? 'none' : isSkipped ? `1.5px dashed ${COLORS.textDim}50` : isToday ? `2px solid ${COLORS.primary}80` : isScheduled ? `1.5px solid ${COLORS.primary}55` : `1.5px dashed ${COLORS.border}35`,
                     transition: 'all 0.25s ease',
                     boxShadow: done ? `0 2px 8px ${COLORS.success}40` : 'none',
-                    cursor: isToday ? 'pointer' : 'default',
+                    cursor: isPast && isScheduled && h.active ? 'pointer' : 'default',
                     opacity: isScheduled ? (isPast || isToday ? 1 : 0.55) : 0.22
                   }}>
                     {done ? <Check size={13} color="#0a0a0f" strokeWidth={3.5} /> : isSkipped ? <span style={{ fontSize: 11, color: COLORS.textDim }}>-</span> : !isScheduled ? <span style={{ fontSize: 11, color: COLORS.textDim }}>·</span> : null}
@@ -6173,17 +6980,7 @@ const HabitsView = ({ data, onAddHabit, onUpdateHabit, onDeleteHabit, onToggleHa
     : 0;
   const globalStreak = getGlobalCurrentStreak(activeHabits, records);
 
-  const getHabitIconComponent = (habit) => {
-    const name = (habit.name || '').toLowerCase();
-    if (name.includes('agua') || name.includes('beber')) return Droplet;
-    if (name.includes('dibuj') || habit.category === 'creatividad') return Pencil;
-    if (name.includes('leer') || name.includes('aprender') || habit.category === 'mente') return BookOpen;
-    if (habit.category === 'fitness') return Dumbbell;
-    if (habit.category === 'salud') return Heart;
-    if (habit.category === 'social') return User;
-    if (habit.category === 'productividad') return Sparkles;
-    return Target;
-  };
+  const getHabitIconComponent = (habit) => getHabitIconDefinition(habit.icon, habit.category, habit.name).icon;
 
   return (
     <div className="habits-minimal-view">
@@ -6233,7 +7030,7 @@ const HabitsView = ({ data, onAddHabit, onUpdateHabit, onDeleteHabit, onToggleHa
       <div className="habits-minimal-filters" role="tablist" aria-label="Categorías de hábitos">
         {[
           { id: 'all', label: 'Todos' },
-          ...CATEGORIES
+          ...habitCategories
         ].map(c => (
           <button
             key={c.id}
@@ -6275,7 +7072,7 @@ const HabitsView = ({ data, onAddHabit, onUpdateHabit, onDeleteHabit, onToggleHa
         </div>
 
         {filtered.map(h => {
-          const cat = getCategoryInfo(h.category);
+          const cat = getCategoryInfo(h.category, data.customHabitCategories);
           const streak = getCurrentStreak(h.id, records, h);
           const todayRec = records.find(r => r.habitId === h.id && r.date === toYYYYMMDD(new Date()));
           const isTodayComplete = !!todayRec?.completed;
@@ -6304,12 +7101,12 @@ const HabitsView = ({ data, onAddHabit, onUpdateHabit, onDeleteHabit, onToggleHa
                 {weekDays.map(day => {
                   const scheduled = isExpectedDay(h, day.date);
                   const complete = records.some(record => record.habitId === h.id && record.date === day.date && record.completed);
-                  const clickable = day.isToday && scheduled && h.active;
+                  const clickable = day.date <= today && scheduled && h.active;
                   return (
                     <button
                       key={day.date}
                       className={`${complete ? 'is-complete' : ''} ${scheduled ? '' : 'is-unscheduled'} ${day.isToday ? 'is-today' : ''}`}
-                      onClick={clickable ? () => onCompleteHabit(h.id) : undefined}
+                      onClick={clickable ? () => onCompleteHabit(h.id, day.date) : undefined}
                       disabled={!clickable}
                       aria-label={`${day.label} ${complete ? 'completado' : scheduled ? 'pendiente' : 'no programado'}`}
                     />
@@ -6374,14 +7171,15 @@ const HabitsView = ({ data, onAddHabit, onUpdateHabit, onDeleteHabit, onToggleHa
       </div>
 
       <Modal isOpen={showForm} onClose={() => { setShowForm(false); setEditHabit(null); }}
-        title={editHabit ? 'Editar Hábito' : 'Nuevo Hábito'}>
-        <HabitForm initial={editHabit} onSave={handleSave}
+        title={editHabit ? 'Editar hábito' : 'Nuevo hábito'} width={900} className="habit-form-modal">
+        <HabitForm initial={editHabit} onSave={handleSave} categories={habitCategories}
+          onCreateCategory={onCreateHabitCategory}
           onCancel={() => { setShowForm(false); setEditHabit(null); }} />
       </Modal>
 
       <Modal isOpen={!!viewHabit} onClose={() => setViewHabit(null)} title="Detalle del hábito">
         {viewHabit && (() => {
-          const cat = getCategoryInfo(viewHabit.category);
+          const cat = getCategoryInfo(viewHabit.category, data.customHabitCategories);
           const HabitIcon = getHabitIconComponent(viewHabit);
           const streak = getCurrentStreak(viewHabit.id, records, viewHabit);
           const best = getBestStreak(viewHabit.id, records, viewHabit);
@@ -6806,6 +7604,82 @@ const HealthView = ({ data, onUpdateHealth }) => {
   );
 };
 
+const FINANCE_RATE_CACHE_KEY = 'habitflow_usd_cop_rate_v1';
+const FINANCE_RATE_CACHE_TTL = 6 * 60 * 60 * 1000;
+
+const parseFinanceMoneyInput = (value) => {
+  if (value === '' || value === null || value === undefined || value === '-') return '';
+  const normalized = String(value).replace(/\./g, '').replace(',', '.');
+  const parsed = Number(normalized);
+  return Number.isFinite(parsed) ? parsed : '';
+};
+
+const formatFinanceMoneyInput = (value) => {
+  if (value === '' || value === null || value === undefined || value === '-') return value || '';
+  const parsed = Number(value);
+  if (!Number.isFinite(parsed)) return '';
+  return parsed.toLocaleString('es-CO', {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 2
+  });
+};
+
+const normalizeFinanceMoneyText = (rawValue) => {
+  const raw = String(rawValue ?? '').replace(/[^\d,.-]/g, '');
+  const negative = raw.trim().startsWith('-');
+  const unsigned = raw.replace(/-/g, '');
+  let integerText = unsigned;
+  let decimalText = null;
+  const lastComma = unsigned.lastIndexOf(',');
+  const dotMatches = unsigned.match(/\./g) || [];
+  const lastDot = unsigned.lastIndexOf('.');
+
+  if (lastComma >= 0) {
+    integerText = unsigned.slice(0, lastComma);
+    decimalText = unsigned.slice(lastComma + 1).replace(/\D/g, '').slice(0, 2);
+  } else if (dotMatches.length === 1 && lastDot >= 0 && unsigned.length - lastDot - 1 <= 2) {
+    integerText = unsigned.slice(0, lastDot);
+    decimalText = unsigned.slice(lastDot + 1).replace(/\D/g, '').slice(0, 2);
+  }
+
+  const integerDigits = integerText.replace(/\D/g, '');
+  if (!integerDigits && decimalText === null) return negative ? '-' : '';
+  const grouped = Number(integerDigits || 0).toLocaleString('es-CO', { maximumFractionDigits: 0 });
+  return `${negative ? '-' : ''}${grouped}${decimalText !== null ? `,${decimalText}` : ''}`;
+};
+
+const FinanceMoneyInput = ({ value, onValueChange, ...props }) => {
+  const [displayValue, setDisplayValue] = useState(formatFinanceMoneyInput(value));
+  const focusedRef = useRef(false);
+
+  useEffect(() => {
+    if (!focusedRef.current) setDisplayValue(formatFinanceMoneyInput(value));
+  }, [value]);
+
+  return (
+    <input
+      {...props}
+      type="text"
+      inputMode="decimal"
+      value={displayValue}
+      onFocus={(event) => {
+        focusedRef.current = true;
+        props.onFocus?.(event);
+      }}
+      onBlur={(event) => {
+        focusedRef.current = false;
+        setDisplayValue(formatFinanceMoneyInput(value));
+        props.onBlur?.(event);
+      }}
+      onChange={(event) => {
+        const nextText = normalizeFinanceMoneyText(event.target.value);
+        setDisplayValue(nextText);
+        onValueChange(parseFinanceMoneyInput(nextText));
+      }}
+    />
+  );
+};
+
 const FinanceView = ({ data, onUpdateFinance }) => {
   const finance = data.financeData || getFinanceData();
   const s = { fontFamily: "'Inter', sans-serif" };
@@ -6837,6 +7711,8 @@ const FinanceView = ({ data, onUpdateFinance }) => {
   const [filterType, setFilterType] = useState('all');
   const [catName, setCatName] = useState('');
   const [section, setSection] = useState('overview');
+  const [rateStatus, setRateStatus] = useState('idle');
+  const [rateError, setRateError] = useState('');
 
   const monthDate = new Date(`${selectedMonth}-01T12:00:00`);
   const monthly = transactions.filter(t => (t.date || '').startsWith(selectedMonth));
@@ -6890,6 +7766,43 @@ const FinanceView = ({ data, onUpdateFinance }) => {
   const strongInputStyle = { ...inputStyle, border: `1px solid ${COLORS.primary}55`, boxShadow: `0 0 0 1px ${COLORS.primary}12 inset` };
   const cardStyle = { background: COLORS.card, borderRadius: 18, border: `1px solid ${COLORS.border}`, padding: 20, boxShadow: '0 18px 50px rgba(0,0,0,0.18)', minWidth: 0, overflow: 'hidden' };
   const tooltipStyle = { background: COLORS.card, border: `1px solid ${COLORS.border}`, borderRadius: 10, color: COLORS.text };
+
+  const refreshExchangeRate = async (force = false) => {
+    setRateError('');
+    try {
+      const cached = JSON.parse(localStorage.getItem(FINANCE_RATE_CACHE_KEY) || 'null');
+      if (!force && cached?.rate && cached?.updatedAt && Date.now() - new Date(cached.updatedAt).getTime() < FINANCE_RATE_CACHE_TTL) {
+        const cachedRate = Number(cached.rate);
+        if (Number.isFinite(cachedRate) && cachedRate > 0) {
+          if (Math.abs(cachedRate - copRate) > 0.001 || finance.copRateUpdatedAt !== cached.updatedAt) {
+            onUpdateFinance(prev => ({ ...prev, copRate: cachedRate, copRateUpdatedAt: cached.updatedAt }));
+          }
+          setRateStatus('cached');
+          return;
+        }
+      }
+
+      setRateStatus('loading');
+      const response = await fetch('https://open.er-api.com/v6/latest/USD', { cache: 'no-store' });
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+      const result = await response.json();
+      const nextRate = Number(result?.rates?.COP);
+      if (!Number.isFinite(nextRate) || nextRate <= 0) throw new Error('La respuesta no incluyó COP');
+      const updatedAt = result?.time_last_update_utc
+        ? new Date(result.time_last_update_utc).toISOString()
+        : new Date().toISOString();
+      localStorage.setItem(FINANCE_RATE_CACHE_KEY, JSON.stringify({ rate: nextRate, updatedAt }));
+      onUpdateFinance(prev => ({ ...prev, copRate: nextRate, copRateUpdatedAt: updatedAt }));
+      setRateStatus('fresh');
+    } catch (error) {
+      setRateStatus('fallback');
+      setRateError(`No se pudo actualizar; se mantiene la última tasa disponible. ${error?.message || ''}`.trim());
+    }
+  };
+
+  useEffect(() => {
+    refreshExchangeRate(false);
+  }, []);
 
   const byCategory = expenseCategories.map(cat => {
     const spent = monthly.filter(t => t.type === 'expense' && t.category === cat.id).reduce((sum, t) => sum + Number(t.amount || 0), 0);
@@ -7167,7 +8080,7 @@ const FinanceView = ({ data, onUpdateFinance }) => {
             <div style={{ fontSize: 11, color: COLORS.textDim, marginBottom: 6, ...s }}>Disponible proyectado</div>
             <div style={{ fontSize: 34, color: available >= 0 ? COLORS.success : COLORS.alert, fontFamily: "'DM Serif Display', serif" }}>{money(available)}</div>
             <div style={{ color: COLORS.textDim, fontSize: 11, ...s }}>Mes: {monthDate.toLocaleDateString('es-ES', { month: 'long', year: 'numeric' })}</div>
-            <div className="finance-currency-controls" style={{ display: 'grid', gridTemplateColumns: '116px 1fr', gap: 8, marginTop: 12, alignItems: 'center' }}>
+            <div className="finance-currency-controls" style={{ display: 'grid', gridTemplateColumns: '116px minmax(0, 1fr)', gap: 8, marginTop: 12, alignItems: 'center' }}>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 3, padding: 3, borderRadius: 999, background: COLORS.bg, border: `1px solid ${COLORS.border}` }}>
                 {['USD', 'COP'].map(cur => (
                   <button key={cur} onClick={() => onUpdateFinance(prev => ({ ...prev, currency: cur }))} style={{
@@ -7183,9 +8096,27 @@ const FinanceView = ({ data, onUpdateFinance }) => {
                   }}>{cur}</button>
                 ))}
               </div>
-              <input type="number" min="1" step="0.01" value={copRate} onChange={e => onUpdateFinance(prev => ({ ...prev, copRate: Math.max(1, Number(e.target.value || 1)) }))} placeholder="COP por 1 USD" style={{ ...inputStyle, padding: '8px 9px', fontSize: 11 }} />
+              <button
+                type="button"
+                onClick={() => refreshExchangeRate(true)}
+                disabled={rateStatus === 'loading'}
+                title="Actualizar tasa USD/COP"
+                style={{ ...inputStyle, padding: '7px 9px', fontSize: 10, cursor: rateStatus === 'loading' ? 'wait' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8, textAlign: 'left' }}
+              >
+                <span style={{ minWidth: 0 }}>
+                  <strong style={{ color: COLORS.text, display: 'block' }}>1 USD = {copRate.toLocaleString('es-CO', { maximumFractionDigits: 2 })} COP</strong>
+                  <span style={{ color: COLORS.textDim, display: 'block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                    {finance.copRateUpdatedAt
+                      ? `Actualizada ${new Date(finance.copRateUpdatedAt).toLocaleString('es-CO', { dateStyle: 'short', timeStyle: 'short' })}`
+                      : 'Tasa de respaldo'}
+                  </span>
+                </span>
+                <RefreshCw size={13} style={{ flexShrink: 0, animation: rateStatus === 'loading' ? 'spin 0.8s linear infinite' : 'none' }} />
+              </button>
             </div>
-            <div style={{ color: COLORS.textDim, fontSize: 10, marginTop: 6, ...s }}>Vista global: {currency}. Cada cuenta puede tener su propia moneda.</div>
+            <div style={{ color: rateError ? COLORS.alert : COLORS.textDim, fontSize: 10, marginTop: 6, lineHeight: 1.4, ...s }}>
+              {rateError || `Vista global: ${currency}. Cada cuenta puede tener su propia moneda.`}
+            </div>
           </div>
         </div>
       </div>
@@ -7239,7 +8170,7 @@ const FinanceView = ({ data, onUpdateFinance }) => {
               <select value={form.type} onChange={e => setForm(f => ({ ...f, type: e.target.value, category: e.target.value === 'income' ? 'income' : (expenseCategories[0]?.id || f.category) }))} style={inputStyle}>
                 <option value="expense">Gasto</option><option value="income">Ingreso</option>
               </select>
-              <input type="number" step="0.01" value={form.amount} onChange={e => setForm(f => ({ ...f, amount: e.target.value }))} placeholder={`Monto ${transactionCurrency}`} style={inputStyle} />
+              <FinanceMoneyInput value={form.amount} onValueChange={amount => setForm(f => ({ ...f, amount }))} placeholder={`Monto ${transactionCurrency}`} style={inputStyle} />
               <input type="date" value={form.date} onClick={e => openNativeDatePicker(e.currentTarget)} onFocus={e => openNativeDatePicker(e.currentTarget)} onChange={e => setForm(f => ({ ...f, date: e.target.value }))} style={{ ...inputStyle, cursor: 'pointer' }} />
             </div>
             <div className="finance-form-row finance-form-row-4" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr auto', gap: 10 }}>
@@ -7332,7 +8263,7 @@ const FinanceView = ({ data, onUpdateFinance }) => {
                         <div style={{ color: pct > 90 ? COLORS.alert : COLORS.textDim, fontSize: 11 }}>{money(spent)} usados de {money(limit)}</div>
                       </div>
                       <div style={{ position: 'relative' }}>
-                        <input type="number" step="0.01" value={cleanDisplayValue(limit)} onChange={e => updateBudget(cat.id, e.target.value)} placeholder={`Limite ${currency}`} style={{ ...inputStyle, padding: '8px 42px 8px 9px', fontSize: 11, width: '100%' }} />
+                        <FinanceMoneyInput value={toDisplayAmount(limit)} onValueChange={amount => updateBudget(cat.id, amount)} placeholder={`Limite ${currency}`} style={{ ...inputStyle, padding: '8px 42px 8px 9px', fontSize: 11, width: '100%' }} />
                         <span style={{ position: 'absolute', right: 9, top: '50%', transform: 'translateY(-50%)', color: COLORS.textDim, fontSize: 9, fontWeight: 800 }}>{currency}</span>
                       </div>
                       <button
@@ -7373,7 +8304,7 @@ const FinanceView = ({ data, onUpdateFinance }) => {
               }} style={inputStyle}>
                 {SUBSCRIPTION_SERVICES.map(service => <option key={service.id} value={service.id}>{service.name}</option>)}
               </select>
-              <input type="number" step="0.01" value={subscriptionForm.amount} onChange={e => setSubscriptionForm(f => ({ ...f, amount: e.target.value }))} placeholder={`Monto ${subscriptionCurrency}`} style={inputStyle} />
+              <FinanceMoneyInput value={subscriptionForm.amount} onValueChange={amount => setSubscriptionForm(f => ({ ...f, amount }))} placeholder={`Monto ${subscriptionCurrency}`} style={inputStyle} />
               <input type="number" min="1" max="31" step="1" value={subscriptionForm.day} onChange={e => setSubscriptionForm(f => ({ ...f, day: e.target.value }))} placeholder="Día" style={inputStyle} />
               <select value={subscriptionForm.accountId} onChange={e => {
                 const previousCurrency = normalizeCurrency(accountById(subscriptionForm.accountId).currency || currency);
@@ -7471,7 +8402,7 @@ const FinanceView = ({ data, onUpdateFinance }) => {
           <div className="finance-card finance-monthly-budget-card" style={{ ...cardStyle, display: section === 'budget' ? 'block' : 'none' }}>
             <h3 style={{ fontSize: 16, color: COLORS.text, marginBottom: 12 }}>Presupuesto mensual</h3>
             <div style={{ position: 'relative', marginBottom: 12 }}>
-              <input type="number" step="0.01" value={cleanDisplayValue(finance.monthlyBudget)} onChange={e => onUpdateFinance(prev => ({ ...prev, monthlyBudget: fromDisplayAmount(e.target.value || 0) }))} placeholder={`Presupuesto ${currency}`} style={{ ...inputStyle, width: '100%', paddingRight: 52 }} />
+              <FinanceMoneyInput value={toDisplayAmount(finance.monthlyBudget)} onValueChange={amount => onUpdateFinance(prev => ({ ...prev, monthlyBudget: fromDisplayAmount(amount || 0) }))} placeholder={`Presupuesto ${currency}`} style={{ ...inputStyle, width: '100%', paddingRight: 52 }} />
               <span style={{ position: 'absolute', right: 12, top: '50%', transform: 'translateY(-50%)', color: COLORS.textDim, fontSize: 10, fontWeight: 800 }}>{currency}</span>
             </div>
             <div style={{ height: 8, background: COLORS.bg, borderRadius: 99, overflow: 'hidden' }}><div style={{ height: '100%', width: `${budgetPct}%`, background: `linear-gradient(90deg, ${COLORS.primary}, ${COLORS.alert})`, borderRadius: 99 }} /></div>
@@ -7560,7 +8491,7 @@ const FinanceView = ({ data, onUpdateFinance }) => {
             )}
             <div className="finance-compact-form finance-account-balance-form" style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) auto', gap: 8 }}>
               <div style={{ position: 'relative' }}>
-                <input type="number" step="0.01" value={accountForm.balance} onChange={e => setAccountForm(f => ({ ...f, balance: e.target.value }))} placeholder={`Saldo inicial ${accountForm.currency}`} style={{ ...strongInputStyle, padding: '9px 46px 9px 10px', fontSize: 11, width: '100%' }} />
+                <FinanceMoneyInput value={accountForm.balance} onValueChange={balance => setAccountForm(f => ({ ...f, balance }))} placeholder={`Saldo inicial ${accountForm.currency}`} style={{ ...strongInputStyle, padding: '9px 46px 9px 10px', fontSize: 11, width: '100%' }} />
                 <span style={{ position: 'absolute', right: 9, top: '50%', transform: 'translateY(-50%)', color: COLORS.textDim, fontSize: 9, fontWeight: 800 }}>{accountForm.currency}</span>
               </div>
               <button className="finance-submit-button" onClick={addAccount} style={{ border: 'none', borderRadius: 10, background: COLORS.primary, color: '#fff', padding: '0 12px', cursor: 'pointer', fontWeight: 800, whiteSpace: 'nowrap' }}><Plus size={15} /> Agregar cuenta</button>
@@ -7593,7 +8524,7 @@ const FinanceView = ({ data, onUpdateFinance }) => {
 
             <div className="finance-compact-form" style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) 110px 74px 130px auto', gap: 8, marginBottom: 16 }}>
               <input value={recurringForm.name} onChange={e => setRecurringForm(f => ({ ...f, name: e.target.value }))} placeholder="Nombre del pago" style={{ ...inputStyle, padding: '9px 10px', fontSize: 12 }} />
-              <input type="number" step="0.01" value={recurringForm.amount} onChange={e => setRecurringForm(f => ({ ...f, amount: e.target.value }))} placeholder={currency} style={{ ...inputStyle, padding: '9px 10px', fontSize: 12 }} />
+              <FinanceMoneyInput value={recurringForm.amount} onValueChange={amount => setRecurringForm(f => ({ ...f, amount }))} placeholder={currency} style={{ ...inputStyle, padding: '9px 10px', fontSize: 12 }} />
               <input type="number" min="1" max="31" step="1" value={recurringForm.day} onChange={e => setRecurringForm(f => ({ ...f, day: e.target.value }))} placeholder="Día" style={{ ...inputStyle, padding: '9px 10px', fontSize: 12 }} />
               <select value={recurringForm.category} onChange={e => setRecurringForm(f => ({ ...f, category: e.target.value }))} style={{ ...inputStyle, padding: '9px 10px', fontSize: 12 }}>
                 {expenseCategories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
@@ -8289,7 +9220,7 @@ const StatisticsView = ({ data }) => {
           <div style={{ display: 'grid', gap: 9 }}>
             {(statsUseful.weak.length ? statsUseful.weak : [{ id: 'ok', name: 'Vas bien', rate: statsUseful.avg, icon: '✨' }]).map(h => (
               <div key={h.id} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: 12, borderRadius: 14, background: `${COLORS.primary}0b`, border: `1px solid ${COLORS.border}` }}>
-                <span className="fire-emoji" style={{ fontSize: 20 }}>{h.icon}</span>
+                <span className="fire-emoji"><HabitIconGlyph habit={h} size={20} strokeWidth={1.75} /></span>
                 <div style={{ flex: 1 }}>
                   <div style={{ color: COLORS.text, fontWeight: 900, fontSize: 13 }}>{h.name}</div>
                   <div style={{ color: COLORS.textDim, fontSize: 11 }}>{h.rate < 55 ? 'Está flojo: reduce dificultad, cambia horario o pon recordatorio.' : 'No hay hábitos críticos en este periodo.'}</div>
@@ -8450,7 +9381,7 @@ const StatisticsView = ({ data }) => {
                 {streakTable.map(h => (
                   <tr key={h.id} style={{ borderBottom: `1px solid ${COLORS.border}` }}>
                     <td style={{ padding: '12px', display: 'flex', alignItems: 'center', gap: 8 }}>
-                      <span className="fire-emoji" style={{ fontSize: 16 }}>{h.icon}</span>
+                      <span className="fire-emoji"><HabitIconGlyph habit={h} size={17} strokeWidth={1.75} /></span>
                       <span style={{ fontSize: 13, color: COLORS.text }}>{h.name}</span>
                     </td>
                     <td style={{ textAlign: 'center', padding: '12px', fontSize: 16, color: COLORS.alert, fontFamily: "'Inter', sans-serif" }}>
@@ -12686,6 +13617,60 @@ const HabitFlowApp = () => {
   }, [data?.agenda]);
 
   useEffect(() => {
+    if (!data?.habits?.length) return;
+    if (typeof Notification === 'undefined' || Notification.permission !== 'granted') return;
+
+    const checkHabitReminders = () => {
+      const now = new Date();
+      const dateStr = toYYYYMMDD(now);
+      const weekday = now.getDay();
+      const sentMap = getSentNotificationMap();
+      const keepAfter = now.getTime() - 7 * 86400000;
+      Object.keys(sentMap).forEach(key => { if (sentMap[key] < keepAfter) delete sentMap[key]; });
+      let changed = false;
+
+      data.habits.forEach(habit => {
+        const reminder = habit.reminder;
+        if (habit.active === false || !reminder?.enabled || !reminder.time) return;
+        if (!isExpectedDay(habit, dateStr)) return;
+        const reminderDays = Array.isArray(reminder.days) ? reminder.days.map(Number) : [];
+        if (reminderDays.length && !reminderDays.includes(weekday)) return;
+        if ((data.records || []).some(record => record.habitId === habit.id && record.date === dateStr && record.completed)) return;
+
+        const dueMinutes = timeToMinutes(reminder.time);
+        const nowMilliseconds = ((now.getHours() * 60 + now.getMinutes()) * 60 + now.getSeconds()) * 1000;
+        const diff = dueMinutes * 60000 - nowMilliseconds;
+        if (diff > 30000 || diff < -10 * 60000) return;
+
+        const key = `habit-reminder:${habit.id}:${dateStr}:${reminder.time}`;
+        if (sentMap[key]) return;
+        sentMap[key] = now.getTime();
+        changed = true;
+        showHabitFlowNotification('HabitFlow • Hábito', {
+          body: String(reminder.message || '').trim() || `Es hora de ${habit.name}.`,
+          tag: key,
+          data: { view: 'habits', habitId: habit.id, date: dateStr },
+          renotify: true,
+          requireInteraction: true
+        });
+      });
+
+      if (changed) saveSentNotificationMap(sentMap);
+    };
+
+    checkHabitReminders();
+    const interval = setInterval(checkHabitReminders, 30000);
+    const onWake = () => checkHabitReminders();
+    window.addEventListener('focus', onWake);
+    document.addEventListener('visibilitychange', onWake);
+    return () => {
+      clearInterval(interval);
+      window.removeEventListener('focus', onWake);
+      document.removeEventListener('visibilitychange', onWake);
+    };
+  }, [data?.habits, data?.records]);
+
+  useEffect(() => {
     if (!data?.healthData) return;
     if (typeof Notification === 'undefined') return;
     if (Notification.permission !== 'granted') return;
@@ -12768,46 +13753,85 @@ const HabitFlowApp = () => {
     return { ...prev, user };
   }, []);
 
-  const onCompleteHabit = useCallback((habitId) => {
+  const onCompleteHabit = useCallback((habitId, targetDate = toYYYYMMDD(new Date())) => {
     const today = toYYYYMMDD(new Date());
+    if (!targetDate || targetDate > today) return;
     setToast(null);
     setData(prev => {
+      const habit = prev.habits.find(item => item.id === habitId);
+      if (!habit || habit.active === false || !isExpectedDay(habit, targetDate)) return prev;
       const records = [...prev.records];
-      const idx = records.findIndex(r => r.habitId === habitId && r.date === today);
-      let xpGain = 0;
-      let habitName = '';
+      const idx = records.findIndex(r => r.habitId === habitId && r.date === targetDate);
+      const xpAwards = { ...(prev.xpAwards || {}) };
+      const habitAwardKey = `habit:${habitId}:${targetDate}`;
+      const perfectAwardKey = `perfect:${targetDate}`;
+      let xpDelta = 0;
+      let completedNow = false;
+
       if (idx >= 0) {
         const wasCompleted = records[idx].completed;
         records[idx] = { ...records[idx], completed: !wasCompleted };
-        if (!wasCompleted) {
-          xpGain = 10;
-          const streak = getCurrentStreak(habitId, records);
-          if (streak >= 21) xpGain = 25;
-          else if (streak >= 7) xpGain = 15;
-          habitName = prev.habits.find(h => h.id === habitId)?.name || '';
-          const rect = document.activeElement?.getBoundingClientRect();
-          setConfetti({ x: rect?.left || window.innerWidth / 2, y: rect?.top || window.innerHeight / 2, key: Date.now() });
-          setTimeout(() => setConfetti(null), 1000);
-        }
+        completedNow = !wasCompleted;
       } else {
-        records.push({ habitId, date: today, completed: true, note: '', mood: 0 });
-        xpGain = 10;
-        habitName = prev.habits.find(h => h.id === habitId)?.name || '';
+        records.push({ habitId, date: targetDate, completed: true, note: '', mood: 0 });
+        completedNow = true;
+      }
+
+      if (completedNow) {
+        if (!Object.prototype.hasOwnProperty.call(xpAwards, habitAwardKey)) {
+          let habitXp = 10;
+          const streak = getCurrentStreak(habitId, records, habit);
+          if (streak >= 21) habitXp = 25;
+          else if (streak >= 7) habitXp = 15;
+          xpAwards[habitAwardKey] = habitXp;
+          xpDelta += habitXp;
+        }
         setConfetti({ x: window.innerWidth / 2, y: window.innerHeight / 2, key: Date.now() });
         setTimeout(() => setConfetti(null), 1000);
+      } else if (Object.prototype.hasOwnProperty.call(xpAwards, habitAwardKey)) {
+        const previousAward = Number(xpAwards[habitAwardKey] || 0);
+        if (Number.isFinite(previousAward) && previousAward > 0) {
+          xpDelta -= previousAward;
+          delete xpAwards[habitAwardKey];
+        }
       }
-      if (xpGain > 0) {
-        const allToday = records.filter(r => r.date === today);
-        const totalHabits = prev.habits.filter(h => h.active).length;
-        const completedToday = allToday.filter(r => r.completed).length;
-        if (completedToday === totalHabits) xpGain += 20;
-        if (habitName) setToast({ message: `+${xpGain} XP - ${habitName}`, type: 'success' });
+
+      const expectedHabits = prev.habits.filter(item => item.active && isExpectedDay(item, targetDate));
+      const completedIds = new Set(records
+        .filter(record => record.date === targetDate && record.completed)
+        .map(record => record.habitId));
+      const isPerfectDay = expectedHabits.length > 0 && expectedHabits.every(item => completedIds.has(item.id));
+
+      if (isPerfectDay && !Object.prototype.hasOwnProperty.call(xpAwards, perfectAwardKey)) {
+        xpAwards[perfectAwardKey] = 20;
+        xpDelta += 20;
+      } else if (!isPerfectDay && Object.prototype.hasOwnProperty.call(xpAwards, perfectAwardKey)) {
+        const previousPerfectAward = Number(xpAwards[perfectAwardKey] || 0);
+        if (Number.isFinite(previousPerfectAward) && previousPerfectAward > 0) xpDelta -= previousPerfectAward;
+        delete xpAwards[perfectAwardKey];
       }
-      let newData = xpGain > 0 ? awardXp({ ...prev, records }, xpGain) : { ...prev, records };
+
+      const user = { ...prev.user };
+      const oldLevel = getLevel(user.xp || 0);
+      user.xp = Math.max(0, Number(user.xp || 0) + xpDelta);
+      const newLevel = getLevel(user.xp);
+      user.level = newLevel;
+      if (newLevel > oldLevel && newLevel > (user.levelUpShown || 0)) {
+        user.levelUpShown = newLevel;
+        setTimeout(() => setShowLevelUp(newLevel), 600);
+      }
+
+      if (completedNow && xpDelta > 0) {
+        setToast({ message: `+${xpDelta} XP - ${habit.name}`, type: 'success' });
+      } else if (!completedNow && xpDelta < 0) {
+        setToast({ message: `${xpDelta} XP - registro corregido`, type: 'info' });
+      }
+
+      const newData = { ...prev, records, xpAwards, user };
       saveData(newData);
       return newData;
     });
-  }, [awardXp]);
+  }, []);
 
   const onUpdateRecord = useCallback((habitId, date, updates) => {
     setData(prev => {
@@ -12880,6 +13904,19 @@ const HabitFlowApp = () => {
       return newData;
     });
     setToast({ message: 'Datos aleatorios cargados en toda la app', type: 'success' });
+  }, []);
+
+  const onCreateHabitCategory = useCallback((category) => {
+    setData(prev => {
+      const current = prev.customHabitCategories || [];
+      const customHabitCategories = [
+        ...current.filter(item => item.id !== category.id),
+        category
+      ];
+      const newData = { ...prev, customHabitCategories };
+      saveData(newData);
+      return newData;
+    });
   }, []);
 
   const onToggleHabit = useCallback((id) => {
@@ -13053,7 +14090,7 @@ const HabitFlowApp = () => {
       const allHabits = [...newHabits, ...extraHabits].map((h, index) => ({
         ...h,
         targetStreak: h.targetStreak || rand(14, 45),
-        icon: isBrokenHabitIcon(h.icon) ? getCategoryIcon(h.category) : h.icon,
+        icon: normalizeHabitIconId(h.icon, h.category, h.name),
         lastFocusSession: Math.random() > 0.55 ? toYYYYMMDD(addDays(new Date(), -rand(0, 8))) : null,
         order: index
       }));
@@ -13328,7 +14365,7 @@ const HabitFlowApp = () => {
   const renderView = () => {
     switch (view) {
       case 'dashboard': return <DashboardView data={data} onCompleteHabit={onCompleteHabit} workoutData={data.workoutData} onNavigate={navigateTo} onUpdateUser={onUpdateUser} />;
-      case 'habits': return <HabitsView data={data} onAddHabit={onAddHabit} onUpdateHabit={onUpdateHabit} onDeleteHabit={onDeleteHabit} onToggleHabit={onToggleHabit} onCompleteHabit={onCompleteHabit} onUpdateRecord={onUpdateRecord} records={data.records} />;
+      case 'habits': return <HabitsView data={data} onAddHabit={onAddHabit} onUpdateHabit={onUpdateHabit} onDeleteHabit={onDeleteHabit} onToggleHabit={onToggleHabit} onCompleteHabit={onCompleteHabit} onUpdateRecord={onUpdateRecord} onCreateHabitCategory={onCreateHabitCategory} records={data.records} />;
       case 'pomodoro': return <PomodoroView data={data} onUpdateUser={onUpdateUser} onUpdatePomodoro={onUpdatePomodoro} />;
       case 'workout': return <WorkoutView data={data} onUpdateData={onUpdateWorkout} onCompleteHabit={onCompleteHabit} awardXp={(prev, amt) => awardXp(prev, amt)} />;
       case 'agenda': return <AgendaView data={data} onUpdateAgenda={onUpdateAgenda} onUpdateAgendaNote={onUpdateAgendaNote} onUpdateAgendaTodos={onUpdateAgendaTodos} onUpdateAgendaTodoLabels={onUpdateAgendaTodoLabels} onMoveTaskToDate={onMoveTaskToDate} onCompleteHabit={onCompleteHabit} />;
