@@ -11,7 +11,7 @@ import {
   Clock, Play, Pause, StopCircle, Award, ChevronLeft, ChevronRight,
   Dumbbell, SkipBack, SkipForward, Timer, Repeat, Maximize, Minimize,
   List, Search, ArrowUp, ArrowDown, Hash, GripVertical, CreditCard,
-  Heart, Pill, Bell
+  Heart, Pill, Bell, Droplet, Pencil, MoreHorizontal
 } from 'lucide-react';
 
 const supabase = window.supabaseClient;
@@ -1702,6 +1702,674 @@ const injectStyles = () => {
         scroll-behavior: auto !important;
         transition-duration: 0.001ms !important;
       }
+    }
+
+    /* Habitos: tracker editorial, ligero y sin tarjetas decorativas. */
+    .habits-minimal-view {
+      --habits-bg: #080a0d;
+      --habits-surface: #0d1014;
+      --habits-surface-hover: #11141a;
+      --habits-border: #2e333d;
+      --habits-divider: #242831;
+      --habits-text: #f4f1ea;
+      --habits-muted: #a7a7a7;
+      --habits-subtle: #6f737a;
+      --habits-accent: #ff7d95;
+      --habits-accent-soft: #f48ba0;
+      --habits-accent-dark: #d9647b;
+      --habits-track: #2a2e36;
+      width: min(100%, 1580px);
+      margin: 0 auto;
+      color: var(--habits-text);
+      font-family: 'Inter', sans-serif;
+      animation: none !important;
+    }
+    html[data-theme-mode="pinkLight"] .habits-minimal-view {
+      --habits-bg: #faf7f5;
+      --habits-surface: #ffffff;
+      --habits-surface-hover: #fff2f4;
+      --habits-border: #e8d7d9;
+      --habits-divider: #eadddf;
+      --habits-text: #1d1b1c;
+      --habits-muted: #6f6467;
+      --habits-subtle: #8d8084;
+      --habits-accent: #d96b7d;
+      --habits-accent-soft: #f2a4b2;
+      --habits-accent-dark: #b94e61;
+      --habits-track: #eadcde;
+    }
+    .habits-minimal-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 32px;
+      padding: 18px 0 42px;
+    }
+    .habits-minimal-header h2 {
+      margin: 0 !important;
+      color: var(--habits-text) !important;
+      background: none !important;
+      font-family: 'DM Serif Display', 'Playfair Display', Georgia, serif !important;
+      font-size: clamp(48px, 4.5vw, 68px) !important;
+      line-height: 0.98 !important;
+      font-weight: 400 !important;
+      letter-spacing: -0.035em !important;
+    }
+    .habits-minimal-header p {
+      margin: 16px 0 0;
+      color: var(--habits-muted);
+      font-size: 17px;
+      line-height: 1.5;
+    }
+    .habits-header-actions {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 12px;
+      flex-shrink: 0;
+    }
+    .habits-date-picker,
+    .habits-nav-button,
+    .habits-new-button {
+      height: 48px;
+      border-radius: 11px;
+      font-family: 'Inter', sans-serif;
+      font-size: 14px;
+      transition: background-color 180ms ease, border-color 180ms ease, color 180ms ease;
+      cursor: pointer;
+    }
+    .habits-date-picker {
+      min-width: 260px;
+      padding: 0 20px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 14px;
+      color: var(--habits-text);
+      background: transparent;
+      border: 1px solid var(--habits-border);
+    }
+    .habits-date-picker:hover,
+    .habits-nav-button:hover {
+      background: var(--habits-surface-hover);
+      border-color: var(--habits-subtle);
+    }
+    .habits-nav-button {
+      width: 52px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--habits-text);
+      background: transparent;
+      border: 1px solid var(--habits-border);
+    }
+    .habits-new-button {
+      min-width: 150px;
+      padding: 0 20px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      color: #111;
+      background: #ff8a9a;
+      border: 1px solid #ff8a9a;
+      font-weight: 700;
+    }
+    .habits-new-button:hover {
+      background: #ff9dac;
+      border-color: #ff9dac;
+    }
+    html[data-theme-mode="pinkLight"] .habits-new-button {
+      color: #fff;
+      background: #1d1b1c;
+      border-color: #1d1b1c;
+    }
+    html[data-theme-mode="pinkLight"] .habits-new-button:hover {
+      background: #353033;
+      border-color: #353033;
+    }
+    .habits-minimal-filters {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      padding-bottom: 36px;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+    .habits-minimal-filters::-webkit-scrollbar { display: none; }
+    .habits-minimal-filters button {
+      flex: 0 0 auto;
+      min-height: 42px;
+      padding: 9px 21px;
+      border-radius: 10px;
+      border: 1px solid var(--habits-border);
+      color: var(--habits-muted);
+      background: transparent;
+      font: 500 13px/1 'Inter', sans-serif;
+      cursor: pointer;
+      transition: color 170ms ease, border-color 170ms ease, background-color 170ms ease;
+    }
+    .habits-minimal-filters button:hover {
+      color: var(--habits-text);
+      background: var(--habits-surface);
+    }
+    .habits-minimal-filters button.is-active {
+      color: var(--habits-accent);
+      border-color: var(--habits-accent);
+      background: color-mix(in srgb, var(--habits-accent) 7%, transparent);
+    }
+    .habits-minimal-metrics {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      padding: 20px 0 48px;
+      border-bottom: 1px solid var(--habits-divider);
+    }
+    .habits-metric {
+      min-height: 76px;
+      padding: 0 clamp(30px, 4vw, 72px);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      border-left: 1px solid var(--habits-border);
+    }
+    .habits-metric:first-child {
+      padding-left: clamp(20px, 4vw, 62px);
+      border-left: 0;
+    }
+    .habits-metric span {
+      color: var(--habits-muted);
+      font-size: 14px;
+      line-height: 1.4;
+    }
+    .habits-metric strong {
+      margin-top: 12px;
+      color: var(--habits-text);
+      font-family: 'DM Serif Display', 'Playfair Display', Georgia, serif;
+      font-size: clamp(28px, 2.5vw, 38px);
+      line-height: 1;
+      font-weight: 400;
+      letter-spacing: -0.02em;
+    }
+    .habits-minimal-list {
+      position: relative;
+      width: 100%;
+    }
+    .habits-minimal-table-header,
+    .habits-minimal-row {
+      display: grid;
+      grid-template-columns:
+        minmax(210px, 1.4fr)
+        minmax(190px, 1.05fr)
+        80px
+        minmax(140px, 0.8fr)
+        110px
+        38px;
+      align-items: center;
+      column-gap: clamp(12px, 1.4vw, 26px);
+    }
+    .habits-minimal-table-header {
+      min-height: 94px;
+      padding: 16px 34px 12px;
+      color: var(--habits-muted);
+      border-bottom: 1px solid var(--habits-divider);
+      font-size: 14px;
+    }
+    .habits-week-heading {
+      align-self: end;
+      text-align: center;
+    }
+    .habits-week-heading > span {
+      display: block;
+      margin-bottom: 16px;
+    }
+    .habits-week-heading > div,
+    .habit-week-dots {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      align-items: center;
+      justify-items: center;
+      gap: 10px;
+    }
+    .habits-week-heading small {
+      color: var(--habits-muted);
+      font-size: 12px;
+      font-weight: 500;
+    }
+    .habits-minimal-row {
+      min-height: 100px;
+      padding: 20px 34px;
+      border-bottom: 1px solid var(--habits-divider);
+      transition: background-color 180ms ease;
+    }
+    .habits-minimal-row:hover {
+      background: var(--habits-surface-hover);
+    }
+    .habits-minimal-row.is-paused {
+      opacity: 0.55;
+    }
+    .habit-row-main {
+      min-width: 0;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+    .habit-line-icon {
+      width: 46px;
+      height: 46px;
+      flex: 0 0 46px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--habits-text);
+    }
+    .habit-row-main strong {
+      display: block;
+      overflow: hidden;
+      color: var(--habits-text);
+      font-size: 15px;
+      font-weight: 650;
+      line-height: 1.35;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .habit-row-main span {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      margin-top: 7px;
+      color: var(--habits-muted);
+      font-size: 12px;
+    }
+    .habit-row-main span i,
+    .habit-detail-minimal > p i {
+      width: 7px;
+      height: 7px;
+      display: inline-block;
+      flex: 0 0 7px;
+      border-radius: 50%;
+      background: var(--habits-accent);
+    }
+    .habit-row-main small {
+      display: block;
+      margin-top: 5px;
+      color: var(--habits-subtle);
+      font-size: 10px;
+    }
+    .habit-week-dots button {
+      width: 14px;
+      height: 14px;
+      padding: 0;
+      border-radius: 50%;
+      border: 1px solid #7b8089;
+      background: transparent;
+      cursor: default;
+      transition: background-color 170ms ease, border-color 170ms ease;
+    }
+    .habit-week-dots button.is-complete {
+      border-color: var(--habits-accent);
+      background: var(--habits-accent);
+    }
+    .habit-week-dots button.is-unscheduled {
+      border-color: var(--habits-divider);
+      opacity: 0.35;
+    }
+    .habit-week-dots button.is-today {
+      outline: 2px solid color-mix(in srgb, var(--habits-accent) 22%, transparent);
+      outline-offset: 3px;
+    }
+    .habit-week-dots button.is-today:not(:disabled) {
+      cursor: pointer;
+    }
+    .habit-row-streak {
+      color: var(--habits-text);
+      font-size: 14px;
+      white-space: nowrap;
+    }
+    .mobile-field-label { display: none; }
+    .habit-row-progress > div {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .habit-row-progress > div > span {
+      height: 3px;
+      flex: 1;
+      min-width: 80px;
+      overflow: hidden;
+      border-radius: 2px;
+      background: var(--habits-track);
+    }
+    .habit-row-progress > div > span i {
+      height: 100%;
+      display: block;
+      border-radius: inherit;
+      background: var(--habits-accent);
+      transition: width 350ms ease;
+    }
+    .habit-row-progress b {
+      min-width: 38px;
+      color: var(--habits-muted);
+      font-size: 13px;
+      font-weight: 500;
+      text-align: right;
+    }
+    .habit-row-status {
+      padding: 8px 0;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--habits-muted);
+      background: transparent;
+      border: 0;
+      font: 500 13px/1 'Inter', sans-serif;
+      text-align: left;
+      cursor: pointer;
+    }
+    .habit-row-status:disabled { cursor: default; }
+    .habit-row-status i {
+      width: 10px;
+      height: 10px;
+      flex: 0 0 10px;
+      border-radius: 50%;
+      border: 1px solid #7b8089;
+      background: transparent;
+    }
+    .habit-row-status.is-complete {
+      color: var(--habits-text);
+    }
+    .habit-row-status.is-complete i {
+      border-color: var(--habits-accent);
+      background: var(--habits-accent);
+    }
+    .habit-row-actions {
+      position: relative;
+      display: flex;
+      justify-content: flex-end;
+    }
+    .habit-more-button {
+      width: 38px;
+      height: 38px;
+      padding: 0;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--habits-muted);
+      background: transparent;
+      border: 0;
+      border-radius: 9px;
+      cursor: pointer;
+      transition: color 170ms ease, background-color 170ms ease;
+    }
+    .habit-more-button:hover {
+      color: var(--habits-text);
+      background: var(--habits-surface);
+    }
+    .habit-actions-menu {
+      position: absolute;
+      z-index: 30;
+      top: calc(100% + 4px);
+      right: 0;
+      width: 158px;
+      padding: 6px;
+      border: 1px solid var(--habits-border);
+      border-radius: 12px;
+      background: var(--habits-surface);
+      box-shadow: 0 14px 34px rgba(0,0,0,0.28);
+    }
+    html[data-theme-mode="pinkLight"] .habit-actions-menu {
+      box-shadow: 0 14px 34px rgba(84,52,62,0.13);
+    }
+    .habit-actions-menu button {
+      width: 100%;
+      padding: 9px 10px;
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      border: 0;
+      border-radius: 8px;
+      color: var(--habits-text);
+      background: transparent;
+      font: 500 12px/1 'Inter', sans-serif;
+      cursor: pointer;
+      text-align: left;
+    }
+    .habit-actions-menu button:hover {
+      background: var(--habits-surface-hover);
+    }
+    .habit-actions-menu button.is-danger {
+      color: var(--habits-accent-dark);
+    }
+    .habits-minimal-empty {
+      min-height: 250px;
+      padding: 50px 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      color: var(--habits-muted);
+      border-bottom: 1px solid var(--habits-divider);
+      text-align: center;
+    }
+    .habits-minimal-empty strong {
+      margin-top: 8px;
+      color: var(--habits-text);
+      font-size: 15px;
+    }
+    .habits-minimal-empty span { font-size: 12px; }
+    .habits-minimal-empty button,
+    .habit-detail-minimal > button {
+      margin-top: 10px;
+      padding: 10px 16px;
+      color: #111;
+      background: var(--habits-accent);
+      border: 0;
+      border-radius: 9px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .habits-calendar-panel {
+      max-width: 480px;
+      margin: -22px 0 30px auto;
+    }
+    .habits-calendar-panel > div {
+      color: var(--habits-text) !important;
+      background: var(--habits-surface) !important;
+      border-color: var(--habits-border) !important;
+      box-shadow: none !important;
+    }
+    .habit-detail-minimal {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      color: var(--habits-text);
+    }
+    .habit-detail-minimal h3 {
+      margin: 16px 0 0;
+      font: 400 30px/1.1 'DM Serif Display', Georgia, serif;
+    }
+    .habit-detail-minimal > p {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin: 8px 0 24px;
+      color: var(--habits-muted);
+      font-size: 12px;
+    }
+    .habit-detail-minimal dl {
+      width: 100%;
+      margin: 0;
+      border-top: 1px solid var(--habits-divider);
+    }
+    .habit-detail-minimal dl > div {
+      padding: 14px 0;
+      display: flex;
+      justify-content: space-between;
+      gap: 20px;
+      border-bottom: 1px solid var(--habits-divider);
+    }
+    .habit-detail-minimal dt { color: var(--habits-muted); font-size: 12px; }
+    .habit-detail-minimal dd { margin: 0; color: var(--habits-text); font-size: 13px; }
+    @media (max-width: 1200px) and (min-width: 861px) {
+      .habits-minimal-table-header,
+      .habits-minimal-row {
+        grid-template-columns: minmax(190px, 1.25fr) 210px 72px minmax(130px, 0.8fr) 108px 38px;
+        column-gap: 16px;
+        padding-left: 20px;
+        padding-right: 20px;
+      }
+      .habits-header-actions { gap: 8px; }
+      .habits-date-picker { min-width: 220px; }
+      .habits-new-button { min-width: 132px; }
+    }
+    @media (max-width: 860px) {
+      .habits-minimal-header {
+        display: block;
+        padding: 8px 0 28px;
+      }
+      .habits-minimal-header h2 {
+        font-size: clamp(42px, 11vw, 58px) !important;
+      }
+      .habits-minimal-header p {
+        margin-top: 10px;
+        font-size: 14px;
+      }
+      .habits-header-actions {
+        margin-top: 26px;
+        display: grid;
+        grid-template-columns: 1fr 48px 48px;
+        justify-content: stretch;
+      }
+      .habits-date-picker {
+        min-width: 0;
+        width: 100%;
+        justify-content: flex-start;
+      }
+      .habits-nav-button { width: 48px; }
+      .habits-new-button {
+        min-width: 0;
+        grid-column: 1 / -1;
+      }
+      .habits-minimal-filters {
+        margin-right: -16px;
+        padding-right: 16px;
+        padding-bottom: 25px;
+      }
+      .habits-minimal-filters button {
+        min-height: 40px;
+        padding: 9px 18px;
+      }
+      .habits-minimal-metrics {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        padding: 4px 0 28px;
+      }
+      .habits-metric,
+      .habits-metric:first-child {
+        min-height: 94px;
+        padding: 20px 14px;
+        border-left: 0;
+        border-top: 1px solid var(--habits-divider);
+      }
+      .habits-metric:nth-child(even) {
+        border-left: 1px solid var(--habits-border);
+      }
+      .habits-metric:nth-child(-n+2) { border-top: 0; }
+      .habits-metric strong {
+        margin-top: 8px;
+        font-size: 28px;
+      }
+      .habits-minimal-table-header { display: none; }
+      .habits-minimal-row {
+        min-height: 0;
+        padding: 23px 2px;
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        column-gap: 14px;
+        row-gap: 22px;
+      }
+      .habit-row-main {
+        grid-column: 1;
+        grid-row: 1;
+        gap: 14px;
+      }
+      .habit-line-icon {
+        width: 40px;
+        height: 40px;
+        flex-basis: 40px;
+      }
+      .habit-line-icon svg { width: 25px; height: 25px; }
+      .habit-row-actions {
+        grid-column: 2;
+        grid-row: 1;
+      }
+      .habit-week-dots {
+        grid-column: 1 / -1;
+        grid-row: 2;
+        padding: 0 8px;
+        gap: 12px;
+      }
+      .habit-week-dots button {
+        width: 13px;
+        height: 13px;
+        min-width: 13px !important;
+        min-height: 13px !important;
+        aspect-ratio: 1;
+        display: block;
+        flex: 0 0 13px;
+      }
+      .habit-row-streak {
+        grid-column: 1;
+        grid-row: 3;
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+      }
+      .mobile-field-label {
+        display: block;
+        color: var(--habits-subtle);
+        font-size: 9px;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+      }
+      .habit-row-status {
+        grid-column: 2;
+        grid-row: 3;
+        justify-self: end;
+      }
+      .habit-row-progress {
+        grid-column: 1 / -1;
+        grid-row: 4;
+      }
+      .habit-row-progress > .mobile-field-label {
+        margin-bottom: 8px;
+      }
+      .habit-actions-menu {
+        top: 38px;
+        right: 0;
+      }
+      .habits-calendar-panel {
+        max-width: none;
+        margin: 0 0 24px;
+      }
+    }
+    @media (max-width: 430px) {
+      .habits-header-actions {
+        grid-template-columns: 1fr 44px 44px;
+      }
+      .habits-date-picker,
+      .habits-nav-button,
+      .habits-new-button {
+        height: 46px;
+      }
+      .habits-date-picker {
+        padding: 0 12px;
+        gap: 9px;
+        font-size: 12px;
+      }
+      .habits-nav-button { width: 44px; }
+      .habits-minimal-row { padding-left: 0; padding-right: 0; }
+      .habit-row-main strong { font-size: 14px; }
+      .habit-week-dots { padding: 0 2px; }
     }
 
     /* El Panel conserva movimiento visual sin alterar posiciones ni volver a montar tarjetas. */
@@ -3592,6 +4260,13 @@ const injectStyles = () => {
       background-clip: text;
       color: transparent !important;
     }
+    .app-main .habits-minimal-header h2 {
+      background: none !important;
+      -webkit-background-clip: border-box !important;
+      background-clip: border-box !important;
+      color: var(--habits-text) !important;
+      -webkit-text-fill-color: var(--habits-text) !important;
+    }
     .brand-word {
       background: linear-gradient(120deg, var(--hf-heading-start) 0%, var(--hf-heading-end) 54%, var(--icon-primary) 82%, var(--hf-heading-start) 100%);
       background-size: 220% 220%;
@@ -5174,7 +5849,9 @@ const HabitsView = ({ data, onAddHabit, onUpdateHabit, onDeleteHabit, onToggleHa
   const [filter, setFilter] = useState('all');
   const [showForm, setShowForm] = useState(false);
   const [editHabit, setEditHabit] = useState(null);
+  const [viewHabit, setViewHabit] = useState(null);
   const [confirmDelete, setConfirmDelete] = useState(null);
+  const [actionMenu, setActionMenu] = useState(null);
   const [viewMode, setViewMode] = useState('week');
   const [baseDate, setBaseDate] = useState(new Date());
   const [dateRange, setDateRange] = useState(() => {
@@ -5261,7 +5938,7 @@ const HabitsView = ({ data, onAddHabit, onUpdateHabit, onDeleteHabit, onToggleHa
   };
 
   const filtered = useMemo(() => {
-    let list = habits;
+    let list = [...habits];
     if (filter !== 'all') list = list.filter(h => h.category === filter);
     return list.sort((a, b) => a.name.localeCompare(b.name));
   }, [habits, filter]);
@@ -5474,273 +6151,224 @@ const HabitsView = ({ data, onAddHabit, onUpdateHabit, onDeleteHabit, onToggleHa
     </div>
   );
 
+  const activeHabits = habits.filter(h => h.active);
+  const endOfToday = new Date();
+  endOfToday.setHours(23, 59, 59, 999);
+  const visibleWeekDays = weekDays.filter(day => day.full <= endOfToday);
+  const weeklyTotals = activeHabits.reduce((totals, habit) => {
+    visibleWeekDays.forEach(day => {
+      if (!isExpectedDay(habit, day.date)) return;
+      totals.expected += 1;
+      if (records.some(record => record.habitId === habit.id && record.date === day.date && record.completed)) {
+        totals.completed += 1;
+      }
+    });
+    return totals;
+  }, { expected: 0, completed: 0 });
+  const weeklyCompletion = weeklyTotals.expected
+    ? Math.round((weeklyTotals.completed / weeklyTotals.expected) * 100)
+    : 0;
+  const monthlyCompletion = activeHabits.length
+    ? Math.round(activeHabits.reduce((sum, habit) => sum + getCompletionRate(habit.id, records, 30, habit), 0) / activeHabits.length * 100)
+    : 0;
+  const globalStreak = getGlobalCurrentStreak(activeHabits, records);
+
+  const getHabitIconComponent = (habit) => {
+    const name = (habit.name || '').toLowerCase();
+    if (name.includes('agua') || name.includes('beber')) return Droplet;
+    if (name.includes('dibuj') || habit.category === 'creatividad') return Pencil;
+    if (name.includes('leer') || name.includes('aprender') || habit.category === 'mente') return BookOpen;
+    if (habit.category === 'fitness') return Dumbbell;
+    if (habit.category === 'salud') return Heart;
+    if (habit.category === 'social') return User;
+    if (habit.category === 'productividad') return Sparkles;
+    return Target;
+  };
+
   return (
-    <div className="habits-mobile-view" style={{ animation: 'fadeIn 0.3s ease-out' }}>
-      <div className="habits-toolbar" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 18, flexWrap: 'wrap', gap: 10 }}>
-        <h2 style={{ fontSize: 20, color: COLORS.text, fontFamily: "'DM Serif Display', serif", margin: 0, letterSpacing: '-0.01em' }}>Mis Hábitos</h2>
-        <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-          <div style={{ display: 'flex', gap: 2, background: COLORS.bg, borderRadius: 10, padding: 3, border: `1px solid ${COLORS.border}` }}>
-            {[
-              { key: 'week', label: 'Semana', icon: 'M3 3h4v4H3V3zm7 0h4v4h-4V3zm7 0h4v4h-4V3z' },
-              { key: 'month', label: 'Mes', icon: 'M3 10h18M3 14h18M3 18h18M3 22h18' },
-              { key: 'calendar', label: 'Personalizado', icon: 'M3 8h18V6a1 1 0 00-1-1H4a1 1 0 00-1 1v2zm0 0v12a1 1 0 001 1h16a1 1 0 001-1V8H3z' }
-            ].map(m => (
-              <button key={m.key} onClick={() => setViewMode(m.key)} style={{
-                padding: '5px 12px', borderRadius: 7, border: 'none',
-                background: viewMode === m.key ? `linear-gradient(135deg, ${COLORS.primary}, #7f1028)` : 'transparent',
-                color: viewMode === m.key ? '#fff' : COLORS.textDim,
-                cursor: 'pointer', fontSize: 11, fontFamily: "'Inter', sans-serif",
-                transition: 'all 0.2s', fontWeight: viewMode === m.key ? 500 : 400,
-                display: 'flex', alignItems: 'center', gap: 4
-              }}>
-                {viewMode === m.key && (
-                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                    <polyline points="20 6 9 17 4 12" />
-                  </svg>
-                )}
-                {m.label}
-              </button>
-            ))}
-          </div>
-          <RippleButton onClick={() => { setEditHabit(null); setShowForm(true); }} style={{
-            padding: '7px 14px', borderRadius: 8, border: 'none',
-            background: `linear-gradient(135deg, ${COLORS.primary}, #7f1028)`, color: '#fff',
-            fontSize: 12, fontFamily: "'Inter', sans-serif", cursor: 'pointer',
-            display: 'flex', alignItems: 'center', gap: 5, fontWeight: 500,
-            boxShadow: `0 2px 8px ${COLORS.primary}30`
-          }}>
-            <Plus size={14} /> Nuevo
-          </RippleButton>
+    <div className="habits-minimal-view">
+      <header className="habits-minimal-header">
+        <div>
+          <h2>Mis hábitos</h2>
+          <p>Pequeñas acciones diarias, grandes resultados.</p>
         </div>
-      </div>
-
-      <div style={{
-        display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-        marginBottom: viewMode === 'calendar' ? 14 : 16, flexWrap: 'wrap', gap: 8
-      }}>
-        <div className="habits-date-row" style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-          <button onClick={() => navigate(-1)} style={{
-            width: 28, height: 28, borderRadius: 8,
-            background: 'transparent', border: 'none',
-            color: COLORS.textDim, cursor: 'pointer',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            transition: 'all 0.15s'
-          }}>
-            <ChevronLeft size={16} />
+        <div className="habits-header-actions">
+          <button
+            className="habits-date-picker"
+            onClick={() => setViewMode(viewMode === 'calendar' ? 'week' : 'calendar')}
+            aria-expanded={viewMode === 'calendar'}
+          >
+            <Calendar size={18} strokeWidth={1.7} />
+            <span>{weekLabel.replace(' - ', ' – ')}</span>
           </button>
-          <span style={{
-            fontSize: 14, color: COLORS.text, fontFamily: "'Inter', sans-serif",
-            fontWeight: 500, margin: '0 4px', minWidth: 140, textAlign: 'center'
-          }}>
-            {viewMode === 'week' ? weekLabel : viewMode === 'month' ? monthLabel : formatRangeLabel()}
-          </span>
-          <button onClick={() => navigate(1)} style={{
-            width: 28, height: 28, borderRadius: 8,
-            background: 'transparent', border: 'none',
-            color: COLORS.textDim, cursor: 'pointer',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            transition: 'all 0.15s'
-          }}>
-            <ChevronRight size={16} />
+          <button className="habits-nav-button" onClick={() => {
+            const previousWeek = new Date(baseDate);
+            previousWeek.setDate(previousWeek.getDate() - 7);
+            setBaseDate(previousWeek);
+            setViewMode('week');
+          }} aria-label="Semana anterior">
+            <ChevronLeft size={20} strokeWidth={1.7} />
           </button>
-          <button onClick={goToToday} style={{
-            padding: '4px 12px', borderRadius: 6, border: `1px solid ${COLORS.border}`,
-            background: 'transparent', color: COLORS.textDim, cursor: 'pointer',
-            fontSize: 10, fontFamily: "'Inter', sans-serif", fontWeight: 500,
-            transition: 'all 0.15s', marginLeft: 4
-          }}>Hoy</button>
+          <button className="habits-nav-button" onClick={() => {
+            const nextWeek = new Date(baseDate);
+            nextWeek.setDate(nextWeek.getDate() + 7);
+            setBaseDate(nextWeek);
+            setViewMode('week');
+          }} aria-label="Semana siguiente">
+            <ChevronRight size={20} strokeWidth={1.7} />
+          </button>
+          <button className="habits-new-button" onClick={() => { setEditHabit(null); setShowForm(true); }}>
+            <Plus size={17} strokeWidth={1.8} />
+            Nuevo hábito
+          </button>
         </div>
-        {viewMode !== 'calendar' && (
-          <div style={{ display: 'flex', gap: 3, alignItems: 'center' }}>
-            {[7, 14, 30, 60].map(n => (
-              <button key={n} onClick={() => handleDateRangeChange(n)} style={{
-                padding: '4px 10px', borderRadius: 6, border: 'none',
-                background: isRangeActive(n) ? `linear-gradient(135deg, ${COLORS.primary}, #7f1028)` : 'transparent',
-                color: isRangeActive(n) ? '#fff' : COLORS.textDim + '99',
-                cursor: 'pointer', fontSize: 10, fontFamily: "'Inter', sans-serif",
-                fontWeight: isRangeActive(n) ? 500 : 400,
-                transition: 'all 0.2s'
-              }}>{n}d</button>
-            ))}
-          </div>
-        )}
-      </div>
+      </header>
 
-      {viewMode === 'calendar' && <CalendarPicker />}
+      {viewMode === 'calendar' && (
+        <div className="habits-calendar-panel">
+          <CalendarPicker />
+        </div>
+      )}
 
-      <div className="habits-filter-row" style={{ display: 'flex', flexWrap: 'wrap', gap: 5, marginBottom: 18 }}>
+      <div className="habits-minimal-filters" role="tablist" aria-label="Categorías de hábitos">
         {[
-          { id: 'all', label: 'Todos', icon: '', color: COLORS.primary },
+          { id: 'all', label: 'Todos' },
           ...CATEGORIES
         ].map(c => (
-          <button key={c.id} onClick={() => setFilter(c.id)} style={{
-            padding: '5px 14px', borderRadius: 20, border: 'none',
-            background: filter === c.id ? `${c.color}20` : 'transparent',
-            color: filter === c.id ? c.color : COLORS.textDim + 'aa',
-            cursor: 'pointer', fontSize: 11, fontFamily: "'Inter', sans-serif",
-            fontWeight: filter === c.id ? 600 : 400, transition: 'all 0.2s',
-            border: filter === c.id ? `1px solid ${c.color}40` : `1px solid transparent`
-          }}>{c.icon && <span className="fire-emoji" style={{ marginRight: 4 }}>{c.icon}</span>}{c.label}</button>
+          <button
+            key={c.id}
+            className={filter === c.id ? 'is-active' : ''}
+            onClick={() => setFilter(c.id)}
+            role="tab"
+            aria-selected={filter === c.id}
+          >
+            {c.label}
+          </button>
         ))}
       </div>
 
-      <div style={{ display: 'grid', gap: 16 }}>
-        {filtered.map((h, i) => {
+      <section className="habits-minimal-metrics" aria-label="Resumen de hábitos">
+        {[
+          { label: 'Racha global', value: `${globalStreak} ${globalStreak === 1 ? 'día' : 'días'}` },
+          { label: 'Cumplimiento semanal', value: `${weeklyCompletion}%` },
+          { label: 'Meta mensual', value: `${monthlyCompletion}%` },
+          { label: 'Hábitos activos', value: activeHabits.length }
+        ].map(metric => (
+          <div key={metric.label} className="habits-metric">
+            <span>{metric.label}</span>
+            <strong>{metric.value}</strong>
+          </div>
+        ))}
+      </section>
+
+      <div className="habits-minimal-list">
+        <div className="habits-minimal-table-header" aria-hidden="true">
+          <span>Hábito</span>
+          <div className="habits-week-heading">
+            <span>Esta semana</span>
+            <div>{dayNames.map(day => <small key={day}>{day.charAt(0).toUpperCase()}</small>)}</div>
+          </div>
+          <span>Racha</span>
+          <span>Progreso</span>
+          <span>Estado</span>
+          <span />
+        </div>
+
+        {filtered.map(h => {
           const cat = getCategoryInfo(h.category);
           const streak = getCurrentStreak(h.id, records, h);
-          const bestStreak = getBestStreak(h.id, records, h);
-          const rangeDays = Math.max(1, Math.ceil((new Date(dateRange.end + 'T00:00:00') - new Date(dateRange.start + 'T00:00:00')) / 86400000));
-          const rate = getCompletionRate(h.id, records, rangeDays, h);
-          const metaPct = Math.min(100, Math.round((streak / h.targetStreak) * 100));
           const todayRec = records.find(r => r.habitId === h.id && r.date === toYYYYMMDD(new Date()));
-          const isTodayComplete = todayRec && todayRec.completed;
-          const isTodaySkipped = todayRec && todayRec.skipped;
+          const isTodayComplete = !!todayRec?.completed;
+          const scheduledDays = weekDays.filter(day => isExpectedDay(h, day.date));
+          const completedDays = scheduledDays.filter(day =>
+            records.some(record => record.habitId === h.id && record.date === day.date && record.completed)
+          );
+          const weekProgress = scheduledDays.length ? Math.round((completedDays.length / scheduledDays.length) * 100) : 0;
+          const HabitIcon = getHabitIconComponent(h);
+          const statusLabel = !h.active ? 'Pausado' : isTodayComplete ? 'Hecho' : 'En progreso';
 
           return (
-            <div key={h.id} className="habit-card" style={{
-              background: COLORS.card, borderRadius: 16,
-              padding: 20, opacity: h.active ? 1 : 0.4,
-              border: `1px solid ${COLORS.border}`,
-              transition: 'all 0.2s',
-              animation: `fadeIn 0.35s ease-out ${i * 50}ms both`,
-              position: 'relative'
-            }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 16 }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
-                  <div style={{
-                    width: 38, height: 38, borderRadius: 10,
-                    background: `linear-gradient(135deg, ${cat.color}25, ${cat.color}10)`,
-                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    fontSize: 20, border: `1px solid ${cat.color}15`
-                  }}><span className="fire-emoji">{h.icon}</span></div>
-                  <div>
-                    <div style={{ fontSize: 15, color: COLORS.text, fontWeight: 600, fontFamily: "'Inter', sans-serif", letterSpacing: '-0.01em' }}>{h.name}</div>
-                    <div style={{
-                      fontSize: 10, color: cat.color, marginTop: 3,
-                      fontFamily: "'Inter', sans-serif", fontWeight: 500,
-                      background: `${cat.color}12`, padding: '1px 7px', borderRadius: 4,
-                      display: 'inline-block'
-                    }}>
-                      <span className="fire-emoji">{cat.icon}</span> {cat.label}
-                    </div>
-                    {h.frequency === 'Personalizado' && h.frequencyDays?.length > 0 && (
-                      <div style={{
-                        marginTop: 5, fontSize: 10, color: COLORS.primary,
-                        fontFamily: "'Inter', sans-serif", fontWeight: 700,
-                        letterSpacing: '0.03em'
-                      }}>
-                        Programado: {h.frequencyDays.map(d => DAY_LABELS[d]).join(' · ')}
-                      </div>
-                    )}
-                  </div>
-                </div>
-                <div style={{ display: 'flex', gap: 4, alignItems: 'center' }}>
-                  {isTodaySkipped ? (
-                    <button onClick={() => onCompleteHabit(h.id)} style={{
-                      padding: '3px 8px', borderRadius: 6, border: `1px solid ${COLORS.success}50`,
-                      background: `${COLORS.success}12`, cursor: 'pointer',
-                      fontSize: 10, fontFamily: "'Inter', sans-serif", color: COLORS.success,
-                      display: 'flex', alignItems: 'center', gap: 3, fontWeight: 500
-                    }}>
-                      <Check size={10} /> Hacer
-                    </button>
-                  ) : isTodayComplete ? (
-                    <button onClick={() => onCompleteHabit(h.id)} style={{
-                      padding: '3px 8px', borderRadius: 6, border: `1px solid ${COLORS.success}40`,
-                      background: `${COLORS.success}20`, cursor: 'pointer',
-                      fontSize: 10, fontFamily: "'Inter', sans-serif", color: COLORS.success,
-                      display: 'flex', alignItems: 'center', gap: 3, fontWeight: 500
-                    }}>
-                      <Check size={10} /> Hecho
-                    </button>
-                  ) : (
-                    <button onClick={() => onCompleteHabit(h.id)} style={{
-                      padding: '3px 8px', borderRadius: 6, border: `1px solid ${COLORS.border}`,
-                      background: 'transparent', cursor: 'pointer',
-                      fontSize: 10, fontFamily: "'Inter', sans-serif", color: COLORS.textDim,
-                      display: 'flex', alignItems: 'center', gap: 3, fontWeight: 500
-                    }}>
-                      <Check size={10} /> Hoy
-                    </button>
+            <article key={h.id} className={`habits-minimal-row ${h.active ? '' : 'is-paused'}`}>
+              <div className="habit-row-main">
+                <div className="habit-line-icon"><HabitIcon size={29} strokeWidth={1.55} /></div>
+                <div>
+                  <strong>{h.name}</strong>
+                  <span><i />{cat.label}</span>
+                  {h.frequency === 'Personalizado' && h.frequencyDays?.length > 0 && (
+                    <small>{h.frequencyDays.map(day => DAY_LABELS[day]).join(' · ')}</small>
                   )}
-                  {!isTodayComplete && !isTodaySkipped && (
-                    <button className="habit-skip-mobile" onClick={() => {
-                      const today = toYYYYMMDD(new Date());
-                      onUpdateRecord(h.id, today, { skipped: true, completed: false });
-                    }} style={{
-                      padding: '3px 6px', borderRadius: 6, border: 'none',
-                      background: 'transparent', cursor: 'pointer',
-                      fontSize: 10, fontFamily: "'Inter', sans-serif", color: COLORS.textDim + '99',
-                      display: 'flex', alignItems: 'center', gap: 2
-                    }}>
-                      <span style={{ fontSize: 12 }}>-</span>
+                </div>
+              </div>
+
+              <div className="habit-week-dots" aria-label={`Cumplimiento semanal de ${h.name}`}>
+                {weekDays.map(day => {
+                  const scheduled = isExpectedDay(h, day.date);
+                  const complete = records.some(record => record.habitId === h.id && record.date === day.date && record.completed);
+                  const clickable = day.isToday && scheduled && h.active;
+                  return (
+                    <button
+                      key={day.date}
+                      className={`${complete ? 'is-complete' : ''} ${scheduled ? '' : 'is-unscheduled'} ${day.isToday ? 'is-today' : ''}`}
+                      onClick={clickable ? () => onCompleteHabit(h.id) : undefined}
+                      disabled={!clickable}
+                      aria-label={`${day.label} ${complete ? 'completado' : scheduled ? 'pendiente' : 'no programado'}`}
+                    />
+                  );
+                })}
+              </div>
+
+              <div className="habit-row-streak">
+                <span className="mobile-field-label">Racha</span>
+                {streak} {streak === 1 ? 'día' : 'días'}
+              </div>
+
+              <div className="habit-row-progress">
+                <span className="mobile-field-label">Progreso</span>
+                <div>
+                  <span><i style={{ width: `${weekProgress}%` }} /></span>
+                  <b>{weekProgress}%</b>
+                </div>
+              </div>
+
+              <button
+                className={`habit-row-status ${isTodayComplete ? 'is-complete' : ''}`}
+                onClick={() => h.active && isExpectedDay(h, today) && onCompleteHabit(h.id)}
+                disabled={!h.active || !isExpectedDay(h, today)}
+              >
+                <i />
+                {statusLabel}
+              </button>
+
+              <div className="habit-row-actions">
+                <button
+                  className="habit-more-button"
+                  onClick={() => setActionMenu(actionMenu === h.id ? null : h.id)}
+                  aria-label={`Acciones para ${h.name}`}
+                  aria-expanded={actionMenu === h.id}
+                >
+                  <MoreHorizontal size={21} />
+                </button>
+                {actionMenu === h.id && (
+                  <div className="habit-actions-menu">
+                    <button onClick={() => { setViewHabit(h); setActionMenu(null); }}><Eye size={15} /> Ver</button>
+                    <button onClick={() => { handleEdit(h); setActionMenu(null); }}><Edit size={15} /> Editar</button>
+                    <button onClick={() => { onToggleHabit(h.id); setActionMenu(null); }}>
+                      {h.active ? <EyeOff size={15} /> : <Eye size={15} />}
+                      {h.active ? 'Pausar' : 'Activar'}
                     </button>
-                  )}
-                  {[
-                    { icon: h.active ? <Eye size={11} /> : <EyeOff size={11} />, onClick: () => onToggleHabit(h.id), color: h.active ? COLORS.success : COLORS.textDim },
-                    { icon: <Edit size={11} />, onClick: () => handleEdit(h), color: COLORS.textDim },
-                    { icon: <Trash2 size={11} />, onClick: () => handleDelete(h), color: COLORS.textDim }
-                  ].map((btn, bi) => (
-                    <button key={bi} onClick={btn.onClick} style={{
-                      width: 26, height: 26, borderRadius: 6, border: 'none',
-                      background: 'transparent', cursor: 'pointer',
-                      display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      color: btn.color, transition: 'all 0.15s'
-                    }}><span className="fire-emoji">{btn.icon}</span></button>
-                  ))}
-                </div>
-              </div>
-
-              {viewMode !== 'calendar' && renderDayGrid(h)}
-
-              <div className="habit-stats-grid" style={{
-                display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 6,
-                marginBottom: 12
-              }}>
-                {[
-                  { label: 'Racha', icon: '\u{1F525}', value: streak, color: COLORS.alert },
-                  { label: 'Mejor', icon: '\u{1F3C6}', value: bestStreak, color: COLORS.primary },
-                  { label: viewMode === 'calendar' ? 'Rango' : 'Este mes', icon: '\u{1F4C5}', value: `${Math.round(rate * 100)}%`, color: COLORS.success },
-                  { label: 'Meta', icon: '\u{1F3AF}', value: `${metaPct}%`, color: COLORS.secondary }
-                ].map((stat, si) => (
-                  <div key={si} style={{
-                    background: COLORS.bg, borderRadius: 8,
-                    padding: '8px 6px', textAlign: 'center'
-                  }}>
-                    <div style={{ fontSize: 9, color: COLORS.textDim + 'aa', marginBottom: 3, fontFamily: "'Inter', sans-serif", fontWeight: 500 }}><span className="fire-emoji">{stat.icon}</span> {stat.label}</div>
-                    <div style={{ fontSize: 17, color: stat.color, fontFamily: "'Inter', sans-serif", fontWeight: 700, letterSpacing: '-0.02em' }}>{stat.value}</div>
+                    <button className="is-danger" onClick={() => { handleDelete(h); setActionMenu(null); }}><Trash2 size={15} /> Eliminar</button>
                   </div>
-                ))}
+                )}
               </div>
-
-              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                <div style={{
-                  flex: 1, height: 5, background: COLORS.bg, borderRadius: 3,
-                  overflow: 'hidden', position: 'relative'
-                }}>
-                  <div style={{
-                    width: `${metaPct}%`, height: '100%', borderRadius: 3,
-                    background: `linear-gradient(90deg, ${COLORS.primary}, ${COLORS.secondary})`,
-                    transition: 'width 0.8s cubic-bezier(0.4, 0, 0.2, 1)'
-                  }} />
-                </div>
-                <div style={{
-                  fontSize: 10, color: COLORS.textDim + 'cc',
-                  fontFamily: "'Inter', sans-serif", fontWeight: 500,
-                  minWidth: 44, textAlign: 'right',
-                  background: COLORS.bg, padding: '2px 8px', borderRadius: 4
-                }}>
-                  {streak}/{h.targetStreak} días
-                </div>
-              </div>
-            </div>
+            </article>
           );
         })}
         {filtered.length === 0 && (
-          <div style={{ textAlign: 'center', padding: '60px 20px', color: COLORS.textDim, background: COLORS.card, borderRadius: 16, border: `1px dashed ${COLORS.border}` }}>
-            <div style={{ fontSize: 40, marginBottom: 12, opacity: 0.5 }}>{'\u{1F4CB}'}</div>
-            <div style={{ fontSize: 14, fontFamily: "'Inter', sans-serif", fontWeight: 500, marginBottom: 4 }}>No hay hábitos aquí aún</div>
-            <div style={{ fontSize: 12, fontFamily: "'Inter', sans-serif", color: COLORS.textDim + '99' }}>Crea tu primer hábito para empezar</div>
+          <div className="habits-minimal-empty">
+            <Target size={30} strokeWidth={1.4} />
+            <strong>No hay hábitos en esta categoría</strong>
+            <span>Crea uno nuevo o elige otro filtro.</span>
+            <button onClick={() => { setEditHabit(null); setShowForm(true); }}>Nuevo hábito</button>
           </div>
         )}
       </div>
@@ -5751,8 +6379,32 @@ const HabitsView = ({ data, onAddHabit, onUpdateHabit, onDeleteHabit, onToggleHa
           onCancel={() => { setShowForm(false); setEditHabit(null); }} />
       </Modal>
 
+      <Modal isOpen={!!viewHabit} onClose={() => setViewHabit(null)} title="Detalle del hábito">
+        {viewHabit && (() => {
+          const cat = getCategoryInfo(viewHabit.category);
+          const HabitIcon = getHabitIconComponent(viewHabit);
+          const streak = getCurrentStreak(viewHabit.id, records, viewHabit);
+          const best = getBestStreak(viewHabit.id, records, viewHabit);
+          const monthRate = Math.round(getCompletionRate(viewHabit.id, records, 30, viewHabit) * 100);
+          return (
+            <div className="habit-detail-minimal">
+              <HabitIcon size={34} strokeWidth={1.5} />
+              <h3>{viewHabit.name}</h3>
+              <p><i />{cat.label}</p>
+              <dl>
+                <div><dt>Frecuencia</dt><dd>{viewHabit.frequency}</dd></div>
+                <div><dt>Racha actual</dt><dd>{streak} días</dd></div>
+                <div><dt>Mejor racha</dt><dd>{best} días</dd></div>
+                <div><dt>Últimos 30 días</dt><dd>{monthRate}%</dd></div>
+              </dl>
+              <button onClick={() => { setViewHabit(null); handleEdit(viewHabit); }}>Editar hábito</button>
+            </div>
+          );
+        })()}
+      </Modal>
+
       <ConfirmModal isOpen={!!confirmDelete} title="Eliminar Hábito"
-        message={`¿estás seguro de eliminar "${confirmDelete?.name}"? Se perdern todos sus registros.`}
+        message={`¿Estás seguro de eliminar "${confirmDelete?.name}"? Se perderán todos sus registros.`}
         danger onConfirm={() => { onDeleteHabit(confirmDelete.id); setConfirmDelete(null); }}
         onCancel={() => setConfirmDelete(null)} />
     </div>
