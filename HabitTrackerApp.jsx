@@ -6796,6 +6796,7 @@ const HabitsView = ({ data, onAddHabit, onUpdateHabit, onDeleteHabit, onToggleHa
     return { start: toYYYYMMDD(start), end: toYYYYMMDD(end) };
   });
   const [calSelect, setCalSelect] = useState(null);
+  const dayNames = WEEKDAY_META.map(day => day.label);
 
   const getWeekDays = (ref) => {
     const monday = getWeekStart(ref, 'monday');
