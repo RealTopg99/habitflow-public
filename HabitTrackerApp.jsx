@@ -6,7 +6,7 @@ const {
 } = Recharts;
 const {
   Activity, Check, Edit, Flame, Menu, Plus, Settings, Trash2,
-  User, X, Target, TrendingUp, Download, Upload, AlertTriangle,
+  User, X, Target, TrendingUp, Download, Upload, AlertTriangle, AlertCircle,
   Sparkles, Eye, EyeOff, BarChart3, Calendar, BookOpen,
   Clock, Play, Pause, StopCircle, Award, ChevronLeft, ChevronRight,
   Dumbbell, SkipBack, SkipForward, Timer, Repeat, Maximize, Minimize,
