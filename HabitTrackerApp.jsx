@@ -12443,7 +12443,7 @@ const AgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAgendaTo
   const [editingTodoLabelId, setEditingTodoLabelId] = useState(null);
   const [deleteChoiceTask, setDeleteChoiceTask] = useState(null);
   const [showNewTaskCategory, setShowNewTaskCategory] = useState(false);
-  const [newTaskCategory, setNewTaskCategory] = useState({ name: '', color: COLORS.primary, icon: '' });
+  const [newTaskCategory, setNewTaskCategory] = useState({ name: '', color: COLORS.primary });
   const dragRef = useRef(null);
 
   const s = { fontFamily: "'Inter', sans-serif" };
@@ -12521,20 +12521,19 @@ const AgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAgendaTo
     if (existing) {
       setEditModalTask(prev => ({ ...prev, category: existing.name }));
       setShowNewTaskCategory(false);
-      setNewTaskCategory({ name: '', color: COLORS.primary, icon: '' });
+      setNewTaskCategory({ name: '', color: COLORS.primary });
       return;
     }
     const category = {
       id: `agenda_cat_${Date.now().toString(36)}_${slugifyAgendaCategory(name)}`,
       name,
       color: newTaskCategory.color || COLORS.primary,
-      icon: String(newTaskCategory.icon || '').trim(),
       createdAt: new Date().toISOString()
     };
     onUpdateAgendaTaskCategories?.(prev => [...(prev || []), category]);
     setEditModalTask(prev => ({ ...prev, category: category.name }));
     setShowNewTaskCategory(false);
-    setNewTaskCategory({ name: '', color: COLORS.primary, icon: '' });
+    setNewTaskCategory({ name: '', color: COLORS.primary });
   };
 
   const goPrev = () => {
@@ -13546,7 +13545,7 @@ const AgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAgendaTo
                     {newTaskCategory.name.trim() || 'Vista previa'}
                   </span>
                 </div>
-                <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0,1fr) 44px minmax(0,0.75fr) auto', gap: 8, alignItems: 'center' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0,1fr) 44px auto', gap: 8, alignItems: 'center' }}>
                   <input
                     value={newTaskCategory.name}
                     onChange={e => setNewTaskCategory(prev => ({ ...prev, name: e.target.value }))}
@@ -13559,12 +13558,6 @@ const AgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAgendaTo
                     onChange={e => setNewTaskCategory(prev => ({ ...prev, color: e.target.value }))}
                     aria-label="Color de la categoría"
                     style={{ width: 44, height: 34, padding: 3, borderRadius: 8, border: `1px solid ${COLORS.border}`, background: COLORS.bg, cursor: 'pointer' }}
-                  />
-                  <input
-                    value={newTaskCategory.icon || ''}
-                    onChange={e => setNewTaskCategory(prev => ({ ...prev, icon: e.target.value }))}
-                    placeholder="Icono opcional"
-                    style={{ width: '100%', minWidth: 0, padding: '8px 10px', borderRadius: 8, border: `1px solid ${COLORS.border}`, background: COLORS.bg, color: COLORS.text, fontSize: 11, ...s, outline: 'none', boxSizing: 'border-box' }}
                   />
                   <button type="button" onClick={saveTaskCategory} disabled={!newTaskCategory.name.trim()}
                     style={{ ...btnBase, padding: '8px 12px', background: newTaskCategory.name.trim() ? COLORS.primary : COLORS.border, color: '#fff', fontWeight: 800, fontSize: 10, opacity: newTaskCategory.name.trim() ? 1 : 0.55 }}>
