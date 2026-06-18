@@ -3525,6 +3525,33 @@ const injectStyles = () => {
         width: 100% !important;
         max-width: 100% !important;
       }
+      .finance-pro-header,
+      .finance-header-actions,
+      .finance-summary-grid,
+      .finance-bottom-grid {
+        display: grid !important;
+        grid-template-columns: 1fr !important;
+        gap: 12px !important;
+        width: 100% !important;
+        max-width: 100% !important;
+      }
+      .finance-header-actions label,
+      .finance-header-actions button {
+        width: 100% !important;
+      }
+      .finance-dashboard-pro {
+        padding-bottom: 84px !important;
+      }
+      .finance-dashboard-pro .recharts-wrapper,
+      .finance-dashboard-pro .recharts-surface {
+        max-width: 100% !important;
+      }
+      .finance-quick-actions {
+        margin-left: -6px !important;
+        margin-right: -6px !important;
+        padding-left: 6px !important;
+        padding-right: 6px !important;
+      }
       .finance-card {
         padding: 16px !important;
         border-radius: 18px !important;
@@ -8030,12 +8057,19 @@ const FinanceView = ({ data, onUpdateFinance }) => {
   const accountChartData = accountBalances.map(a => ({ name: a.name, balance: a.current }));
   const financeSections = [
     { id: 'overview', label: 'Resumen', icon: BarChart3 },
-    { id: 'movements', label: 'Movimientos', icon: List },
+    { id: 'movements', label: 'Transacciones', icon: List },
     { id: 'accounts', label: 'Cuentas', icon: CreditCard },
     { id: 'budget', label: 'Presupuesto', icon: Target },
     { id: 'recurring', label: 'Recurrentes', icon: Repeat },
     { id: 'subscriptions', label: 'Suscripciones', icon: CreditCard }
   ];
+  const visibleFinanceSections = financeSections.filter(item => ['overview', 'movements', 'accounts', 'budget'].includes(item.id));
+  const monthPickerOptions = Array.from({ length: 12 }, (_, offset) => {
+    const d = new Date();
+    d.setMonth(d.getMonth() - offset);
+    const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+    return { key, label: d.toLocaleDateString('es-CO', { month: 'long', year: 'numeric' }) };
+  });
 
   const insights = [
     budgetPct > 90  ? `Alerta: ya usaste ${budgetPct}% del presupuesto mensual.` : `Presupuesto sano: vas en ${budgetPct}% del mes.`,
@@ -8237,6 +8271,643 @@ const FinanceView = ({ data, onUpdateFinance }) => {
   };
 
   const removeSubscription = (id) => onUpdateFinance(prev => ({ ...prev, subscriptions: (prev.subscriptions || []).filter(item => item.id !== id) }));
+
+  const previousMonthDate = new Date(monthDate);
+  previousMonthDate.setMonth(previousMonthDate.getMonth() - 1);
+  const previousMonthKey = `${previousMonthDate.getFullYear()}-${String(previousMonthDate.getMonth() + 1).padStart(2, '0')}`;
+  const getMonthTotals = (key) => {
+    const items = transactions.filter(t => (t.date || '').startsWith(key));
+    const inc = items.filter(t => t.type === 'income').reduce((sum, t) => sum + Number(t.amount || 0), 0);
+    const exp = items.filter(t => t.type === 'expense').reduce((sum, t) => sum + Number(t.amount || 0), 0);
+    return { income: inc, expenses: exp, balance: inc - exp };
+  };
+  const previousTotals = getMonthTotals(previousMonthKey);
+  const deltaPct = (current, previous) => {
+    if (!previous) return 0;
+    return Math.round(((current - previous) / Math.max(1, Math.abs(previous))) * 1000) / 10;
+  };
+  const monthLabel = monthDate.toLocaleDateString('es-CO', { month: 'long', year: 'numeric' });
+  const savings = Math.max(0, balance);
+  const positiveTrend = deltaPct(balance, previousTotals.balance);
+  const incomeTrend = deltaPct(income, previousTotals.income);
+  const expenseTrend = deltaPct(expenses, previousTotals.expenses);
+
+  const debtAccounts = accountBalances.filter(account => account.group === 'credit' || account.group === 'loan' || Number(account.current || 0) < 0);
+  const debtItems = debtAccounts.map((account, index) => {
+    const pending = Math.abs(Number(account.current || 0));
+    const total = Math.max(pending, Math.abs(Number(account.balance || 0)) * 1.65, pending * 1.35, 1);
+    const paid = Math.max(0, total - pending);
+    const pct = Math.min(100, Math.round((paid / total) * 100));
+    const dueDate = new Date(monthDate);
+    dueDate.setDate(Math.min(28, 5 + (index * 10)));
+    return { ...account, pending, total, paid, pct, dueDate };
+  });
+  const totalDebt = debtItems.reduce((sum, item) => sum + Number(item.pending || 0), 0);
+  const totalDebtBase = debtItems.reduce((sum, item) => sum + Number(item.total || 0), 0);
+  const debtPaidPct = totalDebtBase ? Math.round(((totalDebtBase - totalDebt) / totalDebtBase) * 100) : 0;
+
+  const displayDateBadge = (date) => {
+    const d = new Date(date);
+    return {
+      day: String(d.getDate()).padStart(2, '0'),
+      month: d.toLocaleDateString('es-CO', { month: 'short' }).replace('.', '').toUpperCase()
+    };
+  };
+  const daysUntil = (date) => Math.max(0, Math.ceil((new Date(date).setHours(12, 0, 0, 0) - new Date().setHours(12, 0, 0, 0)) / 86400000));
+  const paymentDateForDay = (day) => {
+    const d = new Date(monthDate);
+    d.setDate(Math.min(28, Math.max(1, Number(day || 1))));
+    return d;
+  };
+  const upcomingPayments = [
+    ...activeRecurring.map(item => ({
+      id: `rec_${item.id}`,
+      name: item.name,
+      subtitle: item.type === 'income' ? 'Ingreso recurrente' : 'Pago recurrente',
+      amount: Number(item.amount || 0),
+      type: item.type || 'expense',
+      date: paymentDateForDay(item.day || 1)
+    })),
+    ...activeSubscriptions.map(item => ({
+      id: `sub_${item.id}`,
+      name: item.name,
+      subtitle: item.category || 'Suscripcion',
+      amount: Number(item.amount || 0),
+      type: 'expense',
+      date: paymentDateForDay(item.day || 1)
+    })),
+    ...debtItems.map(item => ({
+      id: `debt_${item.id}`,
+      name: item.name,
+      subtitle: 'Pago de deuda',
+      amount: Math.max(0, item.pending * 0.08),
+      type: 'expense',
+      date: item.dueDate
+    }))
+  ].sort((a, b) => new Date(a.date) - new Date(b.date)).slice(0, 5);
+
+  const moneyFlowData = [
+    { name: 'Ingresos', value: Math.max(0, income), color: '#35C46A' },
+    { name: 'Gastos', value: Math.max(0, expenses), color: '#FF3F78' },
+    { name: 'Ahorros', value: Math.max(0, savings), color: '#5A9CFF' },
+    { name: 'Recurrentes', value: Math.max(0, recurringExpense + subscriptionsExpense), color: '#7B8089' }
+  ].filter(item => item.value > 0);
+  const moneyFlowTotal = moneyFlowData.reduce((sum, item) => sum + item.value, 0) || 1;
+  const categorySpendData = byCategory
+    .filter(item => item.value > 0)
+    .sort((a, b) => b.value - a.value)
+    .slice(0, 7)
+    .map(item => ({ ...item, share: expenses ? Math.round((item.value / expenses) * 100) : 0 }));
+  const recentTransactions = filteredTransactions.slice(0, 6);
+
+  const buildSparkPath = (values = []) => {
+    const cleanValues = values.length ? values.map(v => Number(v || 0)) : [0, 0, 0];
+    const min = Math.min(...cleanValues);
+    const max = Math.max(...cleanValues);
+    const range = max - min || 1;
+    return cleanValues.map((value, index) => {
+      const x = cleanValues.length === 1 ? 0 : (index / (cleanValues.length - 1)) * 100;
+      const y = 34 - ((value - min) / range) * 28;
+      return `${index ? 'L' : 'M'} ${x.toFixed(2)} ${y.toFixed(2)}`;
+    }).join(' ');
+  };
+
+  const metricSeries = cashFlow.map(item => Math.max(0, item.balance));
+  const financeMetrics = [
+    { label: 'Balance neto', value: money(netWorth), hint: 'vs mes anterior', trend: positiveTrend, color: COLORS.primary, series: metricSeries },
+    { label: 'Ingresos', value: money(income), hint: 'Este mes', trend: incomeTrend, color: '#35C46A', series: cashFlow.map(item => item.ingresos) },
+    { label: 'Gastos', value: money(expenses), hint: 'Este mes', trend: -Math.abs(expenseTrend), color: '#FF4D78', series: cashFlow.map(item => item.gastos) },
+    { label: 'Ahorros', value: money(savings), hint: `Tasa de ahorro ${Math.max(0, savingRate)}%`, trend: savingRate, color: '#35C46A', series: cashFlow.map(item => Math.max(0, item.balance)) },
+    { label: 'Deudas', value: money(totalDebt), hint: debtItems.length ? `En ${debtItems.length} deudas` : 'Sin deudas activas', trend: null, color: '#A7A7A7', series: debtItems.map(item => item.pending) }
+  ];
+
+  const proButtonStyle = {
+    border: 'none',
+    borderRadius: 12,
+    background: COLORS.primary,
+    color: '#fff',
+    padding: '12px 16px',
+    minHeight: 44,
+    fontWeight: 850,
+    cursor: 'pointer',
+    boxShadow: `0 14px 32px ${COLORS.primary}28`,
+    ...s
+  };
+  const ghostButtonStyle = {
+    border: `1px solid ${COLORS.border}`,
+    borderRadius: 12,
+    background: COLORS.bg,
+    color: COLORS.text,
+    padding: '11px 14px',
+    minHeight: 42,
+    fontWeight: 750,
+    cursor: 'pointer',
+    ...s
+  };
+  const financeCardStyle = {
+    background: `linear-gradient(145deg, rgba(19,23,31,0.94), rgba(10,12,17,0.98))`,
+    border: `1px solid ${COLORS.border}`,
+    borderRadius: 18,
+    padding: 18,
+    boxShadow: '0 18px 48px rgba(0,0,0,0.24), inset 0 1px 0 rgba(255,255,255,0.025)',
+    minWidth: 0,
+    overflow: 'hidden'
+  };
+  const progressBar = (pct, color = COLORS.primary) => (
+    <div style={{ height: 5, borderRadius: 999, background: 'rgba(255,255,255,0.07)', overflow: 'hidden' }}>
+      <div style={{ width: `${Math.min(100, Math.max(0, pct || 0))}%`, height: '100%', borderRadius: 999, background: color, transition: 'width 420ms ease' }} />
+    </div>
+  );
+  const sectionTitle = (title, action) => (
+    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, marginBottom: 14 }}>
+      <h3 style={{ margin: 0, fontSize: 17, fontFamily: "'DM Serif Display', serif", color: COLORS.text }}>{title}</h3>
+      {action}
+    </div>
+  );
+
+  const renderFinanceTabs = () => (
+    <div className="finance-section-tabs" style={{ display: 'flex', gap: 22, overflowX: 'auto', padding: '0 0 1px', borderBottom: `1px solid ${COLORS.border}` }}>
+      {visibleFinanceSections.map(tab => {
+        const Icon = tab.icon;
+        const active = section === tab.id;
+        return (
+          <button key={tab.id} onClick={() => setSection(tab.id)} style={{
+            border: 'none',
+            borderBottom: `2px solid ${active ? COLORS.primary : 'transparent'}`,
+            background: 'transparent',
+            color: active ? COLORS.text : COLORS.textDim,
+            padding: '14px 2px 13px',
+            minHeight: 42,
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: 8,
+            whiteSpace: 'nowrap',
+            cursor: 'pointer',
+            fontWeight: active ? 850 : 600,
+            ...s
+          }}>
+            <Icon size={14} style={{ color: active ? COLORS.primary : COLORS.textDim }} />
+            {tab.label}
+          </button>
+        );
+      })}
+      <select value={selectedMonth} onChange={e => setSelectedMonth(e.target.value)} style={{ ...inputStyle, marginLeft: 'auto', minWidth: 118, height: 34, padding: '0 9px', borderRadius: 10, fontSize: 12 }}>
+        {monthPickerOptions.slice(0, 6).map(item => <option key={item.key} value={item.key}>{item.label}</option>)}
+      </select>
+    </div>
+  );
+
+  const renderMoneyFlow = () => (
+    <div className="finance-summary-grid" style={{ display: 'grid', gridTemplateColumns: 'minmax(230px, 0.8fr) minmax(260px, 1.2fr)', gap: 24, alignItems: 'center', paddingTop: 18 }}>
+      <div style={{ minWidth: 0 }}>
+        <div style={{ height: 250, position: 'relative' }}>
+          <ResponsiveContainer width="100%" height="100%">
+            <PieChart>
+              <Pie data={moneyFlowData} dataKey="value" innerRadius="58%" outerRadius="82%" paddingAngle={3} animationDuration={700}>
+                {moneyFlowData.map(entry => <Cell key={entry.name} fill={entry.color} />)}
+              </Pie>
+              <Tooltip contentStyle={tooltipStyle} formatter={(value) => money(Number(value || 0))} />
+            </PieChart>
+          </ResponsiveContainer>
+          <div style={{ position: 'absolute', inset: 0, display: 'grid', placeItems: 'center', pointerEvents: 'none' }}>
+            <div style={{ textAlign: 'center' }}>
+              <div style={{ color: COLORS.text, fontSize: 20, fontWeight: 850, ...s }}>{money(balance)}</div>
+              <div style={{ color: COLORS.textDim, fontSize: 11, ...s }}>Balance neto</div>
+            </div>
+          </div>
+        </div>
+        <div style={{ display: 'grid', gap: 8 }}>
+          {moneyFlowData.map(item => (
+            <div key={item.name} style={{ display: 'grid', gridTemplateColumns: '1fr auto auto', gap: 10, alignItems: 'center', color: COLORS.textDim, fontSize: 12, ...s }}>
+              <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}><span style={{ width: 8, height: 8, borderRadius: 999, background: item.color }} />{item.name}</span>
+              <strong style={{ color: COLORS.text }}>{money(item.value)}</strong>
+              <span>{Math.round((item.value / moneyFlowTotal) * 100)}%</span>
+            </div>
+          ))}
+        </div>
+      </div>
+      <div style={{ minWidth: 0 }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+          <h4 style={{ margin: 0, color: COLORS.text, fontSize: 15, ...s }}>Gastos por categoria</h4>
+          <span style={{ color: COLORS.textDim, fontSize: 12, ...s }}>Este mes</span>
+        </div>
+        <div style={{ display: 'grid', gap: 11 }}>
+          {(categorySpendData.length ? categorySpendData : expenseCategories.slice(0, 5).map(cat => ({ ...cat, value: 0, share: 0 }))).map(item => (
+            <div key={item.id}>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr auto auto', gap: 10, alignItems: 'center', marginBottom: 7, color: COLORS.textDim, fontSize: 12, ...s }}>
+                <strong style={{ color: COLORS.text, fontSize: 12 }}>{item.name}</strong>
+                <span>{money(item.value || 0)}</span>
+                <span>{item.share || 0}%</span>
+              </div>
+              {progressBar(item.share || 0, COLORS.primary)}
+            </div>
+          ))}
+        </div>
+        <button onClick={() => setSection('budget')} style={{ ...ghostButtonStyle, marginTop: 18, width: '100%' }}>Ver informe completo <ArrowUp size={14} style={{ transform: 'rotate(45deg)', marginLeft: 6 }} /></button>
+      </div>
+    </div>
+  );
+
+  const renderQuickActions = () => {
+    const actions = [
+      { label: 'Nueva transacción', icon: Plus, run: () => setSection('movements') },
+      { label: 'Nuevo gasto', icon: ArrowDown, run: () => { setSection('movements'); setForm(f => ({ ...f, type: 'expense' })); } },
+      { label: 'Nuevo ingreso', icon: ArrowUp, run: () => { setSection('movements'); setForm(f => ({ ...f, type: 'income', category: 'income' })); } },
+      { label: 'Transferencia', icon: Repeat, run: () => setSection('movements') },
+      { label: 'Más acciones', icon: MoreHorizontal, run: () => setSection(section === 'recurring' ? 'subscriptions' : 'recurring') }
+    ];
+    return (
+      <div className="finance-quick-actions" style={{ display: 'grid', gridTemplateColumns: 'repeat(5, minmax(120px, 1fr))', gap: 8, overflowX: 'auto', padding: '10px 12px' }}>
+        {actions.map(action => {
+          const Icon = action.icon;
+          return (
+            <button key={action.label} onClick={action.run} style={{ ...ghostButtonStyle, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 9, minHeight: 42, flex: '0 0 auto', background: 'transparent' }}>
+              <Icon size={16} />
+              {action.label}
+            </button>
+          );
+        })}
+      </div>
+    );
+  };
+
+  const renderTransactionForm = () => (
+    <div style={{ display: 'grid', gap: 10 }}>
+      <div className="finance-form-row-4" style={{ display: 'grid', gridTemplateColumns: '0.72fr 1fr 1fr 1fr', gap: 10 }}>
+        <select value={form.type} onChange={e => setForm(f => ({ ...f, type: e.target.value, category: e.target.value === 'income' ? 'income' : (expenseCategories[0]?.id || 'food') }))} style={inputStyle}>
+          <option value="expense">Gasto</option>
+          <option value="income">Ingreso</option>
+        </select>
+        <FinanceMoneyInput value={form.amount} onChange={value => setForm(f => ({ ...f, amount: value }))} style={strongInputStyle} placeholder={`Monto ${transactionCurrency}`} />
+        <input value={form.payee} onChange={e => setForm(f => ({ ...f, payee: e.target.value }))} placeholder="Nombre o comercio" style={inputStyle} />
+        <input type="date" value={form.date} onChange={e => setForm(f => ({ ...f, date: e.target.value }))} style={inputStyle} />
+      </div>
+      <div className="finance-form-row-3" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1.2fr auto', gap: 10 }}>
+        <select value={form.accountId} onChange={e => setForm(f => ({ ...f, accountId: e.target.value }))} style={inputStyle}>
+          {accounts.map(account => <option key={account.id} value={account.id}>{account.name} ({normalizeCurrency(account.currency)})</option>)}
+        </select>
+        <select value={form.category} disabled={form.type === 'income'} onChange={e => setForm(f => ({ ...f, category: e.target.value }))} style={inputStyle}>
+          {(form.type === 'income' ? categories.filter(c => c.id === 'income') : expenseCategories).map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+        </select>
+        <input value={form.note} onChange={e => setForm(f => ({ ...f, note: e.target.value }))} placeholder="Nota opcional" style={inputStyle} />
+        <button onClick={addTransaction} style={proButtonStyle}>Agregar</button>
+      </div>
+    </div>
+  );
+
+  const renderMovementList = (items = filteredTransactions) => (
+    <div style={{ display: 'grid', gap: 10 }}>
+      {items.map(t => {
+        const category = catById(t.category);
+        const account = accountById(t.accountId);
+        const isIncome = t.type === 'income';
+        return (
+          <div key={t.id} className="finance-transaction-item" style={{ display: 'grid', gridTemplateColumns: 'minmax(0,1fr) auto auto', gap: 12, alignItems: 'center', padding: '12px 0', borderBottom: `1px solid ${COLORS.border}` }}>
+            <div style={{ minWidth: 0, display: 'flex', alignItems: 'center', gap: 12 }}>
+              <span style={{ width: 34, height: 34, borderRadius: 12, display: 'grid', placeItems: 'center', background: isIncome ? 'rgba(53,196,106,0.12)' : 'rgba(255,63,120,0.12)', color: isIncome ? '#35C46A' : COLORS.primary }}>
+                {isIncome ? <ArrowUp size={16} /> : <ArrowDown size={16} />}
+              </span>
+              <div style={{ minWidth: 0 }}>
+                <div style={{ color: COLORS.text, fontWeight: 850, fontSize: 13, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', ...s }}>{t.payee || category.name}</div>
+                <div style={{ color: COLORS.textDim, fontSize: 11, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', ...s }}>{isIncome ? 'Ingreso' : 'Gasto'} - {category.name} - {account.name}</div>
+              </div>
+            </div>
+            <div style={{ color: isIncome ? '#35C46A' : COLORS.primary, fontWeight: 900, textAlign: 'right', ...s }}>{isIncome ? '+' : '-'}{money(t.amount)}</div>
+            <button onClick={() => removeTransaction(t.id)} className="finance-icon-button" style={{ width: 34, height: 34, borderRadius: 11, border: `1px solid ${COLORS.border}`, background: COLORS.bg, color: COLORS.primary, cursor: 'pointer' }}><Trash2 size={14} /></button>
+          </div>
+        );
+      })}
+      {!items.length && <div style={{ color: COLORS.textDim, fontSize: 13, padding: 18, textAlign: 'center', ...s }}>No hay movimientos en este filtro.</div>}
+    </div>
+  );
+
+  const renderAccountsCompact = () => (
+    <div style={financeCardStyle}>
+      {sectionTitle('Cuentas', <button onClick={() => setSection('accounts')} style={{ ...ghostButtonStyle, minHeight: 34, padding: '8px 10px' }}>Ver todas <ChevronRight size={14} /></button>)}
+      <div style={{ display: 'grid', gap: 10 }}>
+        {accountBalances.slice(0, 4).map(account => (
+          <div key={account.id} style={{ display: 'grid', gridTemplateColumns: 'minmax(0,1fr) auto', gap: 12, alignItems: 'center', padding: '10px 0', borderBottom: `1px solid ${COLORS.border}` }}>
+            <div style={{ display: 'flex', gap: 10, alignItems: 'center', minWidth: 0 }}>
+              <span style={{ width: 34, height: 34, borderRadius: 12, display: 'grid', placeItems: 'center', background: 'rgba(255,63,120,0.12)', color: COLORS.primary }}><CreditCard size={16} /></span>
+              <div style={{ minWidth: 0 }}>
+                <div style={{ color: COLORS.text, fontWeight: 850, fontSize: 13, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', ...s }}>{account.name}</div>
+                <div style={{ color: COLORS.textDim, fontSize: 11, ...s }}>{account.tag?.name || groupLabel(account.group)}</div>
+              </div>
+            </div>
+            <strong style={{ color: account.current < 0 ? COLORS.primary : COLORS.text, ...s }}>{accountMoney(account.current, account.currency)}</strong>
+          </div>
+        ))}
+        <button onClick={() => setSection('accounts')} style={{ ...ghostButtonStyle, width: '100%' }}><Plus size={15} /> Agregar cuenta</button>
+      </div>
+    </div>
+  );
+
+  const renderDebtsCard = () => (
+    <div style={financeCardStyle}>
+      {sectionTitle('Deudas', <button onClick={() => setSection('accounts')} style={{ ...ghostButtonStyle, minHeight: 34, padding: '8px 10px' }}>Ver todas <ChevronRight size={14} /></button>)}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr auto', gap: 10, alignItems: 'end', marginBottom: 12 }}>
+        <div>
+          <div style={{ color: COLORS.textDim, fontSize: 12, ...s }}>Pendiente total</div>
+          <div style={{ color: COLORS.text, fontSize: 28, fontFamily: "'DM Serif Display', serif" }}>{money(totalDebt)}</div>
+        </div>
+        <div style={{ color: COLORS.textDim, fontSize: 12, ...s }}>{debtItems.length ? `En ${debtItems.length} deudas` : 'Sin deudas'}</div>
+      </div>
+      {progressBar(debtPaidPct, COLORS.primary)}
+      <div style={{ color: COLORS.textDim, fontSize: 12, marginTop: 8, marginBottom: 14, ...s }}>{debtPaidPct}% del total pagado</div>
+      <div style={{ display: 'grid', gap: 10 }}>
+        {(debtItems.length ? debtItems : []).slice(0, 3).map(item => (
+          <div key={item.id} style={{ padding: 12, borderRadius: 14, background: 'rgba(255,255,255,0.035)', border: `1px solid ${COLORS.border}` }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0,1fr) auto', gap: 12, marginBottom: 8 }}>
+              <div style={{ minWidth: 0 }}>
+                <strong style={{ color: COLORS.text, fontSize: 13, ...s }}>{item.name}</strong>
+                <div style={{ color: COLORS.textDim, fontSize: 11, ...s }}>Vence {item.dueDate.toLocaleDateString('es-CO', { day: '2-digit', month: 'short', year: 'numeric' })}</div>
+              </div>
+              <div style={{ textAlign: 'right', color: COLORS.text, fontWeight: 850, fontSize: 12, ...s }}>{money(item.pending)}<div style={{ color: COLORS.textDim, fontWeight: 600 }}>de {money(item.total)}</div></div>
+            </div>
+            {progressBar(item.pct, COLORS.primary)}
+            <div style={{ color: COLORS.primary, fontSize: 11, textAlign: 'right', marginTop: 6, ...s }}>{item.pct}%</div>
+          </div>
+        ))}
+        {!debtItems.length && <div style={{ color: COLORS.textDim, fontSize: 13, lineHeight: 1.6, ...s }}>Crea una cuenta tipo credito o deuda para verla aqui.</div>}
+      </div>
+      <button onClick={() => setSection('accounts')} style={{ ...ghostButtonStyle, marginTop: 14, width: '100%' }}>Ver todas mis deudas <ChevronRight size={14} /></button>
+    </div>
+  );
+
+  const renderUpcomingPayments = () => (
+    <div style={financeCardStyle}>
+      {sectionTitle('Proximos pagos', <button onClick={() => setSection('recurring')} style={{ ...ghostButtonStyle, minHeight: 34, padding: '8px 10px' }}>Ver calendario <ChevronRight size={14} /></button>)}
+      <div style={{ display: 'grid', gap: 10 }}>
+        {upcomingPayments.map(item => {
+          const badge = displayDateBadge(item.date);
+          return (
+            <div key={item.id} style={{ display: 'grid', gridTemplateColumns: '48px minmax(0,1fr) auto', gap: 12, alignItems: 'center', padding: '10px 0', borderBottom: `1px solid ${COLORS.border}` }}>
+              <div style={{ border: `1px solid ${COLORS.border}`, borderRadius: 12, padding: '6px 0', textAlign: 'center', color: COLORS.text }}>
+                <div style={{ fontSize: 18, fontWeight: 900, lineHeight: 1, ...s }}>{badge.day}</div>
+                <div style={{ fontSize: 9, color: COLORS.textDim, ...s }}>{badge.month}</div>
+              </div>
+              <div style={{ minWidth: 0 }}>
+                <div style={{ color: COLORS.text, fontWeight: 850, fontSize: 13, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', ...s }}>{item.name}</div>
+                <div style={{ color: COLORS.textDim, fontSize: 11, ...s }}>{item.subtitle}</div>
+              </div>
+              <div style={{ textAlign: 'right', color: item.type === 'income' ? '#35C46A' : COLORS.text, fontWeight: 850, fontSize: 12, ...s }}>
+                {money(item.amount)}
+                <div style={{ color: COLORS.primary, fontWeight: 650 }}>En {daysUntil(item.date)} dias</div>
+              </div>
+            </div>
+          );
+        })}
+        {!upcomingPayments.length && <div style={{ color: COLORS.textDim, fontSize: 13, ...s }}>No hay pagos proximos configurados.</div>}
+      </div>
+    </div>
+  );
+
+  const renderMainContent = () => {
+    if (section === 'movements') {
+      return (
+        <div style={{ paddingTop: 18 }}>
+          {renderTransactionForm()}
+          <div className="finance-filter-row" style={{ display: 'grid', gridTemplateColumns: '160px minmax(0,1fr)', gap: 10, marginTop: 14, marginBottom: 12 }}>
+            <select value={filterType} onChange={e => setFilterType(e.target.value)} style={inputStyle}>
+              <option value="all">Todos</option>
+              <option value="income">Ingresos</option>
+              <option value="expense">Gastos</option>
+            </select>
+            <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Buscar movimiento..." style={inputStyle} />
+          </div>
+          {renderMovementList(filteredTransactions)}
+        </div>
+      );
+    }
+    if (section === 'accounts') {
+      return (
+        <div style={{ paddingTop: 18, display: 'grid', gap: 18 }}>
+          <div className="finance-form-row-4" style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr 1fr 1fr auto', gap: 10 }}>
+            <input value={accountForm.name} onChange={e => setAccountForm(f => ({ ...f, name: e.target.value }))} placeholder="Nueva cuenta" style={inputStyle} />
+            <select value={accountForm.tagId} onChange={e => setAccountForm(f => ({ ...f, tagId: e.target.value }))} style={inputStyle}>
+              {accountTags.map(tag => <option key={tag.id} value={tag.id}>{tag.name}</option>)}
+              <option value="__new__">Crear etiqueta</option>
+            </select>
+            <select value={accountForm.currency} onChange={e => updateAccountFormCurrency(e.target.value)} style={inputStyle}>
+              <option value="USD">USD</option>
+              <option value="COP">COP</option>
+            </select>
+            <FinanceMoneyInput value={accountForm.balance} onChange={value => setAccountForm(f => ({ ...f, balance: value }))} style={inputStyle} placeholder={`Saldo inicial ${accountForm.currency}`} />
+            <button onClick={addAccount} style={proButtonStyle}>Agregar</button>
+          </div>
+          {accountForm.tagId === '__new__' && (
+            <div className="finance-form-row-3" style={{ display: 'grid', gridTemplateColumns: '1fr 180px', gap: 10 }}>
+              <input value={accountForm.customTag} onChange={e => setAccountForm(f => ({ ...f, customTag: e.target.value }))} placeholder="Etiqueta personalizada" style={inputStyle} />
+              <select value={accountForm.customGroup} onChange={e => setAccountForm(f => ({ ...f, customGroup: e.target.value }))} style={inputStyle}>
+                {ACCOUNT_GROUPS.map(group => <option key={group.id} value={group.id}>{group.label}</option>)}
+              </select>
+            </div>
+          )}
+          <div style={{ height: 260 }}>
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={accountChartData}>
+                <CartesianGrid strokeDasharray="3 3" stroke={COLORS.border} />
+                <XAxis dataKey="name" stroke={COLORS.textDim} tick={{ fontSize: 11 }} />
+                <YAxis stroke={COLORS.textDim} tickFormatter={(v) => money(v).replace(',00', '')} tick={{ fontSize: 11 }} />
+                <Tooltip contentStyle={tooltipStyle} formatter={(value) => money(Number(value || 0))} />
+                <Bar dataKey="balance" fill={COLORS.primary} radius={[8, 8, 0, 0]} animationDuration={700} />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+          <div style={{ display: 'grid', gap: 14 }}>
+            {groupedAccountBalances.map(group => (
+              <div key={group.id}>
+                <div style={{ color: COLORS.textDim, fontSize: 11, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 8, ...s }}>{group.label}</div>
+                <div style={{ display: 'grid', gap: 8 }}>
+                  {group.accounts.map(account => (
+                    <div key={account.id} style={{ display: 'grid', gridTemplateColumns: 'minmax(0,1fr) auto auto auto', gap: 10, alignItems: 'center', padding: 12, borderRadius: 14, background: 'rgba(255,255,255,0.035)', border: `1px solid ${COLORS.border}` }}>
+                      <div style={{ minWidth: 0 }}>
+                        <strong style={{ color: COLORS.text, ...s }}>{account.name}</strong>
+                        <div style={{ color: COLORS.textDim, fontSize: 11, ...s }}>{account.tag?.name || group.label}</div>
+                      </div>
+                      <select value={normalizeCurrency(account.currency)} onChange={e => updateAccountCurrency(account.id, e.target.value)} style={{ ...inputStyle, width: 86, minHeight: 34, padding: '4px 8px' }}>
+                        <option value="USD">USD</option>
+                        <option value="COP">COP</option>
+                      </select>
+                      <strong style={{ color: account.current < 0 ? COLORS.primary : COLORS.text, ...s }}>{accountMoney(account.current, account.currency)}</strong>
+                      <button onClick={() => removeAccount(account.id)} className="finance-icon-button" style={{ width: 34, height: 34, borderRadius: 11, border: `1px solid ${COLORS.border}`, background: COLORS.bg, color: COLORS.primary, cursor: 'pointer' }}><Trash2 size={14} /></button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      );
+    }
+    if (section === 'budget') {
+      return (
+        <div style={{ paddingTop: 18, display: 'grid', gap: 16 }}>
+          <div className="finance-form-row-3" style={{ display: 'grid', gridTemplateColumns: 'minmax(0,1fr) auto', gap: 10 }}>
+            <FinanceMoneyInput value={cleanDisplayValue(budget)} onChange={value => onUpdateFinance(prev => ({ ...prev, monthlyBudget: fromDisplayAmount(value) }))} style={strongInputStyle} placeholder="Presupuesto mensual" />
+            <button onClick={addCategory} style={proButtonStyle}>Guardar</button>
+          </div>
+          <div className="finance-form-row-3" style={{ display: 'grid', gridTemplateColumns: 'minmax(0,1fr) auto', gap: 10 }}>
+            <input value={catName} onChange={e => setCatName(e.target.value)} placeholder="Nueva categoria" style={inputStyle} />
+            <button onClick={addCategory} style={ghostButtonStyle}>Crear categoria</button>
+          </div>
+          {categorySpendData.concat(byCategory.filter(item => !categorySpendData.some(c => c.id === item.id))).map(item => (
+            <div key={item.id} style={{ padding: 14, borderRadius: 14, background: 'rgba(255,255,255,0.035)', border: `1px solid ${COLORS.border}` }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 150px auto', gap: 10, alignItems: 'center', marginBottom: 9 }}>
+                <div>
+                  <strong style={{ color: COLORS.text, ...s }}>{item.name}</strong>
+                  <div style={{ color: COLORS.textDim, fontSize: 12, ...s }}>{money(item.value || 0)} usados de {money(item.limit || 0)}</div>
+                </div>
+                <FinanceMoneyInput value={cleanDisplayValue(item.limit || 0)} onChange={value => updateBudget(item.id, value)} style={inputStyle} />
+                <button onClick={() => removeBudgetCategory(item.id)} className="finance-icon-button" style={{ width: 36, height: 36, borderRadius: 11, border: `1px solid ${COLORS.border}`, background: COLORS.bg, color: COLORS.primary, cursor: 'pointer' }}><Trash2 size={14} /></button>
+              </div>
+              {progressBar(item.limit ? Math.round((item.value / item.limit) * 100) : 0, COLORS.primary)}
+            </div>
+          ))}
+        </div>
+      );
+    }
+    if (section === 'recurring') {
+      return (
+        <div style={{ paddingTop: 18, display: 'grid', gap: 16 }}>
+          <div className="finance-form-row-4" style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr 130px 120px auto', gap: 10 }}>
+            <input value={recurringForm.name} onChange={e => setRecurringForm(f => ({ ...f, name: e.target.value }))} placeholder="Nombre del pago" style={inputStyle} />
+            <FinanceMoneyInput value={recurringForm.amount} onChange={value => setRecurringForm(f => ({ ...f, amount: value }))} style={inputStyle} placeholder="Monto" />
+            <input type="number" min="1" max="28" value={recurringForm.day} onChange={e => setRecurringForm(f => ({ ...f, day: e.target.value }))} style={inputStyle} />
+            <select value={recurringForm.type} onChange={e => setRecurringForm(f => ({ ...f, type: e.target.value }))} style={inputStyle}>
+              <option value="expense">Gasto</option>
+              <option value="income">Ingreso</option>
+            </select>
+            <button onClick={addRecurring} style={proButtonStyle}>Agregar</button>
+          </div>
+          <div className="finance-recurring-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: 12 }}>
+            {activeRecurring.map(item => (
+              <div key={item.id} style={{ padding: 14, borderRadius: 14, background: 'rgba(255,255,255,0.035)', border: `1px solid ${COLORS.border}` }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', gap: 10 }}>
+                  <div>
+                    <strong style={{ color: COLORS.text, ...s }}>{item.name}</strong>
+                    <div style={{ color: COLORS.textDim, fontSize: 12, ...s }}>Dia {item.day} - {catById(item.category).name}</div>
+                  </div>
+                  <strong style={{ color: item.type === 'income' ? '#35C46A' : COLORS.primary, ...s }}>{item.type === 'income' ? '+' : '-'}{money(item.amount)}</strong>
+                </div>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 40px', gap: 8, marginTop: 12 }}>
+                  <button onClick={() => payRecurring(item)} style={ghostButtonStyle}>Marcar pagado</button>
+                  <button onClick={() => removeRecurring(item.id)} className="finance-icon-button" style={{ width: 40, height: 40, borderRadius: 12, border: `1px solid ${COLORS.border}`, background: COLORS.bg, color: COLORS.primary }}><Trash2 size={14} /></button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      );
+    }
+    if (section === 'subscriptions') {
+      return (
+        <div style={{ paddingTop: 18, display: 'grid', gap: 16 }}>
+          <div className="finance-subscription-form" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 120px auto', gap: 10 }}>
+            <select value={subscriptionForm.serviceId} onChange={e => {
+              const service = SUBSCRIPTION_SERVICES.find(item => item.id === e.target.value) || SUBSCRIPTION_SERVICES[0];
+              setSubscriptionForm(f => ({ ...f, serviceId: service.id, name: service.name, category: service.category }));
+            }} style={inputStyle}>
+              {SUBSCRIPTION_SERVICES.map(service => <option key={service.id} value={service.id}>{service.name}</option>)}
+            </select>
+            <input value={subscriptionForm.name} onChange={e => setSubscriptionForm(f => ({ ...f, name: e.target.value }))} placeholder={selectedSubscriptionService?.name || 'Nombre'} style={inputStyle} />
+            <FinanceMoneyInput value={subscriptionForm.amount} onChange={value => setSubscriptionForm(f => ({ ...f, amount: value }))} style={inputStyle} placeholder={`Monto ${subscriptionCurrency}`} />
+            <input type="number" min="1" max="28" value={subscriptionForm.day} onChange={e => setSubscriptionForm(f => ({ ...f, day: e.target.value }))} style={inputStyle} />
+            <button onClick={addSubscription} style={proButtonStyle}>Agregar</button>
+          </div>
+          <input value={subscriptionForm.logoUrl} onChange={e => setSubscriptionForm(f => ({ ...f, logoUrl: e.target.value }))} placeholder="URL de logo personalizado opcional" style={inputStyle} />
+          <div className="finance-subscription-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: 12 }}>
+            {activeSubscriptions.map(item => (
+              <div key={item.id} style={{ padding: 14, borderRadius: 14, background: 'rgba(255,255,255,0.035)', border: `1px solid ${COLORS.border}`, display: 'grid', gridTemplateColumns: 'auto 1fr auto', gap: 12, alignItems: 'center' }}>
+                {renderSubscriptionLogo(item, 42)}
+                <div style={{ minWidth: 0 }}>
+                  <strong style={{ color: COLORS.text, ...s }}>{item.name}</strong>
+                  <div style={{ color: COLORS.textDim, fontSize: 12, ...s }}>{item.category} - Dia {item.day}</div>
+                </div>
+                <div style={{ textAlign: 'right' }}>
+                  <strong style={{ color: COLORS.primary, ...s }}>{money(item.amount)}</strong>
+                  <div style={{ display: 'flex', gap: 6, justifyContent: 'flex-end', marginTop: 6 }}>
+                    <button onClick={() => paySubscription(item)} className="finance-icon-button" style={{ width: 32, height: 32, borderRadius: 10, border: `1px solid ${COLORS.border}`, background: COLORS.bg, color: COLORS.text }}><Check size={13} /></button>
+                    <button onClick={() => removeSubscription(item.id)} className="finance-icon-button" style={{ width: 32, height: 32, borderRadius: 10, border: `1px solid ${COLORS.border}`, background: COLORS.bg, color: COLORS.primary }}><Trash2 size={13} /></button>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      );
+    }
+    return (
+      <>
+        {renderMoneyFlow()}
+      </>
+    );
+  };
+
+  const renderFinanceDashboard = () => (
+    <div className="finance-mobile-view finance-dashboard-pro" style={{ animation: 'fadeIn 0.28s ease-out', color: COLORS.text }}>
+      <div className="finance-pro-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 18, flexWrap: 'wrap', marginBottom: 18 }}>
+        <div>
+          <h2 style={{ margin: 0, fontSize: 34, lineHeight: 1, fontFamily: "'DM Serif Display', serif", color: COLORS.text }}>Finanzas</h2>
+          <div style={{ color: COLORS.textDim, fontSize: 13, marginTop: 7, ...s }}>Administra tu dinero y toma el control de tu futuro.</div>
+        </div>
+        <div className="finance-header-actions" style={{ display: 'flex', gap: 10, alignItems: 'center', flexWrap: 'wrap' }}>
+          <label style={{ display: 'inline-flex', alignItems: 'center', gap: 9, minHeight: 42, minWidth: 148, ...ghostButtonStyle }}>
+            <Calendar size={15} />
+            <select value={selectedMonth} onChange={e => setSelectedMonth(e.target.value)} style={{ background: 'transparent', border: 0, color: COLORS.text, outline: 0, minWidth: 102, cursor: 'pointer', ...s }}>
+              {monthPickerOptions.map(item => <option key={item.key} value={item.key}>{item.label}</option>)}
+            </select>
+          </label>
+          <button onClick={() => setSection('movements')} style={proButtonStyle}><Plus size={16} /> Nueva transacción</button>
+        </div>
+      </div>
+
+      <div className="finance-kpis" style={{ display: 'grid', gridTemplateColumns: 'repeat(5, minmax(160px, 1fr))', gap: 12, marginBottom: 14 }}>
+        {financeMetrics.map((card, index) => (
+          <div key={card.label} className="kpi-card finance-pro-kpi" style={{ ...financeCardStyle, minHeight: 118, position: 'relative', animation: `fadeInUp 0.32s ease ${index * 0.04}s both` }}>
+            <div style={{ color: COLORS.textDim, fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 8, ...s }}>{card.label}</div>
+            <div style={{ color: COLORS.text, fontSize: 24, fontFamily: "'DM Serif Display', serif", lineHeight: 1.05, wordBreak: 'break-word' }}>{card.value}</div>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8, marginTop: 8 }}>
+              <span style={{ color: COLORS.textDim, fontSize: 11, ...s }}>{card.hint}</span>
+              {card.trend !== null && (
+                <span style={{ color: card.trend >= 0 ? '#35C46A' : COLORS.primary, fontSize: 11, fontWeight: 850, ...s }}>
+                  {card.trend >= 0 ? '↑' : '↓'} {Math.abs(card.trend)}%
+                </span>
+              )}
+            </div>
+            <svg viewBox="0 0 100 38" preserveAspectRatio="none" style={{ width: '100%', height: 38, marginTop: 10, opacity: 0.95 }}>
+              <path d={buildSparkPath(card.series)} fill="none" stroke={card.color} strokeWidth="2" strokeLinecap="round" />
+            </svg>
+          </div>
+        ))}
+      </div>
+
+      <div className="finance-layout" style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1.45fr) minmax(330px, 0.82fr)', gap: 14, alignItems: 'start' }}>
+        <div className="finance-main-column" style={{ display: 'grid', gap: 14, minWidth: 0 }}>
+          <div style={financeCardStyle}>
+            {renderFinanceTabs()}
+            {renderMainContent()}
+          </div>
+          <div className="finance-action-strip" style={{ ...financeCardStyle, padding: 0, borderRadius: 14 }}>
+            {renderQuickActions()}
+          </div>
+          <div className="finance-bottom-grid" style={{ display: 'grid', gridTemplateColumns: 'minmax(260px, 0.72fr) minmax(300px, 1fr)', gap: 14 }}>
+            {renderAccountsCompact()}
+            <div style={financeCardStyle}>
+              {sectionTitle('Transacciones recientes', <button onClick={() => setSection('movements')} style={{ ...ghostButtonStyle, minHeight: 34, padding: '8px 10px' }}>Ver todas <ChevronRight size={14} /></button>)}
+              {renderMovementList(recentTransactions)}
+            </div>
+          </div>
+        </div>
+        <div className="finance-side-column" style={{ display: 'grid', gap: 14, minWidth: 0 }}>
+          {renderDebtsCard()}
+          {renderUpcomingPayments()}
+        </div>
+      </div>
+    </div>
+  );
+
+  return renderFinanceDashboard();
 
   return (
     <div className="finance-mobile-view" style={{ animation: 'fadeIn 0.3s ease-out' }}>
