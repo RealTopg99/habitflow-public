@@ -327,6 +327,13 @@ const getThemeVisualTokens = (themeModeId, colors) => {
       '--hf-shadow-raised': '0 20px 54px rgba(99,57,73,0.14), inset 0 1px 0 rgba(255,255,255,0.96)',
       '--hf-input-bg': 'rgba(255,255,255,0.88)',
       '--hf-input-hover': '#ffffff',
+      '--hf-select-menu-bg': '#ffffff',
+      '--hf-select-menu-text': '#1D1B1C',
+      '--hf-select-menu-muted': '#6F6467',
+      '--hf-select-menu-hover': '#FFF2F4',
+      '--hf-select-menu-selected': 'rgba(217,107,125,0.12)',
+      '--hf-select-menu-border': '#E8D7D9',
+      '--hf-select-accent': '#D96B7D',
       '--hf-hover': 'rgba(225,29,72,0.065)',
       '--hf-pressed': 'rgba(225,29,72,0.12)',
       '--hf-overlay': 'rgba(52,31,40,0.38)',
@@ -368,6 +375,13 @@ const getThemeVisualTokens = (themeModeId, colors) => {
     '--hf-shadow-raised': '0 28px 76px rgba(0,0,0,0.58), inset 0 1px 0 rgba(255,255,255,0.065)',
     '--hf-input-bg': pure  ? 'rgba(255,255,255,0.045)' : 'rgba(255,255,255,0.055)',
     '--hf-input-hover': pure  ? 'rgba(255,255,255,0.065)' : 'rgba(255,255,255,0.075)',
+    '--hf-select-menu-bg': pure  ? '#0D1014' : '#11141A',
+    '--hf-select-menu-text': '#F4F1EA',
+    '--hf-select-menu-muted': '#A7A7A7',
+    '--hf-select-menu-hover': '#151922',
+    '--hf-select-menu-selected': 'rgba(255,125,149,0.12)',
+    '--hf-select-menu-border': '#2E333D',
+    '--hf-select-accent': '#FF7D95',
     '--hf-hover': 'rgba(255,255,255,0.055)',
     '--hf-pressed': 'rgba(225,29,72,0.16)',
     '--hf-overlay': 'rgba(0,0,0,0.72)',
@@ -5099,6 +5113,40 @@ const injectStyles = () => {
       border-color: var(--hf-card-border) !important;
       border-radius: var(--hf-control-radius) !important;
       box-shadow: inset 0 1px 0 var(--hf-card-highlight) !important;
+      color-scheme: dark;
+    }
+    select option,
+    select optgroup {
+      background-color: var(--hf-select-menu-bg, #0D1014) !important;
+      color: var(--hf-select-menu-text, #F4F1EA) !important;
+      border-color: var(--hf-select-menu-border, #2E333D) !important;
+    }
+    select option {
+      padding: 9px 12px;
+      min-height: 34px;
+    }
+    select optgroup {
+      color: var(--hf-select-menu-muted, #A7A7A7) !important;
+      font-weight: 800;
+    }
+    select option:hover,
+    select option:focus {
+      background-color: var(--hf-select-menu-hover, #151922) !important;
+      color: var(--hf-select-menu-text, #F4F1EA) !important;
+    }
+    select option:checked {
+      background:
+        linear-gradient(0deg, var(--hf-select-menu-selected, rgba(255,125,149,0.12)), var(--hf-select-menu-selected, rgba(255,125,149,0.12))),
+        var(--hf-select-menu-bg, #0D1014) !important;
+      color: var(--hf-select-accent, #FF7D95) !important;
+      font-weight: 800;
+    }
+    select option:disabled {
+      color: var(--hf-select-menu-muted, #A7A7A7) !important;
+      opacity: 0.58;
+    }
+    html[data-theme-mode="pinkLight"] select {
+      color-scheme: light;
     }
     input:hover,
     textarea:hover,
