@@ -12169,6 +12169,53 @@ const formatDuration = (start, end) => {
   return `${m}m`;
 };
 
+const isValidClockTime = (value) => !value || /^([01]\d|2[0-3]):[0-5]\d$/.test(value);
+const getTaskStartTime = (task = {}) => task.startTime || task.dueTime || task.time || '';
+const getTaskEndTime = (task = {}) => task.endTime || '';
+const hasTaskTime = (task) => Boolean(getTaskStartTime(task));
+const isValidTaskTimeRange = (start, end) => !start || !end || timeToMinutes(end) > timeToMinutes(start);
+const getTaskDurationMinutes = (task = {}) => {
+  const start = getTaskStartTime(task);
+  const end = getTaskEndTime(task);
+  if (!isValidTaskTimeRange(start, end) || !start || !end) return undefined;
+  return timeToMinutes(end) - timeToMinutes(start);
+};
+const getTaskTimeRangeLabel = (task = {}) => {
+  const start = getTaskStartTime(task);
+  const end = getTaskEndTime(task);
+  if (!start) return 'Sin hora';
+  return end ? `${start} - ${end}` : start;
+};
+const normalizeTaskTimes = (task = {}, fallbackDate = '') => {
+  const startTime = getTaskStartTime(task);
+  const endTime = getTaskEndTime(task);
+  const durationMinutes = getTaskDurationMinutes({ startTime, endTime });
+  return {
+    ...task,
+    dueDate: task.dueDate || fallbackDate,
+    startTime,
+    dueTime: startTime,
+    endTime,
+    durationMinutes
+  };
+};
+const compareTaskTime = (a, b) => {
+  const aHasTime = hasTaskTime(a);
+  const bHasTime = hasTaskTime(b);
+  if (aHasTime && bHasTime) {
+    const diff = timeToMinutes(getTaskStartTime(a)) - timeToMinutes(getTaskStartTime(b));
+    if (diff !== 0) return diff;
+  }
+  if (aHasTime !== bHasTime) return aHasTime ? -1 : 1;
+  return (a.order ?? 999) - (b.order ?? 999);
+};
+const withTaskTimePatch = (task = {}, nextStartTime, nextEndTime = task.endTime || '') => {
+  const startTime = nextStartTime || '';
+  const safeEndTime = startTime && nextEndTime && timeToMinutes(nextEndTime) <= timeToMinutes(startTime) ? '' : (nextEndTime || '');
+  const durationMinutes = startTime && safeEndTime ? timeToMinutes(safeEndTime) - timeToMinutes(startTime) : undefined;
+  return { ...task, startTime, dueTime: startTime, endTime: safeEndTime, durationMinutes };
+};
+
 const getFreeBlocks = (tasks, dateStr) => {
   const todayTasks = tasks.filter(t => t.dueDate === dateStr && t.startTime && t.endTime && !t.completed)
     .sort((a, b) => timeToMinutes(a.startTime) - timeToMinutes(b.startTime));
@@ -12271,8 +12318,8 @@ const AgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAgendaTo
   }, [agenda]);
 
   const tasks = useMemo(() => {
-    return (expandedAgenda[dateStr] || []).map(t => ({ ...t, dueDate: t.dueDate || dateStr, dueTime: t.dueTime || t.time || '' }))
-      .sort((a, b) => (a.order ?? 999) - (b.order ?? 999));
+    return (expandedAgenda[dateStr] || []).map(t => normalizeTaskTimes(t, dateStr))
+      .sort(compareTaskTime);
   }, [expandedAgenda, dateStr]);
 
   const dayHabits = useMemo(() => {
@@ -12283,15 +12330,15 @@ const AgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAgendaTo
     });
   }, [habits, records, dateStr]);
 
-  const timedTasks = useMemo(() => tasks.filter(t => t.dueTime && (!hideDone || !t.completed)), [tasks, hideDone]);
-  const untimedTasks = useMemo(() => tasks.filter(t => !t.dueTime && (!hideDone || !t.completed)), [tasks, hideDone]);
+  const timedTasks = useMemo(() => tasks.filter(t => hasTaskTime(t) && (!hideDone || !t.completed)), [tasks, hideDone]);
+  const untimedTasks = useMemo(() => tasks.filter(t => !hasTaskTime(t) && (!hideDone || !t.completed)), [tasks, hideDone]);
 
   const completedCount = tasks.filter(t => t.completed).length;
   const totalCount = tasks.length;
   const pct = totalCount > 0  ? Math.round((completedCount / totalCount) * 100) : 0;
   const overdueCount = Object.entries(expandedAgenda || {}).filter(([d]) => d < todayStr).flatMap(([, ts]) => ts.filter(t => !t.completed)).length;
   const alarmCount = tasks.filter(t => t.alarm && !t.completed).length;
-  const busyMins = timedTasks.filter(t => !t.completed).reduce((acc, t) => acc + (t.endTime  ? timeToMinutes(t.endTime) - timeToMinutes(t.dueTime) : 30), 0);
+  const busyMins = timedTasks.filter(t => !t.completed).reduce((acc, t) => acc + (getTaskDurationMinutes(t) || 30), 0);
   const freeMins = Math.max(0, 17 * 60 - busyMins);
 
   const updateTasks = useCallback((updater) => { onUpdateAgenda(dateStr, updater); }, [dateStr, onUpdateAgenda]);
@@ -12312,14 +12359,18 @@ const AgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAgendaTo
     const t = text;
     if (!t.trim()) return;
     const targetDate = dueDateParam || dateStr;
+    const taskExtras = extras || {};
+    const startTime = taskExtras.startTime || taskExtras.dueTime || dueTime || '';
+    const endTime = taskExtras.endTime || '';
+    const durationMinutes = startTime && endTime && isValidTaskTimeRange(startTime, endTime) ? timeToMinutes(endTime) - timeToMinutes(startTime) : undefined;
     onUpdateAgenda(targetDate, prev => {
       const newTask = {
         id: Date.now().toString(36) + Math.random().toString(36).slice(2, 4),
         text: t.trim(), completed: false, priority: priority || inputPrio,
         category: category || 'Personal', note: '', dueDate: targetDate,
-        dueTime: dueTime || '', alarm: false, recurrence: 'none',
+        dueTime: startTime, startTime, endTime, durationMinutes, alarm: false, recurrence: 'none',
         intervalRepeat: 'none', intervalEvery: 1, repeatUntilDate: targetDate, repeatUntilTime: '23:59',
-        reminders: [], tags: [], ...extras, order: prev.length
+        reminders: [], tags: [], ...taskExtras, dueTime: startTime, startTime, endTime, durationMinutes, order: prev.length
       };
       return [...prev, newTask];
     });
@@ -12400,14 +12451,21 @@ const AgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAgendaTo
     return false;
   };
   const updateTaskField = (taskId, field, value) => { updateTasks(prev => prev.map(t => t.id === taskId  ? { ...t, [field]: value } : t)); };
-  const removeTaskTime = (taskId) => { updateTasks(prev => prev.map(t => t.id === taskId  ? { ...t, dueTime: '' } : t)); };
+  const updateTaskStartTime = (taskId, value) => {
+    updateTasks(prev => prev.map(t => t.id === taskId ? withTaskTimePatch(t, value, t.endTime || '') : t));
+  };
+  const updateTaskEndTime = (taskId, value) => {
+    updateTasks(prev => prev.map(t => t.id === taskId ? withTaskTimePatch(t, getTaskStartTime(t), value) : t));
+  };
+  const removeTaskTime = (taskId) => { updateTasks(prev => prev.map(t => t.id === taskId  ? { ...t, dueTime: '', startTime: '', endTime: '', durationMinutes: undefined } : t)); };
   const startEdit = (task) => { setEditTaskId(task.id); setEditText(task.text); };
   const saveEdit = () => { if (editTaskId && editText.trim()) updateTaskField(editTaskId, 'text', editText.trim()); setEditTaskId(null); };
   const toggleExpand = (taskId) => { setExpandedTaskId(expandedTaskId === taskId  ? null : taskId); setEditTaskId(null); };
   const openTaskModal = (task) => {
+    const normalizedTask = task ? normalizeTaskTimes(JSON.parse(JSON.stringify(task)), dateStr) : null;
     setEditModalTask(task
-       ? { ...JSON.parse(JSON.stringify(task)), _originalDueDate: task.dueDate || '' }
-      : { text: '', dueDate: dateStr, dueTime: '', priority: inputPrio, category: 'Personal', alarm: false, recurrence: 'none', intervalRepeat: 'none', intervalEvery: 1, repeatUntilDate: dateStr, repeatUntilTime: '23:59', reminders: ['exact'], status: 'pending' }
+       ? { ...normalizedTask, _originalDueDate: task.dueDate || '' }
+      : { text: '', dueDate: dateStr, dueTime: '', startTime: '', endTime: '', priority: inputPrio, category: 'Personal', alarm: false, recurrence: 'none', intervalRepeat: 'none', intervalEvery: 1, repeatUntilDate: dateStr, repeatUntilTime: '23:59', reminders: ['exact'], status: 'pending' }
     );
     setShowModal(true);
   };
@@ -12415,6 +12473,21 @@ const AgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAgendaTo
   const saveTaskModal = () => {
     let task = editModalTask;
     if (!task || !task.text?.trim()) { closeTaskModal(); return; }
+    const startTime = getTaskStartTime(task);
+    const endTime = getTaskEndTime(task);
+    if (!isValidClockTime(startTime) || !isValidClockTime(endTime)) {
+      alert('Usa horas en formato 24 horas, por ejemplo 08:00 o 14:30.');
+      return;
+    }
+    if (!startTime && endTime) {
+      alert('Agrega una hora de inicio o deja ambos campos de horario vacíos.');
+      return;
+    }
+    if (!isValidTaskTimeRange(startTime, endTime)) {
+      alert('La hora final debe ser mayor que la hora de inicio.');
+      return;
+    }
+    task = withTaskTimePatch(task, startTime, endTime);
     const taskStartDate = task.dueDate || dateStr;
     if (getTaskIntervalMinutes(task) > 0) {
       task = {
@@ -12432,12 +12505,12 @@ const AgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAgendaTo
     }
     if (task.id) {
       const origDate = task._originalDueDate || dateStr;
-      Object.entries({ text: task.text, dueTime: task.dueTime, priority: task.priority, category: task.category, alarm: task.alarm, recurrence: task.recurrence, recurrenceDays: task.recurrenceDays, intervalRepeat: task.intervalRepeat, intervalEvery: task.intervalEvery, repeatUntilDate: task.repeatUntilDate, repeatUntilTime: task.repeatUntilTime, recurrenceUntilDate: task.recurrenceUntilDate, deletedDates: task.deletedDates, reminders: task.reminders, tags: task.tags, status: task.status }).forEach(([k, v]) => updateTaskField(task.id, k, v));
+      Object.entries({ text: task.text, dueTime: task.dueTime, startTime: task.startTime, endTime: task.endTime, durationMinutes: task.durationMinutes, priority: task.priority, category: task.category, alarm: task.alarm, recurrence: task.recurrence, recurrenceDays: task.recurrenceDays, intervalRepeat: task.intervalRepeat, intervalEvery: task.intervalEvery, repeatUntilDate: task.repeatUntilDate, repeatUntilTime: task.repeatUntilTime, recurrenceUntilDate: task.recurrenceUntilDate, deletedDates: task.deletedDates, reminders: task.reminders, tags: task.tags, status: task.status }).forEach(([k, v]) => updateTaskField(task.id, k, v));
       if (task.dueDate && task.dueDate !== origDate) {
         onMoveTaskToDate(task.id, origDate, task.dueDate);
       }
     } else {
-      addTask(task.text, task.priority || 3, task.category || 'Personal', task.dueDate || dateStr, task.dueTime || '', { alarm: task.alarm, recurrence: task.recurrence, recurrenceDays: task.recurrenceDays, intervalRepeat: task.intervalRepeat, intervalEvery: task.intervalEvery, repeatUntilDate: task.repeatUntilDate, repeatUntilTime: task.repeatUntilTime, reminders: task.reminders, tags: task.tags, status: task.status });
+      addTask(task.text, task.priority || 3, task.category || 'Personal', task.dueDate || dateStr, task.startTime || '', { alarm: task.alarm, startTime: task.startTime, dueTime: task.dueTime, endTime: task.endTime, durationMinutes: task.durationMinutes, recurrence: task.recurrence, recurrenceDays: task.recurrenceDays, intervalRepeat: task.intervalRepeat, intervalEvery: task.intervalEvery, repeatUntilDate: task.repeatUntilDate, repeatUntilTime: task.repeatUntilTime, reminders: task.reminders, tags: task.tags, status: task.status });
     }
     closeTaskModal();
   };
@@ -12452,7 +12525,7 @@ const AgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAgendaTo
 
   const handleDragStart = (e, taskId) => { dragRef.current = taskId; setDragTaskId(taskId); e.dataTransfer.effectAllowed = 'move'; e.dataTransfer.setData('text/plain', taskId); };
   const handleDragEnd = () => { setDragTaskId(null); setDropHour(null); };
-  const handleDropOnHour = (hour) => { const id = dragRef.current; if (id) { updateTaskField(id, 'dueTime', `${String(hour).padStart(2,'0')}:00`); setDragTaskId(null); setDropHour(null); } };
+  const handleDropOnHour = (hour) => { const id = dragRef.current; if (id) { updateTaskStartTime(id, `${String(hour).padStart(2,'0')}:00`); setDragTaskId(null); setDropHour(null); } };
 
   const getFilteredAgenda = (agendaObj) => {
     return Object.entries(agendaObj || {}).map(([date, ts]) => [date, ts.filter(t => {
@@ -12466,7 +12539,7 @@ const AgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAgendaTo
   };
 
   const getOverdueTasks = () => Object.entries(expandedAgenda || {}).filter(([d]) => d < todayStr).flatMap(([, ts]) => ts.filter(t => !t.completed));
-  const getUpcomingTasks = () => Object.entries(expandedAgenda || {}).filter(([d]) => d >= todayStr).flatMap(([, ts]) => ts.filter(t => !t.completed)).sort((a, b) => (a.dueDate || '').localeCompare(b.dueDate || '')).slice(0, 3);
+  const getUpcomingTasks = () => Object.entries(expandedAgenda || {}).filter(([d]) => d >= todayStr).flatMap(([d, ts]) => ts.map(t => normalizeTaskTimes(t, d)).filter(t => !t.completed)).sort((a, b) => (a.dueDate || '').localeCompare(b.dueDate || '') || compareTaskTime(a, b)).slice(0, 3);
   const getAlarmTasks = () => tasks.filter(t => t.alarm && !t.completed);
 
   const btnBase = { border: 'none', borderRadius: 8, cursor: 'pointer', fontFamily: "'Inter', sans-serif", fontSize: 11, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4, transition: 'all 0.15s' };
@@ -12503,6 +12576,9 @@ const AgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAgendaTo
   const renderTaskBlock = (task, opts = {}) => {
     const { compact, mini, hideTime, noDrag, onClick } = opts;
     const pc = TASK_BLOCK_COLORS[task.priority || 3];
+    const taskStartTime = getTaskStartTime(task);
+    const taskEndTime = getTaskEndTime(task);
+    const taskTimeLabel = getTaskTimeRangeLabel(task);
     return (
       <div className={compact  ? 'agenda-task-block compact' : 'agenda-task-block'} key={task.id} {...(!noDrag  ? { draggable: true, onDragStart: e => handleDragStart(e, task.id), onDragEnd: handleDragEnd } : {})}
         onClick={e => { e.stopPropagation(); if (onClick) onClick(task); }} style={{
@@ -12527,16 +12603,16 @@ const AgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAgendaTo
               textDecoration: task.completed  ? 'line-through' : 'none', fontWeight: task.completed  ? 400 : 500,
               overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', ...s
             }} onDoubleClick={e => { e.stopPropagation(); startEdit(task); }}>
-              {!hideTime && task.dueTime && !compact && (
-                <span style={{ color: pc.text, fontWeight: 600, marginRight: 5, fontSize: 11 }}>{task.dueTime}</span>
+              {!hideTime && taskStartTime && !compact && (
+                <span style={{ color: pc.text, fontWeight: 600, marginRight: 5, fontSize: 11 }}>{taskTimeLabel}</span>
               )}
               {task.text}
             </div>
             {!compact && (
               <div style={{ display: 'flex', gap: 4, marginTop: 2, alignItems: 'center' }}>
-                {task.dueTime && <span style={{ fontSize: 9, color: pc.text, fontWeight: 500, ...s }}>{task.dueTime}</span>}
-                {task.endTime && <span style={{ fontSize: 8, color: COLORS.textDim, ...s }}>- {task.endTime} ({formatDuration(task.dueTime, task.endTime)})</span>}
-                {!hideTime && !task.dueTime && <span style={{ fontSize: 8, color: COLORS.textDim + '88', ...s }}>Sin hora</span>}
+                {taskStartTime && <span style={{ fontSize: 9, color: pc.text, fontWeight: 500, ...s }}>{taskTimeLabel}</span>}
+                {taskStartTime && taskEndTime && <span style={{ fontSize: 8, color: COLORS.textDim, ...s }}>({formatDuration(taskStartTime, taskEndTime)})</span>}
+                {!hideTime && !taskStartTime && <span style={{ fontSize: 8, color: COLORS.textDim + '88', ...s }}>Sin hora</span>}
                 {task.category && <span style={{ fontSize: 8, padding: '1px 5px', borderRadius: 3, background: `${COLORS.textDim}12`, color: COLORS.textDim + 'cc', ...s }}>{task.category}</span>}
                 {task.alarm && <Clock size={10} color={COLORS.primary} />}
                 {task.recurrence && task.recurrence !== 'none' && <Repeat size={10} color={COLORS.primary} />}
@@ -12547,7 +12623,7 @@ const AgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAgendaTo
           </div>
           {!compact && (
             <div style={{ display: 'flex', gap: 2, flexShrink: 0 }}>
-              {!task.dueTime && <button onClick={e => { e.stopPropagation(); const n = new Date(); updateTaskField(task.id, 'dueTime', `${String(n.getHours()).padStart(2,'0')}:${String(n.getMinutes()).padStart(2,'0')}`); }}
+              {!taskStartTime && <button onClick={e => { e.stopPropagation(); const n = new Date(); updateTaskStartTime(task.id, `${String(n.getHours()).padStart(2,'0')}:${String(n.getMinutes()).padStart(2,'0')}`); }}
                 style={{ ...btnBase, width: 22, height: 22, background: 'transparent', color: COLORS.primary + '99', fontSize: 10 }}><Clock size={11} /></button>}
               <button onClick={e => { e.stopPropagation(); openTaskModal(task); }}
                 style={{ ...btnBase, width: 22, height: 22, background: 'transparent', color: COLORS.textDim + '77', fontSize: 10 }}><Edit size={11} /></button>
@@ -12561,8 +12637,12 @@ const AgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAgendaTo
             <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap', marginBottom: 4, alignItems: 'center' }}>
               <input type="date" value={task.dueDate || dateStr} onClick={e => openNativeDatePicker(e.currentTarget)} onFocus={e => openNativeDatePicker(e.currentTarget)} onChange={e => handleDueDateChange(task.id, e.target.value)}
                 style={{ padding: '2px 6px', borderRadius: 5, border: `1px solid ${COLORS.border}`, background: COLORS.surface, color: COLORS.text, fontSize: 9, ...s, outline: 'none', width: 100, cursor: 'pointer' }} />
-              <input type="time" value={task.dueTime || ''} onChange={e => updateTaskField(task.id, 'dueTime', e.target.value)}
+              <input type="time" value={taskStartTime || ''} onChange={e => updateTaskStartTime(task.id, e.target.value)}
                 style={{ padding: '2px 6px', borderRadius: 5, border: `1px solid ${COLORS.border}`, background: COLORS.surface, color: COLORS.text, fontSize: 9, ...s, outline: 'none', width: 65 }} />
+              <input type="time" value={taskEndTime || ''} min={taskStartTime || undefined} onChange={e => updateTaskEndTime(task.id, e.target.value)}
+                style={{ padding: '2px 6px', borderRadius: 5, border: `1px solid ${COLORS.border}`, background: COLORS.surface, color: COLORS.text, fontSize: 9, ...s, outline: 'none', width: 65 }} />
+              {(taskStartTime || taskEndTime) && <button onClick={() => removeTaskTime(task.id)}
+                style={{ ...btnBase, padding: '2px 6px', background: `${COLORS.alert}08`, color: COLORS.alert, fontSize: 9 }}>Sin hora</button>}
               <select value={task.category} onChange={e => updateTaskField(task.id, 'category', e.target.value)}
                 style={{ padding: '2px 6px', borderRadius: 5, border: `1px solid ${COLORS.border}`, background: COLORS.surface, color: COLORS.text, fontSize: 9, ...s, outline: 'none' }}>
                 {AGENDA_CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
@@ -12590,7 +12670,7 @@ const AgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAgendaTo
           <div style={{ fontSize: 11, color: COLORS.textDim, ...s, marginBottom: 12 }}>
             {isToday  ? 'Añade una tarea o bloquea tiempo para enfocarte' : 'Selecciona otro día o crea una tarea aqué'}
           </div>
-          <button onClick={() => { setEditModalTask({ dueDate: dateStr, priority: inputPrio }); setShowModal(true); }}
+          <button onClick={() => { setEditModalTask({ dueDate: dateStr, dueTime: '', startTime: '', endTime: '', priority: inputPrio }); setShowModal(true); }}
             style={{ ...btnBase, padding: '8px 20px', background: `linear-gradient(135deg, ${COLORS.primary}, #7f1028)`, color: '#fff', margin: '0 auto', fontSize: 12 }}>
             <Plus size={14} /> Añadir tarea
           </button>
@@ -12598,7 +12678,7 @@ const AgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAgendaTo
       ) : (
         <div style={{ padding: '4px 0' }}>
           {HOURS.map(hour => {
-            const hourTasks = timedTasks.filter(t => timeToHour(t.dueTime) === hour);
+            const hourTasks = timedTasks.filter(t => timeToHour(getTaskStartTime(t)) === hour);
             const isDrop = dropHour === hour;
             const isCurrent = hour === new Date().getHours() && isToday;
             const isSectionStart = Object.values(SECTION_HOURS).some(hrs => hrs[0] === hour);
@@ -12618,12 +12698,12 @@ const AgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAgendaTo
                   <div style={{ fontSize: 10, color: isCurrent  ? COLORS.primary : COLORS.textDim + 'bb', fontWeight: isCurrent  ? 700 : 500, background: isCurrent  ? `${COLORS.primary}15` : 'transparent', borderRadius: 4, padding: '0 4px', display: 'inline-block', ...s }}>
                     {String(hour).padStart(2, '0')}
                   </div>
-                  <button onClick={e => { e.stopPropagation(); setEditModalTask({ dueTime: `${String(hour).padStart(2,'0')}:00`, dueDate: dateStr, priority: inputPrio }); setShowModal(true); }}
+                  <button onClick={e => { e.stopPropagation(); setEditModalTask({ dueTime: `${String(hour).padStart(2,'0')}:00`, startTime: `${String(hour).padStart(2,'0')}:00`, endTime: '', dueDate: dateStr, priority: inputPrio }); setShowModal(true); }}
                     style={{ width: 14, height: 14, borderRadius: '50%', border: 'none', background: 'transparent', cursor: 'pointer', color: COLORS.textDim + '44', fontSize: 9, display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '1px auto', padding: 0 }}>+</button>
                   {hour < 23 && <div style={{ width: 1, height: 10, background: isCurrent  ? COLORS.primary : COLORS.border, margin: '0 auto' }} />}
                 </div>
                 <div onClick={() => {
-                  setEditModalTask({ dueTime: `${String(hour).padStart(2,'0')}:00`, dueDate: dateStr, priority: inputPrio });
+                  setEditModalTask({ dueTime: `${String(hour).padStart(2,'0')}:00`, startTime: `${String(hour).padStart(2,'0')}:00`, endTime: '', dueDate: dateStr, priority: inputPrio });
                   setShowModal(true);
                 }} style={{ flex: 1, padding: '2px 8px', minHeight: hourTasks.length > 0  ? undefined : 28, borderRadius: 4 }}>
                   {isDrop && hourTasks.length === 0 && (
@@ -12645,7 +12725,7 @@ const AgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAgendaTo
         const ds = toYYYYMMDD(d);
         const isSel = ds === dateStr;
         const isT = ds === todayStr;
-        const dayTasks = (expandedAgenda[ds] || []).map(t => ({ ...t, dueDate: t.dueDate || ds, dueTime: t.dueTime || t.time || '' }));
+        const dayTasks = (expandedAgenda[ds] || []).map(t => normalizeTaskTimes(t, ds)).sort(compareTaskTime);
         const dayPct = dayTasks.length > 0  ? Math.round(dayTasks.filter(t => t.completed).length / dayTasks.length * 100) : 0;
         return (
           <div key={i} onClick={() => { setCurrentDate(d); }}
@@ -12667,7 +12747,7 @@ const AgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAgendaTo
                   textDecoration: t.completed  ? 'line-through' : 'none',
                   overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap'
                 }}>
-                  {t.dueTime && <span style={{ color: TASK_BLOCK_COLORS[t.priority || 3].text, marginRight: 4 }}>{t.dueTime}</span>}
+                  {hasTaskTime(t) && <span style={{ color: TASK_BLOCK_COLORS[t.priority || 3].text, marginRight: 4 }}>{getTaskTimeRangeLabel(t)}</span>}
                   {t.text}
                 </div>
               ))}
@@ -12690,7 +12770,7 @@ const AgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAgendaTo
           const isCurr = d.getMonth() === currentDate.getMonth();
           const isT = ds === todayStr;
           const isSel = ds === dateStr;
-          const dayTasks = (expandedAgenda[ds] || []).filter(t => !hideDone || !t.completed);
+          const dayTasks = (expandedAgenda[ds] || []).map(t => normalizeTaskTimes(t, ds)).filter(t => !hideDone || !t.completed).sort(compareTaskTime);
           const hasOverdue = dayTasks.some(t => !t.completed && ds < todayStr);
           return (
             <div key={i} onClick={() => { setCurrentDate(d); setViewMode('day'); }}
@@ -12708,7 +12788,7 @@ const AgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAgendaTo
                     background: t.completed  ? `${COLORS.success}15` : `${TASK_BLOCK_COLORS[t.priority || 3].bg}`,
                     color: t.completed  ? COLORS.textDim : TASK_BLOCK_COLORS[t.priority || 3].text,
                     overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap'
-                  }}>{t.text}</div>
+                  }}>{hasTaskTime(t) && <span style={{ marginRight: 4 }}>{getTaskStartTime(t)}</span>}{t.text}</div>
                 ))}
                 {dayTasks.length > 4 && <div style={{ fontSize: 9, color: COLORS.textDim, fontWeight: 700, paddingLeft: 2, ...s }}>+{dayTasks.length - 4}</div>}
               </div>
@@ -12736,7 +12816,7 @@ const AgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAgendaTo
               <span style={{ fontSize: 10, color: COLORS.textDim + '88' }}>{ts.length} tareas</span>
             </div>
             <div style={{ padding: '5px 10px' }}>
-              {ts.sort((a, b) => (a.order ?? 999) - (b.order ?? 999)).map(t => renderTaskBlock(t))}
+              {ts.map(t => normalizeTaskTimes(t, date)).sort(compareTaskTime).map(t => renderTaskBlock(t))}
             </div>
           </div>
         ))}
@@ -12837,15 +12917,15 @@ const AgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAgendaTo
           {sidebarTab === 'alarms' && (
             <div>
               <div style={{ fontSize: 10, fontWeight: 600, color: COLORS.text, ...s, marginBottom: 6 }}>Próximas alarmas</div>
-              {tasks.filter(t => t.alarm && !t.completed && t.dueTime).length === 0  ? (
+              {tasks.filter(t => t.alarm && !t.completed && hasTaskTime(t)).length === 0  ? (
                 <div style={{ textAlign: 'center', padding: '12px 8px', color: COLORS.textDim + '99' }}>
                   <div style={{ fontSize: 18, marginBottom: 4 }}>{'\u{1F515}'}</div>
                   <div style={{ fontSize: 9, ...s }}>No hay alarmas próximas</div>
                 </div>
-              ) : tasks.filter(t => t.alarm && !t.completed && t.dueTime).sort((a, b) => (a.dueTime || '').localeCompare(b.dueTime || '')).slice(0, 5).map(t => (
+              ) : tasks.filter(t => t.alarm && !t.completed && hasTaskTime(t)).sort(compareTaskTime).slice(0, 5).map(t => (
                 <div key={t.id} style={{ padding: '5px 8px', borderRadius: 6, marginBottom: 3, background: COLORS.bg, display: 'flex', alignItems: 'center', gap: 5 }}>
                   <span style={{ fontSize: 10 }}>{'\u{1F514}'}</span>
-                  <span style={{ fontSize: 9, color: COLORS.primary, fontWeight: 600, ...s, flexShrink: 0 }}>{t.dueTime}</span>
+                  <span style={{ fontSize: 9, color: COLORS.primary, fontWeight: 600, ...s, flexShrink: 0 }}>{getTaskTimeRangeLabel(t)}</span>
                   <span style={{ fontSize: 9, color: COLORS.text, ...s, flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{t.text}</span>
                 </div>
               ))}
@@ -12885,13 +12965,14 @@ const AgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAgendaTo
 
   const renderCleanTaskRow = (task) => {
     const priorityColor = PRIORITY_COLORS[task.priority || 3];
+    const timeLabel = getTaskTimeRangeLabel(task);
     return (
       <div className="agenda-clean-task-row" key={task.id} style={{ display: 'flex', alignItems: 'center', gap: 11, padding: '11px 4px', borderBottom: `1px solid ${COLORS.border}` }}>
         <button className="agenda-plan-check" onClick={() => toggleTask(task.id)} style={{ width: 18, height: 18, borderRadius: '50%', flexShrink: 0, border: task.completed  ? 'none' : `2px solid ${priorityColor}88`, background: task.completed  ? COLORS.success : 'transparent', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0 }}>
           {task.completed && <Check size={10} color={COLORS.bg} strokeWidth={4} />}
         </button>
-        <div style={{ width: 45, flexShrink: 0, fontSize: 10, fontWeight: 700, color: task.dueTime  ? priorityColor : COLORS.textDim, ...s }}>
-          {task.dueTime || 'Sin hora'}
+        <div style={{ width: hasTaskTime(task) && getTaskEndTime(task) ? 82 : 52, flexShrink: 0, fontSize: 10, fontWeight: 700, color: hasTaskTime(task)  ? priorityColor : COLORS.textDim, ...s }}>
+          {timeLabel}
         </div>
         <div style={{ flex: 1, minWidth: 0 }}>
           <div style={{ fontSize: 12, color: task.completed  ? COLORS.textDim : COLORS.text, textDecoration: task.completed  ? 'line-through' : 'none', ...s, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{task.text}</div>
@@ -12979,7 +13060,7 @@ const AgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAgendaTo
         {upcoming.length === 0  ? <div style={{ color: COLORS.textDim, fontSize: 10, lineHeight: 1.5, ...s }}>No tienes tareas próximas. Tu semana se ve tranquila.</div> : upcoming.map(task => (
           <div key={`${task.id}-${task.dueDate}`} style={{ padding: '8px 0', borderBottom: `1px solid ${COLORS.border}` }}>
             <div style={{ color: COLORS.text, fontSize: 10, ...s }}>{task.text}</div>
-            <div style={{ color: COLORS.textDim, fontSize: 8, marginTop: 3, ...s }}>{new Date(task.dueDate + 'T12:00:00').toLocaleDateString('es-ES', { weekday: 'short', day: 'numeric', month: 'short' })}{task.dueTime  ? `  ${task.dueTime}` : ''}</div>
+            <div style={{ color: COLORS.textDim, fontSize: 8, marginTop: 3, ...s }}>{new Date(task.dueDate + 'T12:00:00').toLocaleDateString('es-ES', { weekday: 'short', day: 'numeric', month: 'short' })}{hasTaskTime(task)  ? `  ${getTaskTimeRangeLabel(task)}` : ''}</div>
           </div>
         ))}
       </div>
@@ -13212,40 +13293,36 @@ const AgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAgendaTo
                   )}
                 </div>
               </div>
-              <div><div style={{ fontSize: 9, color: COLORS.textDim, marginBottom: 3, ...s }}>Hora</div>
-                {(() => {
-                  const h24 = t.dueTime  ? parseInt(t.dueTime.split(':')[0]) : -1;
-                  const mins = t.dueTime  ? t.dueTime.split(':')[1]?.slice(0,2) || '00' : '00';
-                  const h12 = h24 >= 0  ? (h24 % 12 || 12) : 12;
-                  const ampm = h24 >= 0  ? (h24 >= 12  ? 'PM' : 'AM') : 'AM';
-                  return (
-                    <div style={{ display: 'flex', gap: 3 }}>
-                      <select value={h12} onChange={e => {
-                        const nh = parseInt(e.target.value);
-                        const n24 = ampm === 'PM'  ? (nh === 12  ? 12 : nh + 12) : (nh === 12  ? 0 : nh);
-                        setEditModalTask(p => ({ ...p, dueTime: `${String(n24).padStart(2,'0')}:${mins}` }));
-                      }} style={{ flex: 1, padding: '6px 4px', borderRadius: 6, border: `1px solid ${COLORS.border}`, background: COLORS.bg, color: COLORS.text, fontSize: 10, ...s, outline: 'none', textAlign: 'center', cursor: 'pointer' }}>
-                        {Array.from({ length: 12 }, (_, i) => i + 1).map(h => <option key={h} value={h}>{String(h).padStart(2,'0')}</option>)}
-                      </select>
-                      <span style={{ color: COLORS.textDim, fontSize: 13, display: 'flex', alignItems: 'center', fontWeight: 600 }}>:</span>
-                      <select value={mins} onChange={e => {
-                        const nm = e.target.value;
-                        const n24 = ampm === 'PM'  ? (h12 === 12  ? 12 : h12 + 12) : (h12 === 12  ? 0 : h12);
-                        setEditModalTask(p => ({ ...p, dueTime: `${String(n24).padStart(2,'0')}:${nm}` }));
-                      }} style={{ flex: 1, padding: '6px 4px', borderRadius: 6, border: `1px solid ${COLORS.border}`, background: COLORS.bg, color: COLORS.text, fontSize: 10, ...s, outline: 'none', textAlign: 'center', cursor: 'pointer' }}>
-                        {Array.from({ length: 60 }, (_, i) => String(i).padStart(2,'0')).map(m => <option key={m} value={m}>{m}</option>)}
-                      </select>
-                      <select value={ampm} onChange={e => {
-                        const na = e.target.value;
-                        const nh = na === 'PM'  ? (h12 === 12  ? 12 : h12 + 12) : (h12 === 12  ? 0 : h12);
-                        setEditModalTask(p => ({ ...p, dueTime: `${String(nh).padStart(2,'0')}:${mins}` }));
-                      }} style={{ flex: 0.7, padding: '6px 4px', borderRadius: 6, border: `1px solid ${COLORS.border}`, background: COLORS.bg, color: COLORS.text, fontSize: 10, ...s, outline: 'none', textAlign: 'center', cursor: 'pointer' }}>
-                        <option value="AM">AM</option>
-                        <option value="PM">PM</option>
-                      </select>
-                    </div>
-                  );
-                })()}
+              <div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 3 }}>
+                  <div style={{ fontSize: 9, color: COLORS.textDim, ...s }}>Horario</div>
+                  {(getTaskStartTime(t) || getTaskEndTime(t)) && (
+                    <button type="button" onClick={() => setEditModalTask(p => ({ ...p, dueTime: '', startTime: '', endTime: '', durationMinutes: undefined }))}
+                      style={{ border: 'none', background: 'transparent', color: COLORS.textDim, cursor: 'pointer', fontSize: 9, ...s }}>Sin hora</button>
+                  )}
+                </div>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 6 }}>
+                  <input type="time" value={getTaskStartTime(t)} onChange={e => {
+                    const nextStart = e.target.value;
+                    setEditModalTask(p => {
+                      const endTime = p.endTime || '';
+                      const durationMinutes = nextStart && endTime && isValidTaskTimeRange(nextStart, endTime) ? timeToMinutes(endTime) - timeToMinutes(nextStart) : undefined;
+                      return { ...p, startTime: nextStart, dueTime: nextStart, endTime, durationMinutes };
+                    });
+                  }} style={{ width: '100%', padding: '6px 8px', borderRadius: 6, border: `1px solid ${COLORS.border}`, background: COLORS.bg, color: COLORS.text, fontSize: 10, ...s, outline: 'none' }} />
+                  <input type="time" value={getTaskEndTime(t)} min={getTaskStartTime(t) || undefined} onChange={e => {
+                    const nextEnd = e.target.value;
+                    setEditModalTask(p => {
+                      const startTime = getTaskStartTime(p);
+                      const durationMinutes = startTime && nextEnd && isValidTaskTimeRange(startTime, nextEnd) ? timeToMinutes(nextEnd) - timeToMinutes(startTime) : undefined;
+                      return { ...p, endTime: nextEnd, durationMinutes };
+                    });
+                  }} style={{ width: '100%', padding: '6px 8px', borderRadius: 6, border: `1px solid ${COLORS.border}`, background: COLORS.bg, color: COLORS.text, fontSize: 10, ...s, outline: 'none' }} />
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 4, fontSize: 8.5, color: isValidTaskTimeRange(getTaskStartTime(t), getTaskEndTime(t)) ? COLORS.textDim : COLORS.alert, ...s }}>
+                  <span>Inicio / Final en 24h</span>
+                  <span>{getTaskStartTime(t) && getTaskEndTime(t) ? (formatDuration(getTaskStartTime(t), getTaskEndTime(t)) || 'Final inválida') : 'Opcional'}</span>
+                </div>
               </div>
             </div>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
@@ -13300,7 +13377,8 @@ const AgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAgendaTo
                   recurrenceDays: value !== 'none'  ? [] : p.recurrenceDays,
                   alarm: value !== 'none'  ? true : p.alarm,
                   reminders: value !== 'none'  ? (p.reminders?.length  ? p.reminders : ['exact']) : p.reminders,
-                  dueTime: value !== 'none' && !p.dueTime  ? fallbackTime : p.dueTime,
+                  dueTime: value !== 'none' && !getTaskStartTime(p)  ? fallbackTime : getTaskStartTime(p),
+                  startTime: value !== 'none' && !getTaskStartTime(p)  ? fallbackTime : getTaskStartTime(p),
                   repeatUntilDate: p.repeatUntilDate || p.dueDate || dateStr,
                   repeatUntilTime: p.repeatUntilTime || '23:59',
                   intervalEvery: p.intervalEvery || 1
@@ -13331,7 +13409,7 @@ const AgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAgendaTo
               )}
               {(t.intervalRepeat || 'none') !== 'none' && (
                 <div style={{ marginTop: 8, fontSize: 9, color: COLORS.textDim, lineHeight: 1.5, ...s }}>
-                  Ejemplo: una tarea a las {t.dueTime || '--:--'} con ¿cada hora ? sonar ? cada hora hasta {t.repeatUntilDate || t.dueDate || dateStr} {t.repeatUntilTime || '23:59'}.
+                  Ejemplo: una tarea a las {getTaskStartTime(t) || '--:--'} con repetición sonará hasta {t.repeatUntilDate || t.dueDate || dateStr} {t.repeatUntilTime || '23:59'}.
                 </div>
               )}
             </div>
@@ -13455,7 +13533,7 @@ const AgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAgendaTo
                     <div key={t.id} style={{ padding: '6px 10px', borderRadius: 6, marginBottom: 2, background: COLORS.bg, display: 'flex', alignItems: 'center', gap: 5 }}>
                       <span style={{ fontSize: 10, color: COLORS.text, ...s, flex: 1 }}>{t.text}</span>
                       <span style={{ fontSize: 8, color: PRIORITY_COLORS[t.priority || 3], fontWeight: 600 }}>{PRIORITY_LABELS[t.priority || 3]}</span>
-                      <button onClick={() => { const n = new Date(); updateTaskField(t.id, 'dueTime', `${String(n.getHours()).padStart(2,'0')}:00`); }}
+                      <button onClick={() => { const n = new Date(); updateTaskStartTime(t.id, `${String(n.getHours()).padStart(2,'0')}:00`); }}
                         style={{ ...btnBase, padding: '2px 6px', background: `${COLORS.primary}10`, color: COLORS.primary, fontSize: 8 }}>Programar</button>
                     </div>
                   ))}
