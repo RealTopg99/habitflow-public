@@ -3552,6 +3552,16 @@ const injectStyles = () => {
         padding-left: 6px !important;
         padding-right: 6px !important;
       }
+      .finance-more-actions-panel {
+        left: 8px !important;
+        right: 8px !important;
+        top: 56px !important;
+        width: auto !important;
+        grid-template-columns: 1fr !important;
+      }
+      .finance-more-actions-panel button {
+        min-height: 64px !important;
+      }
       .finance-card {
         padding: 16px !important;
         border-radius: 18px !important;
@@ -7912,6 +7922,9 @@ const FinanceView = ({ data, onUpdateFinance }) => {
   const [showTransactionModal, setShowTransactionModal] = useState(false);
   const [transactionModalStep, setTransactionModalStep] = useState('type');
   const [showMoreActions, setShowMoreActions] = useState(false);
+  const [showDebtModal, setShowDebtModal] = useState(false);
+  const [showDebtHelp, setShowDebtHelp] = useState(false);
+  const [debtForm, setDebtForm] = useState({ name: '', total: '', dueDate: today, minimumPayment: '', reminderEnabled: true, reminderDaysBefore: 3, currency: 'COP' });
   const [selectedDebtId, setSelectedDebtId] = useState(null);
   const [debtPaymentAmount, setDebtPaymentAmount] = useState('');
   const [rateStatus, setRateStatus] = useState('idle');
@@ -7969,6 +7982,8 @@ const FinanceView = ({ data, onUpdateFinance }) => {
     || accountTags.find(tag => tag.id === fallbackType)
     || { id: 'custom', name: groupLabel(fallbackType), group: fallbackType || 'custom' }
   );
+  const accountTagChoices = accountTags.filter(tag => tag.group !== 'loan' && tag.id !== 'loan');
+  const accountGroupChoices = ACCOUNT_GROUPS.filter(group => group.id !== 'loan');
   const inputStyle = { padding: '10px 12px', background: COLORS.bg, border: `1px solid ${COLORS.border}`, borderRadius: 10, color: COLORS.text, outline: 'none', boxSizing: 'border-box', ...s };
   const strongInputStyle = { ...inputStyle, border: `1px solid ${COLORS.primary}55`, boxShadow: `0 0 0 1px ${COLORS.primary}12 inset` };
   const cardStyle = { background: COLORS.card, borderRadius: 18, border: `1px solid ${COLORS.border}`, padding: 20, boxShadow: '0 18px 50px rgba(0,0,0,0.18)', minWidth: 0, overflow: 'hidden' };
@@ -8029,11 +8044,16 @@ const FinanceView = ({ data, onUpdateFinance }) => {
     const tag = accountTagById(a.tagId || a.type, a.type);
     return { ...a, currency: normalizeCurrency(a.currency), tag, group: tag.group || a.type || 'custom', current: Number(a.balance || 0) + movement };
   });
+  const standardAccountBalances = accountBalances.filter(account => account.group !== 'loan' && !String(account.id || '').startsWith('debt_'));
   const groupedAccountBalances = ACCOUNT_GROUPS.map(group => ({
     ...group,
-    accounts: accountBalances.filter(account => account.group === group.id)
+    accounts: standardAccountBalances.filter(account => account.group === group.id)
   })).filter(group => group.accounts.length > 0);
-  const netWorth = accountBalances.reduce((sum, a) => sum + Number(a.current || 0), 0);
+  const selectableAccounts = accounts.filter(account => {
+    const tag = accountTagById(account.tagId || account.type, account.type);
+    return tag.group !== 'loan' && !String(account.id || '').startsWith('debt_');
+  });
+  const netWorth = standardAccountBalances.reduce((sum, a) => sum + Number(a.current || 0), 0);
   const activeRecurring = recurring.filter(r => r.active !== false);
   const recurringExpense = activeRecurring.filter(r => r.type === 'expense').reduce((sum, r) => sum + Number(r.amount || 0), 0);
   const activeSubscriptions = subscriptions.filter(item => item.active !== false);
@@ -8063,7 +8083,7 @@ const FinanceView = ({ data, onUpdateFinance }) => {
     const d = new Date(`${key}-01T12:00:00`);
     return { name: d.toLocaleDateString('es-ES', { month: 'short' }), ingresos: inc, gastos: exp, balance: inc - exp };
   });
-  const accountChartData = accountBalances.map(a => ({ name: a.name, balance: a.current }));
+  const accountChartData = standardAccountBalances.map(a => ({ name: a.name, balance: a.current }));
   const financeSections = [
     { id: 'overview', label: 'Resumen', icon: BarChart3 },
     { id: 'movements', label: 'Transacciones', icon: List },
@@ -8353,12 +8373,15 @@ const FinanceView = ({ data, onUpdateFinance }) => {
   const debtAccounts = accountBalances.filter(account => account.group === 'credit' || account.group === 'loan' || Number(account.current || 0) < 0);
   const debtItems = debtAccounts.map((account, index) => {
     const pending = Math.abs(Number(account.current || 0));
-    const total = Math.max(pending, Math.abs(Number(account.balance || 0)) * 1.65, pending * 1.35, 1);
+    const savedTotal = Number(account.debtTotal || 0);
+    const total = Math.max(savedTotal, pending, Math.abs(Number(account.balance || 0)) * 1.65, pending * 1.35, 1);
     const paid = Math.max(0, total - pending);
     const pct = Math.min(100, Math.round((paid / total) * 100));
     const dueDate = new Date(monthDate);
     dueDate.setDate(Math.min(28, 5 + (index * 10)));
-    return { ...account, pending, total, paid, pct, dueDate };
+    const savedDueDate = account.debtDueDate ? new Date(`${account.debtDueDate}T12:00:00`) : dueDate;
+    const minimumPayment = Number(account.debtMinimumPayment || Math.max(0, pending * 0.08));
+    return { ...account, pending, total, paid, pct, dueDate: savedDueDate, dueDateKey: account.debtDueDate || toYYYYMMDD(savedDueDate), minimumPayment };
   });
   const totalDebt = debtItems.reduce((sum, item) => sum + Number(item.pending || 0), 0);
   const totalDebtBase = debtItems.reduce((sum, item) => sum + Number(item.total || 0), 0);
@@ -8387,6 +8410,56 @@ const FinanceView = ({ data, onUpdateFinance }) => {
       ]
     }));
     closeDebtPayment();
+    setSection('debts');
+  };
+
+  const openDebtCreation = () => {
+    setDebtForm({
+      name: '',
+      total: '',
+      dueDate: today,
+      minimumPayment: '',
+      reminderEnabled: true,
+      reminderDaysBefore: 3,
+      currency: currency || 'COP'
+    });
+    setShowDebtModal(true);
+    setShowMoreActions(false);
+  };
+
+  const addDebt = () => {
+    const name = debtForm.name.trim();
+    const total = fromDisplayAmount(debtForm.total, debtForm.currency);
+    if (!name || !total || total <= 0) return;
+    const minimumPayment = fromDisplayAmount(debtForm.minimumPayment || Math.max(1, Number(debtForm.total || 0) * 0.08), debtForm.currency);
+    const createdAt = Date.now();
+    const dueDate = debtForm.dueDate || today;
+    onUpdateFinance(prev => ({
+      ...prev,
+      accounts: [
+        ...(prev.accounts || []),
+        {
+          id: `debt_${createdAt}`,
+          name,
+          type: 'loan',
+          tagId: 'loan',
+          currency: normalizeCurrency(debtForm.currency),
+          balance: -Math.abs(total),
+          debtTotal: Math.abs(total),
+          debtDueDate: dueDate,
+          debtMinimumPayment: Math.max(0, minimumPayment),
+          debtReminderEnabled: !!debtForm.reminderEnabled,
+          debtReminderDaysBefore: Math.max(0, Number(debtForm.reminderDaysBefore || 0)),
+          debtCreatedAt: new Date().toISOString()
+        }
+      ]
+    }));
+    setShowDebtModal(false);
+    setSection('debts');
+  };
+
+  const removeDebt = (id) => {
+    removeAccount(id);
     setSection('debts');
   };
 
@@ -8424,7 +8497,7 @@ const FinanceView = ({ data, onUpdateFinance }) => {
       id: `debt_${item.id}`,
       name: item.name,
       subtitle: 'Pago de deuda',
-      amount: Math.max(0, item.pending * 0.08),
+      amount: Math.max(0, item.minimumPayment || item.pending * 0.08),
       type: 'expense',
       date: item.dueDate
     }))
@@ -8600,29 +8673,43 @@ const FinanceView = ({ data, onUpdateFinance }) => {
       { label: 'Transferencia', icon: Repeat, run: () => openTransactionFlow('transfer') },
       { label: 'Mas acciones', icon: MoreHorizontal, run: () => setShowMoreActions(value => !value) }
     ];
+    const extraActions = [
+      { label: 'Nueva cuenta', hint: 'Bancos, efectivo y billeteras', icon: CreditCard, run: () => { setSection('accounts'); setShowMoreActions(false); } },
+      { label: 'Nueva deuda', hint: 'Fecha, cuota minima y aviso', icon: AlertCircle, run: openDebtCreation },
+      { label: 'Nuevo presupuesto', hint: 'Limites por categoria', icon: Target, run: () => { setSection('budget'); setShowMoreActions(false); } },
+      { label: 'Nueva categoria', hint: 'Organiza tus gastos', icon: List, run: () => { setSection('budget'); setShowMoreActions(false); } },
+      { label: 'Pagos recurrentes', hint: 'Cuotas y servicios fijos', icon: Repeat, run: () => { setSection('recurring'); setShowMoreActions(false); } },
+      { label: 'Suscripciones', hint: 'Apps, streaming e IA', icon: CreditCard, run: () => { setSection('subscriptions'); setShowMoreActions(false); } }
+    ];
     return (
-      <div className="finance-quick-actions" style={{ position: 'relative', display: 'grid', gridTemplateColumns: 'repeat(5, minmax(120px, 1fr))', gap: 8, overflowX: 'auto', padding: '10px 12px' }}>
-        {actions.map(action => {
-          const Icon = action.icon;
-          return (
-            <button key={action.label} onClick={action.run} style={{ ...ghostButtonStyle, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 9, minHeight: 42, flex: '0 0 auto', background: 'transparent' }}>
-              <Icon size={16} />
-              {action.label}
-            </button>
-          );
-        })}
+      <div style={{ position: 'relative', overflow: 'visible' }}>
+        <div className="finance-quick-actions" style={{ display: 'grid', gridTemplateColumns: 'repeat(5, minmax(120px, 1fr))', gap: 8, overflowX: 'auto', padding: '10px 12px' }}>
+          {actions.map(action => {
+            const Icon = action.icon;
+            const active = showMoreActions && action.label === 'Mas acciones';
+            return (
+              <button key={action.label} onClick={action.run} style={{ ...ghostButtonStyle, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 9, minHeight: 42, flex: '0 0 auto', background: active ? `${COLORS.primary}18` : 'transparent', borderColor: active ? `${COLORS.primary}66` : COLORS.border }}>
+                <Icon size={16} />
+                {action.label}
+              </button>
+            );
+          })}
+        </div>
         {showMoreActions && (
-          <div style={{ position: 'absolute', right: 12, top: 58, zIndex: 6, width: 220, padding: 8, borderRadius: 14, background: COLORS.card, border: `1px solid ${COLORS.border}`, boxShadow: '0 18px 50px rgba(0,0,0,0.35)', display: 'grid', gap: 6 }}>
-            {[
-              { label: 'Nueva cuenta', run: () => { setSection('accounts'); setShowMoreActions(false); } },
-              { label: 'Nueva deuda', run: () => { setAccountForm(f => ({ ...f, tagId: 'loan', currency: currency || 'COP' })); setSection('accounts'); setShowMoreActions(false); } },
-              { label: 'Nuevo presupuesto', run: () => { setSection('budget'); setShowMoreActions(false); } },
-              { label: 'Nueva categoria', run: () => { setSection('budget'); setShowMoreActions(false); } },
-              { label: 'Pagos recurrentes', run: () => { setSection('recurring'); setShowMoreActions(false); } },
-              { label: 'Suscripciones', run: () => { setSection('subscriptions'); setShowMoreActions(false); } }
-            ].map(item => (
-              <button key={item.label} onClick={item.run} style={{ border: 'none', background: 'transparent', color: COLORS.text, textAlign: 'left', borderRadius: 10, padding: '10px 11px', cursor: 'pointer', fontWeight: 750, ...s }}>{item.label}</button>
-            ))}
+          <div className="finance-more-actions-panel" style={{ position: 'absolute', right: 12, top: 58, zIndex: 30, width: 'min(430px, calc(100vw - 42px))', padding: 12, borderRadius: 18, background: `linear-gradient(145deg, ${COLORS.card}, ${COLORS.bg})`, border: `1px solid ${COLORS.border}`, boxShadow: '0 24px 70px rgba(0,0,0,0.48)', display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: 10 }}>
+            {extraActions.map(item => {
+              const Icon = item.icon;
+              return (
+                <button key={item.label} onClick={item.run} style={{ border: `1px solid ${COLORS.border}`, background: 'rgba(255,255,255,0.035)', color: COLORS.text, textAlign: 'left', borderRadius: 14, padding: 12, cursor: 'pointer', display: 'grid', gridTemplateColumns: '34px minmax(0,1fr)', gap: 10, alignItems: 'center', minHeight: 74, ...s }}>
+                  <span style={{ width: 34, height: 34, borderRadius: 12, display: 'grid', placeItems: 'center', background: `${COLORS.primary}14`, color: COLORS.primary }}><Icon size={16} /></span>
+                  <span style={{ minWidth: 0 }}>
+                    <strong style={{ display: 'block', fontSize: 13, color: COLORS.text }}>{item.label}</strong>
+                    <span style={{ display: 'block', color: COLORS.textDim, fontSize: 11, marginTop: 3, lineHeight: 1.35 }}>{item.hint}</span>
+                  </span>
+                </button>
+              );
+            })}
+            <button onClick={() => setShowMoreActions(false)} style={{ gridColumn: '1 / -1', border: 'none', background: 'transparent', color: COLORS.textDim, cursor: 'pointer', padding: '4px 0', ...s }}>Cerrar</button>
           </div>
         )}
       </div>
@@ -8642,7 +8729,7 @@ const FinanceView = ({ data, onUpdateFinance }) => {
       </div>
       <div className="finance-form-row-3" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1.2fr auto', gap: 10 }}>
         <select value={form.accountId} onChange={e => setForm(f => ({ ...f, accountId: e.target.value }))} style={inputStyle}>
-          {accounts.map(account => <option key={account.id} value={account.id}>{account.name} ({normalizeCurrency(account.currency)})</option>)}
+          {selectableAccounts.map(account => <option key={account.id} value={account.id}>{account.name} ({normalizeCurrency(account.currency)})</option>)}
         </select>
         <select value={form.category} disabled={form.type === 'income'} onChange={e => setForm(f => ({ ...f, category: e.target.value }))} style={inputStyle}>
           {(form.type === 'income' ? categories.filter(c => c.id === 'income') : expenseCategories).map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
@@ -8759,14 +8846,14 @@ const FinanceView = ({ data, onUpdateFinance }) => {
                     const nextAccountId = e.target.value;
                     setForm(f => ({ ...f, accountId: nextAccountId, toAccountId: f.toAccountId === nextAccountId ? accounts.find(account => account.id !== nextAccountId)?.id || f.toAccountId : f.toAccountId }));
                   }} style={modalInputStyle}>
-                    {accounts.map(account => <option key={account.id} value={account.id}>{account.name}</option>)}
+                    {selectableAccounts.map(account => <option key={account.id} value={account.id}>{account.name}</option>)}
                   </select>
                 </label>
                 {isTransfer ? (
                   <label style={{ display: 'grid', gap: 6, color: COLORS.textDim, fontSize: 11, ...s }}>
                     Cuenta destino
                     <select value={form.toAccountId} onChange={e => setForm(f => ({ ...f, toAccountId: e.target.value }))} style={modalInputStyle}>
-                      {accounts.map(account => <option key={account.id} value={account.id}>{account.name}</option>)}
+                      {selectableAccounts.map(account => <option key={account.id} value={account.id}>{account.name}</option>)}
                     </select>
                   </label>
                 ) : (
@@ -8854,9 +8941,9 @@ const FinanceView = ({ data, onUpdateFinance }) => {
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 10, marginBottom: 16 }}>
             {[
-              { label: 'Total', value: money(selectedDebt.total) },
-              { label: 'Pagado', value: money(selectedDebt.paid) },
-              { label: 'Pendiente', value: money(selectedDebt.pending) }
+              { label: 'Total', value: accountMoney(selectedDebt.total, selectedDebt.currency) },
+              { label: 'Pagado', value: accountMoney(selectedDebt.paid, selectedDebt.currency) },
+              { label: 'Pendiente', value: accountMoney(selectedDebt.pending, selectedDebt.currency) }
             ].map(item => (
               <div key={item.label} style={{ padding: 12, borderRadius: 14, border: `1px solid ${COLORS.border}`, background: 'rgba(255,255,255,0.035)' }}>
                 <div style={{ color: COLORS.textDim, fontSize: 10, textTransform: 'uppercase', ...s }}>{item.label}</div>
@@ -8876,6 +8963,151 @@ const FinanceView = ({ data, onUpdateFinance }) => {
             <button onClick={closeDebtPayment} style={ghostButtonStyle}>Cancelar</button>
             <button onClick={registerDebtPayment} disabled={!canPay} style={{ ...proButtonStyle, opacity: canPay ? 1 : 0.55 }}>Guardar pago</button>
           </div>
+        </div>
+      </div>
+    );
+  };
+
+  const renderDebtModal = () => {
+    if (!showDebtModal) return null;
+    const debtCurrency = normalizeCurrency(debtForm.currency);
+    const canSaveDebt = debtForm.name.trim() && Number(debtForm.total || 0) > 0 && debtForm.dueDate;
+    const modalInputStyle = { ...inputStyle, width: '100%', minHeight: 44 };
+    return (
+      <div className="finance-modal-backdrop" onMouseDown={(event) => { if (event.target === event.currentTarget) setShowDebtModal(false); }} style={{
+        position: 'fixed',
+        inset: 0,
+        zIndex: 10001,
+        background: 'rgba(0,0,0,0.72)',
+        backdropFilter: 'blur(14px)',
+        display: 'grid',
+        placeItems: 'center',
+        padding: 18
+      }}>
+        <div className="finance-modal-card" style={{
+          width: 'min(560px, calc(100vw - 28px))',
+          maxHeight: 'min(780px, calc(100dvh - 28px))',
+          overflowY: 'auto',
+          background: `linear-gradient(145deg, rgba(17,22,30,0.98), rgba(7,9,13,0.99))`,
+          border: `1px solid rgba(255,255,255,0.12)`,
+          borderRadius: 22,
+          boxShadow: '0 28px 90px rgba(0,0,0,0.62), inset 0 1px 0 rgba(255,255,255,0.05)',
+          padding: 22,
+          color: COLORS.text
+        }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', gap: 14, alignItems: 'start', marginBottom: 18 }}>
+            <div>
+              <h3 style={{ margin: 0, fontSize: 25, fontFamily: "'DM Serif Display', serif", color: COLORS.text }}>Nueva deuda</h3>
+              <p style={{ margin: '6px 0 0', color: COLORS.textDim, fontSize: 13, ...s }}>Registra una deuda con fecha de pago oportuno, cuota minima y aviso.</p>
+            </div>
+            <button onClick={() => setShowDebtModal(false)} aria-label="Cerrar" style={{ width: 38, height: 38, borderRadius: 12, border: `1px solid ${COLORS.border}`, background: COLORS.bg, color: COLORS.text, cursor: 'pointer' }}><X size={18} /></button>
+          </div>
+
+          <div style={{ display: 'grid', gap: 13 }}>
+            <label style={{ display: 'grid', gap: 6, color: COLORS.textDim, fontSize: 11, ...s }}>
+              Nombre de la deuda
+              <input value={debtForm.name} onChange={e => setDebtForm(f => ({ ...f, name: e.target.value }))} placeholder="Ej: Tarjeta Bancolombia, prestamo personal" style={modalInputStyle} />
+            </label>
+
+            <div className="finance-modal-two" style={{ display: 'grid', gridTemplateColumns: '1fr 130px', gap: 10 }}>
+              <label style={{ display: 'grid', gap: 6, color: COLORS.textDim, fontSize: 11, ...s }}>
+                Saldo total pendiente
+                <FinanceMoneyInput value={debtForm.total} onValueChange={value => setDebtForm(f => ({ ...f, total: value }))} placeholder={`$ 0 (${debtCurrency})`} style={modalInputStyle} />
+              </label>
+              <label style={{ display: 'grid', gap: 6, color: COLORS.textDim, fontSize: 11, ...s }}>
+                Moneda
+                <select value={debtForm.currency} onChange={e => setDebtForm(f => ({ ...f, currency: e.target.value, total: switchDraftCurrency(f.total, f.currency, e.target.value), minimumPayment: switchDraftCurrency(f.minimumPayment, f.currency, e.target.value) }))} style={modalInputStyle}>
+                  <option value="COP">COP</option>
+                  <option value="USD">USD</option>
+                </select>
+              </label>
+            </div>
+
+            <div className="finance-modal-two" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+              <label style={{ display: 'grid', gap: 6, color: COLORS.textDim, fontSize: 11, ...s }}>
+                Fecha de pago oportuno
+                <input type="date" value={debtForm.dueDate} onClick={e => openNativeDatePicker(e.currentTarget)} onFocus={e => openNativeDatePicker(e.currentTarget)} onChange={e => setDebtForm(f => ({ ...f, dueDate: e.target.value }))} style={modalInputStyle} />
+              </label>
+              <label style={{ display: 'grid', gap: 6, color: COLORS.textDim, fontSize: 11, ...s }}>
+                Cuota minima a pagar
+                <FinanceMoneyInput value={debtForm.minimumPayment} onValueChange={value => setDebtForm(f => ({ ...f, minimumPayment: value }))} placeholder={`Opcional (${debtCurrency})`} style={modalInputStyle} />
+              </label>
+            </div>
+
+            <div style={{ border: `1px solid ${COLORS.border}`, borderRadius: 16, padding: 12, background: 'rgba(255,255,255,0.035)', display: 'grid', gap: 10 }}>
+              <label style={{ display: 'flex', gap: 10, alignItems: 'center', color: COLORS.text, fontSize: 13, fontWeight: 850, ...s }}>
+                <input type="checkbox" checked={!!debtForm.reminderEnabled} onChange={e => setDebtForm(f => ({ ...f, reminderEnabled: e.target.checked }))} />
+                Activar aviso de pago
+              </label>
+              {debtForm.reminderEnabled && (
+                <label style={{ display: 'grid', gap: 6, color: COLORS.textDim, fontSize: 11, ...s }}>
+                  Avisarme antes de la fecha
+                  <select value={debtForm.reminderDaysBefore} onChange={e => setDebtForm(f => ({ ...f, reminderDaysBefore: e.target.value }))} style={modalInputStyle}>
+                    <option value="0">El mismo dia</option>
+                    <option value="1">1 dia antes</option>
+                    <option value="3">3 dias antes</option>
+                    <option value="5">5 dias antes</option>
+                    <option value="7">7 dias antes</option>
+                  </select>
+                </label>
+              )}
+              <div style={{ color: COLORS.textDim, fontSize: 11, lineHeight: 1.45, ...s }}>El aviso se guarda con la deuda y te recordara pagar la cuota minima en tus dispositivos con notificaciones activas.</div>
+            </div>
+
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1.2fr', gap: 10, paddingTop: 10 }}>
+              <button onClick={() => setShowDebtModal(false)} style={ghostButtonStyle}>Cancelar</button>
+              <button onClick={addDebt} disabled={!canSaveDebt} style={{ ...proButtonStyle, opacity: canSaveDebt ? 1 : 0.55 }}>Guardar deuda</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  const renderDebtHelpModal = () => {
+    if (!showDebtHelp) return null;
+    const steps = [
+      'Crea cada deuda desde Nueva deuda. Escribe el saldo pendiente real, la fecha de pago oportuno y tu cuota minima.',
+      'Cuando hagas un abono, entra a Deudas y usa Registrar pago. HabitFlow baja el saldo pendiente automaticamente.',
+      'Mantén activado el aviso para recordar el pago antes de la fecha. En cada dispositivo debes tener notificaciones activas.',
+      'No crees deudas desde Cuentas. Esa pantalla queda para bancos, efectivo, billeteras y ahorros.'
+    ];
+    return (
+      <div className="finance-modal-backdrop" onMouseDown={(event) => { if (event.target === event.currentTarget) setShowDebtHelp(false); }} style={{
+        position: 'fixed',
+        inset: 0,
+        zIndex: 10002,
+        background: 'rgba(0,0,0,0.72)',
+        backdropFilter: 'blur(14px)',
+        display: 'grid',
+        placeItems: 'center',
+        padding: 18
+      }}>
+        <div className="finance-modal-card" style={{
+          width: 'min(520px, calc(100vw - 28px))',
+          background: `linear-gradient(145deg, rgba(17,22,30,0.98), rgba(7,9,13,0.99))`,
+          border: `1px solid rgba(255,255,255,0.12)`,
+          borderRadius: 22,
+          boxShadow: '0 28px 90px rgba(0,0,0,0.62)',
+          padding: 22,
+          color: COLORS.text
+        }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', gap: 14, alignItems: 'start', marginBottom: 18 }}>
+            <div>
+              <h3 style={{ margin: 0, fontSize: 24, fontFamily: "'DM Serif Display', serif", color: COLORS.text }}>Como usar Deudas</h3>
+              <p style={{ margin: '6px 0 0', color: COLORS.textDim, fontSize: 13, ...s }}>Una forma limpia para saber cuanto debes, cuando pagar y como vas avanzando.</p>
+            </div>
+            <button onClick={() => setShowDebtHelp(false)} aria-label="Cerrar" style={{ width: 38, height: 38, borderRadius: 12, border: `1px solid ${COLORS.border}`, background: COLORS.bg, color: COLORS.text, cursor: 'pointer' }}><X size={18} /></button>
+          </div>
+          <div style={{ display: 'grid', gap: 10 }}>
+            {steps.map((step, index) => (
+              <div key={step} style={{ display: 'grid', gridTemplateColumns: '32px 1fr', gap: 12, alignItems: 'start', padding: 12, borderRadius: 14, border: `1px solid ${COLORS.border}`, background: 'rgba(255,255,255,0.035)' }}>
+                <span style={{ width: 32, height: 32, borderRadius: 999, display: 'grid', placeItems: 'center', background: `${COLORS.primary}18`, color: COLORS.primary, fontWeight: 900, ...s }}>{index + 1}</span>
+                <span style={{ color: COLORS.text, fontSize: 13, lineHeight: 1.55, ...s }}>{step}</span>
+              </div>
+            ))}
+          </div>
+          <button onClick={() => setShowDebtHelp(false)} style={{ ...proButtonStyle, width: '100%', marginTop: 16 }}>Entendido</button>
         </div>
       </div>
     );
@@ -8912,7 +9144,7 @@ const FinanceView = ({ data, onUpdateFinance }) => {
     <div style={financeCardStyle}>
       {sectionTitle('Cuentas', <button onClick={() => setSection('accounts')} style={{ ...ghostButtonStyle, minHeight: 34, padding: '8px 10px' }}>Ver todas <ChevronRight size={14} /></button>)}
       <div style={{ display: 'grid', gap: 10 }}>
-        {accountBalances.slice(0, 4).map(account => (
+        {standardAccountBalances.slice(0, 4).map(account => (
           <div key={account.id} style={{ display: 'grid', gridTemplateColumns: 'minmax(0,1fr) auto', gap: 12, alignItems: 'center', padding: '10px 0', borderBottom: `1px solid ${COLORS.border}` }}>
             <div style={{ display: 'flex', gap: 10, alignItems: 'center', minWidth: 0 }}>
               <span style={{ width: 34, height: 34, borderRadius: 12, display: 'grid', placeItems: 'center', background: 'rgba(255,63,120,0.12)', color: COLORS.primary }}><CreditCard size={16} /></span>
@@ -8931,7 +9163,10 @@ const FinanceView = ({ data, onUpdateFinance }) => {
 
   const renderDebtsCard = () => (
     <div style={financeCardStyle}>
-      {sectionTitle('Deudas', <button onClick={() => setSection('debts')} style={{ ...ghostButtonStyle, minHeight: 34, padding: '8px 10px' }}>Ver todas <ChevronRight size={14} /></button>)}
+      {sectionTitle('Deudas', <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', justifyContent: 'flex-end' }}>
+        <button onClick={() => setShowDebtHelp(true)} style={{ ...ghostButtonStyle, minHeight: 34, padding: '8px 10px' }}>Como usar</button>
+        <button onClick={() => setSection('debts')} style={{ ...ghostButtonStyle, minHeight: 34, padding: '8px 10px' }}>Ver todas <ChevronRight size={14} /></button>
+      </div>)}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr auto', gap: 10, alignItems: 'end', marginBottom: 12 }}>
         <div>
           <div style={{ color: COLORS.textDim, fontSize: 12, ...s }}>Pendiente total</div>
@@ -8949,15 +9184,21 @@ const FinanceView = ({ data, onUpdateFinance }) => {
                 <strong style={{ color: COLORS.text, fontSize: 13, ...s }}>{item.name}</strong>
                 <div style={{ color: COLORS.textDim, fontSize: 11, ...s }}>Vence {item.dueDate.toLocaleDateString('es-CO', { day: '2-digit', month: 'short', year: 'numeric' })}</div>
               </div>
-              <div style={{ textAlign: 'right', color: COLORS.text, fontWeight: 850, fontSize: 12, ...s }}>{money(item.pending)}<div style={{ color: COLORS.textDim, fontWeight: 600 }}>de {money(item.total)}</div></div>
+              <div style={{ textAlign: 'right', color: COLORS.text, fontWeight: 850, fontSize: 12, ...s }}>{accountMoney(item.pending, item.currency)}<div style={{ color: COLORS.textDim, fontWeight: 600 }}>de {accountMoney(item.total, item.currency)}</div></div>
             </div>
             {progressBar(item.pct, COLORS.primary)}
-            <div style={{ color: COLORS.primary, fontSize: 11, textAlign: 'right', marginTop: 6, ...s }}>{item.pct}%</div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', gap: 8, alignItems: 'center', marginTop: 6 }}>
+              <span style={{ color: COLORS.textDim, fontSize: 11, ...s }}>Cuota min. {accountMoney(item.minimumPayment, item.currency)}</span>
+              <span style={{ color: COLORS.primary, fontSize: 11, ...s }}>{item.pct}%</span>
+            </div>
           </div>
         ))}
-        {!debtItems.length && <div style={{ color: COLORS.textDim, fontSize: 13, lineHeight: 1.6, ...s }}>Crea una cuenta tipo credito o deuda para verla aqui.</div>}
+        {!debtItems.length && <div style={{ color: COLORS.textDim, fontSize: 13, lineHeight: 1.6, ...s }}>Crea tu primera deuda desde el boton Nueva deuda. Asi veras fecha, cuota minima y progreso.</div>}
       </div>
-      <button onClick={() => setSection('debts')} style={{ ...ghostButtonStyle, marginTop: 14, width: '100%' }}>Ver todas mis deudas <ChevronRight size={14} /></button>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginTop: 14 }}>
+        <button onClick={openDebtCreation} style={{ ...proButtonStyle, minHeight: 40 }}><Plus size={14} /> Nueva deuda</button>
+        <button onClick={() => setSection('debts')} style={{ ...ghostButtonStyle, width: '100%' }}>Gestionar <ChevronRight size={14} /></button>
+      </div>
     </div>
   );
 
@@ -9013,7 +9254,7 @@ const FinanceView = ({ data, onUpdateFinance }) => {
           <div className="finance-form-row-4" style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr 1fr 1fr auto', gap: 10 }}>
             <input value={accountForm.name} onChange={e => setAccountForm(f => ({ ...f, name: e.target.value }))} placeholder="Nueva cuenta" style={inputStyle} />
             <select value={accountForm.tagId} onChange={e => setAccountForm(f => ({ ...f, tagId: e.target.value }))} style={inputStyle}>
-              {accountTags.map(tag => <option key={tag.id} value={tag.id}>{tag.name}</option>)}
+              {accountTagChoices.map(tag => <option key={tag.id} value={tag.id}>{tag.name}</option>)}
               <option value="__new__">Crear etiqueta</option>
             </select>
             <select value={accountForm.currency} onChange={e => updateAccountFormCurrency(e.target.value)} style={inputStyle}>
@@ -9027,7 +9268,7 @@ const FinanceView = ({ data, onUpdateFinance }) => {
             <div className="finance-form-row-3" style={{ display: 'grid', gridTemplateColumns: '1fr 180px', gap: 10 }}>
               <input value={accountForm.customTag} onChange={e => setAccountForm(f => ({ ...f, customTag: e.target.value }))} placeholder="Etiqueta personalizada" style={inputStyle} />
               <select value={accountForm.customGroup} onChange={e => setAccountForm(f => ({ ...f, customGroup: e.target.value }))} style={inputStyle}>
-                {ACCOUNT_GROUPS.map(group => <option key={group.id} value={group.id}>{group.label}</option>)}
+                {accountGroupChoices.map(group => <option key={group.id} value={group.id}>{group.label}</option>)}
               </select>
             </div>
           )}
@@ -9076,7 +9317,10 @@ const FinanceView = ({ data, onUpdateFinance }) => {
               <h3 style={{ margin: 0, color: COLORS.text, fontFamily: "'DM Serif Display', serif", fontSize: 24 }}>Deudas</h3>
               <p style={{ margin: '4px 0 0', color: COLORS.textDim, fontSize: 12, ...s }}>Controla pagos, progreso y saldo pendiente.</p>
             </div>
-            <button onClick={() => { setAccountForm(f => ({ ...f, tagId: 'loan', currency: currency || 'COP' })); setSection('accounts'); }} style={proButtonStyle}><Plus size={15} /> Nueva deuda</button>
+            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', justifyContent: 'flex-end' }}>
+              <button onClick={() => setShowDebtHelp(true)} style={ghostButtonStyle}>Como usar</button>
+              <button onClick={openDebtCreation} style={proButtonStyle}><Plus size={15} /> Nueva deuda</button>
+            </div>
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: 12 }}>
             {[
@@ -9091,7 +9335,10 @@ const FinanceView = ({ data, onUpdateFinance }) => {
             ))}
           </div>
           <div style={{ display: 'grid', gap: 10 }}>
-            {debtItems.map(item => (
+            {debtItems.map(item => {
+              const daysLeft = daysUntil(item.dueDate);
+              const hasReminder = item.debtReminderEnabled !== false && item.debtDueDate;
+              return (
               <div key={item.id} style={{ padding: 14, borderRadius: 16, background: 'rgba(255,255,255,0.035)', border: `1px solid ${COLORS.border}` }}>
                 <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0,1fr) auto', gap: 12, alignItems: 'start' }}>
                   <div style={{ minWidth: 0 }}>
@@ -9099,18 +9346,35 @@ const FinanceView = ({ data, onUpdateFinance }) => {
                     <div style={{ color: COLORS.textDim, fontSize: 11, marginTop: 2, ...s }}>Vence {item.dueDate.toLocaleDateString('es-CO', { day: '2-digit', month: 'short', year: 'numeric' })}</div>
                   </div>
                   <div style={{ textAlign: 'right' }}>
-                    <strong style={{ color: COLORS.text, fontSize: 15, ...s }}>{money(item.pending)}</strong>
-                    <div style={{ color: COLORS.textDim, fontSize: 11, ...s }}>de {money(item.total)}</div>
+                    <strong style={{ color: COLORS.text, fontSize: 15, ...s }}>{accountMoney(item.pending, item.currency)}</strong>
+                    <div style={{ color: COLORS.textDim, fontSize: 11, ...s }}>de {accountMoney(item.total, item.currency)}</div>
                   </div>
                 </div>
                 <div style={{ marginTop: 12 }}>{progressBar(item.pct, COLORS.primary)}</div>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr auto', gap: 10, alignItems: 'center', marginTop: 12 }}>
-                  <span style={{ color: COLORS.primary, fontSize: 12, fontWeight: 850, ...s }}>{item.pct}% pagado</span>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: 8, marginTop: 12 }}>
+                  {[
+                    { label: 'Cuota minima', value: accountMoney(item.minimumPayment, item.currency) },
+                    { label: 'Pago oportuno', value: item.dueDateKey || toYYYYMMDD(item.dueDate) },
+                    { label: hasReminder ? 'Aviso' : 'Aviso', value: hasReminder ? `${Number(item.debtReminderDaysBefore || 0)} dias antes` : 'Desactivado' }
+                  ].map(meta => (
+                    <div key={meta.label} style={{ padding: '9px 10px', borderRadius: 12, background: 'rgba(255,255,255,0.03)', border: `1px solid ${COLORS.border}` }}>
+                      <div style={{ color: COLORS.textDim, fontSize: 9, letterSpacing: '0.08em', textTransform: 'uppercase', ...s }}>{meta.label}</div>
+                      <div style={{ color: COLORS.text, fontSize: 12, fontWeight: 850, marginTop: 4, ...s }}>{meta.value}</div>
+                    </div>
+                  ))}
+                </div>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr auto auto', gap: 10, alignItems: 'center', marginTop: 12 }}>
+                  <span style={{ color: COLORS.primary, fontSize: 12, fontWeight: 850, ...s }}>{item.pct}% pagado - faltan {daysLeft} dias</span>
                   <button onClick={() => openDebtPayment(item)} style={{ ...ghostButtonStyle, minHeight: 36, padding: '8px 12px' }}>Registrar pago</button>
+                  <button onClick={() => removeDebt(item.id)} className="finance-icon-button" title="Eliminar deuda" style={{ width: 36, height: 36, borderRadius: 11, border: `1px solid ${COLORS.border}`, background: `${COLORS.alert}10`, color: COLORS.alert, cursor: 'pointer' }}><Trash2 size={14} /></button>
                 </div>
               </div>
-            ))}
-            {!debtItems.length && <div style={{ color: COLORS.textDim, fontSize: 13, padding: 20, textAlign: 'center', ...s }}>No tienes deudas registradas.</div>}
+            );})}
+            {!debtItems.length && (
+              <div style={{ color: COLORS.textDim, fontSize: 13, padding: 20, textAlign: 'center', border: `1px dashed ${COLORS.border}`, borderRadius: 16, ...s }}>
+                No tienes deudas registradas. Usa Nueva deuda para agregar saldo, cuota minima, fecha de pago oportuno y recordatorio.
+              </div>
+            )}
           </div>
         </div>
       );
@@ -9264,7 +9528,7 @@ const FinanceView = ({ data, onUpdateFinance }) => {
             {renderFinanceTabs()}
             {renderMainContent()}
           </div>
-          <div className="finance-action-strip" style={{ ...financeCardStyle, padding: 0, borderRadius: 14 }}>
+          <div className="finance-action-strip" style={{ ...financeCardStyle, padding: 0, borderRadius: 14, overflow: 'visible', position: 'relative', zIndex: showMoreActions ? 20 : 1 }}>
             {renderQuickActions()}
           </div>
           <div className="finance-bottom-grid" style={{ display: 'grid', gridTemplateColumns: 'minmax(260px, 0.72fr) minmax(300px, 1fr)', gap: 14 }}>
@@ -9283,6 +9547,8 @@ const FinanceView = ({ data, onUpdateFinance }) => {
     </div>
     {renderTransactionModal()}
     {renderDebtPaymentModal()}
+    {renderDebtModal()}
+    {renderDebtHelpModal()}
     </>
   );
 
@@ -9404,7 +9670,7 @@ const FinanceView = ({ data, onUpdateFinance }) => {
                 const nextCurrency = normalizeCurrency(nextAccount?.currency || currency);
                 setForm(f => ({ ...f, accountId: e.target.value, amount: switchDraftCurrency(f.amount, previousCurrency, nextCurrency) }));
               }} style={inputStyle}>
-                {accounts.map(a => <option key={a.id} value={a.id}>{a.name}</option>)}
+                {selectableAccounts.map(a => <option key={a.id} value={a.id}>{a.name}</option>)}
               </select>
               <input value={form.payee} onChange={e => setForm(f => ({ ...f, payee: e.target.value }))} placeholder="Comercio / origen" style={inputStyle} />
               <button className="lab-cta" onClick={addTransaction} style={{ borderRadius: 999, padding: '10px 16px', cursor: 'pointer' }}><span>Agregar</span></button>
@@ -9533,7 +9799,7 @@ const FinanceView = ({ data, onUpdateFinance }) => {
                 const nextCurrency = normalizeCurrency(nextAccount?.currency || currency);
                 setSubscriptionForm(f => ({ ...f, accountId: e.target.value, amount: switchDraftCurrency(f.amount, previousCurrency, nextCurrency) }));
               }} style={inputStyle}>
-                {accounts.map(account => <option key={account.id} value={account.id}>{account.name}</option>)}
+                {selectableAccounts.map(account => <option key={account.id} value={account.id}>{account.name}</option>)}
               </select>
             </div>
             <div className="finance-subscription-form" style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 1fr) auto', gap: 9, marginBottom: 18 }}>
@@ -9682,7 +9948,7 @@ const FinanceView = ({ data, onUpdateFinance }) => {
             <div className="finance-compact-form finance-account-form" style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) 150px 112px', gap: 8, marginBottom: 8 }}>
               <input value={accountForm.name} onChange={e => setAccountForm(f => ({ ...f, name: e.target.value }))} placeholder="Banco o entidad" style={{ ...inputStyle, padding: '9px 10px', fontSize: 11 }} />
               <select value={accountForm.tagId} onChange={e => setAccountForm(f => ({ ...f, tagId: e.target.value }))} style={{ ...inputStyle, padding: '9px 10px', fontSize: 11 }}>
-                {accountTags.map(tag => <option key={tag.id} value={tag.id}>{tag.name}</option>)}
+                {accountTagChoices.map(tag => <option key={tag.id} value={tag.id}>{tag.name}</option>)}
                 <option value="__new__">+ Nueva etiqueta</option>
               </select>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 3, padding: 3, borderRadius: 999, background: COLORS.bg, border: `1px solid ${COLORS.border}` }}>
@@ -9706,7 +9972,7 @@ const FinanceView = ({ data, onUpdateFinance }) => {
               <div className="finance-compact-form finance-account-tag-form" style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) 150px', gap: 8, marginBottom: 8 }}>
                 <input value={accountForm.customTag} onChange={e => setAccountForm(f => ({ ...f, customTag: e.target.value }))} placeholder="Nombre etiqueta ej: Cuenta de ahorros" style={{ ...inputStyle, padding: '9px 10px', fontSize: 11 }} />
                 <select value={accountForm.customGroup} onChange={e => setAccountForm(f => ({ ...f, customGroup: e.target.value }))} style={{ ...inputStyle, padding: '9px 10px', fontSize: 11 }}>
-                  {ACCOUNT_GROUPS.map(group => <option key={group.id} value={group.id}>{group.label}</option>)}
+                  {accountGroupChoices.map(group => <option key={group.id} value={group.id}>{group.label}</option>)}
                 </select>
               </div>
             )}
@@ -15119,6 +15385,72 @@ const HabitFlowApp = () => {
       document.removeEventListener('visibilitychange', onWake);
     };
   }, [data?.healthData]);
+
+  useEffect(() => {
+    if (!data?.financeData?.accounts?.length) return;
+    if (typeof Notification === 'undefined') return;
+    if (Notification.permission !== 'granted') return;
+
+    const checkDebtNotifications = () => {
+      const now = new Date();
+      const todayKey = toYYYYMMDD(now);
+      const finance = data.financeData || {};
+      const copRate = Math.max(1, Number(finance.copRate || 4000));
+      const sentMap = getSentNotificationMap();
+      const keepAfter = now.getTime() - 14 * 86400000;
+      Object.keys(sentMap).forEach(key => { if (sentMap[key] < keepAfter) delete sentMap[key]; });
+      let changed = false;
+
+      const formatDebtAmount = (amount, accountCurrency = finance.currency || 'USD') => {
+        const currency = accountCurrency === 'COP' ? 'COP' : 'USD';
+        const displayAmount = currency === 'COP' ? Number(amount || 0) * copRate : Number(amount || 0);
+        return displayAmount.toLocaleString(currency === 'COP' ? 'es-CO' : 'en-US', {
+          style: 'currency',
+          currency,
+          maximumFractionDigits: currency === 'COP' ? 0 : 2
+        });
+      };
+
+      (finance.accounts || []).forEach(account => {
+        if (!account.debtDueDate || account.debtReminderEnabled === false) return;
+        const tagGroup = (finance.accountTags || []).find(tag => tag.id === account.tagId)?.group || account.type;
+        if (tagGroup !== 'loan' && !String(account.id || '').startsWith('debt_') && Number(account.balance || 0) >= 0) return;
+
+        const due = new Date(`${account.debtDueDate}T12:00:00`);
+        if (Number.isNaN(due.getTime())) return;
+        const reminderDays = Math.max(0, Number(account.debtReminderDaysBefore || 0));
+        const start = new Date(due.getTime() - reminderDays * 86400000);
+        const todayNoon = new Date(`${todayKey}T12:00:00`);
+        if (todayNoon < start || todayNoon > due) return;
+
+        const key = `finance-debt:${account.id}:${todayKey}:${account.debtDueDate}`;
+        if (sentMap[key]) return;
+        const minimumPayment = Math.max(0, Number(account.debtMinimumPayment || Math.abs(Number(account.balance || 0)) * 0.08));
+        sentMap[key] = now.getTime();
+        changed = true;
+        showHabitFlowNotification('HabitFlow - Pago de deuda', {
+          body: `${account.name}\nCuota minima: ${formatDebtAmount(minimumPayment, account.currency)}\nPago oportuno: ${account.debtDueDate}`,
+          tag: key,
+          data: { view: 'finance', section: 'debts', debtId: account.id },
+          renotify: true,
+          requireInteraction: true
+        });
+      });
+
+      if (changed) saveSentNotificationMap(sentMap);
+    };
+
+    checkDebtNotifications();
+    const interval = setInterval(checkDebtNotifications, 60000);
+    const onWake = () => checkDebtNotifications();
+    window.addEventListener('focus', onWake);
+    document.addEventListener('visibilitychange', onWake);
+    return () => {
+      clearInterval(interval);
+      window.removeEventListener('focus', onWake);
+      document.removeEventListener('visibilitychange', onWake);
+    };
+  }, [data?.financeData]);
 
   const persist = useCallback((newData) => {
     setData(newData);

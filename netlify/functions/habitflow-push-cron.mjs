@@ -69,14 +69,84 @@ const parseTimeToMinutes = (value) => {
   return hours * 60 + minutes;
 };
 
+const minutesToTime = (mins) => {
+  const clean = ((Math.round(mins) % 1440) + 1440) % 1440;
+  const hours = Math.floor(clean / 60);
+  const minutes = clean % 60;
+  return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
+};
+
+const daysBetweenDateStrings = (start, end) => Math.round((new Date(`${end}T12:00:00Z`).getTime() - new Date(`${start}T12:00:00Z`).getTime()) / 86400000);
+
+const taskIntervalMinutes = (task) => {
+  const mode = task?.intervalRepeat || 'none';
+  if (mode === 'minute') return 1;
+  if (mode === 'hour') return 60;
+  if (mode === 'customHours') {
+    const hours = Number(task.intervalEvery || 1);
+    return Number.isFinite(hours) && hours > 0 ? Math.max(1, Math.round(hours * 60)) : 60;
+  }
+  return 0;
+};
+
+const generateIntervalDates = (task, fromDate, count = 31) => {
+  const intervalMins = taskIntervalMinutes(task);
+  if (!intervalMins || !task.dueTime) return [];
+  const endDate = task.repeatUntilDate || fromDate;
+  const startMins = parseTimeToMinutes(task.dueTime);
+  const endMins = parseTimeToMinutes(task.repeatUntilTime || '23:59');
+  if (startMins === null || endMins === null) return [];
+  const endAbs = daysBetweenDateStrings(fromDate, endDate) * 1440 + endMins;
+  if (endAbs < startMins) return [];
+  const dates = new Set();
+  for (let occurrenceAbs = startMins; occurrenceAbs <= endAbs; occurrenceAbs += intervalMins) {
+    const dayOffset = Math.floor(occurrenceAbs / 1440);
+    if (dayOffset >= count) break;
+    dates.add(addDaysToDateString(fromDate, dayOffset));
+  }
+  return Array.from(dates);
+};
+
+const intervalDueSlots = (task, localNow, reminderMins) => {
+  const intervalMins = taskIntervalMinutes(task);
+  if (!intervalMins || !task.dueTime) return [];
+  const anchorDate = task._intervalAnchorDate || task.dueDate || localNow.date;
+  const startMins = parseTimeToMinutes(task.dueTime);
+  if (startMins === null) return [];
+  const endDate = task.repeatUntilDate || anchorDate;
+  const endMins = parseTimeToMinutes(task.repeatUntilTime || '23:59');
+  if (endMins === null) return [];
+  const startAbs = startMins;
+  const endAbs = daysBetweenDateStrings(anchorDate, endDate) * 1440 + endMins;
+  const nowAbs = daysBetweenDateStrings(anchorDate, localNow.date) * 1440 + localNow.msOfDay / 60000;
+  if (endAbs < startAbs || nowAbs < startAbs - reminderMins - 2 || nowAbs > endAbs + 2) return [];
+  const baseIndex = Math.floor((nowAbs + reminderMins - startAbs) / intervalMins);
+  const slots = [];
+  for (let i = Math.max(0, baseIndex - 1); i <= baseIndex + 1; i += 1) {
+    const occurrenceAbs = startAbs + i * intervalMins;
+    if (occurrenceAbs < startAbs || occurrenceAbs > endAbs) continue;
+    const notifyAbs = occurrenceAbs - reminderMins;
+    const diff = notifyAbs * 60000 - nowAbs * 60000;
+    if (diff <= 30000 && diff >= -180000) {
+      const dayOffset = Math.floor(occurrenceAbs / 1440);
+      const occurrenceDate = addDaysToDateString(anchorDate, dayOffset);
+      const occurrenceTime = minutesToTime(occurrenceAbs);
+      slots.push({ date: occurrenceDate, time: occurrenceTime, key: `${occurrenceDate}:${occurrenceTime}` });
+    }
+  }
+  return slots;
+};
+
 const generateRecurrenceDates = (task, fromDate, count = 8) => {
   if (!task.recurrence || task.recurrence === 'none') return [];
   const dates = [];
   const start = new Date(`${fromDate}T12:00:00Z`);
+  const untilDate = task.recurrenceUntilDate || '';
   for (let i = 0; i < count; i += 1) {
     const d = new Date(start);
     d.setUTCDate(d.getUTCDate() + i);
     const ds = toYYYYMMDD(d);
+    if (untilDate && ds > untilDate) break;
     const day = d.getUTCDay();
     if (task.recurrence === 'daily') dates.push(ds);
     else if (task.recurrence === 'weekdays' && day >= 1 && day <= 5) dates.push(ds);
@@ -108,22 +178,79 @@ const reminderLabel = (task) => {
   })[reminder] || 'Recordatorio';
 };
 
+const localWeekday = (dateStr) => new Date(`${dateStr}T12:00:00Z`).getUTCDay();
+
+const isExpectedHabitDay = (habit, dateStr) => {
+  if (!habit || habit.active === false) return false;
+  const weekday = localWeekday(dateStr);
+  if (Array.isArray(habit.frequencyDays) && habit.frequencyDays.length) {
+    return habit.frequencyDays.map(Number).includes(weekday);
+  }
+  if (habit.frequency === 'weekdays') return weekday >= 1 && weekday <= 5;
+  if (habit.frequency === 'weekends') return weekday === 0 || weekday === 6;
+  return true;
+};
+
+const isHabitCompleted = (data, habitId, dateStr) =>
+  (data?.records || []).some((record) => record.habitId === habitId && record.date === dateStr && record.completed);
+
+const isDueMinute = (localNow, at) => {
+  const atMinutes = parseTimeToMinutes(at);
+  if (atMinutes === null) return false;
+  const diff = atMinutes * 60000 - localNow.msOfDay;
+  return diff <= 30000 && diff >= -180000;
+};
+
+const dueHabitRemindersForUser = (row, now) => {
+  const timeZone = row.data?.user?.timezone || DEFAULT_TIME_ZONE;
+  const localNow = getZonedNow(now, timeZone);
+  const items = [];
+  (row.data?.habits || []).forEach((habit) => {
+    const reminder = habit?.reminder;
+    if (habit?.active === false || !reminder?.enabled || !reminder?.time) return;
+    if (!isExpectedHabitDay(habit, localNow.date) || isHabitCompleted(row.data, habit.id, localNow.date)) return;
+    const reminderDays = Array.isArray(reminder.days) ? reminder.days.map(Number) : [];
+    if (reminderDays.length && !reminderDays.includes(localWeekday(localNow.date))) return;
+    if (!isDueMinute(localNow, reminder.time)) return;
+    items.push({
+      type: 'habit-reminder',
+      date: localNow.date,
+      deliveryKey: `${row.user_id}:habit-reminder:${habit.id}:${localNow.date}:${reminder.time}`,
+      payload: {
+        title: 'HabitFlow - Habito',
+        body: String(reminder.message || '').trim() || `Es hora de ${habit.name}.`,
+        requireInteraction: true,
+        data: { view: 'habits', habitId: habit.id, date: localNow.date }
+      }
+    });
+  });
+  return items;
+};
+
 const dueTasksForUser = (row, now) => {
   const timeZone = row.data?.user?.timezone || DEFAULT_TIME_ZONE;
   const localNow = getZonedNow(now, timeZone);
   const agenda = row.data?.agenda || {};
   const due = [];
   const expanded = {};
+  const pushOccurrence = (targetDate, task, anchorDate) => {
+    if ((task.deletedDates || []).includes(targetDate)) return;
+    if (!expanded[targetDate]) expanded[targetDate] = [];
+    if (!expanded[targetDate].some((item) => item.id === task.id)) {
+      expanded[targetDate].push({ ...task, dueDate: targetDate, _seriesAnchorDate: anchorDate, _intervalAnchorDate: anchorDate });
+    }
+  };
 
   Object.entries(agenda).forEach(([date, tasks]) => {
     (tasks || []).forEach((task) => {
-      if (!expanded[date]) expanded[date] = [];
-      expanded[date].push(task);
-      generateRecurrenceDates(task, task.dueDate || date).forEach((ds) => {
-        if (ds !== (task.dueDate || date)) {
-          if (!expanded[ds]) expanded[ds] = [];
-          expanded[ds].push({ ...task, dueDate: ds });
-        }
+      const anchorDate = task.dueDate || date;
+      pushOccurrence(anchorDate, task, anchorDate);
+      const hasIntervalRepeat = taskIntervalMinutes(task) > 0;
+      if (!hasIntervalRepeat) generateRecurrenceDates(task, anchorDate).forEach((ds) => {
+        pushOccurrence(ds, task, anchorDate);
+      });
+      if (hasIntervalRepeat) generateIntervalDates(task, anchorDate).forEach((ds) => {
+        pushOccurrence(ds, task, anchorDate);
       });
     });
   });
@@ -132,6 +259,18 @@ const dueTasksForUser = (row, now) => {
     const date = addDaysToDateString(localNow.date, dayOffset);
     (expanded[date] || []).forEach((task) => {
       if (!task.alarm || !task.dueTime || task.completed) return;
+      const intervalSlots = intervalDueSlots(task, localNow, reminderMinutes(task));
+      if (intervalSlots.length) {
+        intervalSlots.forEach((slot) => {
+          due.push({
+            date: slot.date,
+            task,
+            occurrenceTime: slot.time,
+            deliveryKey: `${row.user_id}:${task.id}:interval:${slot.key}:${task.reminders?.[0] || 'exact'}`
+          });
+        });
+        return;
+      }
       const dueMinutes = parseTimeToMinutes(task.dueTime);
       if (dueMinutes === null) return;
       let notifyDate = date;
@@ -154,6 +293,112 @@ const dueTasksForUser = (row, now) => {
   return due;
 };
 
+const isMedicationActiveOnDate = (med, dateStr) => {
+  if (!med || med.isActive === false) return false;
+  if (med.startDate && dateStr < med.startDate) return false;
+  if (med.endDate && dateStr > med.endDate) return false;
+  return true;
+};
+
+const isMedicationDoseTaken = (health, medicationId, date, time) =>
+  (health?.takenLogs || []).some((log) => log.medicationId === medicationId && log.date === date && log.scheduledTime === time && log.status === 'taken');
+
+const dueMedicationNotificationsForUser = (row, now) => {
+  const timeZone = row.data?.user?.timezone || DEFAULT_TIME_ZONE;
+  const localNow = getZonedNow(now, timeZone);
+  const health = row.data?.healthData || {};
+  const items = [];
+  (health.medications || [])
+    .filter((med) => isMedicationActiveOnDate(med, localNow.date))
+    .forEach((med) => {
+      (med.times || []).forEach((time) => {
+        if (isMedicationDoseTaken(health, med.id, localNow.date, time)) return;
+        const dueMinutes = parseTimeToMinutes(time);
+        if (dueMinutes === null) return;
+        const diff = dueMinutes * 60000 - localNow.msOfDay;
+        if (diff > 30000 || diff < -180000) return;
+        items.push({
+          type: 'health',
+          date: localNow.date,
+          deliveryKey: `${row.user_id}:health:${med.id}:${localNow.date}:${time}`,
+          payload: {
+            title: 'HabitFlow - Salud',
+            body: `${med.name || 'Medicamento'} - ${med.dose || 'dosis'}\nEs hora - ${time}${med.instructions ? ` - ${med.instructions}` : ''}`,
+            requireInteraction: true,
+            data: { view: 'health', medicationId: med.id, date: localNow.date }
+          }
+        });
+      });
+    });
+  return items;
+};
+
+const normalizeCurrency = (value) => String(value || '').toUpperCase() === 'COP' ? 'COP' : 'USD';
+
+const convertFinanceAmount = (amount, fromCurrency, toCurrency, copRate) => {
+  if (fromCurrency === toCurrency) return amount;
+  if (fromCurrency === 'COP' && toCurrency === 'USD') return amount / copRate;
+  if (fromCurrency === 'USD' && toCurrency === 'COP') return amount * copRate;
+  return amount;
+};
+
+const formatFinanceAmount = (amount, currency, copRate) => {
+  const normalized = normalizeCurrency(currency);
+  if (normalized === 'COP') {
+    return `$ ${Math.round(amount).toLocaleString('es-CO')} COP`;
+  }
+  return `$ ${Number(amount || 0).toLocaleString('en-US', { maximumFractionDigits: 2 })} USD`;
+};
+
+const dueDebtNotificationsForUser = (row, now) => {
+  const timeZone = row.data?.user?.timezone || DEFAULT_TIME_ZONE;
+  const localNow = getZonedNow(now, timeZone);
+  const finance = row.data?.financeData || {};
+  const copRate = Math.max(1, Number(finance.copRate || 4000));
+  const tags = finance.accountTags || [];
+  const transactions = finance.transactions || [];
+  const items = [];
+
+  (finance.accounts || []).forEach((account) => {
+    if (!account?.debtDueDate || account.debtReminderEnabled === false) return;
+    const tagGroup = tags.find((tag) => tag.id === account.tagId)?.group || account.type;
+    const isDebt = tagGroup === 'loan' || account.type === 'loan' || String(account.id || '').startsWith('debt_') || Number(account.balance || 0) < 0;
+    if (!isDebt) return;
+
+    const dueDate = String(account.debtDueDate || '');
+    const reminderDays = Math.max(0, Number(account.debtReminderDaysBefore || 0));
+    const reminderStart = addDaysToDateString(dueDate, -reminderDays);
+    if (localNow.date < reminderStart || localNow.date > dueDate) return;
+
+    const accountCurrency = normalizeCurrency(account.currency || finance.currency || 'USD');
+    const movement = transactions
+      .filter((transaction) => (transaction.accountId || '') === account.id)
+      .reduce((sum, transaction) => {
+        const amount = Math.abs(Number(transaction.amount || 0));
+        const transactionCurrency = normalizeCurrency(transaction.currency || accountCurrency);
+        const converted = convertFinanceAmount(amount, transactionCurrency, accountCurrency, copRate);
+        return sum + (transaction.type === 'income' ? converted : -converted);
+      }, 0);
+    const pending = Math.max(0, Math.abs(Number(account.balance || 0) + movement));
+    if (pending <= 0) return;
+
+    const minimumPayment = Math.max(0, Number(account.debtMinimumPayment || pending * 0.08));
+    items.push({
+      type: 'finance-debt',
+      date: localNow.date,
+      deliveryKey: `${row.user_id}:finance-debt:${account.id}:${localNow.date}:${dueDate}`,
+      payload: {
+        title: 'HabitFlow - Pago de deuda',
+        body: `${account.name || 'Deuda'}\nCuota minima: ${formatFinanceAmount(minimumPayment, accountCurrency, copRate)}\nPago oportuno: ${dueDate}`,
+        requireInteraction: true,
+        data: { view: 'finance', section: 'debts', debtId: account.id, date: localNow.date }
+      }
+    });
+  });
+
+  return items;
+};
+
 const markDelivery = async (deliveryKey, userId) => {
   try {
     const existing = await supabaseFetch(`habitflow_push_deliveries?select=delivery_key&delivery_key=eq.${encodeURIComponent(deliveryKey)}&limit=1`);
@@ -170,15 +415,23 @@ const markDelivery = async (deliveryKey, userId) => {
 };
 
 const sendPush = async (subscription, item) => {
-  const taskTitle = item.task.text || 'Recordatorio';
-  const details = `${reminderLabel(item.task)} · ${item.task.dueTime}${item.task.category ? ` · ${item.task.category}` : ''}`;
-  const payload = JSON.stringify({
-    title: 'HabitFlow • Agenda',
+  const taskTitle = item.task?.text || 'Recordatorio';
+  const displayTime = item.occurrenceTime || item.task?.dueTime;
+  const intervalText = item.occurrenceTime ? 'Repeticion activa' : reminderLabel(item.task);
+  const details = item.task ? `${intervalText} - ${displayTime}${item.task.category ? ` - ${item.task.category}` : ''}` : '';
+  const notification = item.payload || {
+    title: 'HabitFlow - Agenda',
     body: `${taskTitle}\n${details}`,
+    requireInteraction: true,
+    data: { view: 'agenda', taskId: item.task?.id, date: item.date }
+  };
+  const payload = JSON.stringify({
+    title: notification.title,
+    body: notification.body,
     tag: item.deliveryKey,
     renotify: true,
-    requireInteraction: true,
-    data: { view: 'agenda', taskId: item.task.id, date: item.date }
+    requireInteraction: notification.requireInteraction ?? true,
+    data: notification.data || { view: 'dashboard' }
   });
   await webpush.sendNotification(subscription.subscription, payload, { TTL: 120, urgency: 'high' });
 };
@@ -206,7 +459,13 @@ export default async () => {
   for (const user of users || []) {
     const userSubscriptions = subscriptionsByUser.get(user.user_id) || [];
     if (!userSubscriptions.length) continue;
-    for (const item of dueTasksForUser(user, now)) {
+    const dueItems = [
+      ...dueTasksForUser(user, now),
+      ...dueMedicationNotificationsForUser(user, now),
+      ...dueDebtNotificationsForUser(user, now),
+      ...dueHabitRemindersForUser(user, now)
+    ];
+    for (const item of dueItems) {
       dueCount += 1;
       const inserted = await markDelivery(item.deliveryKey, user.user_id);
       if (!inserted) continue;
