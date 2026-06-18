@@ -103,7 +103,7 @@
       code = code.replace(/import \{([\s\S]*?)\} from 'lucide-react';/, 'const {$1} = lucideReact;');
       code = code.replace('export default App;', 'window.__App = App;');
 
-      const result = Babel.transform(code, { presets: ['react'] });
+      const result = Babel.transform(code, { presets: [['react', { runtime: 'classic' }]] });
 
       const fn = new Function('React', 'ReactDOM', result.code);
       fn(React, ReactDOM);

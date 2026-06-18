@@ -1,10 +1,10 @@
-﻿import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
-import {
+const { useState, useEffect, useCallback, useMemo, useRef } = React;
+const {
   LineChart, Line, AreaChart, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
   BarChart, Bar, PieChart, Pie, Cell, RadarChart, Radar, PolarGrid,
   PolarAngleAxis, PolarRadiusAxis, Legend, Area
-} from 'recharts';
-import {
+} = Recharts;
+const {
   Activity, Check, Edit, Flame, Menu, Plus, Settings, Trash2,
   User, X, Target, TrendingUp, Download, Upload, AlertTriangle,
   Sparkles, Eye, EyeOff, BarChart3, Calendar, BookOpen,
@@ -16,7 +16,7 @@ import {
   Rocket, Laptop, FileText, SquareCheck, AlarmClock, Lightbulb, Music,
   Palette, Camera, Leaf, Zap, Trophy, Medal, Star, Gift, Bookmark,
   Flower2, ChevronDown, RefreshCw
-} from 'lucide-react';
+} = lucideReact;
 
 const supabase = window.supabaseClient;
 
@@ -38,13 +38,13 @@ const COLORS = { ...BASE_COLORS };
 
 const APP_UPDATE_VERSION = '2026-06-04-pro-ui-audit-v4';
 const APP_UPDATE_NOTES = [
-  'Pomodoro ya no falla al terminar una sesión y ahora avisa al finalizar enfoque, descanso y descanso largo.',
+  'Pomodoro ya no falla al terminar una sesiÃ³n y ahora avisa al finalizar enfoque, descanso y descanso largo.',
   'Finanzas ahora usa un switch global USD/COP para mantener la vista limpia.',
   'Finanzas acepta decimales en importes, presupuestos, cuentas y metas.',
-  'Agenda elimina descripción y checklist en nueva tarea para crear eventos más rápido.',
-  'Panel cambia la gráfica de últimos 7 días por una curva suave con frase diaria.',
-  'Hábitos recibe una vista semanal más compacta al estilo tracker profesional.',
-  'Los controles de nube y datos aleatorios pasan a Configuración.'
+  'Agenda elimina descripciÃ³n y checklist en nueva tarea para crear eventos mÃ¡s rÃ¡pido.',
+  'Panel cambia la grÃ¡fica de Ãºltimos 7 dÃ­as por una curva suave con frase diaria.',
+  'HÃ¡bitos recibe una vista semanal mÃ¡s compacta al estilo tracker profesional.',
+  'Los controles de nube y datos aleatorios pasan a ConfiguraciÃ³n.'
 ];
 
 const CATEGORIES = [
@@ -135,14 +135,14 @@ const HABIT_ICONS = [
   { id: 'target', label: 'Objetivo', icon: Target },
   { id: 'running', label: 'Correr', icon: PersonStanding },
   { id: 'dumbbell', label: 'Ejercicio', icon: Dumbbell },
-  { id: 'meditation', label: 'Meditación', icon: Flower2 },
+  { id: 'meditation', label: 'MeditaciÃ³n', icon: Flower2 },
   { id: 'leaf', label: 'Naturaleza', icon: Leaf },
-  { id: 'apple', label: 'Alimentación', icon: Apple },
+  { id: 'apple', label: 'AlimentaciÃ³n', icon: Apple },
   { id: 'coffee', label: 'Rutina', icon: Coffee },
-  { id: 'smile', label: 'Ánimo', icon: Smile },
+  { id: 'smile', label: 'Ãnimo', icon: Smile },
   { id: 'image', label: 'Creatividad visual', icon: ImageIcon },
   { id: 'moon', label: 'Descanso', icon: Moon },
-  { id: 'sun', label: 'Mañana', icon: Sun },
+  { id: 'sun', label: 'MaÃ±ana', icon: Sun },
   { id: 'rocket', label: 'Productividad', icon: Rocket },
   { id: 'laptop', label: 'Trabajo digital', icon: Laptop },
   { id: 'file-text', label: 'Escritura', icon: FileText },
@@ -150,11 +150,11 @@ const HABIT_ICONS = [
   { id: 'calendar', label: 'Calendario', icon: Calendar },
   { id: 'alarm', label: 'Alarma', icon: AlarmClock },
   { id: 'lightbulb', label: 'Idea', icon: Lightbulb },
-  { id: 'music', label: 'Música', icon: Music },
+  { id: 'music', label: 'MÃºsica', icon: Music },
   { id: 'palette', label: 'Arte', icon: Palette },
-  { id: 'camera', label: 'Fotografía', icon: Camera },
+  { id: 'camera', label: 'FotografÃ­a', icon: Camera },
   { id: 'flame', label: 'Racha', icon: Flame },
-  { id: 'zap', label: 'Energía', icon: Zap },
+  { id: 'zap', label: 'EnergÃ­a', icon: Zap },
   { id: 'trophy', label: 'Logro', icon: Trophy },
   { id: 'medal', label: 'Disciplina', icon: Medal },
   { id: 'star', label: 'Favorito', icon: Star },
@@ -279,8 +279,8 @@ const THEME_MODES = [
     textDim: '#9a9aa0',
     border: 'rgba(239,239,239,0.11)'
   } },
-  { id: 'midnight', name: 'Dark suave', desc: 'Oscuro con tarjetas visibles y contraste cómodo.', colors: BASE_COLORS },
-  { id: 'pureDark', name: 'Dark puro', desc: 'Negro profundo, menos brillo y bordes más finos.', colors: {
+  { id: 'midnight', name: 'Dark suave', desc: 'Oscuro con tarjetas visibles y contraste cÃ³modo.', colors: BASE_COLORS },
+  { id: 'pureDark', name: 'Dark puro', desc: 'Negro profundo, menos brillo y bordes mÃ¡s finos.', colors: {
     ...BASE_COLORS,
     bg: '#000000',
     surface: '#060607',
@@ -382,17 +382,17 @@ const getThemeVisualTokens = (themeModeId, colors) => {
 };
 
 const PREDEFINED_CHALLENGES = [
-  { id: 'challenge1', name: 'Hidratación 30 días', icon: '\u{1F4A7}', desc: 'Tomar 2L de agua diario por 30 días', duration: 30, difficulty: 'Fácil', diffColor: COLORS.success, target: { name: 'Tomar 2L de agua', category: 'salud', icon: '\u{1F4A7}', frequency: 'Diario', targetStreak: 30 } },
-  { id: 'challenge2', name: 'Desafío de Ejercicio', icon: '\u{1F4AA}', desc: 'Ejercicio 20 min por 21 días consecutivos', duration: 21, difficulty: 'Medio', diffColor: '#ffd93d', target: { name: 'Ejercicio 20 min', category: 'fitness', icon: '\u{1F4AA}', frequency: 'Diario', targetStreak: 21 } },
-  { id: 'challenge3', name: 'Lector Intensivo', icon: '\u{1F4DA}', desc: 'Leer 30 min por 14 días seguidos', duration: 14, difficulty: 'Medio', diffColor: '#ffd93d', target: { name: 'Leer 30 min', category: 'mente', icon: '\u{1F4DA}', frequency: 'Diario', targetStreak: 14 } },
-  { id: 'challenge4', name: 'Meditación Profunda', icon: '\u{1F9D8}', desc: 'Meditar 15 min por 21 días', duration: 21, difficulty: 'Medio', diffColor: '#ffd93d', target: { name: 'Meditar 15 min', category: 'mente', icon: '\u{1F9D8}', frequency: 'Diario', targetStreak: 21 } },
-  { id: 'challenge5', name: '100 días de Código', icon: '\u{1F4BB}', desc: 'Programar/aprender 1 hora por 100 días', duration: 100, difficulty: 'Difícil', diffColor: COLORS.alert, target: { name: 'Programar 1 hora', category: 'productividad', icon: '\u{1F4BB}', frequency: 'Diario', targetStreak: 100 } },
-  { id: 'challenge6', name: 'Hábito Perfecto', icon: '\u{1F3C6}', desc: 'Completar TODOS los hábitos del día por 7 días seguidos', duration: 7, difficulty: 'Difícil', diffColor: COLORS.alert, target: null }
+  { id: 'challenge1', name: 'HidrataciÃ³n 30 dÃ­as', icon: '\u{1F4A7}', desc: 'Tomar 2L de agua diario por 30 dÃ­as', duration: 30, difficulty: 'FÃ¡cil', diffColor: COLORS.success, target: { name: 'Tomar 2L de agua', category: 'salud', icon: '\u{1F4A7}', frequency: 'Diario', targetStreak: 30 } },
+  { id: 'challenge2', name: 'DesafÃ­o de Ejercicio', icon: '\u{1F4AA}', desc: 'Ejercicio 20 min por 21 dÃ­as consecutivos', duration: 21, difficulty: 'Medio', diffColor: '#ffd93d', target: { name: 'Ejercicio 20 min', category: 'fitness', icon: '\u{1F4AA}', frequency: 'Diario', targetStreak: 21 } },
+  { id: 'challenge3', name: 'Lector Intensivo', icon: '\u{1F4DA}', desc: 'Leer 30 min por 14 dÃ­as seguidos', duration: 14, difficulty: 'Medio', diffColor: '#ffd93d', target: { name: 'Leer 30 min', category: 'mente', icon: '\u{1F4DA}', frequency: 'Diario', targetStreak: 14 } },
+  { id: 'challenge4', name: 'MeditaciÃ³n Profunda', icon: '\u{1F9D8}', desc: 'Meditar 15 min por 21 dÃ­as', duration: 21, difficulty: 'Medio', diffColor: '#ffd93d', target: { name: 'Meditar 15 min', category: 'mente', icon: '\u{1F9D8}', frequency: 'Diario', targetStreak: 21 } },
+  { id: 'challenge5', name: '100 dÃ­as de CÃ³digo', icon: '\u{1F4BB}', desc: 'Programar/aprender 1 hora por 100 dÃ­as', duration: 100, difficulty: 'DifÃ­cil', diffColor: COLORS.alert, target: { name: 'Programar 1 hora', category: 'productividad', icon: '\u{1F4BB}', frequency: 'Diario', targetStreak: 100 } },
+  { id: 'challenge6', name: 'HÃ¡bito Perfecto', icon: '\u{1F3C6}', desc: 'Completar TODOS los hÃ¡bitos del dÃ­a por 7 dÃ­as seguidos', duration: 7, difficulty: 'DifÃ­cil', diffColor: COLORS.alert, target: null }
 ];
 
 const MUSCLE_COLORS = {
   'Pecho': '#ff6b6b', 'Espalda': '#efefef', 'Piernas': '#00ff9d',
-  'Hombros': '#ffd93d', 'Bíceps': '#e11d48', 'Tríceps': '#e11d48',
+  'Hombros': '#ffd93d', 'BÃ­ceps': '#e11d48', 'TrÃ­ceps': '#e11d48',
   'Abdomen': '#ff9f43', 'Cardio': '#a0a0ff', 'Full Body': '#7f1028'
 };
 
@@ -401,41 +401,41 @@ const WORKOUT_EXERCISES = [
   { id: 'ex2', name: 'Press Inclinado', mg: 'Pecho', type: 'fuerza', equip: 'Mancuernas' },
   { id: 'ex3', name: 'Aperturas', mg: 'Pecho', type: 'fuerza', equip: 'Mancuernas' },
   { id: 'ex4', name: 'Fondos en Paralelas', mg: 'Pecho', type: 'peso_corporal', equip: 'Peso Corporal' },
-  { id: 'ex5', name: 'Press en Máquina', mg: 'Pecho', type: 'fuerza', equip: 'Máquina' },
+  { id: 'ex5', name: 'Press en MÃ¡quina', mg: 'Pecho', type: 'fuerza', equip: 'MÃ¡quina' },
   { id: 'ex6', name: 'Dominadas', mg: 'Espalda', type: 'peso_corporal', equip: 'Peso Corporal' },
   { id: 'ex7', name: 'Remo con Barra', mg: 'Espalda', type: 'fuerza', equip: 'Barra' },
   { id: 'ex8', name: 'Remo con Mancuerna', mg: 'Espalda', type: 'fuerza', equip: 'Mancuernas' },
-  { id: 'ex9', name: 'Jalón al Pecho', mg: 'Espalda', type: 'fuerza', equip: 'Máquina' },
+  { id: 'ex9', name: 'JalÃ³n al Pecho', mg: 'Espalda', type: 'fuerza', equip: 'MÃ¡quina' },
   { id: 'ex10', name: 'Peso Muerto', mg: 'Espalda', type: 'fuerza', equip: 'Barra' },
   { id: 'ex11', name: 'Press Militar', mg: 'Hombros', type: 'fuerza', equip: 'Barra' },
   { id: 'ex12', name: 'Press con Mancuernas', mg: 'Hombros', type: 'fuerza', equip: 'Mancuernas' },
   { id: 'ex13', name: 'Elevaciones Laterales', mg: 'Hombros', type: 'fuerza', equip: 'Mancuernas' },
-  { id: 'ex14', name: 'Pájaros', mg: 'Hombros', type: 'fuerza', equip: 'Mancuernas' },
-  { id: 'ex15', name: 'Curl con Barra', mg: 'Bíceps', type: 'fuerza', equip: 'Barra' },
-  { id: 'ex16', name: 'Curl Martillo', mg: 'Bíceps', type: 'fuerza', equip: 'Mancuernas' },
-  { id: 'ex17', name: 'Curl en Máquina', mg: 'Bíceps', type: 'fuerza', equip: 'Máquina' },
-  { id: 'ex18', name: 'Extensión Francesa', mg: 'Tríceps', type: 'fuerza', equip: 'Barra' },
-  { id: 'ex19', name: 'Press Francés', mg: 'Tríceps', type: 'fuerza', equip: 'Mancuernas' },
-  { id: 'ex20', name: 'Jalón de Polea', mg: 'Tríceps', type: 'fuerza', equip: 'Máquina' },
+  { id: 'ex14', name: 'PÃ¡jaros', mg: 'Hombros', type: 'fuerza', equip: 'Mancuernas' },
+  { id: 'ex15', name: 'Curl con Barra', mg: 'BÃ­ceps', type: 'fuerza', equip: 'Barra' },
+  { id: 'ex16', name: 'Curl Martillo', mg: 'BÃ­ceps', type: 'fuerza', equip: 'Mancuernas' },
+  { id: 'ex17', name: 'Curl en MÃ¡quina', mg: 'BÃ­ceps', type: 'fuerza', equip: 'MÃ¡quina' },
+  { id: 'ex18', name: 'ExtensiÃ³n Francesa', mg: 'TrÃ­ceps', type: 'fuerza', equip: 'Barra' },
+  { id: 'ex19', name: 'Press FrancÃ©s', mg: 'TrÃ­ceps', type: 'fuerza', equip: 'Mancuernas' },
+  { id: 'ex20', name: 'JalÃ³n de Polea', mg: 'TrÃ­ceps', type: 'fuerza', equip: 'MÃ¡quina' },
   { id: 'ex21', name: 'Sentadilla', mg: 'Piernas', type: 'fuerza', equip: 'Barra' },
-  { id: 'ex22', name: 'Prensa de Piernas', mg: 'Piernas', type: 'fuerza', equip: 'Máquina' },
-  { id: 'ex23', name: 'Extensión de Cuádriceps', mg: 'Piernas', type: 'fuerza', equip: 'Máquina' },
-  { id: 'ex24', name: 'Curl de Femoral', mg: 'Piernas', type: 'fuerza', equip: 'Máquina' },
+  { id: 'ex22', name: 'Prensa de Piernas', mg: 'Piernas', type: 'fuerza', equip: 'MÃ¡quina' },
+  { id: 'ex23', name: 'ExtensiÃ³n de CuÃ¡driceps', mg: 'Piernas', type: 'fuerza', equip: 'MÃ¡quina' },
+  { id: 'ex24', name: 'Curl de Femoral', mg: 'Piernas', type: 'fuerza', equip: 'MÃ¡quina' },
   { id: 'ex25', name: 'Peso Muerto Rumano', mg: 'Piernas', type: 'fuerza', equip: 'Barra' },
-  { id: 'ex26', name: 'Pantorrillas de Pie', mg: 'Piernas', type: 'fuerza', equip: 'Máquina' },
+  { id: 'ex26', name: 'Pantorrillas de Pie', mg: 'Piernas', type: 'fuerza', equip: 'MÃ¡quina' },
   { id: 'ex27', name: 'Crunch', mg: 'Abdomen', type: 'peso_corporal', equip: 'Peso Corporal' },
   { id: 'ex28', name: 'Plancha', mg: 'Abdomen', type: 'peso_corporal', equip: 'Peso Corporal' },
   { id: 'ex29', name: 'Caminata en Cinta', mg: 'Cardio', type: 'cardio', equip: 'Cinta' },
-  { id: 'ex30', name: 'Bicicleta estática', mg: 'Cardio', type: 'cardio', equip: 'Bicicleta' }
+  { id: 'ex30', name: 'Bicicleta estÃ¡tica', mg: 'Cardio', type: 'cardio', equip: 'Bicicleta' }
 ];
 
 const SAMPLE_ROUTINES = [
-  { id: 'r1', name: 'Pecho y Tríceps', mgs: ['Pecho', 'Tríceps'], exs: [{ eid: 'ex1', sets: 4, reps: 10, weight: 60, rest: 90 }, { eid: 'ex2', sets: 3, reps: 12, weight: 20, rest: 60 }, { eid: 'ex3', sets: 3, reps: 15, weight: 12, rest: 60 }, { eid: 'ex20', sets: 3, reps: 12, weight: 25, rest: 90 }, { eid: 'ex19', sets: 3, reps: 15, weight: 10, rest: 60 }] },
+  { id: 'r1', name: 'Pecho y TrÃ­ceps', mgs: ['Pecho', 'TrÃ­ceps'], exs: [{ eid: 'ex1', sets: 4, reps: 10, weight: 60, rest: 90 }, { eid: 'ex2', sets: 3, reps: 12, weight: 20, rest: 60 }, { eid: 'ex3', sets: 3, reps: 15, weight: 12, rest: 60 }, { eid: 'ex20', sets: 3, reps: 12, weight: 25, rest: 90 }, { eid: 'ex19', sets: 3, reps: 15, weight: 10, rest: 60 }] },
   { id: 'r2', name: 'Piernas y Abdomen', mgs: ['Piernas', 'Abdomen'], exs: [{ eid: 'ex21', sets: 4, reps: 10, weight: 80, rest: 120 }, { eid: 'ex23', sets: 3, reps: 12, weight: 50, rest: 60 }, { eid: 'ex24', sets: 3, reps: 15, weight: 35, rest: 60 }, { eid: 'ex27', sets: 3, reps: 20, weight: 0, rest: 45 }, { eid: 'ex28', sets: 3, reps: 60, weight: 0, rest: 45 }] },
   { id: 'r3', name: 'Espalda y Hombros', mgs: ['Espalda', 'Hombros'], exs: [{ eid: 'ex6', sets: 3, reps: 8, weight: 0, rest: 90 }, { eid: 'ex7', sets: 4, reps: 10, weight: 50, rest: 90 }, { eid: 'ex9', sets: 3, reps: 12, weight: 40, rest: 60 }, { eid: 'ex11', sets: 4, reps: 8, weight: 35, rest: 90 }, { eid: 'ex13', sets: 3, reps: 15, weight: 8, rest: 45 }] }
 ];
 
-const MGS = ['Pecho', 'Espalda', 'Piernas', 'Hombros', 'Bíceps', 'Tríceps', 'Abdomen', 'Cardio'];
+const MGS = ['Pecho', 'Espalda', 'Piernas', 'Hombros', 'BÃ­ceps', 'TrÃ­ceps', 'Abdomen', 'Cardio'];
 
 const calcRM = (w, r) => Math.round(w * (1 + r / 30));
 
@@ -491,7 +491,7 @@ const genSampleSessions = () => {
       id: `ws${i}`, routineId: r.id, routineName: r.name, date: ds,
       startTime: `${String(6 + Math.floor(Math.random() * 14)).padStart(2, '0')}:${String(Math.floor(Math.random() * 60)).padStart(2, '0')}`,
       endTime: '', durationMinutes: duration,
-      totalVolume, totalSets, exercises: exs, notes: ['Buen entreno', 'Me costó un poco', 'Fue intenso', 'Bien, a mejorar'][i % 4]
+      totalVolume, totalSets, exercises: exs, notes: ['Buen entreno', 'Me costÃ³ un poco', 'Fue intenso', 'Bien, a mejorar'][i % 4]
     });
   }
   return sessions;
@@ -508,9 +508,9 @@ const SUBSCRIPTION_SERVICES = [
   { id: 'disney', name: 'Disney+', category: 'Streaming de video', badge: 'D+', color: '#75b8ff', bg: '#071a33' },
   { id: 'max', name: 'Max', category: 'Streaming de video', badge: 'M', color: '#7c5cff', bg: '#100a28' },
   { id: 'prime_video', name: 'Amazon Prime Video', category: 'Streaming de video', badge: 'PV', color: '#00a8e1', bg: '#061a22' },
-  { id: 'spotify', name: 'Spotify', category: 'Streaming de música', badge: 'S', color: '#1db954', bg: '#04140a' },
-  { id: 'apple_music', name: 'Apple Music', category: 'Streaming de música', badge: 'AM', color: '#fa2d48', bg: '#19040a' },
-  { id: 'youtube_music', name: 'YouTube Music', category: 'Streaming de música', badge: 'YT', color: '#ff0033', bg: '#1a0308' },
+  { id: 'spotify', name: 'Spotify', category: 'Streaming de mÃºsica', badge: 'S', color: '#1db954', bg: '#04140a' },
+  { id: 'apple_music', name: 'Apple Music', category: 'Streaming de mÃºsica', badge: 'AM', color: '#fa2d48', bg: '#19040a' },
+  { id: 'youtube_music', name: 'YouTube Music', category: 'Streaming de mÃºsica', badge: 'YT', color: '#ff0033', bg: '#1a0308' },
   { id: 'google_one', name: 'Google One', category: 'Almacenamiento en la nube', badge: 'G1', color: '#4285f4', bg: '#071323' },
   { id: 'icloud', name: 'iCloud+', category: 'Almacenamiento en la nube', badge: 'i+', color: '#8fd3ff', bg: '#071520' },
   { id: 'dropbox', name: 'Dropbox', category: 'Almacenamiento en la nube', badge: 'Db', color: '#0061ff', bg: '#06122b' },
@@ -522,7 +522,7 @@ const SUBSCRIPTION_SERVICES = [
   { id: 'perplexity', name: 'Perplexity Pro', category: 'Aplicaciones de IA', badge: 'P', color: '#20b8cd', bg: '#04161a' },
   { id: 'amazon_prime', name: 'Amazon Prime', category: 'Compras y beneficios', badge: 'A', color: '#ff9900', bg: '#1c1000' },
   { id: 'walmart', name: 'Walmart+', category: 'Compras y beneficios', badge: 'W+', color: '#0071ce', bg: '#061323' },
-  { id: 'gym', name: 'Membresía de gimnasio', category: 'Fitness y salud', badge: 'GYM', color: '#e11d48', bg: '#19030a' },
+  { id: 'gym', name: 'MembresÃ­a de gimnasio', category: 'Fitness y salud', badge: 'GYM', color: '#e11d48', bg: '#19030a' },
   { id: 'strava', name: 'Strava Premium', category: 'Fitness y salud', badge: 'ST', color: '#fc4c02', bg: '#1b0701' },
   { id: 'fitbit', name: 'Fitbit Premium', category: 'Fitness y salud', badge: 'FB', color: '#00b0b9', bg: '#041719' },
   { id: 'xbox', name: 'Xbox Game Pass', category: 'Videojuegos', badge: 'X', color: '#107c10', bg: '#041404' },
@@ -553,16 +553,16 @@ const getFinanceData = () => ({
     { id: 'cash', name: 'Efectivo', group: 'cash' },
     { id: 'checking', name: 'Cuenta corriente', group: 'bank' },
     { id: 'savings', name: 'Cuenta de ahorros', group: 'savings' },
-    { id: 'credit_card', name: 'Tarjeta / crédito', group: 'credit' },
-    { id: 'loan', name: 'Crédito / deuda', group: 'loan' },
-    { id: 'investment', name: 'Inversión', group: 'investment' },
+    { id: 'credit_card', name: 'Tarjeta / crÃ©dito', group: 'credit' },
+    { id: 'loan', name: 'CrÃ©dito / deuda', group: 'loan' },
+    { id: 'investment', name: 'InversiÃ³n', group: 'investment' },
     { id: 'custom', name: 'Otra cuenta', group: 'custom' }
   ],
   accounts: [
     { id: 'cash', name: 'Efectivo', type: 'cash', tagId: 'cash', currency: 'COP', balance: 180 },
     { id: 'bank', name: 'Cuenta principal', type: 'bank', tagId: 'checking', currency: 'USD', balance: 2100 },
     { id: 'savings', name: 'Ahorros', type: 'savings', tagId: 'savings', currency: 'USD', balance: 650 },
-    { id: 'credit_card', name: 'Tarjeta de crédito', type: 'credit', tagId: 'credit_card', currency: 'USD', balance: -320 }
+    { id: 'credit_card', name: 'Tarjeta de crÃ©dito', type: 'credit', tagId: 'credit_card', currency: 'USD', balance: -320 }
   ],
   recurring: [
     { id: 'rec1', name: 'Renta', type: 'expense', amount: 520, category: 'home', day: 5, active: true },
@@ -571,7 +571,7 @@ const getFinanceData = () => ({
   ],
   subscriptions: [
     { id: 'sub1', serviceId: 'netflix', name: 'Netflix', category: 'Streaming de video', amount: 15.49, day: 7, accountId: 'bank', logoUrl: '', active: true },
-    { id: 'sub2', serviceId: 'spotify', name: 'Spotify', category: 'Streaming de música', amount: 10.99, day: 14, accountId: 'bank', logoUrl: '', active: true },
+    { id: 'sub2', serviceId: 'spotify', name: 'Spotify', category: 'Streaming de mÃºsica', amount: 10.99, day: 14, accountId: 'bank', logoUrl: '', active: true },
     { id: 'sub3', serviceId: 'chatgpt', name: 'ChatGPT Plus', category: 'Aplicaciones de IA', amount: 20, day: 22, accountId: 'bank', logoUrl: '', active: true }
   ],
   goals: [],
@@ -583,7 +583,7 @@ const getFinanceData = () => ({
 });
 
 const MEDICATION_FORMS = [
-  'Tableta / Cápsula', 'Jarabe', 'Inyección', 'Gotas', 'Crema', 'Inhalador', 'Otro'
+  'Tableta / CÃ¡psula', 'Jarabe', 'InyecciÃ³n', 'Gotas', 'Crema', 'Inhalador', 'Otro'
 ];
 
 const MEDICATION_COLORS = [
@@ -597,27 +597,27 @@ const MEDICATION_COLORS = [
 ];
 
 const MEDICATION_FREQUENCIES = [
-  'Una vez al día', 'Cada 6 horas', 'Cada 8 horas', 'Cada 12 horas', 'Cada 24 horas', 'Días específicos', 'Personalizado'
+  'Una vez al dÃ­a', 'Cada 6 horas', 'Cada 8 horas', 'Cada 12 horas', 'Cada 24 horas', 'DÃ­as especÃ­ficos', 'Personalizado'
 ];
 
 const MEAL_TIMING_OPTIONS = [
-  'Antes de las comidas', 'Después de las comidas', 'Con comida', 'En ayunas', 'No importa', 'Según indicación médica'
+  'Antes de las comidas', 'DespuÃ©s de las comidas', 'Con comida', 'En ayunas', 'No importa', 'SegÃºn indicaciÃ³n mÃ©dica'
 ];
 
 const MEDICATION_DURATIONS = [
-  '3 días', '5 días', '7 días', '10 días', '15 días', '30 días', '60 días', 'Permanente', 'Personalizado'
+  '3 dÃ­as', '5 dÃ­as', '7 dÃ­as', '10 dÃ­as', '15 dÃ­as', '30 dÃ­as', '60 dÃ­as', 'Permanente', 'Personalizado'
 ];
 
 const makeMedication = (data) => ({
   id: data.id || `med_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`,
   name: data.name || '',
   dose: data.dose || '',
-  form: data.form || 'Tableta / Cápsula',
+  form: data.form || 'Tableta / CÃ¡psula',
   color: data.color || 'red',
   frequency: data.frequency || 'Cada 8 horas',
   times: Array.isArray(data.times) && data.times.length ? data.times : ['08:00'],
   mealTiming: data.mealTiming || 'No importa',
-  duration: data.duration || '7 días',
+  duration: data.duration || '7 dÃ­as',
   startDate: data.startDate || toYYYYMMDD(new Date()),
   endDate: data.endDate || '',
   instructions: data.instructions || '',
@@ -629,11 +629,11 @@ const makeMedication = (data) => ({
 
 const getHealthData = () => ({
   medications: [
-    makeMedication({ id: 'med_ibuprofen', name: 'Ibuprofeno', dose: '400 mg', form: 'Tableta / Cápsula', color: 'red', frequency: 'Cada 8 horas', times: ['08:00', '16:00', '00:00'], mealTiming: 'Después de las comidas', duration: '7 días', startDate: toYYYYMMDD(new Date()), endDate: toYYYYMMDD(addDays(new Date(), 6)), notes: 'Analgésico / AINE', instructions: 'Tomar con un vaso grande de agua.' }),
-    makeMedication({ id: 'med_amoxicillin', name: 'Amoxicilina', dose: '500 mg', form: 'Tableta / Cápsula', color: 'blue', frequency: 'Cada 12 horas', times: ['08:00', '20:00'], mealTiming: 'Según indicación médica', duration: '10 días', startDate: toYYYYMMDD(new Date()), endDate: toYYYYMMDD(addDays(new Date(), 9)), notes: 'Antibiótico' }),
-    makeMedication({ id: 'med_omeprazole', name: 'Omeprazol', dose: '20 mg', form: 'Tableta / Cápsula', color: 'white', frequency: 'Cada 24 horas', times: ['07:00'], mealTiming: 'En ayunas', duration: '30 días', startDate: toYYYYMMDD(new Date()), endDate: toYYYYMMDD(addDays(new Date(), 29)), notes: 'Protector gástrico' }),
-    makeMedication({ id: 'med_vitamind', name: 'Vitamina D3', dose: '1000 UI', form: 'Tableta / Cápsula', color: 'yellow', frequency: 'Cada 24 horas', times: ['08:00'], mealTiming: 'Con comida', duration: '60 días', startDate: toYYYYMMDD(new Date()), endDate: toYYYYMMDD(addDays(new Date(), 59)), notes: 'Suplemento' }),
-    makeMedication({ id: 'med_loratadine', name: 'Loratadina', dose: '10 mg', form: 'Tableta / Cápsula', color: 'custom', frequency: 'Cada 24 horas', times: ['21:00'], mealTiming: 'No importa', duration: '15 días', startDate: toYYYYMMDD(new Date()), endDate: toYYYYMMDD(addDays(new Date(), 14)), notes: 'Antihistamínico' })
+    makeMedication({ id: 'med_ibuprofen', name: 'Ibuprofeno', dose: '400 mg', form: 'Tableta / CÃ¡psula', color: 'red', frequency: 'Cada 8 horas', times: ['08:00', '16:00', '00:00'], mealTiming: 'DespuÃ©s de las comidas', duration: '7 dÃ­as', startDate: toYYYYMMDD(new Date()), endDate: toYYYYMMDD(addDays(new Date(), 6)), notes: 'AnalgÃ©sico / AINE', instructions: 'Tomar con un vaso grande de agua.' }),
+    makeMedication({ id: 'med_amoxicillin', name: 'Amoxicilina', dose: '500 mg', form: 'Tableta / CÃ¡psula', color: 'blue', frequency: 'Cada 12 horas', times: ['08:00', '20:00'], mealTiming: 'SegÃºn indicaciÃ³n mÃ©dica', duration: '10 dÃ­as', startDate: toYYYYMMDD(new Date()), endDate: toYYYYMMDD(addDays(new Date(), 9)), notes: 'AntibiÃ³tico' }),
+    makeMedication({ id: 'med_omeprazole', name: 'Omeprazol', dose: '20 mg', form: 'Tableta / CÃ¡psula', color: 'white', frequency: 'Cada 24 horas', times: ['07:00'], mealTiming: 'En ayunas', duration: '30 dÃ­as', startDate: toYYYYMMDD(new Date()), endDate: toYYYYMMDD(addDays(new Date(), 29)), notes: 'Protector gÃ¡strico' }),
+    makeMedication({ id: 'med_vitamind', name: 'Vitamina D3', dose: '1000 UI', form: 'Tableta / CÃ¡psula', color: 'yellow', frequency: 'Cada 24 horas', times: ['08:00'], mealTiming: 'Con comida', duration: '60 dÃ­as', startDate: toYYYYMMDD(new Date()), endDate: toYYYYMMDD(addDays(new Date(), 59)), notes: 'Suplemento' }),
+    makeMedication({ id: 'med_loratadine', name: 'Loratadina', dose: '10 mg', form: 'Tableta / CÃ¡psula', color: 'custom', frequency: 'Cada 24 horas', times: ['21:00'], mealTiming: 'No importa', duration: '15 dÃ­as', startDate: toYYYYMMDD(new Date()), endDate: toYYYYMMDD(addDays(new Date(), 14)), notes: 'AntihistamÃ­nico' })
   ],
   takenLogs: []
 });
@@ -699,12 +699,12 @@ const getMedicationDurationText = (med) => {
   if (!med.startDate || !med.endDate) return med.duration || 'Sin fin';
   const total = Math.max(1, Math.round((new Date(`${med.endDate}T12:00:00`).getTime() - new Date(`${med.startDate}T12:00:00`).getTime()) / 86400000) + 1);
   const elapsed = Math.min(total, Math.max(1, Math.round((new Date(`${toYYYYMMDD(new Date())}T12:00:00`).getTime() - new Date(`${med.startDate}T12:00:00`).getTime()) / 86400000) + 1));
-  return `${total} días (Día ${elapsed}/${total})`;
+  return `${total} dÃ­as (DÃ­a ${elapsed}/${total})`;
 };
 
 const groupMedicationDosesByDaypart = (doses) => {
   const groups = [
-    { id: 'morning', label: 'Mañana', icon: '\u2600\uFE0F', start: 6, end: 12, items: [] },
+    { id: 'morning', label: 'MaÃ±ana', icon: '\u2600\uFE0F', start: 6, end: 12, items: [] },
     { id: 'afternoon', label: 'Tarde', icon: '\u{1F305}', start: 12, end: 18, items: [] },
     { id: 'night', label: 'Noche', icon: '\u{1F319}', start: 18, end: 24, items: [] },
     { id: 'dawn', label: 'Madrugada', icon: '\u{1F311}', start: 0, end: 6, items: [] }
@@ -735,7 +735,7 @@ const getStudyData = () => ({
   ],
   sessions: [
     { id: 'study1', subjectId: 'sub1', minutes: 45, note: 'Repaso del sistema', date: toYYYYMMDD(new Date()) },
-    { id: 'study2', subjectId: 'sub2', minutes: 35, note: 'Categorías de gastos', date: toYYYYMMDD(addDays(new Date(), -1)) }
+    { id: 'study2', subjectId: 'sub2', minutes: 35, note: 'CategorÃ­as de gastos', date: toYYYYMMDD(addDays(new Date(), -1)) }
   ]
 });
 
@@ -771,12 +771,12 @@ const getDreamGoals = () => ([
 
 const greets = () => {
   const h = new Date().getHours();
-  if (h < 12) return { text: 'Buenos días', emoji: '\u{1F305}' };
+  if (h < 12) return { text: 'Buenos dÃ­as', emoji: '\u{1F305}' };
   if (h < 19) return { text: 'Buenas tardes', emoji: '\u{2600}\u{FE0F}' };
   return { text: 'Buenas noches', emoji: '\u{1F319}' };
 };
 
-const SPANISH_WEEKDAYS = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
+const SPANISH_WEEKDAYS = ['Domingo', 'Lunes', 'Martes', 'MiÃ©rcoles', 'Jueves', 'Viernes', 'SÃ¡bado'];
 const SPANISH_MONTHS = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
 
 const formatDateSpanish = (d) => {
@@ -817,17 +817,17 @@ const daysAgo = (dateStr) => {
 const getDayOfWeek = (d) => d.getDay();
 
 const genSampleHabits = () => [
-  { id: 'h1', name: 'Beber 2L de agua', description: 'Mantenerse hidratado durante el día', category: 'salud', icon: 'droplet', color: '#00ff9d', frequency: 'Diario', targetStreak: 30, active: true, createdAt: toYYYYMMDD(addDays(new Date(), -60)) },
-  { id: 'h2', name: 'Ejercicio 30 min', description: 'Actividad física diaria', category: 'fitness', icon: 'dumbbell', color: '#ff6b6b', frequency: 'Diario', targetStreak: 21, active: true, createdAt: toYYYYMMDD(addDays(new Date(), -60)) },
-  { id: 'h3', name: 'Leer 20 páginas', description: 'Lectura diaria para desarrollo personal', category: 'mente', icon: 'book-open', color: '#e11d48', frequency: 'Diario', targetStreak: 30, active: true, createdAt: toYYYYMMDD(addDays(new Date(), -60)) },
-  { id: 'h4', name: 'Meditar 10 min', description: 'Meditación de atención plena', category: 'mente', icon: 'meditation', color: '#efefef', frequency: 'Diario', targetStreak: 14, active: true, createdAt: toYYYYMMDD(addDays(new Date(), -60)) },
+  { id: 'h1', name: 'Beber 2L de agua', description: 'Mantenerse hidratado durante el dÃ­a', category: 'salud', icon: 'droplet', color: '#00ff9d', frequency: 'Diario', targetStreak: 30, active: true, createdAt: toYYYYMMDD(addDays(new Date(), -60)) },
+  { id: 'h2', name: 'Ejercicio 30 min', description: 'Actividad fÃ­sica diaria', category: 'fitness', icon: 'dumbbell', color: '#ff6b6b', frequency: 'Diario', targetStreak: 21, active: true, createdAt: toYYYYMMDD(addDays(new Date(), -60)) },
+  { id: 'h3', name: 'Leer 20 pÃ¡ginas', description: 'Lectura diaria para desarrollo personal', category: 'mente', icon: 'book-open', color: '#e11d48', frequency: 'Diario', targetStreak: 30, active: true, createdAt: toYYYYMMDD(addDays(new Date(), -60)) },
+  { id: 'h4', name: 'Meditar 10 min', description: 'MeditaciÃ³n de atenciÃ³n plena', category: 'mente', icon: 'meditation', color: '#efefef', frequency: 'Diario', targetStreak: 14, active: true, createdAt: toYYYYMMDD(addDays(new Date(), -60)) },
   { id: 'h5', name: 'Aprender algo nuevo', description: 'Estudiar o practicar una nueva habilidad', category: 'productividad', icon: 'rocket', color: '#ffd93d', frequency: 'Diario', targetStreak: 21, active: true, createdAt: toYYYYMMDD(addDays(new Date(), -60)) }
 ];
 
 const genSampleRecords = (habits) => {
   const records = [];
   const rates = { h1: 0.85, h2: 0.65, h3: 0.7, h4: 0.55, h5: 0.75 };
-  const sampleNotes = ['Bien hoy', 'Un poco cansado', 'Excelente sesión', 'Me costó empezar', 'Muy productivo', 'Regular', 'Contento con el progreso'];
+  const sampleNotes = ['Bien hoy', 'Un poco cansado', 'Excelente sesiÃ³n', 'Me costÃ³ empezar', 'Muy productivo', 'Regular', 'Contento con el progreso'];
   const sampleMoods = [3, 4, 5, 2, 4, 3, 5];
   const today = new Date();
 
@@ -860,10 +860,10 @@ const getDefaultData = (reset = false) => {
   const records = reset ? [] : genSampleRecords(habits);
   const xp = reset ? 0 : records.filter(r => r.completed).length * 10;
   return {
-    user: { name: 'Usuario', motto: 'Cada día es una nueva oportunidad', accentColor: 'violet', themeMode: 'midnight', iconColor: 'fire', createdAt: toYYYYMMDD(new Date()), xp, level: getLevel(xp), levelUpShown: getLevel(xp), pomodoro: { focus: 25, shortBreak: 5, longBreak: 15 } },
+    user: { name: 'Usuario', motto: 'Cada dÃ­a es una nueva oportunidad', accentColor: 'violet', themeMode: 'midnight', iconColor: 'fire', createdAt: toYYYYMMDD(new Date()), xp, level: getLevel(xp), levelUpShown: getLevel(xp), pomodoro: { focus: 25, shortBreak: 5, longBreak: 15 } },
     habits,
     records,
-    dailyNotes: reset ? {} : { [toYYYYMMDD(new Date())]: { note: 'Buen día en general, cumplí todos mis hábitos', mood: 4 } },
+    dailyNotes: reset ? {} : { [toYYYYMMDD(new Date())]: { note: 'Buen dÃ­a en general, cumplÃ­ todos mis hÃ¡bitos', mood: 4 } },
     challenges: reset ? [] : [{ id: 'ch1', habitId: 'h1', startDate: toYYYYMMDD(addDays(new Date(), -14)), status: 'active' }],
     workoutData: reset ? { exercises: WORKOUT_EXERCISES.map(e => ({ ...e, custom: false })), routines: [], sessions: [] } : getWorkoutData(),
     financeData: reset ? { ...getFinanceData(), monthlyBudget: 0, transactions: [], recurring: [], subscriptions: [], goals: [] } : getFinanceData(),
@@ -1046,17 +1046,17 @@ const saveCloudDataNow = async (data) => {
 
 const queueCloudSave = (data) => {
   if (!getClerkUserId()) {
-    emitCloudSyncStatus({ status: 'local', label: 'Guardado local', reason: 'No hay sesión de Clerk activa.' });
+    emitCloudSyncStatus({ status: 'local', label: 'Guardado local', reason: 'No hay sesiÃ³n de Clerk activa.' });
     return;
   }
-  emitCloudSyncStatus({ status: 'saving', label: 'Guardando nube', reason: 'Sincronizando el último cambio con Supabase.' });
+  emitCloudSyncStatus({ status: 'saving', label: 'Guardando nube', reason: 'Sincronizando el Ãºltimo cambio con Supabase.' });
   clearTimeout(cloudSaveTimer);
   cloudSaveTimer = setTimeout(() => {
     lastCloudSave = lastCloudSave
       .then(() => saveCloudDataNow(data))
       .then(result => {
         emitCloudSyncStatus(result.ok
-          ? { status: 'active', label: 'Nube activa', reason: 'Último cambio guardado en Supabase.' }
+          ? { status: 'active', label: 'Nube activa', reason: 'Ãšltimo cambio guardado en Supabase.' }
           : { status: 'local', label: 'Guardado local', reason: result.reason || 'No se pudo guardar en Supabase.' });
       })
       .catch(err => {
@@ -1095,7 +1095,7 @@ const savePushSubscription = async (subscription) => {
   const client = getCloudClient();
   const userId = getClerkUserId();
   if (!client || !userId || !subscription?.endpoint) {
-    return { ok: false, reason: 'Para recibir avisos con la app cerrada debes iniciar sesión y tener la nube activa.' };
+    return { ok: false, reason: 'Para recibir avisos con la app cerrada debes iniciar sesiÃ³n y tener la nube activa.' };
   }
   try {
     const { error } = await client
@@ -1111,7 +1111,7 @@ const savePushSubscription = async (subscription) => {
     if (error) return { ok: false, reason: error.message };
     return { ok: true };
   } catch (error) {
-    return { ok: false, reason: error?.message || 'No se pudo guardar la suscripción push.' };
+    return { ok: false, reason: error?.message || 'No se pudo guardar la suscripciÃ³n push.' };
   }
 };
 
@@ -1145,14 +1145,14 @@ const requestHabitFlowNotifications = async () => {
           ok: saved.ok,
           permission,
           reason: saved.ok
-            ? 'Push real activo. Este dispositivo ya puede recibir avisos aunque HabitFlow esté cerrado, cuando el servidor de alarmas esté activo.'
+            ? 'Push real activo. Este dispositivo ya puede recibir avisos aunque HabitFlow estÃ© cerrado, cuando el servidor de alarmas estÃ© activo.'
             : `Permiso activo, pero falta guardar el dispositivo: ${saved.reason}`
         };
       } catch (error) {
         return {
           ok: true,
           permission,
-          reason: `Permiso activo para avisos locales, pero el push cerrado no quedó suscrito: ${error?.message || 'revisa el dispositivo.'}`
+          reason: `Permiso activo para avisos locales, pero el push cerrado no quedÃ³ suscrito: ${error?.message || 'revisa el dispositivo.'}`
         };
       }
     }
@@ -1162,8 +1162,8 @@ const requestHabitFlowNotifications = async () => {
       reason: permission === 'granted'
         ? 'Notificaciones activas en este dispositivo. Para que suene en todos, abre HabitFlow en cada PC o celular y activa sus notificaciones una vez.'
         : permission === 'denied'
-          ? 'El navegador bloqueó las notificaciones. Actívalas desde permisos del sitio.'
-          : 'No se concedió el permiso.'
+          ? 'El navegador bloqueÃ³ las notificaciones. ActÃ­valas desde permisos del sitio.'
+          : 'No se concediÃ³ el permiso.'
     };
   } catch {
     return { ok: false, permission: getNotificationPermissionState(), reason: 'No se pudo activar el permiso de notificaciones.' };
@@ -1219,7 +1219,7 @@ const getStoredClerkKey = () => {
 
 const getClerkFrontendApi = (publishableKey) => {
   const part = (publishableKey || '').trim().split('_')[2];
-  if (!part) throw new Error('La llave pública de Clerk no parece válida.');
+  if (!part) throw new Error('La llave pÃºblica de Clerk no parece vÃ¡lida.');
   const normalized = part.replace(/-/g, '+').replace(/_/g, '/');
   const padded = normalized.padEnd(normalized.length + ((4 - normalized.length % 4) % 4), '=');
   return atob(padded).replace(/\$$/, '');
@@ -1251,7 +1251,7 @@ const loadClerk = async (publishableKey) => {
   await loadScriptOnce('habitflow-clerk-js', `https://${frontendApi}/npm/@clerk/clerk-js@6/dist/clerk.browser.js`, {
     'data-clerk-publishable-key': key
   });
-  if (!window.Clerk) throw new Error('Clerk no se inicializó correctamente.');
+  if (!window.Clerk) throw new Error('Clerk no se inicializÃ³ correctamente.');
   await window.Clerk.load({ ui: { ClerkUI: window.__internal_ClerkUICtor } });
   return window.Clerk;
 };
@@ -2513,7 +2513,7 @@ const injectStyles = () => {
       .habit-week-dots { padding: 0 2px; }
     }
 
-    /* Nuevo hábito: modal editorial con iconografía Lucide y controles táctiles. */
+    /* Nuevo hÃ¡bito: modal editorial con iconografÃ­a Lucide y controles tÃ¡ctiles. */
     .hf-modal-panel.habit-form-modal {
       --habit-modal-bg: #0b0e12;
       --habit-modal-surface: #10141a;
@@ -5310,7 +5310,7 @@ const ClerkSetupScreen = ({ initialKey = '', error = '', loading = false, onSave
         <div style={{ marginBottom: 12 }}><BrandLogo size="md" /></div>
         <div style={{ color: COLORS.text, fontSize: 20, fontFamily: "'DM Serif Display', serif", marginBottom: 6 }}>Conectar login con Clerk</div>
         <div style={{ color: COLORS.textDim, fontSize: 12, lineHeight: 1.6, marginBottom: 18 }}>
-          Pega tu Publishable Key de Clerk. La encuentras en Clerk Dashboard, sección API keys, y empieza por pk_test_ o pk_live_.
+          Pega tu Publishable Key de Clerk. La encuentras en Clerk Dashboard, secciÃ³n API keys, y empieza por pk_test_ o pk_live_.
         </div>
         <input value={key} onChange={e => setKey(e.target.value)} placeholder="pk_test_..." style={{
           width: '100%', boxSizing: 'border-box', padding: '12px 14px', borderRadius: 10,
@@ -5361,15 +5361,15 @@ const ClerkSignInScreen = ({ clerk }) => {
           <div>
             <div style={{ marginBottom: 18 }}><BrandLogo size="lg" /></div>
             <div style={{ maxWidth: 420, fontSize: 36, lineHeight: 1.05, color: COLORS.text, fontFamily: "'DM Serif Display', serif", letterSpacing: '-0.03em', marginBottom: 14 }}>
-              Entra a tu sistema personal de hábitos.
+              Entra a tu sistema personal de hÃ¡bitos.
             </div>
             <div style={{ maxWidth: 420, color: COLORS.textDim, fontSize: 13, lineHeight: 1.7 }}>
-              Tus hábitos, agenda, entrenos y enfoque quedan protegidos tras tu sesión de Clerk.
+              Tus hÃ¡bitos, agenda, entrenos y enfoque quedan protegidos tras tu sesiÃ³n de Clerk.
             </div>
           </div>
           <div style={{ display: 'grid', gap: 10 }}>
             <div className="auth-feature-pill"><span className="fire-emoji">{'\u{1F525}'}</span> Rachas y progreso diario</div>
-            <div className="auth-feature-pill"><span className="fire-emoji">✅</span> Acceso seguro con Google o email</div>
+            <div className="auth-feature-pill"><span className="fire-emoji">âœ…</span> Acceso seguro con Google o email</div>
             <div className="auth-feature-pill"><span className="fire-emoji">{'\u{1F319}'}</span> Dark puro con identidad visual propia</div>
           </div>
         </div>
@@ -5677,12 +5677,12 @@ const getHeatMapIntensity = (pct) => {
   return '#006633';
 };
 
-const getDayLabels = () => ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'sáb'];
+const getDayLabels = () => ['Dom', 'Lun', 'Mar', 'MiÃ©', 'Jue', 'Vie', 'sÃ¡b'];
 
 const generateInsights = (habits, records) => {
   const insights = [];
   const today = new Date();
-  const dayNames = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'sábado'];
+  const dayNames = ['Domingo', 'Lunes', 'Martes', 'MiÃ©rcoles', 'Jueves', 'Viernes', 'sÃ¡bado'];
 
   const dayRates = Array(7).fill(0).map(() => ({ total: 0, completed: 0 }));
   for (let i = 0; i < 30; i++) {
@@ -5699,15 +5699,15 @@ const generateInsights = (habits, records) => {
   const bestPct = dayRates[bestDay].total ? Math.round((dayRates[bestDay].completed / dayRates[bestDay].total) * 100) : 0;
   const worstPct = dayRates[worstDay].total ? Math.round((dayRates[worstDay].completed / dayRates[worstDay].total) * 100) : 0;
   if (bestDay !== worstDay && dayRates[bestDay].total > 0) {
-    insights.push({ id: 'bestDay', icon: '\u{1F31F}', text: `Tu mejor día es el ${dayNames[bestDay]} con un ${bestPct}% de completitud`, type: 'positive' });
-    insights.push({ id: 'worstDay', icon: '\u{26A0}\u{FE0F}', text: `Los ${dayNames[worstDay]} sueles fallar más (${worstPct}% completitud). Qué pasa ese día?`, type: 'warning' });
+    insights.push({ id: 'bestDay', icon: '\u{1F31F}', text: `Tu mejor dÃ­a es el ${dayNames[bestDay]} con un ${bestPct}% de completitud`, type: 'positive' });
+    insights.push({ id: 'worstDay', icon: '\u{26A0}\u{FE0F}', text: `Los ${dayNames[worstDay]} sueles fallar mÃ¡s (${worstPct}% completitud). QuÃ© pasa ese dÃ­a?`, type: 'warning' });
   }
 
   const scores = habits.filter(h => h.active).map(h => ({ h, score: getHabitStrength(h.id, records) })).sort((a, b) => b.score - a.score);
   if (scores.length > 0) {
-    insights.push({ id: 'strongest', icon: '\u{1F4AA}', text: `Tu hábito más consolidado es '${scores[0].h.name}' con ${scores[0].score}% de fuerza`, type: 'positive' });
+    insights.push({ id: 'strongest', icon: '\u{1F4AA}', text: `Tu hÃ¡bito mÃ¡s consolidado es '${scores[0].h.name}' con ${scores[0].score}% de fuerza`, type: 'positive' });
     if (scores.length > 1) {
-      insights.push({ id: 'weakest', icon: '\u{1F3AF}', text: `'${scores[scores.length - 1].h.name}' necesita más atención (${scores[scores.length - 1].score}% de fuerza)`, type: 'attention' });
+      insights.push({ id: 'weakest', icon: '\u{1F3AF}', text: `'${scores[scores.length - 1].h.name}' necesita mÃ¡s atenciÃ³n (${scores[scores.length - 1].score}% de fuerza)`, type: 'attention' });
     }
   }
 
@@ -5721,10 +5721,10 @@ const generateInsights = (habits, records) => {
   const twr = calcWeekRate(thisWeek), lwr = calcWeekRate(lastWeek);
   if (twr > lwr && lwr > 0) {
     const diff = Math.round((twr - lwr) * 100);
-    insights.push({ id: 'trendUp', icon: '\u{1F4C8}', text: `Esta semana vas un ${diff}% mejor que la semana pasada. ¡Sigue así!`, type: 'positive' });
+    insights.push({ id: 'trendUp', icon: '\u{1F4C8}', text: `Esta semana vas un ${diff}% mejor que la semana pasada. Â¡Sigue asÃ­!`, type: 'positive' });
   } else if (lwr > twr && twr > 0) {
     const diff = Math.round((lwr - twr) * 100);
-    insights.push({ id: 'trendDown', icon: '\u{1F4C9}', text: `Esta semana bajaste un ${diff}% vs la semana pasada. ¡Puedes recuperarte!`, type: 'warning' });
+    insights.push({ id: 'trendDown', icon: '\u{1F4C9}', text: `Esta semana bajaste un ${diff}% vs la semana pasada. Â¡Puedes recuperarte!`, type: 'warning' });
   }
 
   habits.filter(h => h.active).forEach(h => {
@@ -5732,7 +5732,7 @@ const generateInsights = (habits, records) => {
     const todayRec = records.find(r => r.habitId === h.id && r.date === toYYYYMMDD(today));
     const yesterdayRec = records.find(r => r.habitId === h.id && r.date === toYYYYMMDD(addDays(today, -1)));
     if (streak >= 5 && !todayRec?.completed) {
-      insights.push({ id: `risk-${h.id}`, icon: '\u{1F525}', text: `Tu racha en '${h.name}' está en riesgo (${streak} días). No la rompas hoy!`, type: 'danger' });
+      insights.push({ id: `risk-${h.id}`, icon: '\u{1F525}', text: `Tu racha en '${h.name}' estÃ¡ en riesgo (${streak} dÃ­as). No la rompas hoy!`, type: 'danger' });
     }
   });
 
@@ -5829,7 +5829,7 @@ const HabitHeatMap30 = ({ habitId, records }) => {
   );
 };
 
-const DAY_LABELS = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'sáb'];
+const DAY_LABELS = ['Dom', 'Lun', 'Mar', 'MiÃ©', 'Jue', 'Vie', 'sÃ¡b'];
 
 const HabitForm = ({ initial, onSave, onCancel, categories = CATEGORIES, onCreateCategory }) => {
   const initialCategory = initial?.category || 'salud';
@@ -5924,7 +5924,7 @@ const HabitForm = ({ initial, onSave, onCancel, categories = CATEGORIES, onCreat
       return;
     }
     if (form.reminder?.enabled && (!form.reminder.time || !form.reminder.days?.length)) {
-      setError('El recordatorio necesita una hora y al menos un día.');
+      setError('El recordatorio necesita una hora y al menos un dÃ­a.');
       return;
     }
     onSave({
@@ -5953,29 +5953,29 @@ const HabitForm = ({ initial, onSave, onCancel, categories = CATEGORIES, onCreat
           autoFocus
           value={form.name}
           onChange={event => { handleChange('name', event.target.value); setError(''); }}
-          placeholder="Ej: Leer 20 páginas"
+          placeholder="Ej: Leer 20 pÃ¡ginas"
           aria-invalid={!!error}
         />
       </div>
 
       <div className="habit-form-field habit-form-field-wide">
-        <label htmlFor="habit-description">Descripción</label>
+        <label htmlFor="habit-description">DescripciÃ³n</label>
         <input
           id="habit-description"
           value={form.description}
           onChange={event => handleChange('description', event.target.value)}
-          placeholder="Opcional · Describe tu hábito"
+          placeholder="Opcional Â· Describe tu hÃ¡bito"
         />
       </div>
 
       <div className="habit-form-columns">
         <div className="habit-form-field">
-          <label htmlFor="habit-category">Categoría</label>
+          <label htmlFor="habit-category">CategorÃ­a</label>
           <div className="habit-select-shell">
             <SelectedCategoryIcon size={20} strokeWidth={1.7} />
             <select id="habit-category" value={form.category} onChange={event => handleCategorySelection(event.target.value)}>
               {categories.map(category => <option key={category.id} value={category.id}>{category.label}</option>)}
-              <option value="__new__">+ Crear categoría</option>
+              <option value="__new__">+ Crear categorÃ­a</option>
             </select>
             <ChevronDown size={17} />
           </div>
@@ -5998,8 +5998,8 @@ const HabitForm = ({ initial, onSave, onCancel, categories = CATEGORIES, onCreat
       {showCategoryCreator && (
         <div className="habit-category-creator">
           <div>
-            <strong>Nueva categoría</strong>
-            <span>Se guardará y aparecerá también en los filtros.</span>
+            <strong>Nueva categorÃ­a</strong>
+            <span>Se guardarÃ¡ y aparecerÃ¡ tambiÃ©n en los filtros.</span>
           </div>
           <div className="habit-category-creator-controls">
             <input
@@ -6011,7 +6011,7 @@ const HabitForm = ({ initial, onSave, onCancel, categories = CATEGORIES, onCreat
               type="color"
               value={newCategory.color}
               onChange={event => setNewCategory(current => ({ ...current, color: event.target.value }))}
-              aria-label="Color de la categoría"
+              aria-label="Color de la categorÃ­a"
             />
             <button type="button" onClick={createCategory} disabled={!newCategory.name.trim()}>Crear</button>
             <button type="button" className="is-quiet" onClick={() => setShowCategoryCreator(false)}>Cancelar</button>
@@ -6021,7 +6021,7 @@ const HabitForm = ({ initial, onSave, onCancel, categories = CATEGORIES, onCreat
 
       {form.frequency === 'Personalizado' && (
         <div className="habit-form-field habit-form-days">
-          <label>Días del hábito</label>
+          <label>DÃ­as del hÃ¡bito</label>
           <div>
             {DAY_LABELS.map((label, day) => (
               <button
@@ -6040,7 +6040,7 @@ const HabitForm = ({ initial, onSave, onCancel, categories = CATEGORIES, onCreat
       <div className="habit-icon-section">
         <div className="habit-icon-heading">
           <div>
-            <label>Ícono</label>
+            <label>Ãcono</label>
             <span>Elige uno de los iconos disponibles</span>
           </div>
           <span>{HABIT_ICONS.length} iconos</span>
@@ -6083,9 +6083,9 @@ const HabitForm = ({ initial, onSave, onCancel, categories = CATEGORIES, onCreat
             max="365"
             value={form.targetStreak}
             onChange={event => handleChange('targetStreak', Math.max(3, Math.min(365, Number(event.target.value) || 3)))}
-            aria-label="Días objetivo"
+            aria-label="DÃ­as objetivo"
           />
-          <span>días</span>
+          <span>dÃ­as</span>
         </div>
       </div>
 
@@ -6120,11 +6120,11 @@ const HabitForm = ({ initial, onSave, onCancel, categories = CATEGORIES, onCreat
                 id="habit-reminder-message"
                 value={form.reminder.message}
                 onChange={event => updateReminder('message', event.target.value)}
-                placeholder={`Es hora de ${form.name || 'tu hábito'}`}
+                placeholder={`Es hora de ${form.name || 'tu hÃ¡bito'}`}
               />
             </div>
             <div className="habit-form-field habit-form-days habit-reminder-days">
-              <label>Días de aviso</label>
+              <label>DÃ­as de aviso</label>
               <div>
                 {DAY_LABELS.map((label, day) => (
                   <button
@@ -6147,7 +6147,7 @@ const HabitForm = ({ initial, onSave, onCancel, categories = CATEGORIES, onCreat
       <div className="habit-form-footer">
         <button type="button" className="habit-form-cancel" onClick={onCancel}>Cancelar</button>
         <button type="button" className="habit-form-submit" onClick={handleSubmit}>
-          {initial ? 'Guardar cambios' : 'Crear hábito'}
+          {initial ? 'Guardar cambios' : 'Crear hÃ¡bito'}
         </button>
       </div>
     </div>
@@ -6179,14 +6179,14 @@ const AchievementsSection = ({ habits, records }) => {
     const totalCompletions = records.filter(r => r.completed).length;
     const bestStreak = getGlobalBestStreak(habits, records);
 
-    if (totalCompletions >= 10) list.push({ id: 'a1', icon: '\u{1F331}', label: 'Primeros Pasos', desc: '10 hábitos completados', unlocked: true, color: '#ffd93d' });
-    if (totalCompletions >= 50) list.push({ id: 'a2', icon: '\u{1F525}', label: 'Racha de Fuego', desc: '50 hábitos completados', unlocked: true, color: '#ff6b6b' });
-    if (totalCompletions >= 100) list.push({ id: 'a3', icon: '\u{1F4AA}', label: 'Dedicación', desc: '100 hábitos completados', unlocked: true, color: '#e11d48' });
-    if (totalCompletions >= 200) list.push({ id: 'a4', icon: '\u{1F3C6}', label: 'Campeón', desc: '200 hábitos completados', unlocked: true, color: '#ffd93d' });
-    if (bestStreak >= 7) list.push({ id: 'a5', icon: '\u{1F4C5}', label: 'Una Semana', desc: 'Racha de 7 días', unlocked: true, color: '#efefef' });
-    if (bestStreak >= 14) list.push({ id: 'a6', icon: '\u{1F680}', label: 'Dos Semanas', desc: 'Racha de 14 días', unlocked: true, color: '#ff6b6b' });
-    if (bestStreak >= 21) list.push({ id: 'a7', icon: '\u{2705}', label: '21 días', desc: 'Racha de 21 días (hábito formado)', unlocked: true, color: '#00ff9d' });
-    if (bestStreak >= 30) list.push({ id: 'a8', icon: '\u{1F31F}', label: 'Un Mes', desc: 'Racha de 30 días', unlocked: true, color: '#ffd93d' });
+    if (totalCompletions >= 10) list.push({ id: 'a1', icon: '\u{1F331}', label: 'Primeros Pasos', desc: '10 hÃ¡bitos completados', unlocked: true, color: '#ffd93d' });
+    if (totalCompletions >= 50) list.push({ id: 'a2', icon: '\u{1F525}', label: 'Racha de Fuego', desc: '50 hÃ¡bitos completados', unlocked: true, color: '#ff6b6b' });
+    if (totalCompletions >= 100) list.push({ id: 'a3', icon: '\u{1F4AA}', label: 'DedicaciÃ³n', desc: '100 hÃ¡bitos completados', unlocked: true, color: '#e11d48' });
+    if (totalCompletions >= 200) list.push({ id: 'a4', icon: '\u{1F3C6}', label: 'CampeÃ³n', desc: '200 hÃ¡bitos completados', unlocked: true, color: '#ffd93d' });
+    if (bestStreak >= 7) list.push({ id: 'a5', icon: '\u{1F4C5}', label: 'Una Semana', desc: 'Racha de 7 dÃ­as', unlocked: true, color: '#efefef' });
+    if (bestStreak >= 14) list.push({ id: 'a6', icon: '\u{1F680}', label: 'Dos Semanas', desc: 'Racha de 14 dÃ­as', unlocked: true, color: '#ff6b6b' });
+    if (bestStreak >= 21) list.push({ id: 'a7', icon: '\u{2705}', label: '21 dÃ­as', desc: 'Racha de 21 dÃ­as (hÃ¡bito formado)', unlocked: true, color: '#00ff9d' });
+    if (bestStreak >= 30) list.push({ id: 'a8', icon: '\u{1F31F}', label: 'Un Mes', desc: 'Racha de 30 dÃ­as', unlocked: true, color: '#ffd93d' });
 
    CATEGORIES.forEach(c => {
       const catHabits = habits.filter(h => h.active && h.category === c.id);
@@ -6268,12 +6268,12 @@ const DashboardView = ({ data, onCompleteHabit, workoutData, onNavigate, onUpdat
   const todayCount = getTodayCount(habits, records);
   const greet = greets();
   const dailyQuotes = [
-    'La disciplina no grita: aparece todos los días.',
+    'La disciplina no grita: aparece todos los dÃ­as.',
     'Hoy no necesitas hacerlo perfecto, necesitas hacerlo.',
-    'Un hábito cumplido es una promesa que sí te respetaste.',
-    'La constancia convierte días normales en resultados raros.',
-    'Tu futuro se negocia en los minutos pequeños.',
-    'Hazlo simple, hazlo hoy, repítelo mañana.',
+    'Un hÃ¡bito cumplido es una promesa que sÃ­ te respetaste.',
+    'La constancia convierte dÃ­as normales en resultados raros.',
+    'Tu futuro se negocia en los minutos pequeÃ±os.',
+    'Hazlo simple, hazlo hoy, repÃ­telo maÃ±ana.',
     'El progreso elegante casi siempre parece aburrido al principio.'
   ];
   const dailyQuote = dailyQuotes[new Date().getDate() % dailyQuotes.length];
@@ -6297,9 +6297,9 @@ const DashboardView = ({ data, onCompleteHabit, workoutData, onNavigate, onUpdat
   const isFirstRun = !data.user?.onboardingDone && (habits.length === 0 || records.length === 0);
   const [tourStep, setTourStep] = useState(null);
   const tourSteps = [
-    { title: 'Crea tus primeros hábitos', text: 'Empieza con 3 hábitos simples. Mejor poco y constante que una lista enorme imposible de cumplir.', view: 'habits' },
-    { title: 'Organiza tu día', text: 'Usa Agenda para anotar tareas, poner etiquetas, fechas y alertas. Aquí aterrizas lo que tienes que hacer.', view: 'agenda' },
-    { title: 'Enfócate y mide progreso', text: 'Pomodoro te ayuda a trabajar por bloques. El Panel te muestra qué está funcionando y qué debes ajustar.', view: 'pomodoro' }
+    { title: 'Crea tus primeros hÃ¡bitos', text: 'Empieza con 3 hÃ¡bitos simples. Mejor poco y constante que una lista enorme imposible de cumplir.', view: 'habits' },
+    { title: 'Organiza tu dÃ­a', text: 'Usa Agenda para anotar tareas, poner etiquetas, fechas y alertas. AquÃ­ aterrizas lo que tienes que hacer.', view: 'agenda' },
+    { title: 'EnfÃ³cate y mide progreso', text: 'Pomodoro te ayuda a trabajar por bloques. El Panel te muestra quÃ© estÃ¡ funcionando y quÃ© debes ajustar.', view: 'pomodoro' }
   ];
   const finishTour = (view = 'habits') => {
     onUpdateUser?.({ onboardingDone: true });
@@ -6336,14 +6336,14 @@ const DashboardView = ({ data, onCompleteHabit, workoutData, onNavigate, onUpdat
               justifyContent: 'space-between', gap: 14, flexWrap: 'wrap'
             }}>
               <div>
-                <div style={{ color: COLORS.text, fontSize: 17, fontWeight: 800, marginBottom: 4 }}>Empieza con una guía rápida</div>
-                <div style={{ color: COLORS.textDim, fontSize: 12, lineHeight: 1.6 }}>Te muestro en 3 pasos cómo crear hábitos, organizar tareas y medir tu progreso.</div>
+                <div style={{ color: COLORS.text, fontSize: 17, fontWeight: 800, marginBottom: 4 }}>Empieza con una guÃ­a rÃ¡pida</div>
+                <div style={{ color: COLORS.textDim, fontSize: 12, lineHeight: 1.6 }}>Te muestro en 3 pasos cÃ³mo crear hÃ¡bitos, organizar tareas y medir tu progreso.</div>
               </div>
               <button className="lab-cta" onClick={() => setTourStep(0)} style={{
                 borderRadius: 999, padding: '11px 18px', cursor: 'pointer',
                 fontSize: 12, fontFamily: "'Inter', sans-serif", fontWeight: 700
               }}>
-                <span>Activar mis hábitos ahora</span>
+                <span>Activar mis hÃ¡bitos ahora</span>
               </button>
             </div>
           )}
@@ -6370,18 +6370,18 @@ const DashboardView = ({ data, onCompleteHabit, workoutData, onNavigate, onUpdat
 
           <div className="kpi-grid" style={{ marginBottom: 24 }}>
             <KPICard icon={'\u{2705}'} title="Completados Hoy" value={kpis.completed} suffix={`/${kpis.total}`}
-              subtitle="Hábitos marcados hoy" accent={COLORS.secondary}
+              subtitle="HÃ¡bitos marcados hoy" accent={COLORS.secondary}
               progress={kpis.total > 0 ? kpis.completed / kpis.total : 0} delay={100} />
-            <KPICard icon={'\u{1F525}'} title="Racha Actual" value={kpis.currentStreak} subtitle="días consecutivos"
-              accent={COLORS.alert} suffix=" días" delay={200} />
-            <KPICard icon={'\u{1F4AA}'} title="Fuerza de Hábitos" value={getAvgHabitStrength(habits, records)}
-              subtitle="Puntuación promedio (0-100)" accent={COLORS.primary} suffix=" ptos" delay={250}
+            <KPICard icon={'\u{1F525}'} title="Racha Actual" value={kpis.currentStreak} subtitle="dÃ­as consecutivos"
+              accent={COLORS.alert} suffix=" dÃ­as" delay={200} />
+            <KPICard icon={'\u{1F4AA}'} title="Fuerza de HÃ¡bitos" value={getAvgHabitStrength(habits, records)}
+              subtitle="PuntuaciÃ³n promedio (0-100)" accent={COLORS.primary} suffix=" ptos" delay={250}
               progress={getAvgHabitStrength(habits, records) / 100} />
-            <KPICard icon={'\u{1F4C8}'} title="Tasa de éxito" value={kpis.rate} subtitle="Esta semana"
+            <KPICard icon={'\u{1F4C8}'} title="Tasa de Ã©xito" value={kpis.rate} subtitle="Esta semana"
               accent={COLORS.success} suffix="%" delay={300}
               progress={kpis.rate / 100} />
-            <KPICard icon={'\u{1F3C6}'} title="Mejor Racha" value={kpis.bestStreak} subtitle="Récord histórico"
-              accent={COLORS.alert} suffix=" días" delay={400} />
+            <KPICard icon={'\u{1F3C6}'} title="Mejor Racha" value={kpis.bestStreak} subtitle="RÃ©cord histÃ³rico"
+              accent={COLORS.alert} suffix=" dÃ­as" delay={400} />
           </div>
 
           {workoutData?.sessions?.length > 0 && (() => {
@@ -6389,7 +6389,7 @@ const DashboardView = ({ data, onCompleteHabit, workoutData, onNavigate, onUpdat
             return (
               <div style={{ background: `linear-gradient(135deg, ${COLORS.card}, ${COLORS.surface})`, borderRadius: 16, border: `1px solid ${COLORS.border}`, padding: 20, marginBottom: 24 }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
-                  <div style={{ fontSize: 13, color: COLORS.textDim }}>{'\u{1F3CB}\u{FE0F}'} Último Entreno</div>
+                  <div style={{ fontSize: 13, color: COLORS.textDim }}>{'\u{1F3CB}\u{FE0F}'} Ãšltimo Entreno</div>
                   <div style={{ fontSize: 11, color: COLORS.textDim, fontFamily: "'Inter', sans-serif" }}>{last.date}</div>
                 </div>
                 <div style={{ fontSize: 16, color: COLORS.text, fontFamily: "'DM Serif Display', serif", marginBottom: 8 }}>{last.routineName || 'Entreno Libre'}</div>
@@ -6404,7 +6404,7 @@ const DashboardView = ({ data, onCompleteHabit, workoutData, onNavigate, onUpdat
 
           <div style={{ background: COLORS.card, borderRadius: 16, border: `1px solid ${COLORS.border}`, padding: 24, marginBottom: 24 }}>
             <h3 style={{ fontSize: 18, color: COLORS.text, marginBottom: 16, fontFamily: "'DM Serif Display', serif" }}>
-              Últimos 7 días
+              Ãšltimos 7 dÃ­as
             </h3>
             {(() => {
               const dailyData = getDailyCompletionData(habits, records, 7);
@@ -6420,7 +6420,7 @@ const DashboardView = ({ data, onCompleteHabit, workoutData, onNavigate, onUpdat
                       return (
                         <div style={{ background: '#1a1a26', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 10, padding: '10px 14px', boxShadow: '0 8px 32px rgba(0,0,0,0.4)' }}>
                           <div style={{ fontSize: 13, color: COLORS.text, marginBottom: 4 }}>{d.label}</div>
-                          <div style={{ fontSize: 12, color: COLORS.textDim }}><span style={{ color: COLORS.primary }}>{'\u{2705}'}</span> {d.completed}/{d.total} hábitos</div>
+                          <div style={{ fontSize: 12, color: COLORS.textDim }}><span style={{ color: COLORS.primary }}>{'\u{2705}'}</span> {d.completed}/{d.total} hÃ¡bitos</div>
                           <div style={{ fontSize: 12, color: COLORS.textDim }}>Tasa: <span style={{ color: d.pct >= 80 ? COLORS.success : d.pct >= 50 ? COLORS.primary : COLORS.alert }}>{d.pct}%</span></div>
                         </div>
                       );
@@ -6455,7 +6455,7 @@ const DashboardView = ({ data, onCompleteHabit, workoutData, onNavigate, onUpdat
                 );
               })}
               {insights.length === 0 && (
-                <div style={{ color: COLORS.textDim, fontSize: 13, padding: 16 }}>Completa más hábitos para recibir perspectivas personalizadas.</div>
+                <div style={{ color: COLORS.textDim, fontSize: 13, padding: 16 }}>Completa mÃ¡s hÃ¡bitos para recibir perspectivas personalizadas.</div>
               )}
             </div>
           </div>
@@ -6468,12 +6468,12 @@ const DashboardView = ({ data, onCompleteHabit, workoutData, onNavigate, onUpdat
           padding: 20, position: 'sticky', top: 16
         }}>
           <h3 style={{ fontSize: 15, color: COLORS.text, marginBottom: 16, fontFamily: "'DM Serif Display', serif" }}>
-            Hábitos de Hoy
+            HÃ¡bitos de Hoy
           </h3>
           <div className="today-habits-grid" style={{ display: 'grid', gridTemplateColumns: habitsToday.length > 8 ? 'repeat(2, minmax(0, 1fr))' : '1fr', gap: 7 }}>
             {habitsToday.length === 0 && (
               <div style={{ fontSize: 12, color: COLORS.textDim, textAlign: 'center', padding: 16 }}>
-                No hay hábitos activos
+                No hay hÃ¡bitos activos
               </div>
             )}
             {habitsToday.map(h => (
@@ -6550,7 +6550,7 @@ const ChallengesView = ({ data, onCompleteChallenge, onJoinChallenge, records })
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
         <h3 style={{ fontSize: 18, color: COLORS.text, fontFamily: "'DM Serif Display', serif" }}>
           <Award size={18} style={{ verticalAlign: 'middle', marginRight: 8, color: COLORS.primary }} />
-          Desafíos 30 días
+          DesafÃ­os 30 dÃ­as
         </h3>
         <button onClick={() => setShowCreate(!showCreate)} style={{
           padding: '8px 16px', borderRadius: 8, border: 'none',
@@ -6562,14 +6562,14 @@ const ChallengesView = ({ data, onCompleteChallenge, onJoinChallenge, records })
 
       {showCreate && (
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: 12, marginBottom: 24 }}>
-          {available.length === 0 && <div style={{ color: COLORS.textDim, fontSize: 13, textAlign: 'center', padding: 20, gridColumn: '1 / -1' }}>¡Ya uniste todos los retos disponibles!</div>}
+          {available.length === 0 && <div style={{ color: COLORS.textDim, fontSize: 13, textAlign: 'center', padding: 20, gridColumn: '1 / -1' }}>Â¡Ya uniste todos los retos disponibles!</div>}
           {available.map(pc => (
             <div key={pc.id} style={{ background: COLORS.card, borderRadius: 12, border: `1px solid ${COLORS.border}`, padding: 16 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
                 <span className="fire-emoji" style={{ fontSize: 28 }}>{pc.icon}</span>
                 <div style={{ flex: 1 }}>
                   <div style={{ fontSize: 14, color: COLORS.text, fontWeight: 500 }}>{pc.name}</div>
-                  <span style={{ fontSize: 11, color: pc.diffColor }}>{pc.difficulty}  {pc.duration} días</span>
+                  <span style={{ fontSize: 11, color: pc.diffColor }}>{pc.difficulty}  {pc.duration} dÃ­as</span>
                 </div>
               </div>
               <div style={{ fontSize: 12, color: COLORS.textDim, marginBottom: 12 }}>{pc.desc}</div>
@@ -6604,7 +6604,7 @@ const ChallengesView = ({ data, onCompleteChallenge, onJoinChallenge, records })
                     <span className="fire-emoji" style={{ fontSize: 28 }}>{c.icon}</span>
                     <div style={{ flex: 1 }}>
                       <div style={{ fontSize: 14, color: COLORS.text, fontWeight: 500 }}>{c.name}</div>
-                      <span style={{ fontSize: 11, color: c.diffColor || COLORS.textDim }}>{c.difficulty}  día {Math.min(c.duration, diff + 1)} de {c.duration}</span>
+                      <span style={{ fontSize: 11, color: c.diffColor || COLORS.textDim }}>{c.difficulty}  dÃ­a {Math.min(c.duration, diff + 1)} de {c.duration}</span>
                     </div>
                     <span style={{ fontSize: 13, color: COLORS.primary, fontFamily: "'Inter', sans-serif" }}>{Math.round(progress * 100)}%</span>
                   </div>
@@ -6668,7 +6668,7 @@ const HabitsView = ({ data, onAddHabit, onUpdateHabit, onDeleteHabit, onToggleHa
   });
   const [calSelect, setCalSelect] = useState(null);
 
-  const dayNames = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'sáb', 'Dom'];
+  const dayNames = ['Lun', 'Mar', 'MiÃ©', 'Jue', 'Vie', 'sÃ¡b', 'Dom'];
 
   const getWeekDays = (ref) => {
     const days = [];
@@ -6735,7 +6735,7 @@ const HabitsView = ({ data, onAddHabit, onUpdateHabit, onDeleteHabit, onToggleHa
   const monthLabel = baseDate.toLocaleDateString('es-ES', { month: 'long', year: 'numeric' }).replace(/\b\w/g, c => c.toUpperCase());
   const weekLabel = `${weekDays[0].dayNum} ${baseDate.toLocaleDateString('es-ES', { month: 'short' })} - ${weekDays[6].dayNum} ${weekDays[6].full.toLocaleDateString('es-ES', { month: 'short', year: 'numeric' })}`;
 
-  const calDayNames = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'sáb'];
+  const calDayNames = ['Dom', 'Lun', 'Mar', 'MiÃ©', 'Jue', 'Vie', 'sÃ¡b'];
 
   const navigate = (dir) => {
     const d = new Date(baseDate);
@@ -6848,7 +6848,7 @@ const HabitsView = ({ data, onAddHabit, onUpdateHabit, onDeleteHabit, onToggleHa
                     cursor: isPast && isScheduled && h.active ? 'pointer' : 'default',
                     opacity: isScheduled ? (isPast || isToday ? 1 : 0.55) : 0.22
                   }}>
-                    {done ? <Check size={13} color="#0a0a0f" strokeWidth={3.5} /> : isSkipped ? <span style={{ fontSize: 11, color: COLORS.textDim }}>-</span> : !isScheduled ? <span style={{ fontSize: 11, color: COLORS.textDim }}>·</span> : null}
+                    {done ? <Check size={13} color="#0a0a0f" strokeWidth={3.5} /> : isSkipped ? <span style={{ fontSize: 11, color: COLORS.textDim }}>-</span> : !isScheduled ? <span style={{ fontSize: 11, color: COLORS.textDim }}>Â·</span> : null}
                   </div>
                   <div style={{
                     fontSize: 10, color: isToday ? COLORS.primary : COLORS.textDim + '99',
@@ -6942,7 +6942,7 @@ const HabitsView = ({ data, onAddHabit, onUpdateHabit, onDeleteHabit, onToggleHa
       ))}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 10, paddingTop: 10, borderTop: `1px solid ${COLORS.border}` }}>
         <span style={{ fontSize: 11, color: COLORS.textDim }}>
-          {calSelect ? 'Selecciona el día final' : `${formatRangeLabel()} - ${Math.ceil((new Date(dateRange.end + 'T00:00:00') - new Date(dateRange.start + 'T00:00:00')) / 86400000) + 1} días`}
+          {calSelect ? 'Selecciona el dÃ­a final' : `${formatRangeLabel()} - ${Math.ceil((new Date(dateRange.end + 'T00:00:00') - new Date(dateRange.start + 'T00:00:00')) / 86400000) + 1} dÃ­as`}
         </span>
         <div style={{ display: 'flex', gap: 4 }}>
           {[7, 14, 30, 60].map(n => (
@@ -6986,8 +6986,8 @@ const HabitsView = ({ data, onAddHabit, onUpdateHabit, onDeleteHabit, onToggleHa
     <div className="habits-minimal-view">
       <header className="habits-minimal-header">
         <div>
-          <h2>Mis hábitos</h2>
-          <p>Pequeñas acciones diarias, grandes resultados.</p>
+          <h2>Mis hÃ¡bitos</h2>
+          <p>PequeÃ±as acciones diarias, grandes resultados.</p>
         </div>
         <div className="habits-header-actions">
           <button
@@ -6996,7 +6996,7 @@ const HabitsView = ({ data, onAddHabit, onUpdateHabit, onDeleteHabit, onToggleHa
             aria-expanded={viewMode === 'calendar'}
           >
             <Calendar size={18} strokeWidth={1.7} />
-            <span>{weekLabel.replace(' - ', ' – ')}</span>
+            <span>{weekLabel.replace(' - ', ' â€“ ')}</span>
           </button>
           <button className="habits-nav-button" onClick={() => {
             const previousWeek = new Date(baseDate);
@@ -7016,7 +7016,7 @@ const HabitsView = ({ data, onAddHabit, onUpdateHabit, onDeleteHabit, onToggleHa
           </button>
           <button className="habits-new-button" onClick={() => { setEditHabit(null); setShowForm(true); }}>
             <Plus size={17} strokeWidth={1.8} />
-            Nuevo hábito
+            Nuevo hÃ¡bito
           </button>
         </div>
       </header>
@@ -7027,7 +7027,7 @@ const HabitsView = ({ data, onAddHabit, onUpdateHabit, onDeleteHabit, onToggleHa
         </div>
       )}
 
-      <div className="habits-minimal-filters" role="tablist" aria-label="Categorías de hábitos">
+      <div className="habits-minimal-filters" role="tablist" aria-label="CategorÃ­as de hÃ¡bitos">
         {[
           { id: 'all', label: 'Todos' },
           ...habitCategories
@@ -7044,12 +7044,12 @@ const HabitsView = ({ data, onAddHabit, onUpdateHabit, onDeleteHabit, onToggleHa
         ))}
       </div>
 
-      <section className="habits-minimal-metrics" aria-label="Resumen de hábitos">
+      <section className="habits-minimal-metrics" aria-label="Resumen de hÃ¡bitos">
         {[
-          { label: 'Racha global', value: `${globalStreak} ${globalStreak === 1 ? 'día' : 'días'}` },
+          { label: 'Racha global', value: `${globalStreak} ${globalStreak === 1 ? 'dÃ­a' : 'dÃ­as'}` },
           { label: 'Cumplimiento semanal', value: `${weeklyCompletion}%` },
           { label: 'Meta mensual', value: `${monthlyCompletion}%` },
-          { label: 'Hábitos activos', value: activeHabits.length }
+          { label: 'HÃ¡bitos activos', value: activeHabits.length }
         ].map(metric => (
           <div key={metric.label} className="habits-metric">
             <span>{metric.label}</span>
@@ -7060,7 +7060,7 @@ const HabitsView = ({ data, onAddHabit, onUpdateHabit, onDeleteHabit, onToggleHa
 
       <div className="habits-minimal-list">
         <div className="habits-minimal-table-header" aria-hidden="true">
-          <span>Hábito</span>
+          <span>HÃ¡bito</span>
           <div className="habits-week-heading">
             <span>Esta semana</span>
             <div>{dayNames.map(day => <small key={day}>{day.charAt(0).toUpperCase()}</small>)}</div>
@@ -7092,7 +7092,7 @@ const HabitsView = ({ data, onAddHabit, onUpdateHabit, onDeleteHabit, onToggleHa
                   <strong>{h.name}</strong>
                   <span><i />{cat.label}</span>
                   {h.frequency === 'Personalizado' && h.frequencyDays?.length > 0 && (
-                    <small>{h.frequencyDays.map(day => DAY_LABELS[day]).join(' · ')}</small>
+                    <small>{h.frequencyDays.map(day => DAY_LABELS[day]).join(' Â· ')}</small>
                   )}
                 </div>
               </div>
@@ -7116,7 +7116,7 @@ const HabitsView = ({ data, onAddHabit, onUpdateHabit, onDeleteHabit, onToggleHa
 
               <div className="habit-row-streak">
                 <span className="mobile-field-label">Racha</span>
-                {streak} {streak === 1 ? 'día' : 'días'}
+                {streak} {streak === 1 ? 'dÃ­a' : 'dÃ­as'}
               </div>
 
               <div className="habit-row-progress">
@@ -7163,21 +7163,21 @@ const HabitsView = ({ data, onAddHabit, onUpdateHabit, onDeleteHabit, onToggleHa
         {filtered.length === 0 && (
           <div className="habits-minimal-empty">
             <Target size={30} strokeWidth={1.4} />
-            <strong>No hay hábitos en esta categoría</strong>
+            <strong>No hay hÃ¡bitos en esta categorÃ­a</strong>
             <span>Crea uno nuevo o elige otro filtro.</span>
-            <button onClick={() => { setEditHabit(null); setShowForm(true); }}>Nuevo hábito</button>
+            <button onClick={() => { setEditHabit(null); setShowForm(true); }}>Nuevo hÃ¡bito</button>
           </div>
         )}
       </div>
 
       <Modal isOpen={showForm} onClose={() => { setShowForm(false); setEditHabit(null); }}
-        title={editHabit ? 'Editar hábito' : 'Nuevo hábito'} width={900} className="habit-form-modal">
+        title={editHabit ? 'Editar hÃ¡bito' : 'Nuevo hÃ¡bito'} width={900} className="habit-form-modal">
         <HabitForm initial={editHabit} onSave={handleSave} categories={habitCategories}
           onCreateCategory={onCreateHabitCategory}
           onCancel={() => { setShowForm(false); setEditHabit(null); }} />
       </Modal>
 
-      <Modal isOpen={!!viewHabit} onClose={() => setViewHabit(null)} title="Detalle del hábito">
+      <Modal isOpen={!!viewHabit} onClose={() => setViewHabit(null)} title="Detalle del hÃ¡bito">
         {viewHabit && (() => {
           const cat = getCategoryInfo(viewHabit.category, data.customHabitCategories);
           const HabitIcon = getHabitIconComponent(viewHabit);
@@ -7191,18 +7191,18 @@ const HabitsView = ({ data, onAddHabit, onUpdateHabit, onDeleteHabit, onToggleHa
               <p><i />{cat.label}</p>
               <dl>
                 <div><dt>Frecuencia</dt><dd>{viewHabit.frequency}</dd></div>
-                <div><dt>Racha actual</dt><dd>{streak} días</dd></div>
-                <div><dt>Mejor racha</dt><dd>{best} días</dd></div>
-                <div><dt>Últimos 30 días</dt><dd>{monthRate}%</dd></div>
+                <div><dt>Racha actual</dt><dd>{streak} dÃ­as</dd></div>
+                <div><dt>Mejor racha</dt><dd>{best} dÃ­as</dd></div>
+                <div><dt>Ãšltimos 30 dÃ­as</dt><dd>{monthRate}%</dd></div>
               </dl>
-              <button onClick={() => { setViewHabit(null); handleEdit(viewHabit); }}>Editar hábito</button>
+              <button onClick={() => { setViewHabit(null); handleEdit(viewHabit); }}>Editar hÃ¡bito</button>
             </div>
           );
         })()}
       </Modal>
 
-      <ConfirmModal isOpen={!!confirmDelete} title="Eliminar Hábito"
-        message={`¿Estás seguro de eliminar "${confirmDelete?.name}"? Se perderán todos sus registros.`}
+      <ConfirmModal isOpen={!!confirmDelete} title="Eliminar HÃ¡bito"
+        message={`Â¿EstÃ¡s seguro de eliminar "${confirmDelete?.name}"? Se perderÃ¡n todos sus registros.`}
         danger onConfirm={() => { onDeleteHabit(confirmDelete.id); setConfirmDelete(null); }}
         onCancel={() => setConfirmDelete(null)} />
     </div>
@@ -7223,12 +7223,12 @@ const HealthView = ({ data, onUpdateHealth }) => {
   const emptyForm = {
     name: '',
     dose: '',
-    form: 'Tableta / Cápsula',
+    form: 'Tableta / CÃ¡psula',
     color: 'red',
     frequency: 'Cada 8 horas',
     times: ['08:00'],
     mealTiming: 'No importa',
-    duration: '7 días',
+    duration: '7 dÃ­as',
     startDate: today,
     endDate: '',
     instructions: '',
@@ -7312,7 +7312,7 @@ const HealthView = ({ data, onUpdateHealth }) => {
   };
 
   const deleteMedication = (id) => {
-    if (!window.confirm('¿Eliminar este medicamento y sus registros?')) return;
+    if (!window.confirm('Â¿Eliminar este medicamento y sus registros?')) return;
     onUpdateHealth(prev => {
       const current = normalizeHealthData(prev);
       return {
@@ -7348,9 +7348,9 @@ const HealthView = ({ data, onUpdateHealth }) => {
 
   const heroStats = [
     { icon: <Pill size={22} />, label: 'Medicamentos activos', value: activeMeds.length, sub: 'Medicamentos', color: '#8b5cf6' },
-    { icon: <Clock size={22} />, label: 'Próxima toma', value: nextDose?.time || '--:--', sub: nextDose ? `${nextDose.medication.name} ${nextDose.medication.dose}` : 'Sin tomas pendientes', color: COLORS.primary },
+    { icon: <Clock size={22} />, label: 'PrÃ³xima toma', value: nextDose?.time || '--:--', sub: nextDose ? `${nextDose.medication.name} ${nextDose.medication.dose}` : 'Sin tomas pendientes', color: COLORS.primary },
     { icon: <Activity size={22} />, label: 'Adherencia (semana)', value: `${weekly.pct}%`, sub: weekly.pct >= 80 ? 'Excelente' : weekly.pct >= 50 ? 'En progreso' : 'Por construir', color: COLORS.success },
-    { icon: <Bell size={22} />, label: 'Recordatorios hoy', value: todayDoses.length, sub: nextDose ? `Próxima en ${nextDose.time}` : 'Día completo', color: '#8b5cf6' },
+    { icon: <Bell size={22} />, label: 'Recordatorios hoy', value: todayDoses.length, sub: nextDose ? `PrÃ³xima en ${nextDose.time}` : 'DÃ­a completo', color: '#8b5cf6' },
     { icon: <Calendar size={22} />, label: 'Tratamientos activos', value: activeTreatments, sub: 'En curso', color: COLORS.primary }
   ];
 
@@ -7363,7 +7363,7 @@ const HealthView = ({ data, onUpdateHealth }) => {
           <div className="lab-pill" style={{ display: 'inline-flex', padding: '7px 12px', fontSize: 11, fontWeight: 900, marginBottom: 14 }}>SALUD PRO</div>
           <h2 className="lab-hero-title" style={{ fontSize: 38, lineHeight: 1.04, marginBottom: 10 }}>Tu centro de salud personal.</h2>
           <p style={{ color: COLORS.textDim, fontSize: 16, maxWidth: 620, lineHeight: 1.5 }}>
-            Controla tus medicamentos, recordatorios, tratamientos y adherencia para cuidar lo más importante: tú.
+            Controla tus medicamentos, recordatorios, tratamientos y adherencia para cuidar lo mÃ¡s importante: tÃº.
           </p>
         </div>
       </div>
@@ -7441,7 +7441,7 @@ const HealthView = ({ data, onUpdateHealth }) => {
               </select>
             </div>
             <div>
-              <label style={labelStyle}>Duración</label>
+              <label style={labelStyle}>DuraciÃ³n</label>
               <select value={form.duration} onChange={e => updateForm('duration', e.target.value)} style={inputStyle}>
                 {MEDICATION_DURATIONS.map(item => <option key={item} value={item}>{item}</option>)}
               </select>
@@ -7487,7 +7487,7 @@ const HealthView = ({ data, onUpdateHealth }) => {
             {health.medications.map(med => {
               const color = medicationColorMeta(med.color);
               const upcoming = getNextMedicationDose({ ...health, medications: [med] });
-              const nextLabel = upcoming ? `${upcoming.date === today ? 'Hoy' : 'Próxima'} ${upcoming.time}` : 'Sin tomas pendientes';
+              const nextLabel = upcoming ? `${upcoming.date === today ? 'Hoy' : 'PrÃ³xima'} ${upcoming.time}` : 'Sin tomas pendientes';
               return (
                 <div key={med.id} className="health-med-row" style={{ display: 'grid', gap: 11, padding: '14px 14px', borderRadius: 16, background: 'rgba(255,255,255,0.028)', border: `1px solid ${COLORS.border}`, overflow: 'hidden' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 12, minWidth: 0 }}>
@@ -7516,7 +7516,7 @@ const HealthView = ({ data, onUpdateHealth }) => {
                       <div className="health-med-chip-value">{med.frequency}</div>
                     </div>
                     <div className="health-med-chip">
-                      <div className="health-med-chip-label">Duración</div>
+                      <div className="health-med-chip-label">DuraciÃ³n</div>
                       <div className="health-med-chip-value">{getMedicationDurationText(med)}</div>
                     </div>
                   </div>
@@ -7530,7 +7530,7 @@ const HealthView = ({ data, onUpdateHealth }) => {
             })}
           </div>
           <div style={{ marginTop: 14, color: COLORS.textDim, fontSize: 11, display: 'flex', gap: 8, alignItems: 'center' }}>
-            <AlertTriangle size={14} /> Esta herramienta es solo para seguimiento personal y no reemplaza la indicación de un profesional de salud.
+            <AlertTriangle size={14} /> Esta herramienta es solo para seguimiento personal y no reemplaza la indicaciÃ³n de un profesional de salud.
           </div>
         </div>
 
@@ -7538,7 +7538,7 @@ const HealthView = ({ data, onUpdateHealth }) => {
           <div className="health-card" style={cardStyle}>
             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 12 }}>
               <h3 style={{ color: COLORS.text, fontSize: 17, display: 'flex', gap: 8, alignItems: 'center' }}><Calendar size={16} color={COLORS.primary} /> Horario de tomas</h3>
-              <span style={{ color: COLORS.primary, fontSize: 12, fontWeight: 800 }}>Plan del día</span>
+              <span style={{ color: COLORS.primary, fontSize: 12, fontWeight: 800 }}>Plan del dÃ­a</span>
             </div>
             <div style={{ display: 'grid', gap: 9 }}>
               {groupedDoses.map(group => (
@@ -7553,7 +7553,7 @@ const HealthView = ({ data, onUpdateHealth }) => {
                       const taken = isMedicationDoseTaken(health, dose.medication.id, today, dose.time);
                       return (
                         <button key={`${dose.medication.id}-${dose.time}`} onClick={() => markDoseTaken(dose.medication, dose.time)} style={{ border: `1px solid ${taken ? COLORS.success : COLORS.primary}30`, borderRadius: 999, background: taken ? `${COLORS.success}14` : `${COLORS.primary}10`, color: taken ? COLORS.success : COLORS.text, padding: '6px 8px', fontSize: 11, cursor: 'pointer' }}>
-                          {taken ? <Check size={11} style={{ verticalAlign: 'middle', marginRight: 4 }} /> : null}{dose.time} · {dose.medication.name} {dose.medication.dose}
+                          {taken ? <Check size={11} style={{ verticalAlign: 'middle', marginRight: 4 }} /> : null}{dose.time} Â· {dose.medication.name} {dose.medication.dose}
                         </button>
                       );
                     })}
@@ -7592,10 +7592,10 @@ const HealthView = ({ data, onUpdateHealth }) => {
               </div>
             </div>
             <div style={{ marginTop: 12, padding: 11, borderRadius: 12, background: `${COLORS.primary}0c`, color: COLORS.textDim, fontSize: 12, lineHeight: 1.45 }}>
-              Consejo seguro del día: bebe suficiente agua, descansa bien y sigue siempre las indicaciones de tu profesional de salud.
+              Consejo seguro del dÃ­a: bebe suficiente agua, descansa bien y sigue siempre las indicaciones de tu profesional de salud.
             </div>
             <div style={{ marginTop: 10, color: COLORS.textDim, fontSize: 11, lineHeight: 1.45 }}>
-              Importante: si tienes síntomas fuertes, reacciones adversas o dudas sobre un medicamento, consulta con un profesional.
+              Importante: si tienes sÃ­ntomas fuertes, reacciones adversas o dudas sobre un medicamento, consulta con un profesional.
             </div>
           </div>
         </div>
@@ -7687,7 +7687,7 @@ const FinanceView = ({ data, onUpdateFinance }) => {
     { id: 'cash', label: 'Efectivo' },
     { id: 'bank', label: 'Cuentas bancarias' },
     { id: 'savings', label: 'Ahorros' },
-    { id: 'credit', label: 'Crédito' },
+    { id: 'credit', label: 'CrÃ©dito' },
     { id: 'loan', label: 'Deudas' },
     { id: 'investment', label: 'Inversiones' },
     { id: 'custom', label: 'Otros' }
@@ -7787,7 +7787,7 @@ const FinanceView = ({ data, onUpdateFinance }) => {
       if (!response.ok) throw new Error(`HTTP ${response.status}`);
       const result = await response.json();
       const nextRate = Number(result?.rates?.COP);
-      if (!Number.isFinite(nextRate) || nextRate <= 0) throw new Error('La respuesta no incluyó COP');
+      if (!Number.isFinite(nextRate) || nextRate <= 0) throw new Error('La respuesta no incluyÃ³ COP');
       const updatedAt = result?.time_last_update_utc
         ? new Date(result.time_last_update_utc).toISOString()
         : new Date().toISOString();
@@ -7796,7 +7796,7 @@ const FinanceView = ({ data, onUpdateFinance }) => {
       setRateStatus('fresh');
     } catch (error) {
       setRateStatus('fallback');
-      setRateError(`No se pudo actualizar; se mantiene la última tasa disponible. ${error?.message || ''}`.trim());
+      setRateError(`No se pudo actualizar; se mantiene la Ãºltima tasa disponible. ${error?.message || ''}`.trim());
     }
   };
 
@@ -7869,7 +7869,7 @@ const FinanceView = ({ data, onUpdateFinance }) => {
   const insights = [
     budgetPct > 90 ? `Alerta: ya usaste ${budgetPct}% del presupuesto mensual.` : `Presupuesto sano: vas en ${budgetPct}% del mes.`,
     available < 0 ? `Tu disponible proyectado queda negativo: ${money(available)}.` : `Disponible proyectado despues de gastos, recurrentes y suscripciones: ${money(available)}.`,
-    subscriptionsExpense > 0 ? `Suscripciones activas estimadas este mes: ${money(subscriptionsExpense)}.` : 'Agrega tus suscripciones para ver cuánto consumen al mes.',
+    subscriptionsExpense > 0 ? `Suscripciones activas estimadas este mes: ${money(subscriptionsExpense)}.` : 'Agrega tus suscripciones para ver cuÃ¡nto consumen al mes.',
     recurringExpense > 0 ? `Pagos recurrentes estimados este mes: ${money(recurringExpense)}.` : 'Agrega pagos recurrentes para anticipar obligaciones.'
   ];
 
@@ -8059,7 +8059,7 @@ const FinanceView = ({ data, onUpdateFinance }) => {
         category: 'fun',
         accountId: item.accountId || (prev.accounts || [])[0]?.id || 'cash',
         payee: item.name,
-        note: 'Suscripción',
+        note: 'SuscripciÃ³n',
         date: `${selectedMonth}-${String(item.day || 1).padStart(2, '0')}`
       }, ...(prev.transactions || [])]
     }));
@@ -8209,7 +8209,7 @@ const FinanceView = ({ data, onUpdateFinance }) => {
                     <span style={{ width: 8, height: 8, borderRadius: 99, background: cat.color }} />
                     <div style={{ flex: 1 }}>
                       <div style={{ color: COLORS.text, fontSize: 13, fontWeight: 700 }}>{t.payee || t.note || cat.name}</div>
-                      <div style={{ color: COLORS.textDim, fontSize: 11 }}>{cat.name} · {accountById(t.accountId).name} · {t.date}</div>
+                      <div style={{ color: COLORS.textDim, fontSize: 11 }}>{cat.name} Â· {accountById(t.accountId).name} Â· {t.date}</div>
                     </div>
                     <div style={{ color: t.type === 'income' ? '#10b981' : COLORS.alert, fontWeight: 800 }}>{t.type === 'income' ? '+' : '-'}{money(t.amount)}</div>
                     <button onClick={() => removeTransaction(t.id)} style={{ border: 'none', background: 'transparent', color: COLORS.textDim, cursor: 'pointer' }}><Trash2 size={14} /></button>
@@ -8259,7 +8259,7 @@ const FinanceView = ({ data, onUpdateFinance }) => {
                   <div key={cat.id} style={{ padding: 12, borderRadius: 14, background: 'rgba(239,239,239,0.03)', border: `1px solid ${COLORS.border}` }}>
                     <div className="finance-budget-category-row" style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) 110px 34px', gap: 10, alignItems: 'center', marginBottom: 9 }}>
                       <div>
-                        <div style={{ color: COLORS.text, fontSize: 13, fontWeight: 800 }}><span style={{ color: cat.color }}>●</span> {cat.name}</div>
+                        <div style={{ color: COLORS.text, fontSize: 13, fontWeight: 800 }}><span style={{ color: cat.color }}>â—</span> {cat.name}</div>
                         <div style={{ color: pct > 90 ? COLORS.alert : COLORS.textDim, fontSize: 11 }}>{money(spent)} usados de {money(limit)}</div>
                       </div>
                       <div style={{ position: 'relative' }}>
@@ -8289,7 +8289,7 @@ const FinanceView = ({ data, onUpdateFinance }) => {
             <div className="finance-card-header" style={{ display: 'flex', justifyContent: 'space-between', gap: 12, alignItems: 'flex-start', marginBottom: 18 }}>
               <div>
                 <h3 style={{ fontSize: 18, color: COLORS.text, margin: 0 }}>Suscripciones</h3>
-                <div style={{ color: COLORS.textDim, fontSize: 12, marginTop: 5, ...s }}>Servicios mensuales con logo, monto y día de cobro.</div>
+                <div style={{ color: COLORS.textDim, fontSize: 12, marginTop: 5, ...s }}>Servicios mensuales con logo, monto y dÃ­a de cobro.</div>
               </div>
               <div style={{ textAlign: 'right' }}>
                 <div style={{ color: COLORS.textDim, fontSize: 10, textTransform: 'uppercase', letterSpacing: '0.08em', ...s }}>Total mensual</div>
@@ -8305,7 +8305,7 @@ const FinanceView = ({ data, onUpdateFinance }) => {
                 {SUBSCRIPTION_SERVICES.map(service => <option key={service.id} value={service.id}>{service.name}</option>)}
               </select>
               <FinanceMoneyInput value={subscriptionForm.amount} onValueChange={amount => setSubscriptionForm(f => ({ ...f, amount }))} placeholder={`Monto ${subscriptionCurrency}`} style={inputStyle} />
-              <input type="number" min="1" max="31" step="1" value={subscriptionForm.day} onChange={e => setSubscriptionForm(f => ({ ...f, day: e.target.value }))} placeholder="Día" style={inputStyle} />
+              <input type="number" min="1" max="31" step="1" value={subscriptionForm.day} onChange={e => setSubscriptionForm(f => ({ ...f, day: e.target.value }))} placeholder="DÃ­a" style={inputStyle} />
               <select value={subscriptionForm.accountId} onChange={e => {
                 const previousCurrency = normalizeCurrency(accountById(subscriptionForm.accountId).currency || currency);
                 const nextAccount = accounts.find(a => a.id === e.target.value) || accounts[0];
@@ -8332,7 +8332,7 @@ const FinanceView = ({ data, onUpdateFinance }) => {
                         <div style={{ display: 'flex', justifyContent: 'space-between', gap: 8, alignItems: 'start' }}>
                           <div style={{ minWidth: 0 }}>
                             <div style={{ color: COLORS.text, fontSize: 13, fontWeight: 900, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.name}</div>
-                            <div style={{ color: COLORS.textDim, fontSize: 10, marginTop: 2 }}>{item.category} · Día {item.day}</div>
+                            <div style={{ color: COLORS.textDim, fontSize: 10, marginTop: 2 }}>{item.category} Â· DÃ­a {item.day}</div>
                           </div>
                           <div style={{ color: COLORS.alert, fontWeight: 900, whiteSpace: 'nowrap' }}>{money(item.amount)}</div>
                         </div>
@@ -8343,11 +8343,11 @@ const FinanceView = ({ data, onUpdateFinance }) => {
                       </div>
                     </div>
                   ))}
-                  {!activeSubscriptions.length && <div style={{ color: COLORS.textDim, fontSize: 13, padding: 18, border: `1px dashed ${COLORS.border}`, borderRadius: 16 }}>Aún no tienes suscripciones activas.</div>}
+                  {!activeSubscriptions.length && <div style={{ color: COLORS.textDim, fontSize: 13, padding: 18, border: `1px dashed ${COLORS.border}`, borderRadius: 16 }}>AÃºn no tienes suscripciones activas.</div>}
                 </div>
               </div>
               <div>
-                <h4 style={{ color: COLORS.text, fontSize: 13, margin: '0 0 10px', ...s }}>Catálogo rápido</h4>
+                <h4 style={{ color: COLORS.text, fontSize: 13, margin: '0 0 10px', ...s }}>CatÃ¡logo rÃ¡pido</h4>
                 <div className="finance-subscription-catalog" style={{ display: 'grid', gap: 10, maxHeight: 430, overflowY: 'auto', paddingRight: 4 }}>
                   {subscriptionCatalogGroups.map(group => (
                     <div key={group.category} style={{ display: 'grid', gap: 7 }}>
@@ -8406,7 +8406,7 @@ const FinanceView = ({ data, onUpdateFinance }) => {
               <span style={{ position: 'absolute', right: 12, top: '50%', transform: 'translateY(-50%)', color: COLORS.textDim, fontSize: 10, fontWeight: 800 }}>{currency}</span>
             </div>
             <div style={{ height: 8, background: COLORS.bg, borderRadius: 99, overflow: 'hidden' }}><div style={{ height: '100%', width: `${budgetPct}%`, background: `linear-gradient(90deg, ${COLORS.primary}, ${COLORS.alert})`, borderRadius: 99 }} /></div>
-            <div style={{ color: COLORS.textDim, fontSize: 11, marginTop: 8 }}>Usado: {money(expenses)} · Plan por categorías: {money(budgetTotal)}</div>
+            <div style={{ color: COLORS.textDim, fontSize: 11, marginTop: 8 }}>Usado: {money(expenses)} Â· Plan por categorÃ­as: {money(budgetTotal)}</div>
           </div>
 
           <div className="finance-card finance-accounts-card" style={{ ...cardStyle, display: section === 'accounts' ? 'block' : 'none' }}>
@@ -8425,7 +8425,7 @@ const FinanceView = ({ data, onUpdateFinance }) => {
                         <div style={{ textAlign: 'right', minWidth: 94 }}>
                           <div style={{ color: a.current >= 0 ? COLORS.text : COLORS.alert, fontWeight: 900, whiteSpace: 'nowrap' }}>{accountMoney(a.current, a.currency)}</div>
                           {normalizeCurrency(a.currency) !== currency && (
-                            <div style={{ color: COLORS.textDim, fontSize: 9, marginTop: 2, whiteSpace: 'nowrap' }}>≈ {money(a.current)}</div>
+                            <div style={{ color: COLORS.textDim, fontSize: 9, marginTop: 2, whiteSpace: 'nowrap' }}>â‰ˆ {money(a.current)}</div>
                           )}
                         </div>
                         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2, padding: 2, borderRadius: 999, background: COLORS.bg, border: `1px solid ${COLORS.border}` }}>
@@ -8497,17 +8497,17 @@ const FinanceView = ({ data, onUpdateFinance }) => {
               <button className="finance-submit-button" onClick={addAccount} style={{ border: 'none', borderRadius: 10, background: COLORS.primary, color: '#fff', padding: '0 12px', cursor: 'pointer', fontWeight: 800, whiteSpace: 'nowrap' }}><Plus size={15} /> Agregar cuenta</button>
             </div>
             <div style={{ color: COLORS.textDim, fontSize: 10, marginTop: 8, lineHeight: 1.45 }}>
-              Consejo: si una tarjeta o crédito debe restar patrimonio, registra su saldo inicial como número negativo.
+              Consejo: si una tarjeta o crÃ©dito debe restar patrimonio, registra su saldo inicial como nÃºmero negativo.
             </div>
           </div>
 
           <div className="finance-card finance-categories-card" style={{ ...cardStyle, display: section === 'budget' ? 'block' : 'none' }}>
-            <h3 style={{ fontSize: 16, color: COLORS.text, marginBottom: 12 }}>Categorías</h3>
+            <h3 style={{ fontSize: 16, color: COLORS.text, marginBottom: 12 }}>CategorÃ­as</h3>
             <div className="finance-inline-form finance-category-form" style={{ display: 'flex', gap: 8, marginBottom: 12 }}>
-              <input value={catName} onChange={e => setCatName(e.target.value)} placeholder="Nueva categoría" style={{ ...inputStyle, flex: 1, padding: '9px 11px' }} />
+              <input value={catName} onChange={e => setCatName(e.target.value)} placeholder="Nueva categorÃ­a" style={{ ...inputStyle, flex: 1, padding: '9px 11px' }} />
               <button className="finance-icon-button" onClick={addCategory} style={{ border: 'none', borderRadius: 10, background: COLORS.primary, color: '#fff', padding: '0 12px', cursor: 'pointer' }}><Plus size={15} /></button>
             </div>
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 7 }}>{categories.map(c => <span key={c.id} className="lab-pill" style={{ padding: '6px 9px', fontSize: 11 }}><span style={{ color: c.color }}>●</span> {c.name}</span>)}</div>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 7 }}>{categories.map(c => <span key={c.id} className="lab-pill" style={{ padding: '6px 9px', fontSize: 11 }}><span style={{ color: c.color }}>â—</span> {c.name}</span>)}</div>
           </div>
 
           <div className="finance-card finance-recurring-card" style={{ ...cardStyle, display: section === 'recurring' ? 'block' : 'none' }}>
@@ -8525,7 +8525,7 @@ const FinanceView = ({ data, onUpdateFinance }) => {
             <div className="finance-compact-form" style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) 110px 74px 130px auto', gap: 8, marginBottom: 16 }}>
               <input value={recurringForm.name} onChange={e => setRecurringForm(f => ({ ...f, name: e.target.value }))} placeholder="Nombre del pago" style={{ ...inputStyle, padding: '9px 10px', fontSize: 12 }} />
               <FinanceMoneyInput value={recurringForm.amount} onValueChange={amount => setRecurringForm(f => ({ ...f, amount }))} placeholder={currency} style={{ ...inputStyle, padding: '9px 10px', fontSize: 12 }} />
-              <input type="number" min="1" max="31" step="1" value={recurringForm.day} onChange={e => setRecurringForm(f => ({ ...f, day: e.target.value }))} placeholder="Día" style={{ ...inputStyle, padding: '9px 10px', fontSize: 12 }} />
+              <input type="number" min="1" max="31" step="1" value={recurringForm.day} onChange={e => setRecurringForm(f => ({ ...f, day: e.target.value }))} placeholder="DÃ­a" style={{ ...inputStyle, padding: '9px 10px', fontSize: 12 }} />
               <select value={recurringForm.category} onChange={e => setRecurringForm(f => ({ ...f, category: e.target.value }))} style={{ ...inputStyle, padding: '9px 10px', fontSize: 12 }}>
                 {expenseCategories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
               </select>
@@ -8538,7 +8538,7 @@ const FinanceView = ({ data, onUpdateFinance }) => {
                   <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) auto', gap: 10, alignItems: 'start' }}>
                     <div style={{ minWidth: 0 }}>
                       <div style={{ color: COLORS.text, fontSize: 13, fontWeight: 900, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{r.name}</div>
-                      <div style={{ color: COLORS.textDim, fontSize: 10, marginTop: 3 }}>Día {r.day} · {catById(r.category).name}</div>
+                      <div style={{ color: COLORS.textDim, fontSize: 10, marginTop: 3 }}>DÃ­a {r.day} Â· {catById(r.category).name}</div>
                     </div>
                     <div style={{ color: r.type === 'income' ? COLORS.success : COLORS.alert, fontWeight: 900, whiteSpace: 'nowrap' }}>{r.type === 'income' ? '+' : '-'}{money(r.amount)}</div>
                   </div>
@@ -8548,7 +8548,7 @@ const FinanceView = ({ data, onUpdateFinance }) => {
                   </div>
                 </div>
               ))}
-              {!activeRecurring.length && <div style={{ color: COLORS.textDim, fontSize: 13, padding: 18, border: `1px dashed ${COLORS.border}`, borderRadius: 16 }}>Aún no tienes pagos recurrentes activos.</div>}
+              {!activeRecurring.length && <div style={{ color: COLORS.textDim, fontSize: 13, padding: 18, border: `1px dashed ${COLORS.border}`, borderRadius: 16 }}>AÃºn no tienes pagos recurrentes activos.</div>}
             </div>
           </div>
 
@@ -8557,7 +8557,7 @@ const FinanceView = ({ data, onUpdateFinance }) => {
             <ResponsiveContainer width="100%" height={210}>
               <PieChart>{byCategory.length ? <Pie data={byCategory} dataKey="value" nameKey="name" outerRadius={78}>{byCategory.map((c, i) => <Cell key={i} fill={c.color} />)}</Pie> : null}<Tooltip formatter={v => money(v)} contentStyle={tooltipStyle} labelStyle={{ color: COLORS.text }} /></PieChart>
             </ResponsiveContainer>
-            <div style={{ color: COLORS.textDim, fontSize: 11, textAlign: 'center' }}>{byCategory.length ? 'Distribución de gastos del mes.' : 'Aún no hay gastos para graficar.'}</div>
+            <div style={{ color: COLORS.textDim, fontSize: 11, textAlign: 'center' }}>{byCategory.length ? 'DistribuciÃ³n de gastos del mes.' : 'AÃºn no hay gastos para graficar.'}</div>
           </div>
         </div>
       </div>
@@ -8614,7 +8614,7 @@ const ReadingView = ({ data, onUpdateReading }) => {
   const addBookmark = () => {
     if (!activeBook) return;
     const page = Math.max(1, Number(bookmarkForm.page || activeBook.currentPage || 1));
-    const label = bookmarkForm.label.trim() || `Página ${page}`;
+    const label = bookmarkForm.label.trim() || `PÃ¡gina ${page}`;
     updateBook(activeBook.id, book => ({
       ...book,
       bookmarks: [{ id: `bm_${Date.now()}`, page, label, createdAt: new Date().toISOString() }, ...(book.bookmarks || [])]
@@ -8641,7 +8641,7 @@ const ReadingView = ({ data, onUpdateReading }) => {
       <div className="lab-shell-card" style={{ borderRadius: 28, padding: 30, marginBottom: 20 }}>
         <div className="lab-pill" style={{ display: 'inline-flex', padding: '7px 11px', fontSize: 11, marginBottom: 12 }}><BookOpen size={14} /> Biblioteca personal</div>
         <h2 className="lab-hero-title" style={{ fontSize: 40, lineHeight: 1.05, marginBottom: 8 }}>Lectura con marcadores y notas.</h2>
-        <div style={{ color: COLORS.textDim, fontSize: 13, lineHeight: 1.7, maxWidth: 680 }}>Sube tus PDFs, guarda tu avance, marca páginas importantes y deja notas rápidas mientras estudias o lees.</div>
+        <div style={{ color: COLORS.textDim, fontSize: 13, lineHeight: 1.7, maxWidth: 680 }}>Sube tus PDFs, guarda tu avance, marca pÃ¡ginas importantes y deja notas rÃ¡pidas mientras estudias o lees.</div>
       </div>
 
       <div className="reading-layout" style={{ display: 'grid', gridTemplateColumns: 'minmax(260px, 0.38fr) minmax(0, 1fr)', gap: 18, alignItems: 'start' }}>
@@ -8664,7 +8664,7 @@ const ReadingView = ({ data, onUpdateReading }) => {
                   borderRadius: 14, padding: 12, cursor: 'pointer', color: COLORS.text
                 }}>
                   <div style={{ fontWeight: 800, fontSize: 13, marginBottom: 4 }}>{book.title}</div>
-                  <div style={{ color: COLORS.textDim, fontSize: 11 }}>Pág. {book.currentPage || 1}{book.totalPages ? ` de ${book.totalPages}` : ''} · {(book.notes || []).length} notas</div>
+                  <div style={{ color: COLORS.textDim, fontSize: 11 }}>PÃ¡g. {book.currentPage || 1}{book.totalPages ? ` de ${book.totalPages}` : ''} Â· {(book.notes || []).length} notas</div>
                 </button>
               ))}
               {!books.length && <div style={{ color: COLORS.textDim, fontSize: 13, textAlign: 'center', padding: 18 }}>Sube tu primer PDF para empezar.</div>}
@@ -8687,10 +8687,10 @@ const ReadingView = ({ data, onUpdateReading }) => {
                 <div className="reading-progress-row" style={{ display: 'grid', gridTemplateColumns: '1fr 120px 120px', gap: 10, alignItems: 'center', marginBottom: 14 }}>
                   <div>
                     <div style={{ height: 8, background: COLORS.bg, borderRadius: 99, overflow: 'hidden' }}><div style={{ width: `${progress}%`, height: '100%', background: `linear-gradient(90deg, ${COLORS.primary}, ${COLORS.secondary})` }} /></div>
-                    <div style={{ color: COLORS.textDim, fontSize: 11, marginTop: 6 }}>{progress ? `${progress}% leído` : 'Agrega total de páginas para ver progreso'}</div>
+                    <div style={{ color: COLORS.textDim, fontSize: 11, marginTop: 6 }}>{progress ? `${progress}% leÃ­do` : 'Agrega total de pÃ¡ginas para ver progreso'}</div>
                   </div>
-                  <input type="number" min="1" value={activeBook.currentPage || ''} onChange={e => updateBook(activeBook.id, book => ({ ...book, currentPage: Math.max(1, Number(e.target.value || 1)) }))} placeholder="Página actual" style={inputStyle} />
-                  <input type="number" min="1" value={activeBook.totalPages || ''} onChange={e => updateBook(activeBook.id, book => ({ ...book, totalPages: e.target.value }))} placeholder="Total páginas" style={inputStyle} />
+                  <input type="number" min="1" value={activeBook.currentPage || ''} onChange={e => updateBook(activeBook.id, book => ({ ...book, currentPage: Math.max(1, Number(e.target.value || 1)) }))} placeholder="PÃ¡gina actual" style={inputStyle} />
+                  <input type="number" min="1" value={activeBook.totalPages || ''} onChange={e => updateBook(activeBook.id, book => ({ ...book, totalPages: e.target.value }))} placeholder="Total pÃ¡ginas" style={inputStyle} />
                 </div>
 
                 <iframe title={activeBook.title} src={activeBook.fileData} style={{ width: '100%', height: 'min(72vh, 760px)', border: `1px solid ${COLORS.border}`, borderRadius: 18, background: COLORS.bg }} />
@@ -8700,25 +8700,25 @@ const ReadingView = ({ data, onUpdateReading }) => {
                 <div style={cardStyle}>
                   <h3 style={{ color: COLORS.text, fontSize: 17, marginBottom: 12 }}>Marcadores</h3>
                   <div style={{ display: 'grid', gridTemplateColumns: '90px 1fr auto', gap: 8, marginBottom: 12 }}>
-                    <input type="number" min="1" value={bookmarkForm.page} onChange={e => setBookmarkForm(f => ({ ...f, page: e.target.value }))} placeholder="Pág." style={inputStyle} />
+                    <input type="number" min="1" value={bookmarkForm.page} onChange={e => setBookmarkForm(f => ({ ...f, page: e.target.value }))} placeholder="PÃ¡g." style={inputStyle} />
                     <input value={bookmarkForm.label} onChange={e => setBookmarkForm(f => ({ ...f, label: e.target.value }))} placeholder="Nombre del marcador" style={inputStyle} />
                     <button onClick={addBookmark} style={{ border: 'none', background: COLORS.primary, color: '#fff', borderRadius: 12, padding: '0 13px', cursor: 'pointer' }}><Plus size={16} /></button>
                   </div>
                   <div style={{ display: 'grid', gap: 8 }}>
                     {(activeBook.bookmarks || []).map(b => (
                       <div key={b.id} style={{ display: 'flex', justifyContent: 'space-between', gap: 10, padding: 10, borderRadius: 12, background: COLORS.bg, border: `1px solid ${COLORS.border}` }}>
-                        <span style={{ color: COLORS.text, fontSize: 12 }}><strong style={{ color: COLORS.primary }}>Pág. {b.page}</strong> · {b.label}</span>
+                        <span style={{ color: COLORS.text, fontSize: 12 }}><strong style={{ color: COLORS.primary }}>PÃ¡g. {b.page}</strong> Â· {b.label}</span>
                         <button onClick={() => removeBookmark(b.id)} style={{ border: 'none', background: 'transparent', color: COLORS.textDim, cursor: 'pointer' }}><X size={13} /></button>
                       </div>
                     ))}
-                    {!activeBook.bookmarks?.length && <div style={{ color: COLORS.textDim, fontSize: 12 }}>Aún no tienes marcadores.</div>}
+                    {!activeBook.bookmarks?.length && <div style={{ color: COLORS.textDim, fontSize: 12 }}>AÃºn no tienes marcadores.</div>}
                   </div>
                 </div>
 
                 <div style={cardStyle}>
                   <h3 style={{ color: COLORS.text, fontSize: 17, marginBottom: 12 }}>Notas</h3>
                   <div style={{ display: 'grid', gridTemplateColumns: '90px 1fr auto', gap: 8, marginBottom: 12 }}>
-                    <input type="number" min="1" value={noteForm.page} onChange={e => setNoteForm(f => ({ ...f, page: e.target.value }))} placeholder="Pág." style={inputStyle} />
+                    <input type="number" min="1" value={noteForm.page} onChange={e => setNoteForm(f => ({ ...f, page: e.target.value }))} placeholder="PÃ¡g." style={inputStyle} />
                     <input value={noteForm.text} onChange={e => setNoteForm(f => ({ ...f, text: e.target.value }))} placeholder="Escribe una nota..." style={inputStyle} />
                     <button onClick={addNote} style={{ border: 'none', background: COLORS.primary, color: '#fff', borderRadius: 12, padding: '0 13px', cursor: 'pointer' }}><Plus size={16} /></button>
                   </div>
@@ -8726,13 +8726,13 @@ const ReadingView = ({ data, onUpdateReading }) => {
                     {(activeBook.notes || []).map(n => (
                       <div key={n.id} style={{ padding: 10, borderRadius: 12, background: COLORS.bg, border: `1px solid ${COLORS.border}` }}>
                         <div style={{ display: 'flex', justifyContent: 'space-between', gap: 8, marginBottom: 5 }}>
-                          <strong style={{ color: COLORS.primary, fontSize: 12 }}>Pág. {n.page}</strong>
+                          <strong style={{ color: COLORS.primary, fontSize: 12 }}>PÃ¡g. {n.page}</strong>
                           <button onClick={() => removeNote(n.id)} style={{ border: 'none', background: 'transparent', color: COLORS.textDim, cursor: 'pointer' }}><X size={13} /></button>
                         </div>
                         <div style={{ color: COLORS.text, fontSize: 12, lineHeight: 1.5 }}>{n.text}</div>
                       </div>
                     ))}
-                    {!activeBook.notes?.length && <div style={{ color: COLORS.textDim, fontSize: 12 }}>Aún no tienes notas.</div>}
+                    {!activeBook.notes?.length && <div style={{ color: COLORS.textDim, fontSize: 12 }}>AÃºn no tienes notas.</div>}
                   </div>
                 </div>
               </div>
@@ -8740,7 +8740,7 @@ const ReadingView = ({ data, onUpdateReading }) => {
           ) : (
             <div style={{ ...cardStyle, textAlign: 'center', padding: 46 }}>
               <div className="fire-emoji" style={{ fontSize: 54, marginBottom: 12 }}>{'\u{1F4D6}'}</div>
-              <h3 style={{ color: COLORS.text, fontSize: 22, marginBottom: 8 }}>Tu biblioteca está vacía</h3>
+              <h3 style={{ color: COLORS.text, fontSize: 22, marginBottom: 8 }}>Tu biblioteca estÃ¡ vacÃ­a</h3>
               <div style={{ color: COLORS.textDim, fontSize: 13 }}>Sube un PDF para leerlo, guardar progreso, marcadores y notas.</div>
             </div>
           )}
@@ -8832,11 +8832,11 @@ const DreamGoalsView = ({ data, onUpdateDreamGoals }) => {
           <Target size={13} /> Ecosistema de Metas
         </div>
         <h1 style={{ margin: 0, color: COLORS.text, fontSize: 'clamp(44px, 7vw, 74px)', lineHeight: 0.95, letterSpacing: '-0.07em', fontWeight: 500, ...s }}>
-          Tus sueños, bajo<br />
-          <span style={{ color: COLORS.primary, fontWeight: 900, textShadow: `0 0 28px ${COLORS.primary}22` }}>control matemático.</span>
+          Tus sueÃ±os, bajo<br />
+          <span style={{ color: COLORS.primary, fontWeight: 900, textShadow: `0 0 28px ${COLORS.primary}22` }}>control matemÃ¡tico.</span>
         </h1>
         <p style={{ margin: '24px auto 0', maxWidth: 430, color: COLORS.textDim, fontSize: 14, lineHeight: 1.75, ...s }}>
-          No solo sueñes. Visualiza el progreso exacto y cuánto te falta para conquistar tus próximos grandes pasos.
+          No solo sueÃ±es. Visualiza el progreso exacto y cuÃ¡nto te falta para conquistar tus prÃ³ximos grandes pasos.
         </p>
       </div>
 
@@ -8882,7 +8882,7 @@ const DreamGoalsView = ({ data, onUpdateDreamGoals }) => {
                     <div style={{ width: `${pct}%`, height: '100%', background: goal.accent || COLORS.primary, borderRadius: 99, boxShadow: `0 0 18px ${(goal.accent || COLORS.primary)}66` }} />
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 9, padding: '10px 13px', borderRadius: 14, background: `${goal.accent || COLORS.primary}12`, border: `1px solid ${goal.accent || COLORS.primary}2f`, color: COLORS.text, fontSize: 12, ...s }}>
-                    <span style={{ color: goal.accent || COLORS.primary, fontWeight: 900 }}>{missing === 0 ? '✓' : '$'}</span>
+                    <span style={{ color: goal.accent || COLORS.primary, fontWeight: 900 }}>{missing === 0 ? 'âœ“' : '$'}</span>
                     <span style={{ color: COLORS.textDim }}>Faltan</span>
                     <strong style={{ color: goal.accent || COLORS.primary }}>{money(missing)}</strong>
                     <span>{missing === 0 ? 'meta completada.' : 'para completar.'}</span>
@@ -9088,14 +9088,14 @@ const StudyView = ({ data, onUpdateStudy }) => {
             return (
               <div key={subject.id} style={{ background: COLORS.card, borderRadius: 18, border: `1px solid ${COLORS.border}`, padding: 20 }}>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, marginBottom: 12 }}>
-                  <div><div style={{ color: COLORS.text, fontSize: 17, fontWeight: 800 }}><span style={{ color: subject.color }}>●</span> {subject.name}</div><div style={{ color: COLORS.textDim, fontSize: 11 }}>Meta: {subject.goalHours || 0}h  Estudiado: {fmtTime(studied)}</div></div>
+                  <div><div style={{ color: COLORS.text, fontSize: 17, fontWeight: 800 }}><span style={{ color: subject.color }}>â—</span> {subject.name}</div><div style={{ color: COLORS.textDim, fontSize: 11 }}>Meta: {subject.goalHours || 0}h  Estudiado: {fmtTime(studied)}</div></div>
                   <button onClick={() => removeSubject(subject.id)} style={{ border: 'none', background: 'transparent', color: COLORS.textDim, cursor: 'pointer' }}><Trash2 size={15} /></button>
                 </div>
                 <div style={{ height: 7, background: COLORS.bg, borderRadius: 99, overflow: 'hidden', marginBottom: 14 }}><div style={{ height: '100%', width: `${pct}%`, background: `linear-gradient(90deg, ${subject.color}, ${COLORS.primary})`, borderRadius: 99 }} /></div>
                 <div style={{ display: 'grid', gap: 7, marginBottom: 12 }}>
                   {(subject.topics || []).map(topic => (
                     <button key={topic.id} onClick={() => toggleTopic(subject.id, topic.id)} style={{ display: 'flex', alignItems: 'center', gap: 9, padding: '8px 10px', borderRadius: 10, border: `1px solid ${COLORS.border}`, background: topic.completed ? 'rgba(239,239,239,0.08)' : 'rgba(239,239,239,0.025)', color: COLORS.text, cursor: 'pointer', textAlign: 'left' }}>
-                      <span style={{ width: 17, height: 17, borderRadius: 5, border: `1px solid ${topic.completed ? COLORS.success : COLORS.border}`, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontSize: 11 }}>{topic.completed ? '✓' : ''}</span>
+                      <span style={{ width: 17, height: 17, borderRadius: 5, border: `1px solid ${topic.completed ? COLORS.success : COLORS.border}`, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontSize: 11 }}>{topic.completed ? 'âœ“' : ''}</span>
                       <span style={{ textDecoration: topic.completed ? 'line-through' : 'none', opacity: topic.completed ? 0.55 : 1 }}>{topic.name}</span>
                     </button>
                   ))}
@@ -9131,7 +9131,7 @@ const StudyView = ({ data, onUpdateStudy }) => {
             <div style={{ display: 'grid', gap: 8 }}>
               {sessions.slice(0, 8).map(s => {
                 const subject = subjectById(s.subjectId);
-                return <div key={s.id} style={{ display: 'flex', gap: 10, alignItems: 'center', padding: 10, borderRadius: 12, background: 'rgba(239,239,239,0.035)', border: `1px solid ${COLORS.border}` }}><span style={{ color: subject.color }}>●</span><div style={{ flex: 1 }}><div style={{ color: COLORS.text, fontSize: 12, fontWeight: 700 }}>{subject.name}  {fmtTime(Number(s.minutes || 0))}</div><div style={{ color: COLORS.textDim, fontSize: 10 }}>{s.date} {s.note ? ` ${s.note}` : ''}</div></div><button onClick={() => removeSession(s.id)} style={{ border: 'none', background: 'transparent', color: COLORS.textDim, cursor: 'pointer' }}><Trash2 size={13} /></button></div>;
+                return <div key={s.id} style={{ display: 'flex', gap: 10, alignItems: 'center', padding: 10, borderRadius: 12, background: 'rgba(239,239,239,0.035)', border: `1px solid ${COLORS.border}` }}><span style={{ color: subject.color }}>â—</span><div style={{ flex: 1 }}><div style={{ color: COLORS.text, fontSize: 12, fontWeight: 700 }}>{subject.name}  {fmtTime(Number(s.minutes || 0))}</div><div style={{ color: COLORS.textDim, fontSize: 10 }}>{s.date} {s.note ? ` ${s.note}` : ''}</div></div><button onClick={() => removeSession(s.id)} style={{ border: 'none', background: 'transparent', color: COLORS.textDim, cursor: 'pointer' }}><Trash2 size={13} /></button></div>;
               })}
             </div>
           </div>
@@ -9182,7 +9182,7 @@ const StatisticsView = ({ data }) => {
       <div className="stats-head" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24, flexWrap: 'wrap', gap: 12 }}>
         <h2 style={{ fontSize: 24, color: COLORS.text, fontFamily: "'DM Serif Display', serif" }}>
           <BarChart3 size={22} style={{ verticalAlign: 'middle', marginRight: 8, color: COLORS.primary }} />
-          Estadísticas
+          EstadÃ­sticas
         </h2>
         <div className="stats-period-row" style={{ display: 'flex', gap: 8 }}>
           {[
@@ -9203,10 +9203,10 @@ const StatisticsView = ({ data }) => {
       <div style={{ display: 'grid', gap: 24 }}>
         <div className="stats-useful-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: 12 }}>
           {[
-            ['Hoy', `${statsUseful.todayDone}/${statsUseful.todayTotal}`, 'Hábitos esperados completados', COLORS.primary],
-            ['Promedio', `${statsUseful.avg}%`, `Últimos ${period} días`, statsUseful.avg >= 70 ? COLORS.success : COLORS.alert],
-            ['Días perfectos', statsUseful.perfectDays, 'Días con todo completado', '#f59e0b'],
-            ['Mejor hábito', statsUseful.best?.name || '--', `${statsUseful.best?.rate || 0}% cumplimiento`, COLORS.success]
+            ['Hoy', `${statsUseful.todayDone}/${statsUseful.todayTotal}`, 'HÃ¡bitos esperados completados', COLORS.primary],
+            ['Promedio', `${statsUseful.avg}%`, `Ãšltimos ${period} dÃ­as`, statsUseful.avg >= 70 ? COLORS.success : COLORS.alert],
+            ['DÃ­as perfectos', statsUseful.perfectDays, 'DÃ­as con todo completado', '#f59e0b'],
+            ['Mejor hÃ¡bito', statsUseful.best?.name || '--', `${statsUseful.best?.rate || 0}% cumplimiento`, COLORS.success]
           ].map(([label, value, sub, color]) => (
             <div key={label} style={{ background: COLORS.card, border: `1px solid ${COLORS.border}`, borderRadius: 16, padding: 18 }}>
               <div style={{ color: COLORS.textDim, fontSize: 10, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 8 }}>{label}</div>
@@ -9216,14 +9216,14 @@ const StatisticsView = ({ data }) => {
           ))}
         </div>
         <div style={{ background: COLORS.card, borderRadius: 18, border: `1px solid ${COLORS.border}`, padding: 20 }}>
-          <h3 style={{ fontSize: 16, color: COLORS.text, marginBottom: 12, fontFamily: "'DM Serif Display', serif" }}>Qué ajustar ahora</h3>
+          <h3 style={{ fontSize: 16, color: COLORS.text, marginBottom: 12, fontFamily: "'DM Serif Display', serif" }}>QuÃ© ajustar ahora</h3>
           <div style={{ display: 'grid', gap: 9 }}>
-            {(statsUseful.weak.length ? statsUseful.weak : [{ id: 'ok', name: 'Vas bien', rate: statsUseful.avg, icon: '✨' }]).map(h => (
+            {(statsUseful.weak.length ? statsUseful.weak : [{ id: 'ok', name: 'Vas bien', rate: statsUseful.avg, icon: 'âœ¨' }]).map(h => (
               <div key={h.id} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: 12, borderRadius: 14, background: `${COLORS.primary}0b`, border: `1px solid ${COLORS.border}` }}>
                 <span className="fire-emoji"><HabitIconGlyph habit={h} size={20} strokeWidth={1.75} /></span>
                 <div style={{ flex: 1 }}>
                   <div style={{ color: COLORS.text, fontWeight: 900, fontSize: 13 }}>{h.name}</div>
-                  <div style={{ color: COLORS.textDim, fontSize: 11 }}>{h.rate < 55 ? 'Está flojo: reduce dificultad, cambia horario o pon recordatorio.' : 'No hay hábitos críticos en este periodo.'}</div>
+                  <div style={{ color: COLORS.textDim, fontSize: 11 }}>{h.rate < 55 ? 'EstÃ¡ flojo: reduce dificultad, cambia horario o pon recordatorio.' : 'No hay hÃ¡bitos crÃ­ticos en este periodo.'}</div>
                 </div>
                 <div style={{ color: h.rate < 55 ? COLORS.alert : COLORS.success, fontWeight: 900 }}>{h.rate}%</div>
               </div>
@@ -9260,7 +9260,7 @@ const StatisticsView = ({ data }) => {
         <div className="stats-grid-2" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24 }}>
           <div style={{ background: COLORS.card, borderRadius: 16, border: `1px solid ${COLORS.border}`, padding: 24 }}>
             <h3 style={{ fontSize: 16, color: COLORS.text, marginBottom: 16, fontFamily: "'DM Serif Display', serif" }}>
-              Últimos 7 días
+              Ãšltimos 7 dÃ­as
             </h3>
             <div className="chart-container">
               <ResponsiveContainer width="100%" height={280}>
@@ -9280,7 +9280,7 @@ const StatisticsView = ({ data }) => {
 
           <div style={{ background: COLORS.card, borderRadius: 16, border: `1px solid ${COLORS.border}`, padding: 24 }}>
             <h3 style={{ fontSize: 16, color: COLORS.text, marginBottom: 16, fontFamily: "'DM Serif Display', serif" }}>
-              Rendimiento por Categoría
+              Rendimiento por CategorÃ­a
             </h3>
             <div className="chart-container">
               <ResponsiveContainer width="100%" height={280}>
@@ -9305,7 +9305,7 @@ const StatisticsView = ({ data }) => {
         <div className="stats-grid-2" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24 }}>
           <div style={{ background: COLORS.card, borderRadius: 16, border: `1px solid ${COLORS.border}`, padding: 24 }}>
             <h3 style={{ fontSize: 16, color: COLORS.text, marginBottom: 16, fontFamily: "'DM Serif Display', serif" }}>
-              Distribución por Categoría
+              DistribuciÃ³n por CategorÃ­a
             </h3>
             <ResponsiveContainer width="100%" height={280}>
               <PieChart>
@@ -9356,7 +9356,7 @@ const StatisticsView = ({ data }) => {
               {[COLORS.card, '#006633', '#009955', '#9f1239', COLORS.success].map((c, i) => (
                 <div key={i} style={{ width: 14, height: 14, borderRadius: 3, background: c }} />
               ))}
-              <span style={{ fontSize: 10, color: COLORS.textDim }}>Más</span>
+              <span style={{ fontSize: 10, color: COLORS.textDim }}>MÃ¡s</span>
             </div>
           </div>
         </div>
@@ -9493,12 +9493,12 @@ const SettingsView = ({ data, onUpdateUser, onResetData, cloudSync, onGenerateRa
       await handleEnableNotifications();
       return;
     }
-    const ok = await showHabitFlowNotification('HabitFlow • Prueba', {
+    const ok = await showHabitFlowNotification('HabitFlow â€¢ Prueba', {
       body: 'Si ves esto, las notificaciones funcionan en este dispositivo.',
       tag: `habitflow-test-${Date.now()}`
     });
     setNotificationPermission(getNotificationPermissionState());
-    setNotificationMsg(ok ? 'Notificación de prueba enviada.' : 'No se pudo enviar la prueba. Revisa permisos del navegador.');
+    setNotificationMsg(ok ? 'NotificaciÃ³n de prueba enviada.' : 'No se pudo enviar la prueba. Revisa permisos del navegador.');
   };
 
   const handleExport = () => {
@@ -9520,10 +9520,10 @@ const SettingsView = ({ data, onUpdateUser, onResetData, cloudSync, onGenerateRa
         const parsed = normalizeLoadedData(JSON.parse(ev.target.result));
         if (parsed) {
           saveData(parsed);
-          setImportMsg('\u{2705} Datos importados correctamente. Recarga la página.');
+          setImportMsg('\u{2705} Datos importados correctamente. Recarga la pÃ¡gina.');
           setTimeout(() => window.location.reload(), 1500);
         } else {
-          setImportMsg('\u{26A0}\u{FE0F} Formato de archivo inválido');
+          setImportMsg('\u{26A0}\u{FE0F} Formato de archivo invÃ¡lido');
         }
       } catch {
         setImportMsg('\u{26A0}\u{FE0F} Error al leer el archivo');
@@ -9536,7 +9536,7 @@ const SettingsView = ({ data, onUpdateUser, onResetData, cloudSync, onGenerateRa
     <div className="settings-mobile-view" style={{ animation: 'fadeIn 0.3s ease-out' }}>
       <h2 style={{ fontSize: 24, color: COLORS.text, marginBottom: 24, fontFamily: "'DM Serif Display', serif" }}>
         <Settings size={22} style={{ verticalAlign: 'middle', marginRight: 8, color: COLORS.primary }} />
-       Configuración
+       ConfiguraciÃ³n
       </h2>
 
       <div className="settings-stack" style={{ display: 'grid', gap: 18, maxWidth: 760 }}>
@@ -9548,7 +9548,7 @@ const SettingsView = ({ data, onUpdateUser, onResetData, cloudSync, onGenerateRa
           <div style={{ display: 'grid', gridTemplateColumns: '1fr auto', gap: 12, alignItems: 'center' }}>
             <div>
               <div style={{ color: COLORS.text, fontSize: 13, fontWeight: 900, marginBottom: 4 }}>
-                {cloudSync?.status === 'active' ? '☁️ Nube activa' : cloudSync?.status === 'saving' ? '↻ Guardando en nube' : '💾 Guardado local'}
+                {cloudSync?.status === 'active' ? 'â˜ï¸ Nube activa' : cloudSync?.status === 'saving' ? 'â†» Guardando en nube' : 'ðŸ’¾ Guardado local'}
               </div>
               <div style={{ color: COLORS.textDim, fontSize: 11, lineHeight: 1.45 }}>
                 {cloudSync?.reason || cloudSync?.label || 'Estado de guardado de HabitFlow.'}
@@ -9594,7 +9594,7 @@ const SettingsView = ({ data, onUpdateUser, onResetData, cloudSync, onGenerateRa
                 }} />
             </div>
             <div>
-              <label style={{ fontSize: 12, color: COLORS.textDim, marginBottom: 4, display: 'block' }}>FRASE DE MOTIVACIÓN</label>
+              <label style={{ fontSize: 12, color: COLORS.textDim, marginBottom: 4, display: 'block' }}>FRASE DE MOTIVACIÃ“N</label>
               <input value={editMotto} onChange={e => setEditMotto(e.target.value)}
                 style={{
                   width: '100%', padding: '10px 14px', background: COLORS.bg, border: `1px solid ${COLORS.border}`,
@@ -9616,7 +9616,7 @@ const SettingsView = ({ data, onUpdateUser, onResetData, cloudSync, onGenerateRa
           </h3>
           <div style={{ fontSize: 11, color: COLORS.textDim, marginBottom: 14, lineHeight: 1.55 }}>
             Recibe alarmas de agenda, recordatorios de habitos pendientes y mensajes de disciplina en todos los dispositivos de tu cuenta.
-            En Mac revisa también Ajustes del sistema > Notificaciones > tu navegador y activa sonidos/banners.
+            En Mac revisa tambiÃ©n Ajustes del sistema {'>'} Notificaciones {'>'} tu navegador y activa sonidos/banners.
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
             <span style={{
@@ -9626,7 +9626,7 @@ const SettingsView = ({ data, onUpdateUser, onResetData, cloudSync, onGenerateRa
               color: notificationPermission === 'granted' ? COLORS.success : notificationPermission === 'denied' ? COLORS.alert : COLORS.textDim,
               fontSize: 12, fontWeight: 800, ...s
             }}>
-              🔔 {getNotificationStatusLabel(notificationPermission)}
+              ðŸ”” {getNotificationStatusLabel(notificationPermission)}
             </span>
             <button onClick={handleEnableNotifications} style={{
               padding: '10px 14px', borderRadius: 10, border: 'none',
@@ -9732,7 +9732,7 @@ const SettingsView = ({ data, onUpdateUser, onResetData, cloudSync, onGenerateRa
             Color de iconos
           </h3>
           <div style={{ fontSize: 11, color: COLORS.textDim, marginBottom: 14, lineHeight: 1.45 }}>
-            Cambia el color global de iconos, emojis de hábitos y logo.
+            Cambia el color global de iconos, emojis de hÃ¡bitos y logo.
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(132px, 1fr))', gap: 10 }}>
             {ICON_COLOR_PALETTE.map(p => {
@@ -9764,16 +9764,16 @@ const SettingsView = ({ data, onUpdateUser, onResetData, cloudSync, onGenerateRa
           <div className="stats-chart-card" style={{ background: COLORS.card, borderRadius: 16, border: `1px solid ${COLORS.border}`, padding: 24 }}>
           <h3 style={{ fontSize: 16, color: COLORS.text, marginBottom: 16, fontFamily: "'DM Serif Display', serif" }}>
             <TrendingUp size={16} style={{ verticalAlign: 'middle', marginRight: 6, color: COLORS.primary }} />
-           Estadísticas de Uso
+           EstadÃ­sticas de Uso
           </h3>
           <div className="settings-usage-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12 }}>
             <div style={{ background: COLORS.bg, borderRadius: 8, padding: '12px 16px', textAlign: 'center' }}>
               <div style={{ fontSize: 24, color: COLORS.secondary, fontFamily: "'Inter', sans-serif" }}>{daysRegistered}</div>
-              <div style={{ fontSize: 11, color: COLORS.textDim }}>días Registrando</div>
+              <div style={{ fontSize: 11, color: COLORS.textDim }}>dÃ­as Registrando</div>
             </div>
             <div style={{ background: COLORS.bg, borderRadius: 8, padding: '12px 16px', textAlign: 'center' }}>
               <div style={{ fontSize: 24, color: COLORS.primary, fontFamily: "'Inter', sans-serif" }}>{totalHabitsCreated}</div>
-              <div style={{ fontSize: 11, color: COLORS.textDim }}>Hábitos Creados</div>
+              <div style={{ fontSize: 11, color: COLORS.textDim }}>HÃ¡bitos Creados</div>
             </div>
             <div style={{ background: COLORS.bg, borderRadius: 8, padding: '12px 16px', textAlign: 'center' }}>
               <div style={{ fontSize: 24, color: COLORS.success, fontFamily: "'Inter', sans-serif" }}>{totalCompletions}</div>
@@ -9848,7 +9848,7 @@ const SettingsView = ({ data, onUpdateUser, onResetData, cloudSync, onGenerateRa
             YouTube API Key
           </h3>
           <div style={{ fontSize: 11, color: COLORS.textDim, marginBottom: 12, lineHeight: 1.5 }}>
-            Necesits una API Key de YouTube Data API v3 para buscar videos. Es gratis y sin tarjeta de crédito.
+            Necesits una API Key de YouTube Data API v3 para buscar videos. Es gratis y sin tarjeta de crÃ©dito.
             Obtenela en <span style={{ color: COLORS.primary, cursor: 'pointer' }} onClick={() => window.open('https://console.cloud.google.com/apis/credentials', '_blank')}>console.cloud.google.com</span>.
           </div>
 
@@ -9895,12 +9895,12 @@ const SettingsView = ({ data, onUpdateUser, onResetData, cloudSync, onGenerateRa
               {showApiKey && user.youtubeKeyPassword && (
                 <div style={{ display: 'flex', gap: 8 }}>
                   <input type="password" value={apiPwd} onChange={e => { setApiPwd(e.target.value); setApiPwdError(''); }}
-                    placeholder="Contraseña para ver la key"
+                    placeholder="ContraseÃ±a para ver la key"
                     style={{ flex: 1, padding: '8px 12px', background: COLORS.bg, border: `1px solid ${apiPwdError ? COLORS.alert : COLORS.border}`,
                       borderRadius: 6, color: COLORS.text, fontSize: 12, outline: 'none', fontFamily: "'Inter', sans-serif" }} />
                   <button onClick={() => {
                     if (apiPwd === user.youtubeKeyPassword) { setShowApiKey(true); setApiPwdError(''); }
-                    else { setApiPwdError('Contraseña incorrecta'); }
+                    else { setApiPwdError('ContraseÃ±a incorrecta'); }
                   }} style={{ padding: '8px 14px', borderRadius: 6, border: 'none', background: COLORS.primary, color: '#fff', cursor: 'pointer', fontSize: 12, fontFamily: "'Inter', sans-serif" }}>Ver</button>
                 </div>
               )}
@@ -9914,7 +9914,7 @@ const SettingsView = ({ data, onUpdateUser, onResetData, cloudSync, onGenerateRa
                   {!user.youtubeKeyPassword && (
                     <div style={{ display: 'flex', gap: 8 }}>
                       <input type="password" value={newApiPwd} onChange={e => setNewApiPwd(e.target.value)}
-                        placeholder="Crear contraseña" style={{ width: 120, padding: '8px 12px', background: COLORS.bg, border: `1px solid ${COLORS.border}`,
+                        placeholder="Crear contraseÃ±a" style={{ width: 120, padding: '8px 12px', background: COLORS.bg, border: `1px solid ${COLORS.border}`,
                           borderRadius: 6, color: COLORS.text, fontSize: 12, outline: 'none', fontFamily: "'Inter', sans-serif" }} />
                       <button onClick={() => { if (newApiPwd) { onUpdateUser({ youtubeKeyPassword: newApiPwd }); setNewApiPwd(''); } }}
                         style={{ padding: '8px 12px', borderRadius: 6, border: 'none', background: COLORS.success, color: '#000', cursor: 'pointer', fontSize: 11, fontFamily: "'Inter', sans-serif", whiteSpace: 'nowrap' }}>{'\u{1F512}'} Fijar</button>
@@ -9945,7 +9945,7 @@ const SettingsView = ({ data, onUpdateUser, onResetData, cloudSync, onGenerateRa
             <h3 style={{ fontSize: 16, color: COLORS.alert, fontFamily: "'DM Serif Display', serif" }}>Zona de Peligro</h3>
           </div>
           <p style={{ fontSize: 13, color: COLORS.textDim, marginBottom: 16, lineHeight: 1.5 }}>
-           Esto eliminar TODOS tus datos incluyendo hábitos y registros. Esta acción no se puede deshacer.
+           Esto eliminar TODOS tus datos incluyendo hÃ¡bitos y registros. Esta acciÃ³n no se puede deshacer.
           </p>
           <RippleButton onClick={() => setShowReset(true)} style={{
             padding: '10px 24px', borderRadius: 8, border: `1px solid ${COLORS.alert}`,
@@ -9956,7 +9956,7 @@ const SettingsView = ({ data, onUpdateUser, onResetData, cloudSync, onGenerateRa
       </div>
 
       <ConfirmModal isOpen={showReset} title="Resetear Datos"
-        message="¿estás completamente seguro? Se eliminarn todos tus hábitos, registros y configuración. Esta acción es irreversible."
+        message="Â¿estÃ¡s completamente seguro? Se eliminarn todos tus hÃ¡bitos, registros y configuraciÃ³n. Esta acciÃ³n es irreversible."
         danger onConfirm={() => { onResetData(); setShowReset(false); }}
         onCancel={() => setShowReset(false)} />
     </div>
@@ -9979,7 +9979,7 @@ const LevelUpModal = ({ open, level, onClose }) => {
       }} onClick={e => e.stopPropagation()}>
         <div style={{ fontSize: 72, marginBottom: 16, animation: 'float 2s ease-in-out infinite' }}>{'\u{1F389}'}</div>
         <div style={{ fontSize: 14, color: COLORS.primary, textTransform: 'uppercase', letterSpacing: '0.12em', marginBottom: 8 }}>
-          ¡Felicidades!
+          Â¡Felicidades!
         </div>
         <div style={{ fontSize: 48, color: COLORS.text, fontFamily: "'DM Serif Display', serif", marginBottom: 8 }}>
           SUBISTE AL
@@ -9988,7 +9988,7 @@ const LevelUpModal = ({ open, level, onClose }) => {
           NIVEL {level}
         </div>
         <div style={{ fontSize: 14, color: COLORS.textDim, margin: '16px 0 24px' }}>
-          Sigue así, cada día cuenta en tu camino
+          Sigue asÃ­, cada dÃ­a cuenta en tu camino
         </div>
         <button onClick={onClose} style={{
           padding: '12px 32px', borderRadius: 12, border: 'none',
@@ -10054,7 +10054,7 @@ const FocusMode = ({ habits, records, onCompleteHabit, onClose }) => {
       padding: 40, animation: 'fadeIn 0.2s ease-out'
     }}>
       <div style={{ position: 'absolute', top: 24, right: 24, display: 'flex', gap: 8, alignItems: 'center' }}>
-        <span style={{ fontSize: 13, color: COLORS.textDim }}>Hábito {step + 1} de {pendingToday.length} pendientes</span>
+        <span style={{ fontSize: 13, color: COLORS.textDim }}>HÃ¡bito {step + 1} de {pendingToday.length} pendientes</span>
         <button onClick={onClose} style={{ background: 'none', border: 'none', color: COLORS.textDim, cursor: 'pointer', padding: 8 }}><X size={20} /></button>
       </div>
 
@@ -10097,7 +10097,7 @@ const FocusMode = ({ habits, records, onCompleteHabit, onClose }) => {
           <div style={{ fontSize: 64, fontFamily: "'Inter', sans-serif", color: COLORS.text, fontWeight: 500 }}>
             {timeLeft !== null ? formatTime(timeLeft) : `${timerMinutes}:00`}
           </div>
-          {timeLeft !== null && timeLeft === 0 && <div style={{ fontSize: 14, color: COLORS.success, marginTop: 4 }}>¡Tiempo!</div>}
+          {timeLeft !== null && timeLeft === 0 && <div style={{ fontSize: 14, color: COLORS.success, marginTop: 4 }}>Â¡Tiempo!</div>}
         </div>
       </div>
 
@@ -10179,14 +10179,14 @@ const PomodoroView = ({ data, onUpdateUser, onUpdatePomodoro }) => {
   const ambientTypes = [
     { id: 'none', label: 'Silencio', icon: '\u{1F507}' },
     { id: 'whitenoise', label: 'Ruido Blanco', icon: '\u{1F4FB}' },
-    { id: 'brown', label: 'Ruido Marrón', icon: '\u{1F3A7}' },
+    { id: 'brown', label: 'Ruido MarrÃ³n', icon: '\u{1F3A7}' },
     { id: 'rain', label: 'Lluvia', icon: '\u{1F327}\u{FE0F}' },
     { id: 'ocean', label: 'Olas', icon: '\u{1F30A}' },
     { id: 'fire', label: 'Fogata', icon: '\u{1F525}' },
   ];
   const defaultFavorites = [
     { id: 'fav1', label: 'Top G Songs', videoId: 'aG4kHBL5WlQ', playlist: 'RDaG4kHBL5WlQ' },
-    { id: 'fav2', label: 'Música Clásica Radio', videoId: 'hydk9hHO1Ko', playlist: 'RDhydk9hHO1Ko' },
+    { id: 'fav2', label: 'MÃºsica ClÃ¡sica Radio', videoId: 'hydk9hHO1Ko', playlist: 'RDhydk9hHO1Ko' },
     { id: 'fav3', label: 'Lofi 1 AM Study', videoId: 'lTRiuFIWV54', playlist: '' },
   ];
   const [searchInput, setSearchInput] = useState('');
@@ -10204,9 +10204,9 @@ const PomodoroView = ({ data, onUpdateUser, onUpdatePomodoro }) => {
   const seekIntervalRef = useRef(null);
   const durations = { focus: settings.focus * 60, shortBreak: settings.shortBreak * 60, longBreak: settings.longBreak * 60 };
   const modeCopy = {
-    focus: { label: 'sesión de enfoque', next: 'Toma un descanso corto. Levántate, respira y vuelve con calma.', tone: 880 },
+    focus: { label: 'sesiÃ³n de enfoque', next: 'Toma un descanso corto. LevÃ¡ntate, respira y vuelve con calma.', tone: 880 },
     shortBreak: { label: 'descanso corto', next: 'Vuelve al enfoque. El siguiente bloque cuenta.', tone: 660 },
-    longBreak: { label: 'descanso largo', next: 'Tu ciclo largo terminó. Revisa energía y empieza otro ciclo si quieres.', tone: 520 }
+    longBreak: { label: 'descanso largo', next: 'Tu ciclo largo terminÃ³. Revisa energÃ­a y empieza otro ciclo si quieres.', tone: 520 }
   };
   const youtubeContainerRef = useRef(null);
   const youtubePlayerRef = useRef(null);
@@ -10305,10 +10305,10 @@ const PomodoroView = ({ data, onUpdateUser, onUpdatePomodoro }) => {
           publishedText: i.snippet.publishedAt ? new Date(i.snippet.publishedAt).toLocaleDateString() : ''
         }));
         setSearchResults(videos); setSearchLoading(false); return;
-      } catch(e) { setSearchError('Error de conexión: ' + e.message); setSearchLoading(false); return; }
+      } catch(e) { setSearchError('Error de conexiÃ³n: ' + e.message); setSearchLoading(false); return; }
     }
     // Fallback: 'YouTube embed with search results
-    setSearchError('Configura una API Key de YouTube en Settings para buscar. Sin key, usó URLs directas.');
+    setSearchError('Configura una API Key de YouTube en Settings para buscar. Sin key, usÃ³ URLs directas.');
     setSearchLoading(false);
   };
 
@@ -10328,7 +10328,7 @@ const PomodoroView = ({ data, onUpdateUser, onUpdatePomodoro }) => {
 
   const addFavorite = (videoId, playlist, label) => {
     const id = 'fav_' + Date.now();
-    const updated = [...favorites, { id, label: label || 'Sin título', videoId, playlist: playlist || '' }];
+    const updated = [...favorites, { id, label: label || 'Sin tÃ­tulo', videoId, playlist: playlist || '' }];
     setFavorites(updated);
     onUpdateUser({ youtubeFavorites: updated });
   };
@@ -10372,8 +10372,8 @@ const PomodoroView = ({ data, onUpdateUser, onUpdatePomodoro }) => {
     playBeep(copy.tone, 0.75);
     setTimeout(() => playBeep(copy.tone * 1.18, 0.45), 180);
     requestHabitFlowNotifications().then(() => {
-      showHabitFlowNotification('HabitFlow • Pomodoro terminado', {
-        body: `Terminó tu ${copy.label}. ${copy.next}`,
+      showHabitFlowNotification('HabitFlow â€¢ Pomodoro terminado', {
+        body: `TerminÃ³ tu ${copy.label}. ${copy.next}`,
         tag: `habitflow-pomodoro-${finishedMode}-${Date.now()}`,
         renotify: true,
         requireInteraction: true,
@@ -10620,7 +10620,7 @@ const PomodoroView = ({ data, onUpdateUser, onUpdatePomodoro }) => {
             {'\u{1F345}'} Pomodoro
           </div>
           <div style={{ fontSize: 12, color: COLORS.textDim, marginTop: 4 }}>
-            {todaySessions.length} sesión{String(todaySessions.length) !== '1' ? 'es' : ''} completadas hoy
+            {todaySessions.length} sesiÃ³n{String(todaySessions.length) !== '1' ? 'es' : ''} completadas hoy
           </div>
         </div>
         <div className="pomodoro-modes" style={{ display: 'flex', gap: 8 }}>
@@ -10658,7 +10658,7 @@ const PomodoroView = ({ data, onUpdateUser, onUpdatePomodoro }) => {
         <div style={{ background: COLORS.card, borderRadius: 12, border: `1px solid ${COLORS.border}`, padding: 16, textAlign: 'center' }}>
           <div style={{ fontSize: 11, color: COLORS.textDim, marginBottom: 4 }}>Mejor racha</div>
           <div style={{ fontSize: 28, color: '#ffd93d', fontFamily: "'Inter', sans-serif", fontWeight: 600 }}>{bestStreak}</div>
-          <div style={{ fontSize: 10, color: COLORS.textDim, marginTop: 2 }}>días seguidos</div>
+          <div style={{ fontSize: 10, color: COLORS.textDim, marginTop: 2 }}>dÃ­as seguidos</div>
         </div>
       </div>
 
@@ -10707,7 +10707,7 @@ const PomodoroView = ({ data, onUpdateUser, onUpdatePomodoro }) => {
             fontSize: 12, fontFamily: "'Inter', sans-serif", fontWeight: 800
           }}>
             <Sparkles size={14} style={{ verticalAlign: 'middle', marginRight: 6, color: COLORS.primary }} />
-            Cómo usar Pomodoro
+            CÃ³mo usar Pomodoro
           </button>
 
           <div style={{ display: 'flex', gap: 20, marginTop: 20, fontSize: 12, color: COLORS.textDim }}>
@@ -10754,7 +10754,7 @@ const PomodoroView = ({ data, onUpdateUser, onUpdatePomodoro }) => {
                     const d = payload[0].payload;
                     return <div style={{ background: '#1a1a26', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 8, padding: '8px 12px' }}>
                       <div style={{ fontSize: 12, color: COLORS.text, marginBottom: 2 }}>{d.label}</div>
-                      <div style={{ fontSize: 11, color: COLORS.alert }}>{d.minutes} min - {d.sessions} sesión{String(d.sessions) !== '1' ? 'es' : ''}</div>
+                      <div style={{ fontSize: 11, color: COLORS.alert }}>{d.minutes} min - {d.sessions} sesiÃ³n{String(d.sessions) !== '1' ? 'es' : ''}</div>
                     </div>;
                   }} />
                   <Bar dataKey="minutes" name="Minutos" fill={COLORS.alert} radius={[4, 4, 0, 0]} maxBarSize={28} />
@@ -10775,11 +10775,11 @@ const PomodoroView = ({ data, onUpdateUser, onUpdatePomodoro }) => {
                 <div style={{ fontSize: 20, color: COLORS.alert, fontFamily: "'Inter', sans-serif", fontWeight: 600 }}>{(monthlyTotal / 60).toFixed(1)}h</div>
               </div>
               <div style={{ background: COLORS.bg, borderRadius: 8, padding: '10px 12px' }}>
-                <div style={{ fontSize: 10, color: COLORS.textDim }}>Promedio/sesión</div>
+                <div style={{ fontSize: 10, color: COLORS.textDim }}>Promedio/sesiÃ³n</div>
                 <div style={{ fontSize: 20, color: COLORS.primary, fontFamily: "'Inter', sans-serif", fontWeight: 600 }}>{avgSession}m</div>
               </div>
               <div style={{ background: COLORS.bg, borderRadius: 8, padding: '10px 12px' }}>
-                <div style={{ fontSize: 10, color: COLORS.textDim }}>días activos</div>
+                <div style={{ fontSize: 10, color: COLORS.textDim }}>dÃ­as activos</div>
                 <div style={{ fontSize: 20, color: COLORS.success, fontFamily: "'Inter', sans-serif", fontWeight: 600 }}>{uniqueDates.length}</div>
               </div>
               <div style={{ background: COLORS.bg, borderRadius: 8, padding: '10px 12px' }}>
@@ -10935,7 +10935,7 @@ const PomodoroView = ({ data, onUpdateUser, onUpdatePomodoro }) => {
         <Modal isOpen={showSettings} onClose={() => setShowSettings(false)} title="Configurar Pomodoro" width={420}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
             {[
-              { key: 'focus', label: 'Duración de enfoque (min)', min: 1, max: 120 },
+              { key: 'focus', label: 'DuraciÃ³n de enfoque (min)', min: 1, max: 120 },
               { key: 'shortBreak', label: 'Descanso corto (min)', min: 1, max: 30 },
               { key: 'longBreak', label: 'Descanso largo (min)', min: 5, max: 60 },
             ].map(({ key, label, min, max }) => (
@@ -10984,18 +10984,18 @@ const PomodoroView = ({ data, onUpdateUser, onUpdatePomodoro }) => {
       )}
 
       {showGuide && (
-        <Modal isOpen={showGuide} onClose={() => setShowGuide(false)} title="Guía Pomodoro Pro" width={620}>
+        <Modal isOpen={showGuide} onClose={() => setShowGuide(false)} title="GuÃ­a Pomodoro Pro" width={620}>
           <div style={{ display: 'grid', gap: 14, color: COLORS.textDim, fontSize: 13, lineHeight: 1.6 }}>
             <div style={{ background: COLORS.bg, border: `1px solid ${COLORS.border}`, borderRadius: 14, padding: 14 }}>
-              <div style={{ color: COLORS.text, fontWeight: 900, marginBottom: 6 }}>Configuración recomendada</div>
-              <div>25 min enfoque + 5 min descanso corto + 15 min descanso largo cada 4 bloques. Si una tarea es pesada, usa 50/10; si estás empezando, usa 15/5.</div>
+              <div style={{ color: COLORS.text, fontWeight: 900, marginBottom: 6 }}>ConfiguraciÃ³n recomendada</div>
+              <div>25 min enfoque + 5 min descanso corto + 15 min descanso largo cada 4 bloques. Si una tarea es pesada, usa 50/10; si estÃ¡s empezando, usa 15/5.</div>
             </div>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: 10 }}>
               {[
                 ['1', 'Define una sola tarea antes de iniciar.'],
                 ['2', 'Durante enfoque no revises mensajes, redes ni correo.'],
-                ['3', 'En descanso levántate, toma agua y evita pantallas.'],
-                ['4', 'Después de 4 ciclos toma un descanso largo real.']
+                ['3', 'En descanso levÃ¡ntate, toma agua y evita pantallas.'],
+                ['4', 'DespuÃ©s de 4 ciclos toma un descanso largo real.']
               ].map(([n, text]) => (
                 <div key={n} style={{ background: COLORS.card, border: `1px solid ${COLORS.border}`, borderRadius: 14, padding: 13 }}>
                   <div style={{ color: COLORS.primary, fontWeight: 900, marginBottom: 5 }}>{n}</div>
@@ -11004,7 +11004,7 @@ const PomodoroView = ({ data, onUpdateUser, onUpdatePomodoro }) => {
               ))}
             </div>
             <div style={{ color: COLORS.textDim }}>
-              La técnica sirve para proteger tu atención: convierte el trabajo en bloques medibles, reduce la fricción para empezar y te obliga a descansar antes de quemarte.
+              La tÃ©cnica sirve para proteger tu atenciÃ³n: convierte el trabajo en bloques medibles, reduce la fricciÃ³n para empezar y te obliga a descansar antes de quemarte.
             </div>
           </div>
         </Modal>
@@ -11088,7 +11088,7 @@ const WorkoutTrainTab = ({ workoutData, onUpdateData, setGymMode, awardXp, onCom
       <div style={{ background: `linear-gradient(135deg, ${COLORS.primary}15, #7f102810)`, borderRadius: 16, border: `1px solid ${COLORS.primary}30`, padding: 32, marginBottom: 24, textAlign: 'center' }}>
         <div className="fire-emoji" style={{ fontSize: 48, marginBottom: 12 }}>{'\u{1F3CB}\u{FE0F}'}</div>
         <div style={{ fontSize: 20, color: COLORS.text, fontFamily: "'DM Serif Display', serif", marginBottom: 8 }}>Entreno Libre</div>
-        <div style={{ fontSize: 13, color: COLORS.textDim, marginBottom: 20 }}>Empieza sin rutina, añade ejercicios sobre la marcha</div>
+        <div style={{ fontSize: 13, color: COLORS.textDim, marginBottom: 20 }}>Empieza sin rutina, aÃ±ade ejercicios sobre la marcha</div>
         <button onClick={startFreeWorkout} style={{ padding: '14px 40px', borderRadius: 12, border: 'none', background: `linear-gradient(135deg, ${COLORS.primary}, #7f1028)`, color: '#fff', fontSize: 16, fontFamily: "'Inter', sans-serif", cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 8 }}><Play size={18} /> Iniciar Entreno Libre</button>
       </div>
 
@@ -11116,7 +11116,7 @@ const WorkoutTrainTab = ({ workoutData, onUpdateData, setGymMode, awardXp, onCom
                 {r.muscleGroups.map(mg => <span key={mg} style={{ fontSize: 10, padding: '2px 8px', borderRadius: 4, background: `${MUSCLE_COLORS[mg] || COLORS.primary}20`, color: MUSCLE_COLORS[mg] || COLORS.text }}>{mg}</span>)}
               </div>
               <div style={{ fontSize: 12, color: COLORS.textDim, marginBottom: 4 }}>{r.exercises.length} ejercicios - {totalSets} series - ~{Math.floor(estDuration)} min</div>
-              <div style={{ fontSize: 11, color: COLORS.textDim, marginBottom: 16 }}>{last ? `Última vez: ${daysAgo(last.date)} días` : 'Nunca realizada'}</div>
+              <div style={{ fontSize: 11, color: COLORS.textDim, marginBottom: 16 }}>{last ? `Ãšltima vez: ${daysAgo(last.date)} dÃ­as` : 'Nunca realizada'}</div>
               <button onClick={() => startRoutine(r)} style={{ width: '100%', padding: '10px', borderRadius: 8, border: 'none', background: `linear-gradient(135deg, ${COLORS.primary}, #7f1028)`, color: '#fff', cursor: 'pointer', fontSize: 14, fontFamily: "'Inter', sans-serif" }}><Play size={14} style={{ verticalAlign: 'middle', marginRight: 4 }} /> Iniciar</button>
             </div>
           );
@@ -11139,7 +11139,7 @@ const WorkoutAdvisorModal = ({ exercises, onSave, onClose }) => {
   const s = { fontFamily: "'Inter', sans-serif" };
   const input = { padding: '10px 12px', borderRadius: 10, border: `1px solid ${COLORS.border}`, background: COLORS.bg, color: COLORS.text, outline: 'none', ...s };
   const goalMuscles = {
-    muscle: ['Pecho', 'Espalda', 'Piernas', 'Hombros', 'Bíceps', 'Tríceps'],
+    muscle: ['Pecho', 'Espalda', 'Piernas', 'Hombros', 'BÃ­ceps', 'TrÃ­ceps'],
     strength: ['Pecho', 'Espalda', 'Piernas', 'Hombros'],
     fatloss: ['Cardio', 'Piernas', 'Espalda', 'Pecho', 'Abdomen'],
     glutes: ['Piernas', 'Abdomen', 'Espalda'],
@@ -11157,9 +11157,9 @@ const WorkoutAdvisorModal = ({ exercises, onSave, onClose }) => {
     const nameMap = {
       muscle: 'Rutina hipertrofia personalizada',
       strength: 'Rutina fuerza progresiva',
-      fatloss: 'Rutina recomposición y cardio',
-      glutes: 'Rutina glúteos y piernas',
-      health: 'Rutina salud y energía'
+      fatloss: 'Rutina recomposiciÃ³n y cardio',
+      glutes: 'Rutina glÃºteos y piernas',
+      health: 'Rutina salud y energÃ­a'
     };
     return {
       name: nameMap[profile.goal] || 'Rutina personalizada',
@@ -11183,10 +11183,10 @@ const WorkoutAdvisorModal = ({ exercises, onSave, onClose }) => {
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(170px, 1fr))', gap: 10 }}>
           <select value={profile.goal} onChange={e => setProfile(p => ({ ...p, goal: e.target.value }))} style={input}>
-            <option value="muscle">Ganar músculo</option>
+            <option value="muscle">Ganar mÃºsculo</option>
             <option value="strength">Fuerza</option>
             <option value="fatloss">Perder grasa</option>
-            <option value="glutes">Pierna / glúteos</option>
+            <option value="glutes">Pierna / glÃºteos</option>
             <option value="health">Salud general</option>
           </select>
           <select value={profile.level} onChange={e => setProfile(p => ({ ...p, level: e.target.value }))} style={input}>
@@ -11201,17 +11201,17 @@ const WorkoutAdvisorModal = ({ exercises, onSave, onClose }) => {
           </select>
           <select value={profile.equipment} onChange={e => setProfile(p => ({ ...p, equipment: e.target.value }))} style={input}>
             <option value="gym">Gimnasio completo</option>
-            <option value="home">Casa / básico</option>
+            <option value="home">Casa / bÃ¡sico</option>
           </select>
-          <input type="number" min="2" max="6" value={profile.days} onChange={e => setProfile(p => ({ ...p, days: Number(e.target.value || 4) }))} placeholder="Días por semana" style={input} />
-          <input type="number" min="25" max="100" value={profile.time} onChange={e => setProfile(p => ({ ...p, time: Number(e.target.value || 60) }))} placeholder="Minutos por sesión" style={input} />
+          <input type="number" min="2" max="6" value={profile.days} onChange={e => setProfile(p => ({ ...p, days: Number(e.target.value || 4) }))} placeholder="DÃ­as por semana" style={input} />
+          <input type="number" min="25" max="100" value={profile.time} onChange={e => setProfile(p => ({ ...p, time: Number(e.target.value || 60) }))} placeholder="Minutos por sesiÃ³n" style={input} />
         </div>
         <div style={{ background: COLORS.bg, border: `1px solid ${COLORS.border}`, borderRadius: 14, padding: 14, color: COLORS.textDim, fontSize: 12, lineHeight: 1.6 }}>
-          Instrucciones: empieza con un peso que te deje 1-2 repeticiones en reserva. Si completas todas las series dos entrenos seguidos, sube 2.5 kg en tren superior o 5 kg en tren inferior. Descansa bien y no sacrifiques técnica.
+          Instrucciones: empieza con un peso que te deje 1-2 repeticiones en reserva. Si completas todas las series dos entrenos seguidos, sube 2.5 kg en tren superior o 5 kg en tren inferior. Descansa bien y no sacrifiques tÃ©cnica.
         </div>
         <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end' }}>
           <button onClick={onClose} style={{ padding: '11px 16px', borderRadius: 10, border: `1px solid ${COLORS.border}`, background: 'transparent', color: COLORS.textDim, cursor: 'pointer' }}>Cancelar</button>
-          <button onClick={save} className="lab-cta" style={{ padding: '11px 18px', borderRadius: 999, cursor: 'pointer' }}><Sparkles size={15} /><span>Crear rutina automática</span></button>
+          <button onClick={save} className="lab-cta" style={{ padding: '11px 18px', borderRadius: 999, cursor: 'pointer' }}><Sparkles size={15} /><span>Crear rutina automÃ¡tica</span></button>
         </div>
       </div>
     </Modal>
@@ -11540,12 +11540,12 @@ const GymMode = ({ gymData, workoutData, onUpdateData, onClose, onSaveSession, o
   if (finished) return (
     <div style={{ position: 'fixed', inset: 0, zIndex: 2000, background: `radial-gradient(circle at 50% 0%, ${COLORS.primary}18, transparent 38%), ${COLORS.bg}`, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: 40 }}>
       <div style={{ fontSize: 70, marginBottom: 12 }}>{'\u{1F3C6}'}</div>
-      <div style={{ fontSize: 34, color: COLORS.text, fontFamily: "'DM Serif Display', serif", marginBottom: 8 }}>¡Entreno completado!</div>
-      <div style={{ color: COLORS.textDim, fontSize: 13, fontFamily: "'Inter', sans-serif", marginBottom: 24 }}>Resumen real de tu sesión</div>
+      <div style={{ fontSize: 34, color: COLORS.text, fontFamily: "'DM Serif Display', serif", marginBottom: 8 }}>Â¡Entreno completado!</div>
+      <div style={{ color: COLORS.textDim, fontSize: 13, fontFamily: "'Inter', sans-serif", marginBottom: 24 }}>Resumen real de tu sesiÃ³n</div>
       <div style={{ background: COLORS.card, borderRadius: 22, border: `1px solid ${COLORS.border}`, padding: 24, maxWidth: 720, width: '100%', marginBottom: 20, boxShadow: '0 26px 90px rgba(0,0,0,0.16)' }}>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(145px, 1fr))', gap: 12, marginBottom: 16 }}>
           {[
-            ['Duración', durationLabel(summaryStats.durationSeconds), COLORS.primary],
+            ['DuraciÃ³n', durationLabel(summaryStats.durationSeconds), COLORS.primary],
             ['Tiempo activo', durationLabel(summaryStats.activeSeconds), COLORS.success],
             ['Descanso', durationLabel(summaryStats.restSeconds), COLORS.textDim],
             ['Series', summaryStats.totalSetsDone, COLORS.success],
@@ -11558,9 +11558,9 @@ const GymMode = ({ gymData, workoutData, onUpdateData, onClose, onSaveSession, o
             </div>
           ))}
         </div>
-        {prs.length > 0 && <div style={{ marginBottom: 16 }}><div style={{ fontSize: 12, color: '#ffd93d', marginBottom: 8 }}>{'\u{1F3C6}'} Nuevos Récords Personales</div>{prs.map((p, i) => <div key={i} style={{ fontSize: 11, color: COLORS.text, fontFamily: "'Inter', sans-serif" }}>{p.exName}: {p.weight}kg - {p.reps} reps</div>)}</div>}
+        {prs.length > 0 && <div style={{ marginBottom: 16 }}><div style={{ fontSize: 12, color: '#ffd93d', marginBottom: 8 }}>{'\u{1F3C6}'} Nuevos RÃ©cords Personales</div>{prs.map((p, i) => <div key={i} style={{ fontSize: 11, color: COLORS.text, fontFamily: "'Inter', sans-serif" }}>{p.exName}: {p.weight}kg - {p.reps} reps</div>)}</div>}
         <div style={{ borderTop: `1px solid ${COLORS.border}`, paddingTop: 12, marginBottom: 14 }}>
-          <div style={{ color: COLORS.text, fontSize: 13, fontWeight: 800, fontFamily: "'Inter', sans-serif", marginBottom: 8 }}>Duración por ejercicio</div>
+          <div style={{ color: COLORS.text, fontSize: 13, fontWeight: 800, fontFamily: "'Inter', sans-serif", marginBottom: 8 }}>DuraciÃ³n por ejercicio</div>
           <div style={{ display: 'grid', gap: 6 }}>
             {exState.filter(e => e.sets.some(set => set.completed)).map(e => {
               const key = e.eid || e.exerciseId;
@@ -11574,11 +11574,11 @@ const GymMode = ({ gymData, workoutData, onUpdateData, onClose, onSaveSession, o
             })}
           </div>
         </div>
-        <textarea value={sessionNotes} onChange={e => setSessionNotes(e.target.value)} placeholder="¿Cómo te sentiste hoy?" rows={2} style={{ width: '100%', padding: '8px 12px', background: COLORS.bg, border: `1px solid ${COLORS.border}`, borderRadius: 8, color: COLORS.text, fontSize: 13, fontFamily: "'Inter', sans-serif", resize: 'vertical' }} />
+        <textarea value={sessionNotes} onChange={e => setSessionNotes(e.target.value)} placeholder="Â¿CÃ³mo te sentiste hoy?" rows={2} style={{ width: '100%', padding: '8px 12px', background: COLORS.bg, border: `1px solid ${COLORS.border}`, borderRadius: 8, color: COLORS.text, fontSize: 13, fontFamily: "'Inter', sans-serif", resize: 'vertical' }} />
       </div>
       <div style={{ display: 'flex', gap: 12 }}>
         <button onClick={onClose} style={{ padding: '12px 24px', borderRadius: 10, border: `1px solid ${COLORS.border}`, background: 'transparent', color: COLORS.textDim, cursor: 'pointer', fontSize: 14, fontFamily: "'Inter', sans-serif" }}>Descartar</button>
-        <button onClick={saveSession} style={{ padding: '12px 32px', borderRadius: 10, border: 'none', background: `linear-gradient(135deg, ${COLORS.success}, #9f1239)`, color: '#000', cursor: 'pointer', fontSize: 14, fontFamily: "'Inter', sans-serif" }}>{'\u{1F4BE}'} Guardar Sesión</button>
+        <button onClick={saveSession} style={{ padding: '12px 32px', borderRadius: 10, border: 'none', background: `linear-gradient(135deg, ${COLORS.success}, #9f1239)`, color: '#000', cursor: 'pointer', fontSize: 14, fontFamily: "'Inter', sans-serif" }}>{'\u{1F4BE}'} Guardar SesiÃ³n</button>
       </div>
     </div>
   );
@@ -11594,13 +11594,13 @@ const GymMode = ({ gymData, workoutData, onUpdateData, onClose, onSaveSession, o
         </div>
         <div style={{ textAlign: 'center' }}>
           <div style={{ fontSize: 18, color: COLORS.text, fontFamily: "'DM Serif Display', serif" }}>{gymData.routine?.name || 'Entreno Libre'}</div>
-          <div style={{ marginTop: 3, fontSize: 11, color: COLORS.textDim, fontFamily: "'Inter', sans-serif" }}>Ejercicio {activeExIdx + 1} de {totalExs} · {completedSets}/{totalSets} series</div>
+          <div style={{ marginTop: 3, fontSize: 11, color: COLORS.textDim, fontFamily: "'Inter', sans-serif" }}>Ejercicio {activeExIdx + 1} de {totalExs} Â· {completedSets}/{totalSets} series</div>
         </div>
         {confirmSkip ? (
           <div style={{ display: 'flex', gap: 8, alignItems: 'center', justifySelf: 'end' }}>
-            <span style={{ fontSize: 11, color: COLORS.alert }}>¿Salir sin guardar?</span>
+            <span style={{ fontSize: 11, color: COLORS.alert }}>Â¿Salir sin guardar?</span>
             <button onClick={() => { setConfirmSkip(false); }} style={{ padding: '6px 12px', borderRadius: 6, border: `1px solid ${COLORS.border}`, background: 'transparent', color: COLORS.textDim, cursor: 'pointer', fontSize: 12, fontFamily: "'Inter', sans-serif" }}>No</button>
-            <button onClick={onClose} style={{ padding: '6px 12px', borderRadius: 6, border: 'none', background: COLORS.alert, color: '#fff', cursor: 'pointer', fontSize: 12, fontFamily: "'Inter', sans-serif" }}>Sí</button>
+            <button onClick={onClose} style={{ padding: '6px 12px', borderRadius: 6, border: 'none', background: COLORS.alert, color: '#fff', cursor: 'pointer', fontSize: 12, fontFamily: "'Inter', sans-serif" }}>SÃ­</button>
           </div>
         ) : (
           <button onClick={() => setConfirmSkip(true)} style={{ justifySelf: 'end', padding: '8px 16px', borderRadius: 8, border: 'none', background: COLORS.alert + '20', color: COLORS.alert, cursor: 'pointer', fontSize: 13, fontFamily: "'Inter', sans-serif" }}>Terminar</button>
@@ -11623,7 +11623,7 @@ const GymMode = ({ gymData, workoutData, onUpdateData, onClose, onSaveSession, o
 
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(145px, 1fr))', gap: 10, marginBottom: 18 }}>
             {[
-              ['Duración ejercicio', durationLabel(currentExerciseDuration), COLORS.primary],
+              ['DuraciÃ³n ejercicio', durationLabel(currentExerciseDuration), COLORS.primary],
               ['Pendientes', pendingSets, COLORS.text]
             ].map(([label, value, color]) => (
               <div key={label} style={{ background: COLORS.bg, border: `1px solid ${COLORS.border}`, borderRadius: 14, padding: '11px 12px' }}>
@@ -11661,7 +11661,7 @@ const GymMode = ({ gymData, workoutData, onUpdateData, onClose, onSaveSession, o
                 </div>
               </div>
             ))}
-            <button onClick={addSetToCurrentExercise} style={{ marginTop: 4, padding: '9px 13px', borderRadius: 11, border: `1px dashed ${COLORS.primary}55`, background: `${COLORS.primary}10`, color: COLORS.primary, cursor: 'pointer', fontSize: 12, fontFamily: "'Inter', sans-serif", fontWeight: 800 }}><Plus size={13} style={{ verticalAlign: 'middle', marginRight: 5 }} />Añadir serie</button>
+            <button onClick={addSetToCurrentExercise} style={{ marginTop: 4, padding: '9px 13px', borderRadius: 11, border: `1px dashed ${COLORS.primary}55`, background: `${COLORS.primary}10`, color: COLORS.primary, cursor: 'pointer', fontSize: 12, fontFamily: "'Inter', sans-serif", fontWeight: 800 }}><Plus size={13} style={{ verticalAlign: 'middle', marginRight: 5 }} />AÃ±adir serie</button>
           </div>
 
           {restRunning && restTime > 0 ? (
@@ -11686,7 +11686,7 @@ const GymMode = ({ gymData, workoutData, onUpdateData, onClose, onSaveSession, o
 
           <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 16 }}>
             <button onClick={() => goToExercise(activeExIdx - 1)} disabled={activeExIdx === 0} style={{ padding: '8px 16px', borderRadius: 8, border: `1px solid ${COLORS.border}`, background: 'transparent', color: COLORS.textDim, cursor: activeExIdx > 0 ? 'pointer' : 'default', fontSize: 13, fontFamily: "'Inter', sans-serif" }}>{'\u{2190}'} Ejercicio Anterior</button>
-            <button onClick={() => setShowAddEx(true)} style={{ padding: '8px 16px', borderRadius: 8, border: 'none', background: `${COLORS.primary}15`, color: COLORS.primary, cursor: 'pointer', fontSize: 13, fontFamily: "'Inter', sans-serif" }}>+ Añadir Ejercicio</button>
+            <button onClick={() => setShowAddEx(true)} style={{ padding: '8px 16px', borderRadius: 8, border: 'none', background: `${COLORS.primary}15`, color: COLORS.primary, cursor: 'pointer', fontSize: 13, fontFamily: "'Inter', sans-serif" }}>+ AÃ±adir Ejercicio</button>
             <button onClick={() => goToExercise(activeExIdx + 1)} disabled={activeExIdx >= totalExs - 1} style={{ padding: '8px 16px', borderRadius: 8, border: `1px solid ${COLORS.border}`, background: 'transparent', color: COLORS.textDim, cursor: activeExIdx < totalExs - 1 ? 'pointer' : 'default', fontSize: 13, fontFamily: "'Inter', sans-serif" }}>Siguiente Ejercicio {'\u{2192}'}</button>
           </div>
         </div>
@@ -11729,8 +11729,8 @@ const GymMode = ({ gymData, workoutData, onUpdateData, onClose, onSaveSession, o
       {showAddEx && <WorkoutExerciseAdder workoutData={workoutData} onUpdateData={onUpdateData} onAdd={(eid) => { setExState(x => [...x, { exerciseId: eid, eid, rest: 90, sets: [{ setNumber: 1, reps: 10, weight: 0, completed: false, isPersonalRecord: false }] }]); setShowAddEx(false); }} onClose={() => setShowAddEx(false)} />}
       {showFitnessToast && (
         <div style={{ position: 'fixed', bottom: 24, left: '50%', transform: 'translateX(-50%)', zIndex: 2001, background: COLORS.card, border: `1px solid ${COLORS.success}40`, borderRadius: 12, padding: '12px 20px', display: 'flex', alignItems: 'center', gap: 12, animation: 'slideIn 0.3s ease-out' }}>
-          <span>{'\u{1F4AA}'} ¿Marcar tu hábito de fitness como completado hoy?</span>
-          <button onClick={() => { onCompleteHabit('h2'); setShowFitnessToast(false); }} style={{ padding: '6px 14px', borderRadius: 6, border: 'none', background: COLORS.success, color: '#000', cursor: 'pointer', fontSize: 12, fontFamily: "'Inter', sans-serif" }}>Sí</button>
+          <span>{'\u{1F4AA}'} Â¿Marcar tu hÃ¡bito de fitness como completado hoy?</span>
+          <button onClick={() => { onCompleteHabit('h2'); setShowFitnessToast(false); }} style={{ padding: '6px 14px', borderRadius: 6, border: 'none', background: COLORS.success, color: '#000', cursor: 'pointer', fontSize: 12, fontFamily: "'Inter', sans-serif" }}>SÃ­</button>
           <button onClick={() => setShowFitnessToast(false)} style={{ padding: '6px 14px', borderRadius: 6, border: 'none', background: 'transparent', color: COLORS.textDim, cursor: 'pointer', fontSize: 12, fontFamily: "'Inter', sans-serif" }}>No</button>
         </div>
       )}
@@ -11755,7 +11755,7 @@ const WorkoutExerciseAdder = ({ workoutData, onAdd, onClose, onUpdateData }) => 
   return (
     <div style={{ position: 'fixed', inset: 0, zIndex: 2100, background: 'rgba(0,0,0,0.8)', backdropFilter: 'blur(8px)', display: 'flex', alignItems: 'center', justifyContent: 'center' }} onClick={onClose}>
       <div style={{ background: COLORS.card, borderRadius: 16, border: `1px solid ${COLORS.border}`, padding: 24, maxWidth: 480, width: '90%', maxHeight: '80vh', overflow: 'auto' }} onClick={e => e.stopPropagation()}>
-        <div style={{ fontSize: 16, color: COLORS.text, fontFamily: "'DM Serif Display', serif", marginBottom: 16 }}>Añadir Ejercicio</div>
+        <div style={{ fontSize: 16, color: COLORS.text, fontFamily: "'DM Serif Display', serif", marginBottom: 16 }}>AÃ±adir Ejercicio</div>
         {!showCustom && (
           <button onClick={() => setShowCustom(true)} style={{ width: '100%', display: 'flex', alignItems: 'center', gap: 8, padding: '10px 14px', background: `${COLORS.primary}10`, border: `1px dashed ${COLORS.primary}40`, cursor: 'pointer', borderRadius: 10, color: COLORS.primary, fontSize: 13, fontFamily: "'Inter', sans-serif", textAlign: 'left', marginBottom: 12 }}>
             <Sparkles size={16} /> Personalizar ejercicio
@@ -11764,7 +11764,7 @@ const WorkoutExerciseAdder = ({ workoutData, onAdd, onClose, onUpdateData }) => 
         {showCustom && (
           <div style={{ display: 'flex', gap: 8, marginBottom: 12 }}>
             <input value={customName} onChange={e => setCustomName(e.target.value)} onKeyDown={e => e.key === 'Enter' && addCustom()} placeholder="Nombre del ejercicio" autoFocus style={{ flex: 1, padding: '10px 14px', background: COLORS.bg, border: `1px solid ${COLORS.primary}`, borderRadius: 10, color: COLORS.text, fontSize: 13, outline: 'none', fontFamily: "'Inter', sans-serif" }} />
-            <button onClick={addCustom} style={{ padding: '10px 18px', borderRadius: 10, border: 'none', background: COLORS.primary, color: '#fff', cursor: 'pointer', fontSize: 13, fontFamily: "'Inter', sans-serif", whiteSpace: 'nowrap' }}>Añadir</button>
+            <button onClick={addCustom} style={{ padding: '10px 18px', borderRadius: 10, border: 'none', background: COLORS.primary, color: '#fff', cursor: 'pointer', fontSize: 13, fontFamily: "'Inter', sans-serif", whiteSpace: 'nowrap' }}>AÃ±adir</button>
           </div>
         )}
         <div style={{ display: 'flex', gap: 6, marginBottom: 12, flexWrap: 'wrap' }}>
@@ -11801,7 +11801,7 @@ const WorkoutCalTab = ({ workoutData }) => {
   thisMonthSessions.forEach(s => s.exercises?.forEach(e => { if (e.muscleGroup) { mgCount[e.muscleGroup] = (mgCount[e.muscleGroup] || 0) + 1; } }));
   const topMg = Object.entries(mgCount).sort((a, b) => b[1] - a[1])[0];
 
-  const dayLabels = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'sáb'];
+  const dayLabels = ['Dom', 'Lun', 'Mar', 'MiÃ©', 'Jue', 'Vie', 'sÃ¡b'];
 
   const prevMonth = () => {
     if (currentMonth === 0) { setCurrentYear(y => y - 1); setCurrentMonth(11); }
@@ -11923,11 +11923,11 @@ const WorkoutProgTab = ({ workoutData }) => {
         <>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24, marginBottom: 24 }}>
             <div style={{ background: COLORS.card, borderRadius: 16, border: `1px solid ${COLORS.border}`, padding: 20 }}>
-              <div style={{ fontSize: 14, color: COLORS.text, marginBottom: 12, fontFamily: "'DM Serif Display', serif" }}>Progresión de Peso Máximo</div>
+              <div style={{ fontSize: 14, color: COLORS.text, marginBottom: 12, fontFamily: "'DM Serif Display', serif" }}>ProgresiÃ³n de Peso MÃ¡ximo</div>
               <ResponsiveContainer width="100%" height={250}><LineChart data={chartData}><XAxis dataKey="date" tick={{ fontSize: 10, fill: COLORS.textDim }} /><YAxis tick={{ fontSize: 10, fill: COLORS.textDim }} /><Tooltip /><defs><linearGradient id="rmGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor={COLORS.primary} stopOpacity={0.3} /><stop offset="100%" stopColor={COLORS.primary} stopOpacity={0} /></linearGradient></defs><Line type="monotone" dataKey="rm" stroke={COLORS.primary} strokeWidth={2} dot={{ fill: COLORS.primary, r: 4 }} activeDot={{ r: 6 }} /></LineChart></ResponsiveContainer>
             </div>
             <div style={{ background: COLORS.card, borderRadius: 16, border: `1px solid ${COLORS.border}`, padding: 20 }}>
-              <div style={{ fontSize: 14, color: COLORS.text, marginBottom: 12, fontFamily: "'DM Serif Display', serif" }}>Volumen por Sesión</div>
+              <div style={{ fontSize: 14, color: COLORS.text, marginBottom: 12, fontFamily: "'DM Serif Display', serif" }}>Volumen por SesiÃ³n</div>
               <ResponsiveContainer width="100%" height={250}><BarChart data={chartData}><XAxis dataKey="date" tick={{ fontSize: 10, fill: COLORS.textDim }} /><YAxis tick={{ fontSize: 10, fill: COLORS.textDim }} /><Tooltip /><defs><linearGradient id="volGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor={COLORS.secondary} stopOpacity={0.8} /><stop offset="100%" stopColor={COLORS.secondary} stopOpacity={0.3} /></linearGradient></defs><Bar dataKey="volume" fill="url(#volGrad)" radius={[4, 4, 0, 0]} /></BarChart></ResponsiveContainer>
             </div>
           </div>
@@ -11936,18 +11936,18 @@ const WorkoutProgTab = ({ workoutData }) => {
             <ResponsiveContainer width="100%" height={200}><BarChart data={weeklyData}><XAxis dataKey="week" tick={{ fontSize: 10, fill: COLORS.textDim }} /><YAxis tick={{ fontSize: 10, fill: COLORS.textDim }} /><Tooltip /><Bar dataKey="sessions" fill={COLORS.primary} radius={[4, 4, 0, 0]} /></BarChart></ResponsiveContainer>
           </div>
         </>
-        ) : <EmptyState icon={'\u{1F3CB}\u{FE0F}'} title="Sin datos de entrenos" subtitle="Registra sesiones para ver tu progreso aquí" compact />}
+        ) : <EmptyState icon={'\u{1F3CB}\u{FE0F}'} title="Sin datos de entrenos" subtitle="Registra sesiones para ver tu progreso aquÃ­" compact />}
 
       <div style={{ background: COLORS.card, borderRadius: 16, border: `1px solid ${COLORS.border}`, padding: 20, marginBottom: 24 }}>
-        <div style={{ fontSize: 16, color: COLORS.text, fontFamily: "'DM Serif Display', serif", marginBottom: 16 }}>{'\u{1F3C6}'} Récords Personales</div>
-        {allPRs.length > 0 ? <div style={{ overflowX: 'auto' }}><table style={{ width: '100%', borderCollapse: 'collapse' }}><thead><tr style={{ borderBottom: `1px solid ${COLORS.border}` }}><th style={{ textAlign: 'left', padding: '8px 12px', fontSize: 10, color: COLORS.textDim }}>EJERCICIO</th><th style={{ textAlign: 'center', padding: '8px 12px', fontSize: 10, color: COLORS.textDim }}>PESO</th><th style={{ textAlign: 'center', padding: '8px 12px', fontSize: 10, color: COLORS.textDim }}>REPS</th><th style={{ textAlign: 'center', padding: '8px 12px', fontSize: 10, color: COLORS.textDim }}>1RM EST.</th><th style={{ textAlign: 'center', padding: '8px 12px', fontSize: 10, color: COLORS.textDim }}>FECHA</th></tr></thead><tbody>{allPRs.map((pr, i) => <tr key={i} style={{ borderBottom: `1px solid ${COLORS.border}` }}><td style={{ padding: '8px 12px', fontSize: 12, color: COLORS.text, fontFamily: "'Inter', sans-serif" }}>{pr.exName} {isNewPR(pr.date) && <span style={{ fontSize: 9, background: COLORS.alert, color: '#fff', padding: '1px 6px', borderRadius: 4, marginLeft: 4 }}>NUEVO</span>}</td><td style={{ textAlign: 'center', padding: '8px 12px', fontSize: 12, color: COLORS.text, fontFamily: "'Inter', sans-serif" }}>{pr.weight} kg</td><td style={{ textAlign: 'center', padding: '8px 12px', fontSize: 12, color: COLORS.textDim, fontFamily: "'Inter', sans-serif" }}>{pr.reps}</td><td style={{ textAlign: 'center', padding: '8px 12px', fontSize: 12, color: COLORS.primary, fontFamily: "'Inter', sans-serif" }}>{calcRM(pr.weight, pr.reps)} kg</td><td style={{ textAlign: 'center', padding: '8px 12px', fontSize: 11, color: COLORS.textDim, fontFamily: "'Inter', sans-serif" }}>{pr.date}</td></tr>)}</tbody></table></div> : <div style={{ textAlign: 'center', padding: 20, color: COLORS.textDim }}>Aún no hay récords personales. ¡A darle!</div>}
+        <div style={{ fontSize: 16, color: COLORS.text, fontFamily: "'DM Serif Display', serif", marginBottom: 16 }}>{'\u{1F3C6}'} RÃ©cords Personales</div>
+        {allPRs.length > 0 ? <div style={{ overflowX: 'auto' }}><table style={{ width: '100%', borderCollapse: 'collapse' }}><thead><tr style={{ borderBottom: `1px solid ${COLORS.border}` }}><th style={{ textAlign: 'left', padding: '8px 12px', fontSize: 10, color: COLORS.textDim }}>EJERCICIO</th><th style={{ textAlign: 'center', padding: '8px 12px', fontSize: 10, color: COLORS.textDim }}>PESO</th><th style={{ textAlign: 'center', padding: '8px 12px', fontSize: 10, color: COLORS.textDim }}>REPS</th><th style={{ textAlign: 'center', padding: '8px 12px', fontSize: 10, color: COLORS.textDim }}>1RM EST.</th><th style={{ textAlign: 'center', padding: '8px 12px', fontSize: 10, color: COLORS.textDim }}>FECHA</th></tr></thead><tbody>{allPRs.map((pr, i) => <tr key={i} style={{ borderBottom: `1px solid ${COLORS.border}` }}><td style={{ padding: '8px 12px', fontSize: 12, color: COLORS.text, fontFamily: "'Inter', sans-serif" }}>{pr.exName} {isNewPR(pr.date) && <span style={{ fontSize: 9, background: COLORS.alert, color: '#fff', padding: '1px 6px', borderRadius: 4, marginLeft: 4 }}>NUEVO</span>}</td><td style={{ textAlign: 'center', padding: '8px 12px', fontSize: 12, color: COLORS.text, fontFamily: "'Inter', sans-serif" }}>{pr.weight} kg</td><td style={{ textAlign: 'center', padding: '8px 12px', fontSize: 12, color: COLORS.textDim, fontFamily: "'Inter', sans-serif" }}>{pr.reps}</td><td style={{ textAlign: 'center', padding: '8px 12px', fontSize: 12, color: COLORS.primary, fontFamily: "'Inter', sans-serif" }}>{calcRM(pr.weight, pr.reps)} kg</td><td style={{ textAlign: 'center', padding: '8px 12px', fontSize: 11, color: COLORS.textDim, fontFamily: "'Inter', sans-serif" }}>{pr.date}</td></tr>)}</tbody></table></div> : <div style={{ textAlign: 'center', padding: 20, color: COLORS.textDim }}>AÃºn no hay rÃ©cords personales. Â¡A darle!</div>}
       </div>
 
       <div className="stats-grid-2" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: 12 }}>
         <div style={{ background: COLORS.card, borderRadius: 12, border: `1px solid ${COLORS.border}`, padding: 16, textAlign: 'center' }}><div style={{ fontSize: 28, color: COLORS.primary, fontFamily: "'Inter', sans-serif" }}>{sessions.length}</div><div style={{ fontSize: 11, color: COLORS.textDim }}>Sesiones Registradas</div></div>
         <div style={{ background: COLORS.card, borderRadius: 12, border: `1px solid ${COLORS.border}`, padding: 16, textAlign: 'center' }}><div style={{ fontSize: 28, color: COLORS.success, fontFamily: "'Inter', sans-serif" }}>{sessions.reduce((t, s) => t + s.totalVolume, 0) > 999 ? `${(sessions.reduce((t, s) => t + s.totalVolume, 0) / 1000).toFixed(1)}k` : sessions.reduce((t, s) => t + s.totalVolume, 0)}</div><div style={{ fontSize: 11, color: COLORS.textDim }}>Volumen Total (kg)</div></div>
         <div style={{ background: COLORS.card, borderRadius: 12, border: `1px solid ${COLORS.border}`, padding: 16, textAlign: 'center' }}><div style={{ fontSize: 28, color: COLORS.alert, fontFamily: "'Inter', sans-serif" }}>{exercises.reduce((best, e) => { const c = sessions.filter(s => s.exercises?.some(x => x.exerciseId === e.id)).length; return c > best.count ? { count: c, name: e.name } : best; }, { count: 0, name: '--' }).name}</div><div style={{ fontSize: 11, color: COLORS.textDim }}>Ejercicio + Frecuente</div></div>
-        <div style={{ background: COLORS.card, borderRadius: 12, border: `1px solid ${COLORS.border}`, padding: 16, textAlign: 'center' }}><div style={{ fontSize: 28, color: '#ffd93d', fontFamily: "'Inter', sans-serif" }}>{Object.entries(sessions.flatMap(s => s.exercises?.map(e => e.muscleGroup) || []).reduce((acc, mg) => { acc[mg] = (acc[mg] || 0) + 1; return acc; }, {})).sort((a, b) => b[1] - a[1])[0]?.[0] || '--'}</div><div style={{ fontSize: 11, color: COLORS.textDim }}>Músculo + Entrenado</div></div>
+        <div style={{ background: COLORS.card, borderRadius: 12, border: `1px solid ${COLORS.border}`, padding: 16, textAlign: 'center' }}><div style={{ fontSize: 28, color: '#ffd93d', fontFamily: "'Inter', sans-serif" }}>{Object.entries(sessions.flatMap(s => s.exercises?.map(e => e.muscleGroup) || []).reduce((acc, mg) => { acc[mg] = (acc[mg] || 0) + 1; return acc; }, {})).sort((a, b) => b[1] - a[1])[0]?.[0] || '--'}</div><div style={{ fontSize: 11, color: COLORS.textDim }}>MÃºsculo + Entrenado</div></div>
       </div>
     </div>
   );
@@ -11959,10 +11959,10 @@ const PRIORITY_COLORS = { 1: '#ff6b6b', 2: '#ff9f43', 3: '#e11d48', 4: '#8888a0'
 const STATUS_LABELS = { pending: 'Pendiente', in_progress: 'En progreso', completed: 'Completada', postponed: 'Pospuesta', cancelled: 'Cancelada' };
 const STATUS_COLORS = { pending: COLORS.textDim, in_progress: COLORS.primary, completed: COLORS.success, postponed: '#ffd93d', cancelled: '#666' };
 const HOURS = Array.from({ length: 18 }, (_, i) => i + 6);
-const SECTION_LABELS = { morning: '\u{1F305} Mañana', afternoon: '\u{2600}\u{FE0F} Tarde', evening: '\u{1F319} Noche' };
+const SECTION_LABELS = { morning: '\u{1F305} MaÃ±ana', afternoon: '\u{2600}\u{FE0F} Tarde', evening: '\u{1F319} Noche' };
 const SECTION_HOURS = { morning: [6, 7, 8, 9, 10, 11], afternoon: [12, 13, 14, 15, 16, 17], evening: [18, 19, 20, 21, 22, 23] };
 const RECURRENCE_TYPES = [
-  { id: 'none', label: 'No repetir' }, { id: 'daily', label: 'Cada día' },
+  { id: 'none', label: 'No repetir' }, { id: 'daily', label: 'Cada dÃ­a' },
   { id: 'weekdays', label: 'Lun - Vie' }, { id: 'weekends', label: 'Fines de semana' },
   { id: 'weekly', label: 'Semanal' }, { id: 'biweekly', label: 'Cada 2 semanas' },
   { id: 'monthly', label: 'Mensual' }, { id: 'yearly', label: 'Anual' },
@@ -11981,10 +11981,10 @@ const REMINDER_OPTIONS = [
   { id: '15min', label: '15 minutos antes', mins: 15 },
   { id: '30min', label: '30 minutos antes', mins: 30 },
   { id: '1hour', label: '1 hora antes', mins: 60 },
-  { id: '1day', label: '1 día antes', mins: 1440 }
+  { id: '1day', label: '1 dÃ­a antes', mins: 1440 }
 ];
-const DAY_NAMES = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
-const DAY_NAMES_FULL = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
+const DAY_NAMES = ['Dom', 'Lun', 'Mar', 'MiÃ©', 'Jue', 'Vie', 'SÃ¡b'];
+const DAY_NAMES_FULL = ['Domingo', 'Lunes', 'Martes', 'MiÃ©rcoles', 'Jueves', 'Viernes', 'SÃ¡bado'];
 const MONTH_NAMES = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
 
 const timeToHour = (t) => { if (!t) return -1; const [h] = t.split(':').map(Number); return h; };
@@ -12094,8 +12094,8 @@ const parseNaturalInput = (text, defaultDate) => {
   const timeMatch = clean.match(/\b(\d{1,2}):(\d{2})\b/);
   if (timeMatch) { startTime = timeMatch[0]; clean = clean.replace(timeMatch[0], '').trim(); }
   const today = toYYYYMMDD(new Date());
-  if (/\bpasado mañana\b/i.test(clean)) { dueDate = toYYYYMMDD(new Date(Date.now() + 2 * 86400000)); clean = clean.replace(/\bpasado mañana\b/i, '').trim(); }
-  else if (/\bmañana\b/i.test(clean)) { dueDate = toYYYYMMDD(new Date(Date.now() + 86400000)); clean = clean.replace(/\bmañana\b/i, '').trim(); }
+  if (/\bpasado maÃ±ana\b/i.test(clean)) { dueDate = toYYYYMMDD(new Date(Date.now() + 2 * 86400000)); clean = clean.replace(/\bpasado maÃ±ana\b/i, '').trim(); }
+  else if (/\bmaÃ±ana\b/i.test(clean)) { dueDate = toYYYYMMDD(new Date(Date.now() + 86400000)); clean = clean.replace(/\bmaÃ±ana\b/i, '').trim(); }
   else if (/\bhoy\b/i.test(clean)) { dueDate = today; clean = clean.replace(/\bhoy\b/i, '').trim(); }
   else {
     const dmMatch = clean.match(/\b(\d{1,2})[\/-](\d{1,2})\b/);
@@ -12538,14 +12538,14 @@ const AgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAgendaTo
             {isToday ? '\u{1F305}' : '\u{1F4C5}'}
           </div>
           <div style={{ fontSize: 14, fontWeight: 600, color: COLORS.text, ...s, marginBottom: 4 }}>
-            {isToday ? 'Tu día está libre' : 'No hay tareas para este día'}
+            {isToday ? 'Tu dÃ­a estÃ¡ libre' : 'No hay tareas para este dÃ­a'}
           </div>
           <div style={{ fontSize: 11, color: COLORS.textDim, ...s, marginBottom: 12 }}>
-            {isToday ? 'Añade una tarea o bloquea tiempo para enfocarte' : 'Selecciona otro día o crea una tarea aquí'}
+            {isToday ? 'AÃ±ade una tarea o bloquea tiempo para enfocarte' : 'Selecciona otro dÃ­a o crea una tarea aquÃ­'}
           </div>
           <button onClick={() => { setEditModalTask({ dueDate: dateStr, priority: inputPrio }); setShowModal(true); }}
             style={{ ...btnBase, padding: '8px 20px', background: `linear-gradient(135deg, ${COLORS.primary}, #7f1028)`, color: '#fff', margin: '0 auto', fontSize: 12 }}>
-            <Plus size={14} /> Añadir tarea
+            <Plus size={14} /> AÃ±adir tarea
           </button>
         </div>
       ) : (
@@ -12580,7 +12580,7 @@ const AgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAgendaTo
                   setShowModal(true);
                 }} style={{ flex: 1, padding: '2px 8px', minHeight: hourTasks.length > 0 ? undefined : 28, borderRadius: 4 }}>
                   {isDrop && hourTasks.length === 0 && (
-                    <div style={{ margin: '3px 0', padding: '6px 10px', borderRadius: 8, border: `1.5px dashed ${COLORS.primary}50`, fontSize: 10, color: COLORS.primary + '88', textAlign: 'center' }}>Soltar aquí</div>
+                    <div style={{ margin: '3px 0', padding: '6px 10px', borderRadius: 8, border: `1.5px dashed ${COLORS.primary}50`, fontSize: 10, color: COLORS.primary + '88', textAlign: 'center' }}>Soltar aquÃ­</div>
                   )}
                   {hourTasks.map(task => renderTaskBlock(task))}
                 </div>
@@ -12685,7 +12685,7 @@ const AgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAgendaTo
         ) : filtered.map(([date, ts]) => (
           <div key={date}>
             <div style={{ padding: '8px 14px', fontSize: 11, color: COLORS.textDim, fontWeight: 600, background: COLORS.bg, borderBottom: `1px solid ${COLORS.border}`, display: 'flex', justifyContent: 'space-between', alignItems: 'center', ...s }}>
-              <span>{date === todayStr ? 'Hoy' : date === toYYYYMMDD(new Date(Date.now() + 86400000)) ? 'Mañana' : new Date(date + 'T12:00:00').toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'short' })}</span>
+              <span>{date === todayStr ? 'Hoy' : date === toYYYYMMDD(new Date(Date.now() + 86400000)) ? 'MaÃ±ana' : new Date(date + 'T12:00:00').toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'short' })}</span>
               <span style={{ fontSize: 10, color: COLORS.textDim + '88' }}>{ts.length} tareas</span>
             </div>
             <div style={{ padding: '5px 10px' }}>
@@ -12755,7 +12755,7 @@ const AgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAgendaTo
           {sidebarTab === 'unscheduled' && (
             untimedTasks.length === 0 ? (
               <div style={{ textAlign: 'center', padding: '16px 8px', color: COLORS.textDim + '99' }}>
-                <div style={{ fontSize: 20, marginBottom: 4 }}>✅</div>
+                <div style={{ fontSize: 20, marginBottom: 4 }}>âœ…</div>
                 <div style={{ fontSize: 10, ...s }}>Todo programado</div>
               </div>
             ) : untimedTasks.map(task => renderTaskBlock(task, { compact: true }))
@@ -12764,7 +12764,7 @@ const AgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAgendaTo
             <div>
               {renderMiniCalendar()}
               <div style={{ borderTop: `1px solid ${COLORS.border}`, paddingTop: 8, marginTop: 4 }}>
-                <div style={{ fontSize: 10, fontWeight: 600, color: COLORS.text, ...s, marginBottom: 6 }}>Resumen del día</div>
+                <div style={{ fontSize: 10, fontWeight: 600, color: COLORS.text, ...s, marginBottom: 6 }}>Resumen del dÃ­a</div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
                   <span style={{ fontSize: 9, color: COLORS.textDim, ...s }}>Progreso</span>
                   <span style={{ fontSize: 9, color: COLORS.text, fontWeight: 600, ...s }}>{pct}%</span>
@@ -12789,11 +12789,11 @@ const AgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAgendaTo
           )}
           {sidebarTab === 'alarms' && (
             <div>
-              <div style={{ fontSize: 10, fontWeight: 600, color: COLORS.text, ...s, marginBottom: 6 }}>Próximas alarmas</div>
+              <div style={{ fontSize: 10, fontWeight: 600, color: COLORS.text, ...s, marginBottom: 6 }}>PrÃ³ximas alarmas</div>
               {tasks.filter(t => t.alarm && !t.completed && t.dueTime).length === 0 ? (
                 <div style={{ textAlign: 'center', padding: '12px 8px', color: COLORS.textDim + '99' }}>
                   <div style={{ fontSize: 18, marginBottom: 4 }}>{'\u{1F515}'}</div>
-                  <div style={{ fontSize: 9, ...s }}>No hay alarmas próximas</div>
+                  <div style={{ fontSize: 9, ...s }}>No hay alarmas prÃ³ximas</div>
                 </div>
               ) : tasks.filter(t => t.alarm && !t.completed && t.dueTime).sort((a, b) => (a.dueTime || '').localeCompare(b.dueTime || '')).slice(0, 5).map(t => (
                 <div key={t.id} style={{ padding: '5px 8px', borderRadius: 6, marginBottom: 3, background: COLORS.bg, display: 'flex', alignItems: 'center', gap: 5 }}>
@@ -12804,14 +12804,14 @@ const AgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAgendaTo
               ))}
               {overdueCount > 0 && <>
                 <div style={{ fontSize: 10, fontWeight: 600, color: COLORS.alert, ...s, margin: '8px 0 4px', display: 'flex', alignItems: 'center', gap: 4 }}>
-                  <span> ï¸ Vencidas ({overdueCount})</span>
+                  <span>Â Ã¯Â¸Â Vencidas ({overdueCount})</span>
                 </div>
                 {getOverdueTasks().slice(0, 3).map(t => (
                   <div key={t.id} style={{ padding: '4px 8px', borderRadius: 6, marginBottom: 2, background: `${COLORS.alert}06`, display: 'flex', alignItems: 'center', gap: 4 }}>
                     <span style={{ fontSize: 9, color: COLORS.text, ...s, flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{t.text}</span>
                     <button onClick={() => { const d = new Date(t.dueDate + 'T12:00:00'); d.setDate(d.getDate() + 1); onMoveTaskToDate(t.id, t.dueDate, toYYYYMMDD(d)); }}
                       style={{ ...btnBase, fontSize: 8, padding: '1px 5px', background: `${COLORS.primary}10`, color: COLORS.primary }}>Mover</button>
-                    <button onClick={() => toggleTask(t.id)} style={{ ...btnBase, fontSize: 8, padding: '1px 5px', background: `${COLORS.success}10`, color: COLORS.success }}>✓</button>
+                    <button onClick={() => toggleTask(t.id)} style={{ ...btnBase, fontSize: 8, padding: '1px 5px', background: `${COLORS.success}10`, color: COLORS.success }}>âœ“</button>
                   </div>
                 ))}
               </>}
@@ -12827,10 +12827,10 @@ const AgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAgendaTo
       <div style={{ display: 'flex', gap: 7, alignItems: 'center' }}>
         <Plus size={15} color={COLORS.primary} style={{ marginLeft: 4 }} />
         <input value={quickText} onChange={e => setQuickText(e.target.value)} onKeyDown={e => { if (e.key === 'Enter') handleQuickAdd(); }}
-          placeholder="Añade una tarea... prueba: pagar luz mañana 18:00 p1 @finanzas"
+          placeholder="AÃ±ade una tarea... prueba: pagar luz maÃ±ana 18:00 p1 @finanzas"
           style={{ flex: 1, padding: '8px 4px', border: 'none', background: 'transparent', color: COLORS.text, fontSize: 12, ...s, outline: 'none' }} />
         <button onClick={handleQuickAdd} style={{ ...btnBase, padding: '7px 11px', background: `${COLORS.primary}16`, color: COLORS.primary, fontWeight: 700 }}>
-          Añadir
+          AÃ±adir
         </button>
       </div>
     </div>
@@ -12866,13 +12866,13 @@ const AgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAgendaTo
     const visibleDone = tasks.filter(t => t.completed && !hideDone);
     const sections = [
       { id: 'timed', label: 'Programadas', hint: 'Con una hora definida', tasks: visibleTimed },
-      { id: 'untimed', label: 'Por ordenar', hint: 'Decide cuándo hacerlas', tasks: visibleUntimed }
+      { id: 'untimed', label: 'Por ordenar', hint: 'Decide cuÃ¡ndo hacerlas', tasks: visibleUntimed }
     ];
     return (
       <div className="agenda-plan-card" style={{ background: COLORS.card, borderRadius: 16, border: `1px solid ${COLORS.border}`, padding: '18px 20px', minHeight: 470 }}>
         <div className="agenda-plan-head" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12, paddingBottom: 13, borderBottom: `1px solid ${COLORS.border}` }}>
           <div>
-            <div style={{ fontSize: 15, color: COLORS.text, fontWeight: 700, ...s }}>Plan del día</div>
+            <div style={{ fontSize: 15, color: COLORS.text, fontWeight: 700, ...s }}>Plan del dÃ­a</div>
             <div style={{ marginTop: 3, fontSize: 10, color: COLORS.textDim, ...s }}>{totalCount - completedCount} pendientes  {freeMins >= 60 ? `${Math.floor(freeMins / 60)}h ${freeMins % 60}m` : `${freeMins}m`} disponibles</div>
           </div>
           <button className="agenda-add-task-button" onClick={() => openTaskModal(null)} style={{ ...btnBase, padding: '7px 10px', color: COLORS.primary, background: `${COLORS.primary}12`, fontWeight: 700 }}><Plus size={13} /> Tarea</button>
@@ -12880,7 +12880,7 @@ const AgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAgendaTo
         {tasks.length === 0 ? (
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: 330, textAlign: 'center' }}>
             <div style={{ width: 46, height: 46, borderRadius: 14, background: `${COLORS.primary}12`, display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 12 }}><Check size={21} color={COLORS.primary} /></div>
-            <div style={{ color: COLORS.text, fontSize: 15, fontWeight: 700, ...s }}>Tu día está despejado</div>
+            <div style={{ color: COLORS.text, fontSize: 15, fontWeight: 700, ...s }}>Tu dÃ­a estÃ¡ despejado</div>
             <div style={{ color: COLORS.textDim, fontSize: 11, marginTop: 5, maxWidth: 260, lineHeight: 1.5, ...s }}>Captura algo arriba o disfruta del espacio libre. No hace falta llenar cada hora.</div>
           </div>
         ) : (
@@ -12928,8 +12928,8 @@ const AgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAgendaTo
     const upcoming = getUpcomingTasks().filter(task => task.dueDate !== dateStr).slice(0, 5);
     return (
       <div>
-        <div style={{ color: COLORS.text, fontSize: 12, fontWeight: 700, marginBottom: 9, ...s }}>Próximos días</div>
-        {upcoming.length === 0 ? <div style={{ color: COLORS.textDim, fontSize: 10, lineHeight: 1.5, ...s }}>No tienes tareas próximas. Tu semana se ve tranquila.</div> : upcoming.map(task => (
+        <div style={{ color: COLORS.text, fontSize: 12, fontWeight: 700, marginBottom: 9, ...s }}>PrÃ³ximos dÃ­as</div>
+        {upcoming.length === 0 ? <div style={{ color: COLORS.textDim, fontSize: 10, lineHeight: 1.5, ...s }}>No tienes tareas prÃ³ximas. Tu semana se ve tranquila.</div> : upcoming.map(task => (
           <div key={`${task.id}-${task.dueDate}`} style={{ padding: '8px 0', borderBottom: `1px solid ${COLORS.border}` }}>
             <div style={{ color: COLORS.text, fontSize: 10, ...s }}>{task.text}</div>
             <div style={{ color: COLORS.textDim, fontSize: 8, marginTop: 3, ...s }}>{new Date(task.dueDate + 'T12:00:00').toLocaleDateString('es-ES', { weekday: 'short', day: 'numeric', month: 'short' })}{task.dueTime ? `  ${task.dueTime}` : ''}</div>
@@ -12980,7 +12980,7 @@ const AgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAgendaTo
           <div style={{ color: COLORS.text, fontSize: 12, fontWeight: 700, ...s }}>To-do list</div>
           <button onClick={() => setShowTodoLabels(value => !value)} style={{ ...btnBase, padding: '4px 6px', color: showTodoLabels ? COLORS.primary : COLORS.textDim, background: showTodoLabels ? `${COLORS.primary}12` : 'transparent', fontSize: 9 }}><Hash size={10} /> Etiquetas</button>
         </div>
-        <div style={{ color: COLORS.textDim, fontSize: 9, marginTop: 2, marginBottom: 8, ...s }}>Anota algo rápido y márcalo cuando esté hecho.</div>
+        <div style={{ color: COLORS.textDim, fontSize: 9, marginTop: 2, marginBottom: 8, ...s }}>Anota algo rÃ¡pido y mÃ¡rcalo cuando estÃ© hecho.</div>
         {showTodoLabels && (
           <div style={{ marginBottom: 7, padding: 7, borderRadius: 8, background: COLORS.bg, border: `1px solid ${COLORS.border}` }}>
             <div style={{ display: 'flex', gap: 5 }}>
@@ -12994,16 +12994,16 @@ const AgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAgendaTo
           </div>
         )}
         {agendaTodoLabels.length > 0 && <select value={todoLabel} onChange={e => setTodoLabel(e.target.value)} style={{ width: '100%', marginBottom: 6, padding: '5px 6px', borderRadius: 6, border: `1px solid ${COLORS.border}`, background: COLORS.bg, color: todoLabel ? getTodoLabelColor(todoLabel) : COLORS.textDim, fontSize: 9, ...s, outline: 'none' }}>
-          <option value="">Añadir sin etiqueta</option>
+          <option value="">AÃ±adir sin etiqueta</option>
           {agendaTodoLabels.map(label => <option key={label} value={label}>{label}</option>)}
         </select>}
         <div className="agenda-todo-add-row" style={{ display: 'flex', gap: 5, marginBottom: 6 }}>
           <input value={todoText} onChange={e => setTodoText(e.target.value)} onKeyDown={e => { if (e.key === 'Enter') addTodo(); }} placeholder="Ej: compras supermercado"
             style={{ flex: 1, minWidth: 0, padding: '7px 8px', borderRadius: 7, border: `1px solid ${COLORS.border}`, background: COLORS.bg, color: COLORS.text, fontSize: 10, ...s, outline: 'none' }} />
-          <button onClick={addTodo} style={{ ...btnBase, width: 30, color: COLORS.primary, background: `${COLORS.primary}14` }} title="Añadir pendiente"><Plus size={13} /></button>
+          <button onClick={addTodo} style={{ ...btnBase, width: 30, color: COLORS.primary, background: `${COLORS.primary}14` }} title="AÃ±adir pendiente"><Plus size={13} /></button>
         </div>
         {todoItems.length === 0 ? (
-          <div style={{ padding: '7px 0 2px', color: COLORS.textDim, fontSize: 10, lineHeight: 1.45, ...s }}>Todavía no hay pendientes.</div>
+          <div style={{ padding: '7px 0 2px', color: COLORS.textDim, fontSize: 10, lineHeight: 1.45, ...s }}>TodavÃ­a no hay pendientes.</div>
         ) : todoGroups.map(([label, groupTodos]) => {
           const labelColor = label ? getTodoLabelColor(label) : COLORS.textDim;
           return (
@@ -13051,7 +13051,7 @@ const AgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAgendaTo
         {[
           { id: 'todos', label: 'To-do', icon: <Check size={11} /> },
           { id: 'calendar', label: 'Mes', icon: <Calendar size={11} /> },
-          { id: 'upcoming', label: 'Próximo', icon: <List size={11} /> }
+          { id: 'upcoming', label: 'PrÃ³ximo', icon: <List size={11} /> }
         ].map(item => (
           <button key={item.id} onClick={() => setSidePanel(item.id)} style={{ ...btnBase, flex: 1, padding: '6px 3px', background: sidePanel === item.id ? COLORS.card : 'transparent', color: sidePanel === item.id ? COLORS.text : COLORS.textDim, fontSize: 9 }}>{item.icon}{item.label}</button>
         ))}
@@ -13093,7 +13093,7 @@ const AgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAgendaTo
             </div>
           </div>
           <div style={{ color: COLORS.textDim, fontSize: 12, lineHeight: 1.6, ...s, margin: '14px 0 18px' }}>
-            “{deleteChoiceTask.text}” pertenece a una repetición. Elige si quieres borrar solo esta aparición o cortar la serie desde aquí.
+            â€œ{deleteChoiceTask.text}â€ pertenece a una repeticiÃ³n. Elige si quieres borrar solo esta apariciÃ³n o cortar la serie desde aquÃ­.
           </div>
           <div style={{ display: 'grid', gap: 8 }}>
             <button onClick={() => { deleteSingleOccurrence(deleteChoiceTask); close(); closeTaskModal(); }} style={{ ...btnBase, width: '100%', padding: '11px 12px', background: COLORS.bg, border: `1px solid ${COLORS.border}`, color: COLORS.text, fontWeight: 700, justifyContent: 'flex-start' }}>
@@ -13120,10 +13120,10 @@ const AgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAgendaTo
         <div onClick={e => e.stopPropagation()} style={modalStyle}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24, flexShrink: 0 }}>
             <div style={{ fontSize: 18, color: COLORS.text, fontFamily: "'DM Serif Display', serif" }}>{t.id ? 'Editar tarea' : 'Nueva tarea'}</div>
-            <button onClick={closeTaskModal} style={{ width: 28, height: 28, borderRadius: 8, border: 'none', background: COLORS.bg, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: COLORS.textDim, fontSize: 14 }}>✕</button>
+            <button onClick={closeTaskModal} style={{ width: 28, height: 28, borderRadius: 8, border: 'none', background: COLORS.bg, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: COLORS.textDim, fontSize: 14 }}>âœ•</button>
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 16, flex: 1, minHeight: 0, overflowY: 'auto', paddingRight: 2 }}>
-            <input value={t.text || ''} onChange={e => setEditModalTask(p => ({ ...p, text: e.target.value }))} placeholder="Título de la tarea"
+            <input value={t.text || ''} onChange={e => setEditModalTask(p => ({ ...p, text: e.target.value }))} placeholder="TÃ­tulo de la tarea"
               style={{ width: '100%', height: 44, flexShrink: 0, boxSizing: 'border-box', padding: '0 14px', borderRadius: 10, border: `1px solid ${COLORS.border}`, background: COLORS.bg, color: COLORS.text, fontSize: 14, fontWeight: 500, ...s, outline: 'none' }} />
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
               <div><div style={{ fontSize: 9, color: COLORS.textDim, marginBottom: 3, ...s }}>Fecha</div>
@@ -13209,7 +13209,7 @@ const AgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAgendaTo
                       background: (t.priority || 3) === p ? PRIORITY_COLORS[p] : `${PRIORITY_COLORS[p]}15`,
                       color: (t.priority || 3) === p ? '#fff' : PRIORITY_COLORS[p], fontWeight: 700, fontSize: 9, ...s }}>{PRIORITY_LABELS[p]}</button>
                 ))}</div></div>
-              <div><div style={{ fontSize: 9, color: COLORS.textDim, marginBottom: 3, ...s }}>Categoría</div>
+              <div><div style={{ fontSize: 9, color: COLORS.textDim, marginBottom: 3, ...s }}>CategorÃ­a</div>
                 <select value={t.category || 'Personal'} onChange={e => setEditModalTask(p => ({ ...p, category: e.target.value }))}
                   style={{ width: '100%', padding: '6px 8px', borderRadius: 6, border: `1px solid ${COLORS.border}`, background: COLORS.bg, color: COLORS.text, fontSize: 10, ...s, outline: 'none' }}>
                   {AGENDA_CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
@@ -13240,7 +13240,7 @@ const AgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAgendaTo
               </div>
             )}
             <div style={{ padding: 12, borderRadius: 12, border: `1px solid ${COLORS.border}`, background: `${COLORS.primary}08` }}>
-              <div style={{ fontSize: 10, color: COLORS.text, fontWeight: 700, marginBottom: 8, ...s }}>Repetición de alarma</div>
+              <div style={{ fontSize: 10, color: COLORS.text, fontWeight: 700, marginBottom: 8, ...s }}>RepeticiÃ³n de alarma</div>
               <select value={t.intervalRepeat || 'none'} onChange={e => {
                 const value = e.target.value;
                 if (value !== 'none') requestHabitFlowNotifications();
@@ -13263,7 +13263,7 @@ const AgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAgendaTo
               </select>
               {(t.intervalRepeat || 'none') === 'customHours' && (
                 <div style={{ marginTop: 8 }}>
-                  <div style={{ fontSize: 9, color: COLORS.textDim, marginBottom: 3, ...s }}>Repetir cada cuántas horas</div>
+                  <div style={{ fontSize: 9, color: COLORS.textDim, marginBottom: 3, ...s }}>Repetir cada cuÃ¡ntas horas</div>
                   <input type="number" min="0.25" step="0.25" value={t.intervalEvery || 1} onChange={e => setEditModalTask(p => ({ ...p, intervalEvery: e.target.value }))}
                     style={{ width: '100%', padding: '7px 9px', borderRadius: 8, border: `1px solid ${COLORS.border}`, background: COLORS.bg, color: COLORS.text, fontSize: 10, ...s, outline: 'none' }} />
                 </div>
@@ -13271,7 +13271,7 @@ const AgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAgendaTo
               {(t.intervalRepeat || 'none') !== 'none' && (
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginTop: 8 }}>
                   <div>
-                    <div style={{ fontSize: 9, color: COLORS.textDim, marginBottom: 3, ...s }}>Finaliza el día</div>
+                    <div style={{ fontSize: 9, color: COLORS.textDim, marginBottom: 3, ...s }}>Finaliza el dÃ­a</div>
                     <input type="date" value={t.repeatUntilDate || t.dueDate || dateStr} min={t.dueDate || dateStr} onClick={e => openNativeDatePicker(e.currentTarget)} onFocus={e => openNativeDatePicker(e.currentTarget)} onChange={e => setEditModalTask(p => ({ ...p, repeatUntilDate: e.target.value }))}
                       style={{ width: '100%', padding: '7px 9px', borderRadius: 8, border: `1px solid ${COLORS.border}`, background: COLORS.bg, color: COLORS.text, fontSize: 10, ...s, outline: 'none', cursor: 'pointer' }} />
                   </div>
@@ -13284,13 +13284,13 @@ const AgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAgendaTo
               )}
               {(t.intervalRepeat || 'none') !== 'none' && (
                 <div style={{ marginTop: 8, fontSize: 9, color: COLORS.textDim, lineHeight: 1.5, ...s }}>
-                  Ejemplo: una tarea a las {t.dueTime || '--:--'} con “cada hora” sonará cada hora hasta {t.repeatUntilDate || t.dueDate || dateStr} {t.repeatUntilTime || '23:59'}.
+                  Ejemplo: una tarea a las {t.dueTime || '--:--'} con â€œcada horaâ€ sonarÃ¡ cada hora hasta {t.repeatUntilDate || t.dueDate || dateStr} {t.repeatUntilTime || '23:59'}.
                 </div>
               )}
             </div>
             {t.recurrence === 'custom' && (
               <div>
-                <div style={{ fontSize: 9, color: COLORS.textDim, marginBottom: 4, ...s }}>Repetir estos días</div>
+                <div style={{ fontSize: 9, color: COLORS.textDim, marginBottom: 4, ...s }}>Repetir estos dÃ­as</div>
                 <div style={{ display: 'flex', gap: 4 }}>
                   {DAY_NAMES.map((day, idx) => {
                     const active = (t.recurrenceDays || []).includes(idx);
@@ -13344,7 +13344,7 @@ const AgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAgendaTo
 
       <div className="agenda-view-tabs" style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 14, borderBottom: `1px solid ${COLORS.border}`, paddingBottom: 9 }}>
         {[
-          { id: 'day', label: 'Mi día' },
+          { id: 'day', label: 'Mi dÃ­a' },
           { id: 'week', label: 'Semana' },
           { id: 'month', label: 'Mes' },
           { id: 'list', label: 'Todas' }
@@ -13362,7 +13362,7 @@ const AgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAgendaTo
           <input value={searchQuery} onChange={e => setSearchQuery(e.target.value)} placeholder="Buscar tareas..." style={{ width: 145, padding: '5px 2px', background: 'transparent', color: COLORS.text, border: 'none', outline: 'none', fontSize: 10, ...s }} />
           <div style={{ width: 1, height: 16, background: COLORS.border }} />
           {[0, 1, 2, 3, 4].map(priority => <button key={priority} onClick={() => setFilterPrio(priority)} style={{ ...btnBase, padding: '4px 7px', borderRadius: 6, color: filterPrio === priority ? '#fff' : COLORS.textDim, background: filterPrio === priority ? (priority ? PRIORITY_COLORS[priority] : COLORS.primary) : 'transparent', fontSize: 9 }}>{priority ? PRIORITY_LABELS[priority] : 'Todas'}</button>)}
-          <select value={filterCat} onChange={e => setFilterCat(e.target.value)} style={{ padding: '4px 7px', borderRadius: 6, border: `1px solid ${COLORS.border}`, background: COLORS.bg, color: COLORS.text, fontSize: 9, ...s }}><option value="">Categorías</option>{AGENDA_CATEGORIES.map(category => <option key={category} value={category}>{category}</option>)}</select>
+          <select value={filterCat} onChange={e => setFilterCat(e.target.value)} style={{ padding: '4px 7px', borderRadius: 6, border: `1px solid ${COLORS.border}`, background: COLORS.bg, color: COLORS.text, fontSize: 9, ...s }}><option value="">CategorÃ­as</option>{AGENDA_CATEGORIES.map(category => <option key={category} value={category}>{category}</option>)}</select>
           <div style={{ flex: 1 }} />
           <button onClick={() => setHideDone(v => !v)} style={{ ...btnBase, padding: '4px 7px', color: hideDone ? COLORS.primary : COLORS.textDim, background: hideDone ? `${COLORS.primary}12` : 'transparent', fontSize: 9 }}>{hideDone ? 'Mostrar completadas' : 'Ocultar completadas'}</button>
         </div>
@@ -13395,7 +13395,7 @@ const AgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAgendaTo
       {showPlanner && (
         <div onClick={() => setShowPlanner(false)} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.65)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20, backdropFilter: 'blur(4px)' }}>
           <div onClick={e => e.stopPropagation()} style={{ background: COLORS.card, borderRadius: 20, border: `1px solid ${COLORS.border}`, padding: 28, maxWidth: 520, width: '100%', maxHeight: '85vh', overflow: 'auto', boxShadow: '0 24px 64px rgba(0,0,0,0.5)' }}>
-            <div style={{ fontSize: 18, color: COLORS.text, fontFamily: "'DM Serif Display', serif", marginBottom: 20 }}>{'\u{1F9E0}'} Planificar día</div>
+            <div style={{ fontSize: 18, color: COLORS.text, fontFamily: "'DM Serif Display', serif", marginBottom: 20 }}>{'\u{1F9E0}'} Planificar dÃ­a</div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
               <div style={{ padding: '12px 16px', borderRadius: 10, background: `${COLORS.primary}08`, border: `1px solid ${COLORS.primary}20` }}>
                 <div style={{ fontSize: 10, color: COLORS.textDim, ...s, marginBottom: 2 }}>Tiempo libre disponible</div>
@@ -13421,7 +13421,7 @@ const AgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAgendaTo
                     <div key={t.id} style={{ padding: '6px 10px', borderRadius: 6, marginBottom: 2, background: `${COLORS.alert}06`, display: 'flex', alignItems: 'center', gap: 5 }}>
                       <span style={{ fontSize: 10, color: COLORS.text, ...s, flex: 1 }}>{t.text}</span>
                       <button onClick={() => { onMoveTaskToDate(t.id, t.dueDate, todayStr); }} style={{ ...btnBase, padding: '2px 6px', background: `${COLORS.primary}10`, color: COLORS.primary, fontSize: 8 }}>Mover a hoy</button>
-                      <button onClick={() => toggleTask(t.id)} style={{ ...btnBase, padding: '2px 6px', background: `${COLORS.success}10`, color: COLORS.success, fontSize: 8 }}>✓</button>
+                      <button onClick={() => toggleTask(t.id)} style={{ ...btnBase, padding: '2px 6px', background: `${COLORS.success}10`, color: COLORS.success, fontSize: 8 }}>âœ“</button>
                     </div>
                   ))}
                 </div>
@@ -13429,9 +13429,9 @@ const AgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAgendaTo
               <div style={{ marginTop: 4, fontSize: 10, color: COLORS.textDim, ...s, padding: '8px 12px', borderRadius: 8, background: COLORS.bg, border: `1px solid ${COLORS.border}` }}>
                 <span style={{ color: COLORS.primary, fontWeight: 600 }}>{'\u{1F4A1}'} Sugerencia:</span>{' '}
                 {freeMins > 120 ? 'Tienes tiempo libre amplio. Ideal para programar tus tareas P1 en bloques de enfoque.' :
-                 untimedTasks.length > 0 ? `Tienes ${untimedTasks.length} tareas sin hora. Asígnales un horario para mejorar tu productividad.` :
-                 overdueCount > 0 ? `Tienes ${overdueCount} tareas vencidas. Reprogramarlas te ayudará a cerrar el día.` :
-                 'Tu día está bien organizado. Buen trabajo!'}
+                 untimedTasks.length > 0 ? `Tienes ${untimedTasks.length} tareas sin hora. AsÃ­gnales un horario para mejorar tu productividad.` :
+                 overdueCount > 0 ? `Tienes ${overdueCount} tareas vencidas. Reprogramarlas te ayudarÃ¡ a cerrar el dÃ­a.` :
+                 'Tu dÃ­a estÃ¡ bien organizado. Buen trabajo!'}
               </div>
             </div>
           </div>
@@ -13570,9 +13570,9 @@ const HabitFlowApp = () => {
               if (sentMap[key]) return;
               sentMap[key] = now.getTime();
               changed = true;
-              const category = task.category ? ` · ${task.category}` : '';
-              showHabitFlowNotification('HabitFlow • Agenda', {
-                body: `${task.text}\n${reminder.mins > 0 ? `${reminder.label} · ` : 'Es hora · '}${slot.time}${category}`,
+              const category = task.category ? ` Â· ${task.category}` : '';
+              showHabitFlowNotification('HabitFlow â€¢ Agenda', {
+                body: `${task.text}\n${reminder.mins > 0 ? `${reminder.label} Â· ` : 'Es hora Â· '}${slot.time}${category}`,
                 tag: key,
                 data: { view: 'agenda', taskId: task.id, date: slot.date },
                 renotify: true
@@ -13590,9 +13590,9 @@ const HabitFlowApp = () => {
           if (sentMap[key]) return;
           sentMap[key] = now.getTime();
           changed = true;
-          const when = reminder.mins > 0 ? `${reminder.label} · ${task.dueTime}` : `Es hora · ${task.dueTime}`;
-          const category = task.category ? ` · ${task.category}` : '';
-          showHabitFlowNotification('HabitFlow • Agenda', {
+          const when = reminder.mins > 0 ? `${reminder.label} Â· ${task.dueTime}` : `Es hora Â· ${task.dueTime}`;
+          const category = task.category ? ` Â· ${task.category}` : '';
+          showHabitFlowNotification('HabitFlow â€¢ Agenda', {
             body: `${task.text}\n${when}${category}`,
             tag: key,
             data: { view: 'agenda', taskId: task.id, date: dateStr },
@@ -13646,7 +13646,7 @@ const HabitFlowApp = () => {
         if (sentMap[key]) return;
         sentMap[key] = now.getTime();
         changed = true;
-        showHabitFlowNotification('HabitFlow • Hábito', {
+        showHabitFlowNotification('HabitFlow â€¢ HÃ¡bito', {
           body: String(reminder.message || '').trim() || `Es hora de ${habit.name}.`,
           tag: key,
           data: { view: 'habits', habitId: habit.id, date: dateStr },
@@ -13694,8 +13694,8 @@ const HabitFlowApp = () => {
         if (sentMap[key]) return;
         sentMap[key] = now.getTime();
         changed = true;
-        showHabitFlowNotification('HabitFlow • Salud', {
-          body: `${dose.medication.name} · ${dose.medication.dose}\nEs hora · ${dose.time}${dose.medication.instructions ? ` · ${dose.medication.instructions}` : ''}`,
+        showHabitFlowNotification('HabitFlow â€¢ Salud', {
+          body: `${dose.medication.name} Â· ${dose.medication.dose}\nEs hora Â· ${dose.time}${dose.medication.instructions ? ` Â· ${dose.medication.instructions}` : ''}`,
           tag: key,
           data: { view: 'health', medicationId: dose.medication.id, date: dateStr },
           renotify: true,
@@ -14062,7 +14062,7 @@ const HabitFlowApp = () => {
   }, [data]);
 
   const onGenerateRandomData = useCallback(() => {
-    if (!window.confirm('Esto reemplazará tus datos actuales con datos aleatorios de demostración. ¿Quieres continuar?')) return;
+    if (!window.confirm('Esto reemplazarÃ¡ tus datos actuales con datos aleatorios de demostraciÃ³n. Â¿Quieres continuar?')) return;
     setData(prev => {
       const uid = () => `${Date.now()}_${Math.random().toString(36).slice(2, 7)}`;
       const pick = (arr) => arr[Math.floor(Math.random() * arr.length)];
@@ -14352,14 +14352,14 @@ const HabitFlowApp = () => {
 
   const navItems = [
     { id: 'dashboard', label: 'Panel', icon: <Activity size={20} /> },
-    { id: 'habits', label: 'Hábitos', icon: <Target size={20} /> },
+    { id: 'habits', label: 'HÃ¡bitos', icon: <Target size={20} /> },
     { id: 'pomodoro', label: 'Pomodoro', icon: <Clock size={20} /> },
     { id: 'workout', label: 'Entreno', icon: <Dumbbell size={20} /> },
     { id: 'agenda', label: 'Agenda', icon: <List size={20} /> },
     { id: 'dreams', label: 'Metas', icon: <Sparkles size={20} /> },
     { id: 'finance', label: 'Finanzas', icon: <CreditCard size={20} /> },
     { id: 'health', label: 'Salud', icon: <Heart size={20} /> },
-    { id: 'settings', label:  'Configuración', icon: <Settings size={20} /> }
+    { id: 'settings', label:  'ConfiguraciÃ³n', icon: <Settings size={20} /> }
   ];
 
   const renderView = () => {
@@ -14385,7 +14385,7 @@ const HabitFlowApp = () => {
       {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
       <Modal isOpen={showUpdateNotes} onClose={closeUpdateNotes} title="Novedades de HabitFlow" width={620}>
         <div style={{ color: COLORS.textDim, fontSize: 13, lineHeight: 1.65, marginBottom: 18 }}>
-          Actualizamos la experiencia para que la app se sienta más ordenada, más premium y más fácil de usar. Esto se muestra una sola vez por dispositivo.
+          Actualizamos la experiencia para que la app se sienta mÃ¡s ordenada, mÃ¡s premium y mÃ¡s fÃ¡cil de usar. Esto se muestra una sola vez por dispositivo.
         </div>
         <div style={{ display: 'grid', gap: 10, marginBottom: 20 }}>
           {APP_UPDATE_NOTES.map((note, index) => (
@@ -14461,10 +14461,10 @@ const HabitFlowApp = () => {
         </nav>
 
         <div className="user-info" style={{ padding: sidebarOpen ? '16px 20px' : '14px 8px', borderTop: `1px solid ${COLORS.border}`, fontSize: 11, color: COLORS.textDim }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: sidebarOpen ? 'flex-start' : 'center', gap: sidebarOpen ? 8 : 4, margin: sidebarOpen ? 0 : '0 auto', minHeight: 24, borderRadius: 9, background: sidebarOpen ? 'transparent' : `${COLORS.alert}10`, border: sidebarOpen ? 'none' : `1px solid ${COLORS.alert}24`, color: sidebarOpen ? COLORS.textDim : COLORS.text, fontWeight: sidebarOpen ? 400 : 700 }} title={`Racha global: ${getGlobalCurrentStreak(data.habits, data.records)} días`}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: sidebarOpen ? 'flex-start' : 'center', gap: sidebarOpen ? 8 : 4, margin: sidebarOpen ? 0 : '0 auto', minHeight: 24, borderRadius: 9, background: sidebarOpen ? 'transparent' : `${COLORS.alert}10`, border: sidebarOpen ? 'none' : `1px solid ${COLORS.alert}24`, color: sidebarOpen ? COLORS.textDim : COLORS.text, fontWeight: sidebarOpen ? 400 : 700 }} title={`Racha global: ${getGlobalCurrentStreak(data.habits, data.records)} dÃ­as`}>
             <Flame size={sidebarOpen ? 14 : 13} color={COLORS.alert} />
             {!sidebarOpen && <span className="streak-compact-count">{getGlobalCurrentStreak(data.habits, data.records)}</span>}
-            Racha global: {getGlobalCurrentStreak(data.habits, data.records)} días
+            Racha global: {getGlobalCurrentStreak(data.habits, data.records)} dÃ­as
           </div>
         </div>
       </aside>
@@ -14547,7 +14547,7 @@ const HabitFlowApp = () => {
           </button>
         ))}
         <div style={{ position: 'relative', flex: 1 }}>
-          <button aria-label="Más secciones" title="Más secciones" onClick={() => setShowMoreNav(s => !s)} style={{
+          <button aria-label="MÃ¡s secciones" title="MÃ¡s secciones" onClick={() => setShowMoreNav(s => !s)} style={{
             display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2,
             padding: '8px 12px', borderRadius: 8, border: 'none', width: '100%',
             background: showMoreNav ? `${theme.primary}15` : 'transparent',
@@ -14556,7 +14556,7 @@ const HabitFlowApp = () => {
             transition: 'all 0.2s'
           }}>
             <Menu size={20} />
-            <span>Más</span>
+            <span>MÃ¡s</span>
           </button>
           {showMoreNav && (
             <div className="mobile-more-popover" style={{
@@ -14604,5 +14604,5 @@ const App = () => {
   );
 };
 
-export default App;
+window.__App = App;
 
