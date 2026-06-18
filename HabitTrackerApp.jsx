@@ -38,13 +38,13 @@ const COLORS = { ...BASE_COLORS };
 
 const APP_UPDATE_VERSION = '2026-06-04-pro-ui-audit-v4';
 const APP_UPDATE_NOTES = [
-  'Pomodoro ya no falla al terminar una sesiÃ³n y ahora avisa al finalizar enfoque, descanso y descanso largo.',
+  'Pomodoro ya no falla al terminar una sesión y ahora avisa al finalizar enfoque, descanso y descanso largo.',
   'Finanzas ahora usa un switch global USD/COP para mantener la vista limpia.',
   'Finanzas acepta decimales en importes, presupuestos, cuentas y metas.',
-  'Agenda elimina descripciÃ³n y checklist en nueva tarea para crear eventos mÃ¡s rÃ¡pido.',
-  'Panel cambia la grÃ¡fica de Ãºltimos 7 dÃ­as por una curva suave con frase diaria.',
-  'HÃ¡bitos recibe una vista semanal mÃ¡s compacta al estilo tracker profesional.',
-  'Los controles de nube y datos aleatorios pasan a ConfiguraciÃ³n.'
+  'Agenda elimina descripción y checklist en nueva tarea para crear eventos más rápido.',
+  'Panel cambia la gráfica de Últimos 7 días por una curva suave con frase diaria.',
+  'Hábitos recibe una vista semanal más compacta al estilo tracker profesional.',
+  'Los controles de nube y datos aleatorios pasan a Configuración.'
 ];
 
 const CATEGORIES = [
@@ -135,14 +135,14 @@ const HABIT_ICONS = [
   { id: 'target', label: 'Objetivo', icon: Target },
   { id: 'running', label: 'Correr', icon: PersonStanding },
   { id: 'dumbbell', label: 'Ejercicio', icon: Dumbbell },
-  { id: 'meditation', label: 'MeditaciÃ³n', icon: Flower2 },
+  { id: 'meditation', label: 'Meditación', icon: Flower2 },
   { id: 'leaf', label: 'Naturaleza', icon: Leaf },
-  { id: 'apple', label: 'AlimentaciÃ³n', icon: Apple },
+  { id: 'apple', label: 'Alimentación', icon: Apple },
   { id: 'coffee', label: 'Rutina', icon: Coffee },
-  { id: 'smile', label: 'Ãnimo', icon: Smile },
+  { id: 'smile', label: 'Ánimo', icon: Smile },
   { id: 'image', label: 'Creatividad visual', icon: ImageIcon },
   { id: 'moon', label: 'Descanso', icon: Moon },
-  { id: 'sun', label: 'MaÃ±ana', icon: Sun },
+  { id: 'sun', label: 'Mañana', icon: Sun },
   { id: 'rocket', label: 'Productividad', icon: Rocket },
   { id: 'laptop', label: 'Trabajo digital', icon: Laptop },
   { id: 'file-text', label: 'Escritura', icon: FileText },
@@ -150,11 +150,11 @@ const HABIT_ICONS = [
   { id: 'calendar', label: 'Calendario', icon: Calendar },
   { id: 'alarm', label: 'Alarma', icon: AlarmClock },
   { id: 'lightbulb', label: 'Idea', icon: Lightbulb },
-  { id: 'music', label: 'MÃºsica', icon: Music },
+  { id: 'music', label: 'Música', icon: Music },
   { id: 'palette', label: 'Arte', icon: Palette },
-  { id: 'camera', label: 'FotografÃ­a', icon: Camera },
+  { id: 'camera', label: 'Fotografía', icon: Camera },
   { id: 'flame', label: 'Racha', icon: Flame },
-  { id: 'zap', label: 'EnergÃ­a', icon: Zap },
+  { id: 'zap', label: 'Energía', icon: Zap },
   { id: 'trophy', label: 'Logro', icon: Trophy },
   { id: 'medal', label: 'Disciplina', icon: Medal },
   { id: 'star', label: 'Favorito', icon: Star },
@@ -279,8 +279,8 @@ const THEME_MODES = [
     textDim: '#9a9aa0',
     border: 'rgba(239,239,239,0.11)'
   } },
-  { id: 'midnight', name: 'Dark suave', desc: 'Oscuro con tarjetas visibles y contraste cÃ³modo.', colors: BASE_COLORS },
-  { id: 'pureDark', name: 'Dark puro', desc: 'Negro profundo, menos brillo y bordes mÃ¡s finos.', colors: {
+  { id: 'midnight', name: 'Dark suave', desc: 'Oscuro con tarjetas visibles y contraste cómodo.', colors: BASE_COLORS },
+  { id: 'pureDark', name: 'Dark puro', desc: 'Negro profundo, menos brillo y bordes más finos.', colors: {
     ...BASE_COLORS,
     bg: '#000000',
     surface: '#060607',
@@ -343,56 +343,56 @@ const getThemeVisualTokens = (themeModeId, colors) => {
   const pure = themeModeId === 'pureDark';
   return {
     '--hf-canvas': colors.bg,
-    '--hf-canvas-raised': pure ? '#040405' : colors.surface,
-    '--hf-surface': pure ? 'rgba(13,13,15,0.88)' : 'rgba(18,18,26,0.88)',
-    '--hf-surface-strong': pure ? '#101013' : colors.card,
-    '--hf-surface-soft': pure ? '#08080a' : colors.surface,
-    '--hf-card-border': pure ? 'rgba(255,255,255,0.105)' : colors.border,
+    '--hf-canvas-raised': pure  ? '#040405' : colors.surface,
+    '--hf-surface': pure  ? 'rgba(13,13,15,0.88)' : 'rgba(18,18,26,0.88)',
+    '--hf-surface-strong': pure  ? '#101013' : colors.card,
+    '--hf-surface-soft': pure  ? '#08080a' : colors.surface,
+    '--hf-card-border': pure  ? 'rgba(255,255,255,0.105)' : colors.border,
     '--hf-card-border-strong': 'rgba(255,255,255,0.17)',
     '--hf-card-highlight': 'rgba(255,255,255,0.055)',
     '--hf-text': colors.text,
     '--hf-muted': colors.textDim,
-    '--hf-subtle': pure ? '#767680' : colors.textDim,
+    '--hf-subtle': pure  ? '#767680' : colors.textDim,
     '--hf-glass': pure
-      ? 'linear-gradient(145deg, rgba(20,20,23,0.92), rgba(7,7,9,0.96))'
+       ? 'linear-gradient(145deg, rgba(20,20,23,0.92), rgba(7,7,9,0.96))'
       : 'linear-gradient(145deg, rgba(30,30,43,0.90), rgba(13,13,20,0.94))',
     '--hf-glass-quiet': pure
-      ? 'linear-gradient(145deg, rgba(16,16,19,0.88), rgba(6,6,8,0.94))'
+       ? 'linear-gradient(145deg, rgba(16,16,19,0.88), rgba(6,6,8,0.94))'
       : 'linear-gradient(145deg, rgba(25,25,36,0.86), rgba(11,11,17,0.92))',
     '--hf-shadow': pure
-      ? '0 24px 64px rgba(0,0,0,0.52), inset 0 1px 0 rgba(255,255,255,0.052)'
+       ? '0 24px 64px rgba(0,0,0,0.52), inset 0 1px 0 rgba(255,255,255,0.052)'
       : '0 22px 58px rgba(0,0,0,0.34), inset 0 1px 0 rgba(255,255,255,0.045)',
     '--hf-shadow-soft': pure
-      ? '0 12px 34px rgba(0,0,0,0.40), inset 0 1px 0 rgba(255,255,255,0.04)'
+       ? '0 12px 34px rgba(0,0,0,0.40), inset 0 1px 0 rgba(255,255,255,0.04)'
       : '0 12px 32px rgba(0,0,0,0.24), inset 0 1px 0 rgba(255,255,255,0.04)',
     '--hf-shadow-raised': '0 28px 76px rgba(0,0,0,0.58), inset 0 1px 0 rgba(255,255,255,0.065)',
-    '--hf-input-bg': pure ? 'rgba(255,255,255,0.045)' : 'rgba(255,255,255,0.055)',
-    '--hf-input-hover': pure ? 'rgba(255,255,255,0.065)' : 'rgba(255,255,255,0.075)',
+    '--hf-input-bg': pure  ? 'rgba(255,255,255,0.045)' : 'rgba(255,255,255,0.055)',
+    '--hf-input-hover': pure  ? 'rgba(255,255,255,0.065)' : 'rgba(255,255,255,0.075)',
     '--hf-hover': 'rgba(255,255,255,0.055)',
     '--hf-pressed': 'rgba(225,29,72,0.16)',
     '--hf-overlay': 'rgba(0,0,0,0.72)',
     '--hf-grid': 'rgba(255,255,255,0.075)',
     '--hf-track': 'rgba(255,255,255,0.08)',
-    '--hf-header': pure ? 'rgba(3,3,4,0.86)' : 'rgba(8,8,12,0.88)',
-    '--hf-nav': pure ? 'rgba(6,6,8,0.94)' : 'rgba(12,12,18,0.94)',
+    '--hf-header': pure  ? 'rgba(3,3,4,0.86)' : 'rgba(8,8,12,0.88)',
+    '--hf-nav': pure  ? 'rgba(6,6,8,0.94)' : 'rgba(12,12,18,0.94)',
     '--hf-glow': 'rgba(225,29,72,0.18)',
     '--hf-heading-start': '#ffffff',
-    '--hf-heading-end': pure ? '#c9c9d0' : colors.text
+    '--hf-heading-end': pure  ? '#c9c9d0' : colors.text
   };
 };
 
 const PREDEFINED_CHALLENGES = [
-  { id: 'challenge1', name: 'HidrataciÃ³n 30 dÃ­as', icon: '\u{1F4A7}', desc: 'Tomar 2L de agua diario por 30 dÃ­as', duration: 30, difficulty: 'FÃ¡cil', diffColor: COLORS.success, target: { name: 'Tomar 2L de agua', category: 'salud', icon: '\u{1F4A7}', frequency: 'Diario', targetStreak: 30 } },
-  { id: 'challenge2', name: 'DesafÃ­o de Ejercicio', icon: '\u{1F4AA}', desc: 'Ejercicio 20 min por 21 dÃ­as consecutivos', duration: 21, difficulty: 'Medio', diffColor: '#ffd93d', target: { name: 'Ejercicio 20 min', category: 'fitness', icon: '\u{1F4AA}', frequency: 'Diario', targetStreak: 21 } },
-  { id: 'challenge3', name: 'Lector Intensivo', icon: '\u{1F4DA}', desc: 'Leer 30 min por 14 dÃ­as seguidos', duration: 14, difficulty: 'Medio', diffColor: '#ffd93d', target: { name: 'Leer 30 min', category: 'mente', icon: '\u{1F4DA}', frequency: 'Diario', targetStreak: 14 } },
-  { id: 'challenge4', name: 'MeditaciÃ³n Profunda', icon: '\u{1F9D8}', desc: 'Meditar 15 min por 21 dÃ­as', duration: 21, difficulty: 'Medio', diffColor: '#ffd93d', target: { name: 'Meditar 15 min', category: 'mente', icon: '\u{1F9D8}', frequency: 'Diario', targetStreak: 21 } },
-  { id: 'challenge5', name: '100 dÃ­as de CÃ³digo', icon: '\u{1F4BB}', desc: 'Programar/aprender 1 hora por 100 dÃ­as', duration: 100, difficulty: 'DifÃ­cil', diffColor: COLORS.alert, target: { name: 'Programar 1 hora', category: 'productividad', icon: '\u{1F4BB}', frequency: 'Diario', targetStreak: 100 } },
-  { id: 'challenge6', name: 'HÃ¡bito Perfecto', icon: '\u{1F3C6}', desc: 'Completar TODOS los hÃ¡bitos del dÃ­a por 7 dÃ­as seguidos', duration: 7, difficulty: 'DifÃ­cil', diffColor: COLORS.alert, target: null }
+  { id: 'challenge1', name: 'Hidratación 30 días', icon: '\u{1F4A7}', desc: 'Tomar 2L de agua diario por 30 días', duration: 30, difficulty: 'Fácil', diffColor: COLORS.success, target: { name: 'Tomar 2L de agua', category: 'salud', icon: '\u{1F4A7}', frequency: 'Diario', targetStreak: 30 } },
+  { id: 'challenge2', name: 'Desafío de Ejercicio', icon: '\u{1F4AA}', desc: 'Ejercicio 20 min por 21 días consecutivos', duration: 21, difficulty: 'Medio', diffColor: '#ffd93d', target: { name: 'Ejercicio 20 min', category: 'fitness', icon: '\u{1F4AA}', frequency: 'Diario', targetStreak: 21 } },
+  { id: 'challenge3', name: 'Lector Intensivo', icon: '\u{1F4DA}', desc: 'Leer 30 min por 14 días seguidos', duration: 14, difficulty: 'Medio', diffColor: '#ffd93d', target: { name: 'Leer 30 min', category: 'mente', icon: '\u{1F4DA}', frequency: 'Diario', targetStreak: 14 } },
+  { id: 'challenge4', name: 'Meditación Profunda', icon: '\u{1F9D8}', desc: 'Meditar 15 min por 21 días', duration: 21, difficulty: 'Medio', diffColor: '#ffd93d', target: { name: 'Meditar 15 min', category: 'mente', icon: '\u{1F9D8}', frequency: 'Diario', targetStreak: 21 } },
+  { id: 'challenge5', name: '100 días de Código', icon: '\u{1F4BB}', desc: 'Programar/aprender 1 hora por 100 días', duration: 100, difficulty: 'Difícil', diffColor: COLORS.alert, target: { name: 'Programar 1 hora', category: 'productividad', icon: '\u{1F4BB}', frequency: 'Diario', targetStreak: 100 } },
+  { id: 'challenge6', name: 'Hábito Perfecto', icon: '\u{1F3C6}', desc: 'Completar TODOS los hábitos del día por 7 días seguidos', duration: 7, difficulty: 'Difícil', diffColor: COLORS.alert, target: null }
 ];
 
 const MUSCLE_COLORS = {
   'Pecho': '#ff6b6b', 'Espalda': '#efefef', 'Piernas': '#00ff9d',
-  'Hombros': '#ffd93d', 'BÃ­ceps': '#e11d48', 'TrÃ­ceps': '#e11d48',
+  'Hombros': '#ffd93d', 'Bíceps': '#e11d48', 'Tríceps': '#e11d48',
   'Abdomen': '#ff9f43', 'Cardio': '#a0a0ff', 'Full Body': '#7f1028'
 };
 
@@ -401,41 +401,41 @@ const WORKOUT_EXERCISES = [
   { id: 'ex2', name: 'Press Inclinado', mg: 'Pecho', type: 'fuerza', equip: 'Mancuernas' },
   { id: 'ex3', name: 'Aperturas', mg: 'Pecho', type: 'fuerza', equip: 'Mancuernas' },
   { id: 'ex4', name: 'Fondos en Paralelas', mg: 'Pecho', type: 'peso_corporal', equip: 'Peso Corporal' },
-  { id: 'ex5', name: 'Press en MÃ¡quina', mg: 'Pecho', type: 'fuerza', equip: 'MÃ¡quina' },
+  { id: 'ex5', name: 'Press en Máquina', mg: 'Pecho', type: 'fuerza', equip: 'Máquina' },
   { id: 'ex6', name: 'Dominadas', mg: 'Espalda', type: 'peso_corporal', equip: 'Peso Corporal' },
   { id: 'ex7', name: 'Remo con Barra', mg: 'Espalda', type: 'fuerza', equip: 'Barra' },
   { id: 'ex8', name: 'Remo con Mancuerna', mg: 'Espalda', type: 'fuerza', equip: 'Mancuernas' },
-  { id: 'ex9', name: 'JalÃ³n al Pecho', mg: 'Espalda', type: 'fuerza', equip: 'MÃ¡quina' },
+  { id: 'ex9', name: 'Jalón al Pecho', mg: 'Espalda', type: 'fuerza', equip: 'Máquina' },
   { id: 'ex10', name: 'Peso Muerto', mg: 'Espalda', type: 'fuerza', equip: 'Barra' },
   { id: 'ex11', name: 'Press Militar', mg: 'Hombros', type: 'fuerza', equip: 'Barra' },
   { id: 'ex12', name: 'Press con Mancuernas', mg: 'Hombros', type: 'fuerza', equip: 'Mancuernas' },
   { id: 'ex13', name: 'Elevaciones Laterales', mg: 'Hombros', type: 'fuerza', equip: 'Mancuernas' },
-  { id: 'ex14', name: 'PÃ¡jaros', mg: 'Hombros', type: 'fuerza', equip: 'Mancuernas' },
-  { id: 'ex15', name: 'Curl con Barra', mg: 'BÃ­ceps', type: 'fuerza', equip: 'Barra' },
-  { id: 'ex16', name: 'Curl Martillo', mg: 'BÃ­ceps', type: 'fuerza', equip: 'Mancuernas' },
-  { id: 'ex17', name: 'Curl en MÃ¡quina', mg: 'BÃ­ceps', type: 'fuerza', equip: 'MÃ¡quina' },
-  { id: 'ex18', name: 'ExtensiÃ³n Francesa', mg: 'TrÃ­ceps', type: 'fuerza', equip: 'Barra' },
-  { id: 'ex19', name: 'Press FrancÃ©s', mg: 'TrÃ­ceps', type: 'fuerza', equip: 'Mancuernas' },
-  { id: 'ex20', name: 'JalÃ³n de Polea', mg: 'TrÃ­ceps', type: 'fuerza', equip: 'MÃ¡quina' },
+  { id: 'ex14', name: 'Pájaros', mg: 'Hombros', type: 'fuerza', equip: 'Mancuernas' },
+  { id: 'ex15', name: 'Curl con Barra', mg: 'Bíceps', type: 'fuerza', equip: 'Barra' },
+  { id: 'ex16', name: 'Curl Martillo', mg: 'Bíceps', type: 'fuerza', equip: 'Mancuernas' },
+  { id: 'ex17', name: 'Curl en Máquina', mg: 'Bíceps', type: 'fuerza', equip: 'Máquina' },
+  { id: 'ex18', name: 'Extensión Francesa', mg: 'Tríceps', type: 'fuerza', equip: 'Barra' },
+  { id: 'ex19', name: 'Press Francés', mg: 'Tríceps', type: 'fuerza', equip: 'Mancuernas' },
+  { id: 'ex20', name: 'Jalón de Polea', mg: 'Tríceps', type: 'fuerza', equip: 'Máquina' },
   { id: 'ex21', name: 'Sentadilla', mg: 'Piernas', type: 'fuerza', equip: 'Barra' },
-  { id: 'ex22', name: 'Prensa de Piernas', mg: 'Piernas', type: 'fuerza', equip: 'MÃ¡quina' },
-  { id: 'ex23', name: 'ExtensiÃ³n de CuÃ¡driceps', mg: 'Piernas', type: 'fuerza', equip: 'MÃ¡quina' },
-  { id: 'ex24', name: 'Curl de Femoral', mg: 'Piernas', type: 'fuerza', equip: 'MÃ¡quina' },
+  { id: 'ex22', name: 'Prensa de Piernas', mg: 'Piernas', type: 'fuerza', equip: 'Máquina' },
+  { id: 'ex23', name: 'Extensión de Cuádriceps', mg: 'Piernas', type: 'fuerza', equip: 'Máquina' },
+  { id: 'ex24', name: 'Curl de Femoral', mg: 'Piernas', type: 'fuerza', equip: 'Máquina' },
   { id: 'ex25', name: 'Peso Muerto Rumano', mg: 'Piernas', type: 'fuerza', equip: 'Barra' },
-  { id: 'ex26', name: 'Pantorrillas de Pie', mg: 'Piernas', type: 'fuerza', equip: 'MÃ¡quina' },
+  { id: 'ex26', name: 'Pantorrillas de Pie', mg: 'Piernas', type: 'fuerza', equip: 'Máquina' },
   { id: 'ex27', name: 'Crunch', mg: 'Abdomen', type: 'peso_corporal', equip: 'Peso Corporal' },
   { id: 'ex28', name: 'Plancha', mg: 'Abdomen', type: 'peso_corporal', equip: 'Peso Corporal' },
   { id: 'ex29', name: 'Caminata en Cinta', mg: 'Cardio', type: 'cardio', equip: 'Cinta' },
-  { id: 'ex30', name: 'Bicicleta estÃ¡tica', mg: 'Cardio', type: 'cardio', equip: 'Bicicleta' }
+  { id: 'ex30', name: 'Bicicleta estática', mg: 'Cardio', type: 'cardio', equip: 'Bicicleta' }
 ];
 
 const SAMPLE_ROUTINES = [
-  { id: 'r1', name: 'Pecho y TrÃ­ceps', mgs: ['Pecho', 'TrÃ­ceps'], exs: [{ eid: 'ex1', sets: 4, reps: 10, weight: 60, rest: 90 }, { eid: 'ex2', sets: 3, reps: 12, weight: 20, rest: 60 }, { eid: 'ex3', sets: 3, reps: 15, weight: 12, rest: 60 }, { eid: 'ex20', sets: 3, reps: 12, weight: 25, rest: 90 }, { eid: 'ex19', sets: 3, reps: 15, weight: 10, rest: 60 }] },
+  { id: 'r1', name: 'Pecho y Tríceps', mgs: ['Pecho', 'Tríceps'], exs: [{ eid: 'ex1', sets: 4, reps: 10, weight: 60, rest: 90 }, { eid: 'ex2', sets: 3, reps: 12, weight: 20, rest: 60 }, { eid: 'ex3', sets: 3, reps: 15, weight: 12, rest: 60 }, { eid: 'ex20', sets: 3, reps: 12, weight: 25, rest: 90 }, { eid: 'ex19', sets: 3, reps: 15, weight: 10, rest: 60 }] },
   { id: 'r2', name: 'Piernas y Abdomen', mgs: ['Piernas', 'Abdomen'], exs: [{ eid: 'ex21', sets: 4, reps: 10, weight: 80, rest: 120 }, { eid: 'ex23', sets: 3, reps: 12, weight: 50, rest: 60 }, { eid: 'ex24', sets: 3, reps: 15, weight: 35, rest: 60 }, { eid: 'ex27', sets: 3, reps: 20, weight: 0, rest: 45 }, { eid: 'ex28', sets: 3, reps: 60, weight: 0, rest: 45 }] },
   { id: 'r3', name: 'Espalda y Hombros', mgs: ['Espalda', 'Hombros'], exs: [{ eid: 'ex6', sets: 3, reps: 8, weight: 0, rest: 90 }, { eid: 'ex7', sets: 4, reps: 10, weight: 50, rest: 90 }, { eid: 'ex9', sets: 3, reps: 12, weight: 40, rest: 60 }, { eid: 'ex11', sets: 4, reps: 8, weight: 35, rest: 90 }, { eid: 'ex13', sets: 3, reps: 15, weight: 8, rest: 45 }] }
 ];
 
-const MGS = ['Pecho', 'Espalda', 'Piernas', 'Hombros', 'BÃ­ceps', 'TrÃ­ceps', 'Abdomen', 'Cardio'];
+const MGS = ['Pecho', 'Espalda', 'Piernas', 'Hombros', 'Bíceps', 'Tríceps', 'Abdomen', 'Cardio'];
 
 const calcRM = (w, r) => Math.round(w * (1 + r / 30));
 
@@ -491,7 +491,7 @@ const genSampleSessions = () => {
       id: `ws${i}`, routineId: r.id, routineName: r.name, date: ds,
       startTime: `${String(6 + Math.floor(Math.random() * 14)).padStart(2, '0')}:${String(Math.floor(Math.random() * 60)).padStart(2, '0')}`,
       endTime: '', durationMinutes: duration,
-      totalVolume, totalSets, exercises: exs, notes: ['Buen entreno', 'Me costÃ³ un poco', 'Fue intenso', 'Bien, a mejorar'][i % 4]
+      totalVolume, totalSets, exercises: exs, notes: ['Buen entreno', 'Me cost ? un poco', 'Fue intenso', 'Bien, a mejorar'][i % 4]
     });
   }
   return sessions;
@@ -508,9 +508,9 @@ const SUBSCRIPTION_SERVICES = [
   { id: 'disney', name: 'Disney+', category: 'Streaming de video', badge: 'D+', color: '#75b8ff', bg: '#071a33' },
   { id: 'max', name: 'Max', category: 'Streaming de video', badge: 'M', color: '#7c5cff', bg: '#100a28' },
   { id: 'prime_video', name: 'Amazon Prime Video', category: 'Streaming de video', badge: 'PV', color: '#00a8e1', bg: '#061a22' },
-  { id: 'spotify', name: 'Spotify', category: 'Streaming de mÃºsica', badge: 'S', color: '#1db954', bg: '#04140a' },
-  { id: 'apple_music', name: 'Apple Music', category: 'Streaming de mÃºsica', badge: 'AM', color: '#fa2d48', bg: '#19040a' },
-  { id: 'youtube_music', name: 'YouTube Music', category: 'Streaming de mÃºsica', badge: 'YT', color: '#ff0033', bg: '#1a0308' },
+  { id: 'spotify', name: 'Spotify', category: 'Streaming de música', badge: 'S', color: '#1db954', bg: '#04140a' },
+  { id: 'apple_music', name: 'Apple Music', category: 'Streaming de música', badge: 'AM', color: '#fa2d48', bg: '#19040a' },
+  { id: 'youtube_music', name: 'YouTube Music', category: 'Streaming de música', badge: 'YT', color: '#ff0033', bg: '#1a0308' },
   { id: 'google_one', name: 'Google One', category: 'Almacenamiento en la nube', badge: 'G1', color: '#4285f4', bg: '#071323' },
   { id: 'icloud', name: 'iCloud+', category: 'Almacenamiento en la nube', badge: 'i+', color: '#8fd3ff', bg: '#071520' },
   { id: 'dropbox', name: 'Dropbox', category: 'Almacenamiento en la nube', badge: 'Db', color: '#0061ff', bg: '#06122b' },
@@ -522,7 +522,7 @@ const SUBSCRIPTION_SERVICES = [
   { id: 'perplexity', name: 'Perplexity Pro', category: 'Aplicaciones de IA', badge: 'P', color: '#20b8cd', bg: '#04161a' },
   { id: 'amazon_prime', name: 'Amazon Prime', category: 'Compras y beneficios', badge: 'A', color: '#ff9900', bg: '#1c1000' },
   { id: 'walmart', name: 'Walmart+', category: 'Compras y beneficios', badge: 'W+', color: '#0071ce', bg: '#061323' },
-  { id: 'gym', name: 'MembresÃ­a de gimnasio', category: 'Fitness y salud', badge: 'GYM', color: '#e11d48', bg: '#19030a' },
+  { id: 'gym', name: 'Membresía de gimnasio', category: 'Fitness y salud', badge: 'GYM', color: '#e11d48', bg: '#19030a' },
   { id: 'strava', name: 'Strava Premium', category: 'Fitness y salud', badge: 'ST', color: '#fc4c02', bg: '#1b0701' },
   { id: 'fitbit', name: 'Fitbit Premium', category: 'Fitness y salud', badge: 'FB', color: '#00b0b9', bg: '#041719' },
   { id: 'xbox', name: 'Xbox Game Pass', category: 'Videojuegos', badge: 'X', color: '#107c10', bg: '#041404' },
@@ -553,16 +553,16 @@ const getFinanceData = () => ({
     { id: 'cash', name: 'Efectivo', group: 'cash' },
     { id: 'checking', name: 'Cuenta corriente', group: 'bank' },
     { id: 'savings', name: 'Cuenta de ahorros', group: 'savings' },
-    { id: 'credit_card', name: 'Tarjeta / crÃ©dito', group: 'credit' },
-    { id: 'loan', name: 'CrÃ©dito / deuda', group: 'loan' },
-    { id: 'investment', name: 'InversiÃ³n', group: 'investment' },
+    { id: 'credit_card', name: 'Tarjeta / crédito', group: 'credit' },
+    { id: 'loan', name: 'Crédito / deuda', group: 'loan' },
+    { id: 'investment', name: 'Inversión', group: 'investment' },
     { id: 'custom', name: 'Otra cuenta', group: 'custom' }
   ],
   accounts: [
     { id: 'cash', name: 'Efectivo', type: 'cash', tagId: 'cash', currency: 'COP', balance: 180 },
     { id: 'bank', name: 'Cuenta principal', type: 'bank', tagId: 'checking', currency: 'USD', balance: 2100 },
     { id: 'savings', name: 'Ahorros', type: 'savings', tagId: 'savings', currency: 'USD', balance: 650 },
-    { id: 'credit_card', name: 'Tarjeta de crÃ©dito', type: 'credit', tagId: 'credit_card', currency: 'USD', balance: -320 }
+    { id: 'credit_card', name: 'Tarjeta de crédito', type: 'credit', tagId: 'credit_card', currency: 'USD', balance: -320 }
   ],
   recurring: [
     { id: 'rec1', name: 'Renta', type: 'expense', amount: 520, category: 'home', day: 5, active: true },
@@ -571,7 +571,7 @@ const getFinanceData = () => ({
   ],
   subscriptions: [
     { id: 'sub1', serviceId: 'netflix', name: 'Netflix', category: 'Streaming de video', amount: 15.49, day: 7, accountId: 'bank', logoUrl: '', active: true },
-    { id: 'sub2', serviceId: 'spotify', name: 'Spotify', category: 'Streaming de mÃºsica', amount: 10.99, day: 14, accountId: 'bank', logoUrl: '', active: true },
+    { id: 'sub2', serviceId: 'spotify', name: 'Spotify', category: 'Streaming de música', amount: 10.99, day: 14, accountId: 'bank', logoUrl: '', active: true },
     { id: 'sub3', serviceId: 'chatgpt', name: 'ChatGPT Plus', category: 'Aplicaciones de IA', amount: 20, day: 22, accountId: 'bank', logoUrl: '', active: true }
   ],
   goals: [],
@@ -583,7 +583,7 @@ const getFinanceData = () => ({
 });
 
 const MEDICATION_FORMS = [
-  'Tableta / CÃ¡psula', 'Jarabe', 'InyecciÃ³n', 'Gotas', 'Crema', 'Inhalador', 'Otro'
+  'Tableta / Cápsula', 'Jarabe', 'Inyección', 'Gotas', 'Crema', 'Inhalador', 'Otro'
 ];
 
 const MEDICATION_COLORS = [
@@ -597,27 +597,27 @@ const MEDICATION_COLORS = [
 ];
 
 const MEDICATION_FREQUENCIES = [
-  'Una vez al dÃ­a', 'Cada 6 horas', 'Cada 8 horas', 'Cada 12 horas', 'Cada 24 horas', 'DÃ­as especÃ­ficos', 'Personalizado'
+  'Una vez al día', 'Cada 6 horas', 'Cada 8 horas', 'Cada 12 horas', 'Cada 24 horas', 'Días específicos', 'Personalizado'
 ];
 
 const MEAL_TIMING_OPTIONS = [
-  'Antes de las comidas', 'DespuÃ©s de las comidas', 'Con comida', 'En ayunas', 'No importa', 'SegÃºn indicaciÃ³n mÃ©dica'
+  'Antes de las comidas', 'Después de las comidas', 'Con comida', 'En ayunas', 'No importa', 'Según indicación médica'
 ];
 
 const MEDICATION_DURATIONS = [
-  '3 dÃ­as', '5 dÃ­as', '7 dÃ­as', '10 dÃ­as', '15 dÃ­as', '30 dÃ­as', '60 dÃ­as', 'Permanente', 'Personalizado'
+  '3 días', '5 días', '7 días', '10 días', '15 días', '30 días', '60 días', 'Permanente', 'Personalizado'
 ];
 
 const makeMedication = (data) => ({
   id: data.id || `med_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`,
   name: data.name || '',
   dose: data.dose || '',
-  form: data.form || 'Tableta / CÃ¡psula',
+  form: data.form || 'Tableta / Cápsula',
   color: data.color || 'red',
   frequency: data.frequency || 'Cada 8 horas',
-  times: Array.isArray(data.times) && data.times.length ? data.times : ['08:00'],
+  times: Array.isArray(data.times) && data.times.length  ? data.times : ['08:00'],
   mealTiming: data.mealTiming || 'No importa',
-  duration: data.duration || '7 dÃ­as',
+  duration: data.duration || '7 días',
   startDate: data.startDate || toYYYYMMDD(new Date()),
   endDate: data.endDate || '',
   instructions: data.instructions || '',
@@ -629,11 +629,11 @@ const makeMedication = (data) => ({
 
 const getHealthData = () => ({
   medications: [
-    makeMedication({ id: 'med_ibuprofen', name: 'Ibuprofeno', dose: '400 mg', form: 'Tableta / CÃ¡psula', color: 'red', frequency: 'Cada 8 horas', times: ['08:00', '16:00', '00:00'], mealTiming: 'DespuÃ©s de las comidas', duration: '7 dÃ­as', startDate: toYYYYMMDD(new Date()), endDate: toYYYYMMDD(addDays(new Date(), 6)), notes: 'AnalgÃ©sico / AINE', instructions: 'Tomar con un vaso grande de agua.' }),
-    makeMedication({ id: 'med_amoxicillin', name: 'Amoxicilina', dose: '500 mg', form: 'Tableta / CÃ¡psula', color: 'blue', frequency: 'Cada 12 horas', times: ['08:00', '20:00'], mealTiming: 'SegÃºn indicaciÃ³n mÃ©dica', duration: '10 dÃ­as', startDate: toYYYYMMDD(new Date()), endDate: toYYYYMMDD(addDays(new Date(), 9)), notes: 'AntibiÃ³tico' }),
-    makeMedication({ id: 'med_omeprazole', name: 'Omeprazol', dose: '20 mg', form: 'Tableta / CÃ¡psula', color: 'white', frequency: 'Cada 24 horas', times: ['07:00'], mealTiming: 'En ayunas', duration: '30 dÃ­as', startDate: toYYYYMMDD(new Date()), endDate: toYYYYMMDD(addDays(new Date(), 29)), notes: 'Protector gÃ¡strico' }),
-    makeMedication({ id: 'med_vitamind', name: 'Vitamina D3', dose: '1000 UI', form: 'Tableta / CÃ¡psula', color: 'yellow', frequency: 'Cada 24 horas', times: ['08:00'], mealTiming: 'Con comida', duration: '60 dÃ­as', startDate: toYYYYMMDD(new Date()), endDate: toYYYYMMDD(addDays(new Date(), 59)), notes: 'Suplemento' }),
-    makeMedication({ id: 'med_loratadine', name: 'Loratadina', dose: '10 mg', form: 'Tableta / CÃ¡psula', color: 'custom', frequency: 'Cada 24 horas', times: ['21:00'], mealTiming: 'No importa', duration: '15 dÃ­as', startDate: toYYYYMMDD(new Date()), endDate: toYYYYMMDD(addDays(new Date(), 14)), notes: 'AntihistamÃ­nico' })
+    makeMedication({ id: 'med_ibuprofen', name: 'Ibuprofeno', dose: '400 mg', form: 'Tableta / Cápsula', color: 'red', frequency: 'Cada 8 horas', times: ['08:00', '16:00', '00:00'], mealTiming: 'Después de las comidas', duration: '7 días', startDate: toYYYYMMDD(new Date()), endDate: toYYYYMMDD(addDays(new Date(), 6)), notes: 'Analgésico / AINE', instructions: 'Tomar con un vaso grande de agua.' }),
+    makeMedication({ id: 'med_amoxicillin', name: 'Amoxicilina', dose: '500 mg', form: 'Tableta / Cápsula', color: 'blue', frequency: 'Cada 12 horas', times: ['08:00', '20:00'], mealTiming: 'Según indicación médica', duration: '10 días', startDate: toYYYYMMDD(new Date()), endDate: toYYYYMMDD(addDays(new Date(), 9)), notes: 'Antibiótico' }),
+    makeMedication({ id: 'med_omeprazole', name: 'Omeprazol', dose: '20 mg', form: 'Tableta / Cápsula', color: 'white', frequency: 'Cada 24 horas', times: ['07:00'], mealTiming: 'En ayunas', duration: '30 días', startDate: toYYYYMMDD(new Date()), endDate: toYYYYMMDD(addDays(new Date(), 29)), notes: 'Protector gástrico' }),
+    makeMedication({ id: 'med_vitamind', name: 'Vitamina D3', dose: '1000 UI', form: 'Tableta / Cápsula', color: 'yellow', frequency: 'Cada 24 horas', times: ['08:00'], mealTiming: 'Con comida', duration: '60 días', startDate: toYYYYMMDD(new Date()), endDate: toYYYYMMDD(addDays(new Date(), 59)), notes: 'Suplemento' }),
+    makeMedication({ id: 'med_loratadine', name: 'Loratadina', dose: '10 mg', form: 'Tableta / Cápsula', color: 'custom', frequency: 'Cada 24 horas', times: ['21:00'], mealTiming: 'No importa', duration: '15 días', startDate: toYYYYMMDD(new Date()), endDate: toYYYYMMDD(addDays(new Date(), 14)), notes: 'Antihistamínico' })
   ],
   takenLogs: []
 });
@@ -642,7 +642,7 @@ const normalizeHealthData = (health) => {
   const base = health || {};
   return {
     medications: (base.medications || []).map(makeMedication),
-    takenLogs: Array.isArray(base.takenLogs) ? base.takenLogs : []
+    takenLogs: Array.isArray(base.takenLogs)  ? base.takenLogs : []
   };
 };
 
@@ -691,7 +691,7 @@ const getWeeklyHealthStats = (health, endDate = toYYYYMMDD(new Date())) => {
     total += doses.length;
     taken += doses.filter(dose => isMedicationDoseTaken(health, dose.medication.id, date, dose.time)).length;
   }
-  return { total, taken, pct: total ? Math.round((taken / total) * 100) : 0 };
+  return { total, taken, pct: total  ? Math.round((taken / total) * 100) : 0 };
 };
 
 const getMedicationDurationText = (med) => {
@@ -699,12 +699,12 @@ const getMedicationDurationText = (med) => {
   if (!med.startDate || !med.endDate) return med.duration || 'Sin fin';
   const total = Math.max(1, Math.round((new Date(`${med.endDate}T12:00:00`).getTime() - new Date(`${med.startDate}T12:00:00`).getTime()) / 86400000) + 1);
   const elapsed = Math.min(total, Math.max(1, Math.round((new Date(`${toYYYYMMDD(new Date())}T12:00:00`).getTime() - new Date(`${med.startDate}T12:00:00`).getTime()) / 86400000) + 1));
-  return `${total} dÃ­as (DÃ­a ${elapsed}/${total})`;
+  return `${total} días (Día ${elapsed}/${total})`;
 };
 
 const groupMedicationDosesByDaypart = (doses) => {
   const groups = [
-    { id: 'morning', label: 'MaÃ±ana', icon: '\u2600\uFE0F', start: 6, end: 12, items: [] },
+    { id: 'morning', label: 'Mañana', icon: '\u2600\uFE0F', start: 6, end: 12, items: [] },
     { id: 'afternoon', label: 'Tarde', icon: '\u{1F305}', start: 12, end: 18, items: [] },
     { id: 'night', label: 'Noche', icon: '\u{1F319}', start: 18, end: 24, items: [] },
     { id: 'dawn', label: 'Madrugada', icon: '\u{1F311}', start: 0, end: 6, items: [] }
@@ -735,7 +735,7 @@ const getStudyData = () => ({
   ],
   sessions: [
     { id: 'study1', subjectId: 'sub1', minutes: 45, note: 'Repaso del sistema', date: toYYYYMMDD(new Date()) },
-    { id: 'study2', subjectId: 'sub2', minutes: 35, note: 'CategorÃ­as de gastos', date: toYYYYMMDD(addDays(new Date(), -1)) }
+    { id: 'study2', subjectId: 'sub2', minutes: 35, note: 'Categorías de gastos', date: toYYYYMMDD(addDays(new Date(), -1)) }
   ]
 });
 
@@ -771,12 +771,12 @@ const getDreamGoals = () => ([
 
 const greets = () => {
   const h = new Date().getHours();
-  if (h < 12) return { text: 'Buenos dÃ­as', emoji: '\u{1F305}' };
+  if (h < 12) return { text: 'Buenos días', emoji: '\u{1F305}' };
   if (h < 19) return { text: 'Buenas tardes', emoji: '\u{2600}\u{FE0F}' };
   return { text: 'Buenas noches', emoji: '\u{1F319}' };
 };
 
-const SPANISH_WEEKDAYS = ['Domingo', 'Lunes', 'Martes', 'MiÃ©rcoles', 'Jueves', 'Viernes', 'SÃ¡bado'];
+const SPANISH_WEEKDAYS = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
 const SPANISH_MONTHS = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
 
 const formatDateSpanish = (d) => {
@@ -817,17 +817,17 @@ const daysAgo = (dateStr) => {
 const getDayOfWeek = (d) => d.getDay();
 
 const genSampleHabits = () => [
-  { id: 'h1', name: 'Beber 2L de agua', description: 'Mantenerse hidratado durante el dÃ­a', category: 'salud', icon: 'droplet', color: '#00ff9d', frequency: 'Diario', targetStreak: 30, active: true, createdAt: toYYYYMMDD(addDays(new Date(), -60)) },
-  { id: 'h2', name: 'Ejercicio 30 min', description: 'Actividad fÃ­sica diaria', category: 'fitness', icon: 'dumbbell', color: '#ff6b6b', frequency: 'Diario', targetStreak: 21, active: true, createdAt: toYYYYMMDD(addDays(new Date(), -60)) },
-  { id: 'h3', name: 'Leer 20 pÃ¡ginas', description: 'Lectura diaria para desarrollo personal', category: 'mente', icon: 'book-open', color: '#e11d48', frequency: 'Diario', targetStreak: 30, active: true, createdAt: toYYYYMMDD(addDays(new Date(), -60)) },
-  { id: 'h4', name: 'Meditar 10 min', description: 'MeditaciÃ³n de atenciÃ³n plena', category: 'mente', icon: 'meditation', color: '#efefef', frequency: 'Diario', targetStreak: 14, active: true, createdAt: toYYYYMMDD(addDays(new Date(), -60)) },
+  { id: 'h1', name: 'Beber 2L de agua', description: 'Mantenerse hidratado durante el día', category: 'salud', icon: 'droplet', color: '#00ff9d', frequency: 'Diario', targetStreak: 30, active: true, createdAt: toYYYYMMDD(addDays(new Date(), -60)) },
+  { id: 'h2', name: 'Ejercicio 30 min', description: 'Actividad física diaria', category: 'fitness', icon: 'dumbbell', color: '#ff6b6b', frequency: 'Diario', targetStreak: 21, active: true, createdAt: toYYYYMMDD(addDays(new Date(), -60)) },
+  { id: 'h3', name: 'Leer 20 páginas', description: 'Lectura diaria para desarrollo personal', category: 'mente', icon: 'book-open', color: '#e11d48', frequency: 'Diario', targetStreak: 30, active: true, createdAt: toYYYYMMDD(addDays(new Date(), -60)) },
+  { id: 'h4', name: 'Meditar 10 min', description: 'Meditación de atención plena', category: 'mente', icon: 'meditation', color: '#efefef', frequency: 'Diario', targetStreak: 14, active: true, createdAt: toYYYYMMDD(addDays(new Date(), -60)) },
   { id: 'h5', name: 'Aprender algo nuevo', description: 'Estudiar o practicar una nueva habilidad', category: 'productividad', icon: 'rocket', color: '#ffd93d', frequency: 'Diario', targetStreak: 21, active: true, createdAt: toYYYYMMDD(addDays(new Date(), -60)) }
 ];
 
 const genSampleRecords = (habits) => {
   const records = [];
   const rates = { h1: 0.85, h2: 0.65, h3: 0.7, h4: 0.55, h5: 0.75 };
-  const sampleNotes = ['Bien hoy', 'Un poco cansado', 'Excelente sesiÃ³n', 'Me costÃ³ empezar', 'Muy productivo', 'Regular', 'Contento con el progreso'];
+  const sampleNotes = ['Bien hoy', 'Un poco cansado', 'Excelente sesión', 'Me cost ? empezar', 'Muy productivo', 'Regular', 'Contento con el progreso'];
   const sampleMoods = [3, 4, 5, 2, 4, 3, 5];
   const today = new Date();
 
@@ -843,8 +843,8 @@ const genSampleRecords = (habits) => {
       const completed = Math.random() < prob;
       const hasNote = completed && Math.random() < 0.2;
       records.push({
-        habitId: h.id, date: dateStr, completed, note: hasNote ? sampleNotes[(idx + i) % sampleNotes.length] : '',
-        mood: completed ? sampleMoods[(idx + i) % sampleMoods.length] : 0
+        habitId: h.id, date: dateStr, completed, note: hasNote  ? sampleNotes[(idx + i) % sampleNotes.length] : '',
+        mood: completed  ? sampleMoods[(idx + i) % sampleMoods.length] : 0
       });
     });
   }
@@ -852,25 +852,25 @@ const genSampleRecords = (habits) => {
 };
 
 const getDefaultData = (reset = false) => {
-  const habits = reset ? [] : genSampleHabits().map(h => ({
+  const habits = reset  ? [] : genSampleHabits().map(h => ({
     ...h,
     icon: normalizeHabitIconId(h.icon, h.category, h.name),
     reminder: { enabled: false, time: '08:00', days: [0, 1, 2, 3, 4, 5, 6], message: '' }
   }));
-  const records = reset ? [] : genSampleRecords(habits);
-  const xp = reset ? 0 : records.filter(r => r.completed).length * 10;
+  const records = reset  ? [] : genSampleRecords(habits);
+  const xp = reset  ? 0 : records.filter(r => r.completed).length * 10;
   return {
-    user: { name: 'Usuario', motto: 'Cada dÃ­a es una nueva oportunidad', accentColor: 'violet', themeMode: 'midnight', iconColor: 'fire', createdAt: toYYYYMMDD(new Date()), xp, level: getLevel(xp), levelUpShown: getLevel(xp), pomodoro: { focus: 25, shortBreak: 5, longBreak: 15 } },
+    user: { name: 'Usuario', motto: 'Cada día es una nueva oportunidad', accentColor: 'violet', themeMode: 'midnight', iconColor: 'fire', createdAt: toYYYYMMDD(new Date()), xp, level: getLevel(xp), levelUpShown: getLevel(xp), pomodoro: { focus: 25, shortBreak: 5, longBreak: 15 } },
     habits,
     records,
-    dailyNotes: reset ? {} : { [toYYYYMMDD(new Date())]: { note: 'Buen dÃ­a en general, cumplÃ­ todos mis hÃ¡bitos', mood: 4 } },
-    challenges: reset ? [] : [{ id: 'ch1', habitId: 'h1', startDate: toYYYYMMDD(addDays(new Date(), -14)), status: 'active' }],
-    workoutData: reset ? { exercises: WORKOUT_EXERCISES.map(e => ({ ...e, custom: false })), routines: [], sessions: [] } : getWorkoutData(),
-    financeData: reset ? { ...getFinanceData(), monthlyBudget: 0, transactions: [], recurring: [], subscriptions: [], goals: [] } : getFinanceData(),
-    healthData: reset ? { medications: [], takenLogs: [] } : getHealthData(),
-    studyData: reset ? { subjects: [], sessions: [] } : getStudyData(),
+    dailyNotes: reset  ? {} : { [toYYYYMMDD(new Date())]: { note: 'Buen día en general, cumpl ? todos mis hábitos', mood: 4 } },
+    challenges: reset  ? [] : [{ id: 'ch1', habitId: 'h1', startDate: toYYYYMMDD(addDays(new Date(), -14)), status: 'active' }],
+    workoutData: reset  ? { exercises: WORKOUT_EXERCISES.map(e => ({ ...e, custom: false })), routines: [], sessions: [] } : getWorkoutData(),
+    financeData: reset  ? { ...getFinanceData(), monthlyBudget: 0, transactions: [], recurring: [], subscriptions: [], goals: [] } : getFinanceData(),
+    healthData: reset  ? { medications: [], takenLogs: [] } : getHealthData(),
+    studyData: reset  ? { subjects: [], sessions: [] } : getStudyData(),
     readingData: getReadingData(),
-    dreamGoals: reset ? [] : getDreamGoals(),
+    dreamGoals: reset  ? [] : getDreamGoals(),
     pomodoroRecords: [],
     agenda: {},
     agendaNotes: {},
@@ -883,7 +883,54 @@ const getDefaultData = (reset = false) => {
   };
 };
 
+const buildLostAccentRepairs = () => {
+  const q = '?';
+  return [
+    ['d' + q + 'as', 'd\u00edas'], ['D' + q + 'as', 'D\u00edas'], ['d' + q + 'a', 'd\u00eda'], ['D' + q + 'a', 'D\u00eda'],
+    ['h' + q + 'bitos', 'h\u00e1bitos'], ['H' + q + 'bitos', 'H\u00e1bitos'], ['h' + q + 'bito', 'h\u00e1bito'], ['H' + q + 'bito', 'H\u00e1bito'],
+    ['sesi' + q + 'n', 'sesi\u00f3n'], ['Sesi' + q + 'n', 'Sesi\u00f3n'], ['m' + q + 's', 'm\u00e1s'], ['M' + q + 's', 'M\u00e1s'],
+    ['Configuraci' + q + 'n', 'Configuraci\u00f3n'], ['Puntuaci' + q + 'n', 'Puntuaci\u00f3n'], ['R' + q + 'cord', 'R\u00e9cord'],
+    [q + 'ltimo', '\u00daltimo'], [q + 'ltimos', '\u00daltimos'], [q + 'ltima', '\u00daltima'], [q + 'ltimas', '\u00daltimas'],
+    ['Mi' + q + 'rcoles', 'Mi\u00e9rcoles'], ['S' + q + 'bado', 'S\u00e1bado'], ['categor' + q + 'a', 'categor\u00eda'], ['Categor' + q + 'a', 'Categor\u00eda'],
+    ['descripci' + q + 'n', 'descripci\u00f3n'], ['ma' + q + 'ana', 'ma\u00f1ana'], ['Ma' + q + 'ana', 'Ma\u00f1ana'],
+    ['tambi' + q + 'n', 'tambi\u00e9n'], ['t' + q + 'cnica', 't\u00e9cnica'], ['Duraci' + q + 'n', 'Duraci\u00f3n'], ['Seg' + q + 'n', 'Seg\u00fan'],
+    ['est' + q + ' libre', 'est\u00e1 libre'], ['est' + q + ' cerrado', 'est\u00e9 cerrado'], ['aqu' + q, 'aqu\u00ed'],
+    ['ayudar' + q, 'ayudar\u00e1'], ['reemplazar' + q, 'reemplazar\u00e1'], ['Qu' + q + ' pasa', '\u00bfQu\u00e9 pasa'],
+    [q + 'C' + q + 'mo', '\u00bfC\u00f3mo'], [q + 'Eliminar', '\u00bfEliminar'], [q + 'Quieres', '\u00bfQuieres'], [q + 'Salir', '\u00bfSalir']
+  ];
+};
+
+const TEXT_ENCODING_REPAIRS = [
+  ['\u00c3\u00a1', '\u00e1'], ['\u00c3\u00a9', '\u00e9'], ['\u00c3\u00ad', '\u00ed'], ['\u00c3\u00b3', '\u00f3'], ['\u00c3\u00ba', '\u00fa'], ['\u00c3\u00b1', '\u00f1'],
+  ['\u00c3\u0081', '\u00c1'], ['\u00c3\u0089', '\u00c9'], ['\u00c3\u008d', '\u00cd'], ['\u00c3\u0093', '\u00d3'], ['\u00c3\u009a', '\u00da'], ['\u00c3\u0091', '\u00d1'],
+  ['\u00c2\u00bf', '\u00bf'], ['\u00c2\u00a1', '\u00a1'], ['\u00c2\u00a0', ' '],
+  ['\u00e2\u20ac\u0153', '\u201c'], ['\u00e2\u20ac\u009d', '\u201d'], ['\u00e2\u20ac\u02dc', '\u2018'], ['\u00e2\u20ac\u2122', '\u2019'],
+  ['\u00e2\u20ac\u201c', '\u2013'], ['\u00e2\u20ac\u201d', '\u2014'],
+  ...buildLostAccentRepairs()
+];
+
+const repairMojibakeText = (value) => {
+  if (typeof value !== 'string') return value;
+  let next = value;
+  for (let pass = 0; pass < 3; pass++) {
+    const before = next;
+    TEXT_ENCODING_REPAIRS.forEach(([bad, good]) => { next = next.split(bad).join(good); });
+    if (next === before) break;
+  }
+  return next;
+};
+
+const repairStoredText = (value) => {
+  if (typeof value === 'string') return repairMojibakeText(value);
+  if (Array.isArray(value)) return value.map(repairStoredText);
+  if (value && typeof value === 'object') {
+    return Object.fromEntries(Object.entries(value).map(([key, item]) => [key, repairStoredText(item)]));
+  }
+  return value;
+};
+
 const normalizeLoadedData = (parsed) => {
+  parsed = repairStoredText(parsed);
   if (!parsed || !parsed.user || !parsed.habits || !parsed.records) return null;
   if (!parsed.user.xp) parsed.user.xp = 0;
   if (!parsed.user.level) parsed.user.level = 1;
@@ -917,7 +964,7 @@ const normalizeLoadedData = (parsed) => {
       h.reminder = {
         enabled: false,
         time: '08:00',
-        days: h.frequencyDays?.length ? [...h.frequencyDays] : [0, 1, 2, 3, 4, 5, 6],
+        days: h.frequencyDays?.length  ? [...h.frequencyDays] : [0, 1, 2, 3, 4, 5, 6],
         message: ''
       };
     }
@@ -938,8 +985,8 @@ const normalizeLoadedData = (parsed) => {
   if (!parsed.financeData.accounts || !parsed.financeData.accounts.length) parsed.financeData.accounts = getFinanceData().accounts;
   parsed.financeData.accounts = parsed.financeData.accounts.map(account => ({
     ...account,
-    tagId: account.tagId || (account.type === 'credit' ? 'credit_card' : account.type === 'bank' ? 'checking' : account.type || 'custom'),
-    currency: account.currency === 'COP' ? 'COP' : 'USD'
+    tagId: account.tagId || (account.type === 'credit'  ? 'credit_card' : account.type === 'bank'  ? 'checking' : account.type || 'custom'),
+    currency: account.currency === 'COP'  ? 'COP' : 'USD'
   }));
   if (!parsed.financeData.recurring) parsed.financeData.recurring = [];
   if (!parsed.financeData.subscriptions) parsed.financeData.subscriptions = [];
@@ -953,7 +1000,7 @@ const normalizeLoadedData = (parsed) => {
   if (!parsed.dreamGoals) parsed.dreamGoals = getDreamGoals();
   parsed.dreamGoals = (parsed.dreamGoals || []).map(goal => ({
     ...goal,
-    image: typeof goal.image === 'string' && goal.image.startsWith('data:') ? '' : goal.image
+    image: typeof goal.image === 'string' && goal.image.startsWith('data:')  ? '' : goal.image
   }));
   if (!parsed.agenda) parsed.agenda = {};
   if (!parsed.agendaNotes) parsed.agendaNotes = {};
@@ -970,7 +1017,7 @@ const loadData = () => {
   try {
     const raw = localStorage.getItem('habitTrackerData');
     if (raw) {
-      const parsed = normalizeLoadedData(JSON.parse(raw));
+      const parsed = normalizeLoadedData(JSON.parse(repairMojibakeText(raw)));
       if (parsed) {
         saveLocalData(parsed);
         return parsed;
@@ -1046,17 +1093,17 @@ const saveCloudDataNow = async (data) => {
 
 const queueCloudSave = (data) => {
   if (!getClerkUserId()) {
-    emitCloudSyncStatus({ status: 'local', label: 'Guardado local', reason: 'No hay sesiÃ³n de Clerk activa.' });
+    emitCloudSyncStatus({ status: 'local', label: 'Guardado local', reason: 'No hay sesión de Clerk activa.' });
     return;
   }
-  emitCloudSyncStatus({ status: 'saving', label: 'Guardando nube', reason: 'Sincronizando el Ãºltimo cambio con Supabase.' });
+  emitCloudSyncStatus({ status: 'saving', label: 'Guardando nube', reason: 'Sincronizando el Último cambio con Supabase.' });
   clearTimeout(cloudSaveTimer);
   cloudSaveTimer = setTimeout(() => {
     lastCloudSave = lastCloudSave
       .then(() => saveCloudDataNow(data))
       .then(result => {
         emitCloudSyncStatus(result.ok
-          ? { status: 'active', label: 'Nube activa', reason: 'Ãšltimo cambio guardado en Supabase.' }
+           ? { status: 'active', label: 'Nube activa', reason: 'Último cambio guardado en Supabase.' }
           : { status: 'local', label: 'Guardado local', reason: result.reason || 'No se pudo guardar en Supabase.' });
       })
       .catch(err => {
@@ -1095,7 +1142,7 @@ const savePushSubscription = async (subscription) => {
   const client = getCloudClient();
   const userId = getClerkUserId();
   if (!client || !userId || !subscription?.endpoint) {
-    return { ok: false, reason: 'Para recibir avisos con la app cerrada debes iniciar sesiÃ³n y tener la nube activa.' };
+    return { ok: false, reason: 'Para recibir avisos con la app cerrada debes iniciar sesión y tener la nube activa.' };
   }
   try {
     const { error } = await client
@@ -1111,7 +1158,7 @@ const savePushSubscription = async (subscription) => {
     if (error) return { ok: false, reason: error.message };
     return { ok: true };
   } catch (error) {
-    return { ok: false, reason: error?.message || 'No se pudo guardar la suscripciÃ³n push.' };
+    return { ok: false, reason: error?.message || 'No se pudo guardar la suscripción push.' };
   }
 };
 
@@ -1129,7 +1176,7 @@ const requestHabitFlowNotifications = async () => {
       try { registration = await navigator.serviceWorker.ready; } catch {}
     }
     const permission = Notification.permission === 'default'
-      ? await Notification.requestPermission()
+       ? await Notification.requestPermission()
       : Notification.permission;
     if (permission === 'granted' && registration && 'PushManager' in window && window.HABITFLOW_VAPID_PUBLIC_KEY) {
       try {
@@ -1145,14 +1192,14 @@ const requestHabitFlowNotifications = async () => {
           ok: saved.ok,
           permission,
           reason: saved.ok
-            ? 'Push real activo. Este dispositivo ya puede recibir avisos aunque HabitFlow estÃ© cerrado, cuando el servidor de alarmas estÃ© activo.'
+             ? 'Push real activo. Este dispositivo ya puede recibir avisos aúnque HabitFlow esté cerrado, cuando el servidor de alarmas est ? activo.'
             : `Permiso activo, pero falta guardar el dispositivo: ${saved.reason}`
         };
       } catch (error) {
         return {
           ok: true,
           permission,
-          reason: `Permiso activo para avisos locales, pero el push cerrado no quedÃ³ suscrito: ${error?.message || 'revisa el dispositivo.'}`
+          reason: `Permiso activo para avisos locales, pero el push cerrado no qued ? suscrito: ${error?.message || 'revisa el dispositivo.'}`
         };
       }
     }
@@ -1160,10 +1207,10 @@ const requestHabitFlowNotifications = async () => {
       ok: permission === 'granted',
       permission,
       reason: permission === 'granted'
-        ? 'Notificaciones activas en este dispositivo. Para que suene en todos, abre HabitFlow en cada PC o celular y activa sus notificaciones una vez.'
+         ? 'Notificaciones activas en este dispositivo. Para que suene en todos, abre HabitFlow en cada PC o celular y activa sus notificaciones una vez.'
         : permission === 'denied'
-          ? 'El navegador bloqueÃ³ las notificaciones. ActÃ­valas desde permisos del sitio.'
-          : 'No se concediÃ³ el permiso.'
+           ? 'El navegador bloque ? las notificaciones. Actívalas desde permisos del sitio.'
+          : 'No se concedi ? el permiso.'
     };
   } catch {
     return { ok: false, permission: getNotificationPermissionState(), reason: 'No se pudo activar el permiso de notificaciones.' };
@@ -1219,7 +1266,7 @@ const getStoredClerkKey = () => {
 
 const getClerkFrontendApi = (publishableKey) => {
   const part = (publishableKey || '').trim().split('_')[2];
-  if (!part) throw new Error('La llave pÃºblica de Clerk no parece vÃ¡lida.');
+  if (!part) throw new Error('La llave pública de Clerk no parece válida.');
   const normalized = part.replace(/-/g, '+').replace(/_/g, '/');
   const padded = normalized.padEnd(normalized.length + ((4 - normalized.length % 4) % 4), '=');
   return atob(padded).replace(/\$$/, '');
@@ -1251,7 +1298,7 @@ const loadClerk = async (publishableKey) => {
   await loadScriptOnce('habitflow-clerk-js', `https://${frontendApi}/npm/@clerk/clerk-js@6/dist/clerk.browser.js`, {
     'data-clerk-publishable-key': key
   });
-  if (!window.Clerk) throw new Error('Clerk no se inicializÃ³ correctamente.');
+  if (!window.Clerk) throw new Error('Clerk no se inicializ ? correctamente.');
   await window.Clerk.load({ ui: { ClerkUI: window.__internal_ClerkUICtor } });
   return window.Clerk;
 };
@@ -1845,7 +1892,7 @@ const injectStyles = () => {
       }
     }
 
-    /* Habitos: tracker editorial, ligero y sin tarjetas decorativas. */
+    /* Hábitos: tracker editorial, ligero y sin tarjetas decorativas. */
     .habits-minimal-view {
       --habits-bg: #080a0d;
       --habits-surface: #0d1014;
@@ -2513,7 +2560,7 @@ const injectStyles = () => {
       .habit-week-dots { padding: 0 2px; }
     }
 
-    /* Nuevo hÃ¡bito: modal editorial con iconografÃ­a Lucide y controles tÃ¡ctiles. */
+    /* Nuevo hábito: modal editorial con iconografía Lucide y controles táctiles. */
     .hf-modal-panel.habit-form-modal {
       --habit-modal-bg: #0b0e12;
       --habit-modal-surface: #10141a;
@@ -5183,7 +5230,7 @@ const Toast = ({ message, type = 'success', onClose }) => {
 };
 
 const EmptyState = ({ icon = '\u{1F4CB}', title = 'Sin datos', subtitle = '', compact = false }) => (
-  <div style={{ textAlign: 'center', padding: compact ? 24 : 48, color: COLORS.textDim }}>
+  <div style={{ textAlign: 'center', padding: compact  ? 24 : 48, color: COLORS.textDim }}>
     <svg width="80" height="80" viewBox="0 0 80 80" style={{ margin: '0 auto 16px', display: 'block', opacity: 0.4 }}>
       <rect x="10" y="20" width="60" height="50" rx="6" fill="none" stroke="currentColor" strokeWidth="2" />
       <line x1="20" y1="35" x2="60" y2="35" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
@@ -5202,7 +5249,7 @@ const Skeleton = ({ width = '100%', height = 20, style = {} }) => (
 
 const AnimatedCounter = ({ value, duration = 1000, prefix = '', suffix = '', style = {} }) => {
   const [display, setDisplay] = useState(0);
-  const numericValue = Number.isFinite(Number(value)) ? Number(value) : 0;
+  const numericValue = Number.isFinite(Number(value))  ? Number(value) : 0;
 
   useEffect(() => {
     const start = performance.now();
@@ -5229,7 +5276,7 @@ const AnimatedCounter = ({ value, duration = 1000, prefix = '', suffix = '', sty
 };
 
 const KPICard = ({ icon, title, value, subtitle, accent, suffix = '', delay = 0, progress }) => {
-  const progressCircle = progress !== undefined ? (
+  const progressCircle = progress !== undefined  ? (
     <svg className="kpi-progress-ring" width="38" height="38" viewBox="0 0 38 38" style={{ flexShrink: 0, opacity: 0.82 }}>
       <circle cx="19" cy="19" r="15" fill="none" stroke={COLORS.border} strokeWidth="2" opacity="0.75" />
       <circle cx="19" cy="19" r="15" fill="none" stroke={accent} strokeWidth="2.25"
@@ -5257,7 +5304,7 @@ const KPICard = ({ icon, title, value, subtitle, accent, suffix = '', delay = 0,
             <span className="fire-emoji dashboard-kpi-icon">{icon}</span> {title}
           </div>
           <div style={{ fontSize: 24, fontWeight: 500, color: COLORS.text, fontFamily: "'Inter', sans-serif", lineHeight: 1.2, minHeight: '1.2em' }}>
-            <AnimatedCounter value={typeof value === 'number' ? value : parseInt(value)} duration={1200} suffix={suffix} />
+            <AnimatedCounter value={typeof value === 'number'  ? value : parseInt(value)} duration={1200} suffix={suffix} />
           </div>
         </div>
         {progressCircle}
@@ -5296,7 +5343,7 @@ const Modal = ({ isOpen, onClose, title, children, width = 480, className = '' }
 };
 
 const BrandLogo = ({ size = 'sm', compact = false, center = false }) => (
-  <div className={`brand-lockup ${size} ${compact ? 'compact' : ''} ${center ? 'center' : ''}`} aria-label="HabitFlow">
+  <div className={`brand-lockup ${size} ${compact  ? 'compact' : ''} ${center  ? 'center' : ''}`} aria-label="HabitFlow">
     <img className="brand-mark" src="./brand-logo.svg" alt="HF" />
     {!compact && <span className="brand-word">HabitFlow</span>}
   </div>
@@ -5310,20 +5357,20 @@ const ClerkSetupScreen = ({ initialKey = '', error = '', loading = false, onSave
         <div style={{ marginBottom: 12 }}><BrandLogo size="md" /></div>
         <div style={{ color: COLORS.text, fontSize: 20, fontFamily: "'DM Serif Display', serif", marginBottom: 6 }}>Conectar login con Clerk</div>
         <div style={{ color: COLORS.textDim, fontSize: 12, lineHeight: 1.6, marginBottom: 18 }}>
-          Pega tu Publishable Key de Clerk. La encuentras en Clerk Dashboard, secciÃ³n API keys, y empieza por pk_test_ o pk_live_.
+          Pega tu Publishable Key de Clerk. La encuentras en Clerk Dashboard, sección API keys, y empieza por pk_test_ o pk_live_.
         </div>
         <input value={key} onChange={e => setKey(e.target.value)} placeholder="pk_test_..." style={{
           width: '100%', boxSizing: 'border-box', padding: '12px 14px', borderRadius: 10,
-          border: `1px solid ${error ? COLORS.alert : COLORS.border}`, background: COLORS.bg,
+          border: `1px solid ${error  ? COLORS.alert : COLORS.border}`, background: COLORS.bg,
           color: COLORS.text, outline: 'none', fontSize: 13, fontFamily: "'Inter', sans-serif", marginBottom: 10
         }} />
         {error && <div style={{ color: COLORS.alert, fontSize: 11, lineHeight: 1.45, marginBottom: 12 }}>{error}</div>}
         <button disabled={loading || !key.trim()} onClick={() => onSave(key.trim())} style={{
           width: '100%', padding: '12px 16px', borderRadius: 10, border: 'none',
-          background: loading || !key.trim() ? COLORS.border : `linear-gradient(135deg, ${COLORS.primary}, #7f1028)`,
-          color: '#fff', cursor: loading || !key.trim() ? 'default' : 'pointer',
+          background: loading || !key.trim()  ? COLORS.border : `linear-gradient(135deg, ${COLORS.primary}, #7f1028)`,
+          color: '#fff', cursor: loading || !key.trim()  ? 'default' : 'pointer',
           fontSize: 13, fontFamily: "'Inter', sans-serif", fontWeight: 700
-        }}>{loading ? 'Conectando...' : 'Activar login'}</button>
+        }}>{loading  ? 'Conectando...' : 'Activar login'}</button>
       </div>
     </div>
   );
@@ -5361,15 +5408,15 @@ const ClerkSignInScreen = ({ clerk }) => {
           <div>
             <div style={{ marginBottom: 18 }}><BrandLogo size="lg" /></div>
             <div style={{ maxWidth: 420, fontSize: 36, lineHeight: 1.05, color: COLORS.text, fontFamily: "'DM Serif Display', serif", letterSpacing: '-0.03em', marginBottom: 14 }}>
-              Entra a tu sistema personal de hÃ¡bitos.
+              Entra a tu sistema personal de hábitos.
             </div>
             <div style={{ maxWidth: 420, color: COLORS.textDim, fontSize: 13, lineHeight: 1.7 }}>
-              Tus hÃ¡bitos, agenda, entrenos y enfoque quedan protegidos tras tu sesiÃ³n de Clerk.
+              Tus hábitos, agenda, entrenos y enfoque quedan protegidos tras tu sesión de Clerk.
             </div>
           </div>
           <div style={{ display: 'grid', gap: 10 }}>
             <div className="auth-feature-pill"><span className="fire-emoji">{'\u{1F525}'}</span> Rachas y progreso diario</div>
-            <div className="auth-feature-pill"><span className="fire-emoji">âœ…</span> Acceso seguro con Google o email</div>
+            <div className="auth-feature-pill"><span className="fire-emoji">?</span> Acceso seguro con Google o email</div>
             <div className="auth-feature-pill"><span className="fire-emoji">{'\u{1F319}'}</span> Dark puro con identidad visual propia</div>
           </div>
         </div>
@@ -5419,7 +5466,7 @@ const AuthGate = ({ children }) => {
 
   const [publishableKey, setPublishableKey] = useState(getStoredClerkKey);
   const [clerk, setClerk] = useState(null);
-  const [status, setStatus] = useState(publishableKey ? 'loading' : 'setup');
+  const [status, setStatus] = useState(publishableKey  ? 'loading' : 'setup');
   const [error, setError] = useState('');
   const [isSignedIn, setIsSignedIn] = useState(false);
 
@@ -5485,7 +5532,7 @@ const getCompletionRate = (habitId, records, days = 30, habit) => {
     const rec = records.find(r => r.habitId === habitId && r.date === dateStr);
     if (rec && rec.completed) completed++;
   }
-  return expected > 0 ? completed / expected : 0;
+  return expected > 0  ? completed / expected : 0;
 };
 
 const getCurrentStreak = (habitId, records, habit) => {
@@ -5536,7 +5583,7 @@ const getWeeklyRate = (habits, records) => {
     const dayRecs = records.filter(r => r.date === date);
     dayRecs.forEach(r => { total++; if (r.completed) completed++; });
   }
-  return total ? Math.round((completed / total) * 100) : 0;
+  return total  ? Math.round((completed / total) * 100) : 0;
 };
 
 const getGlobalBestStreak = (habits, records) => {
@@ -5557,7 +5604,7 @@ const getHabitStrength = (habitId, records) => {
     sumW += w;
     if (rec && rec.completed) sumV += w;
   }
-  return sumW > 0 ? Math.round((sumV / sumW) * 100) : 0;
+  return sumW > 0  ? Math.round((sumV / sumW) * 100) : 0;
 };
 
 const getAvgHabitStrength = (habits, records) => {
@@ -5566,7 +5613,7 @@ const getAvgHabitStrength = (habits, records) => {
   return Math.round(scores.reduce((a, b) => a + b, 0) / scores.length);
 };
 
-const getStrengthColor = (s) => s >= 70 ? COLORS.success : s >= 40 ? '#ffd93d' : COLORS.alert;
+const getStrengthColor = (s) => s >= 70  ? COLORS.success : s >= 40  ? '#ffd93d' : COLORS.alert;
 
 const getXpForLevel = (level) => Math.round(100 * level * 1.5);
 
@@ -5596,7 +5643,7 @@ const getDailyCompletionData = (habits, records, days = 30) => {
       label: formatDateShort(date),
       completed,
       total,
-      pct: total ? Math.round((completed / total) * 100) : 0
+      pct: total  ? Math.round((completed / total) * 100) : 0
     });
   }
   return data;
@@ -5617,7 +5664,7 @@ const getCategoryPerformance = (habits, records, days = 30) => {
   });
   return CATEGORIES.filter(c => catMap[c.id] && catMap[c.id].total > 0).map(c => ({
     category: c.label,
-    value: catMap[c.id].total ? Math.round((catMap[c.id].completed / catMap[c.id].total) * 100) : 0,
+    value: catMap[c.id].total  ? Math.round((catMap[c.id].completed / catMap[c.id].total) * 100) : 0,
     fullMark: 100,
     color: c.color,
     id: c.id
@@ -5646,7 +5693,7 @@ const getWeeklyStackData = (habits, records) => {
     const entry = { date: formatDateShort(date), label: dateStr };
     habits.filter(h => h.active).forEach(h => {
       const rec = records.find(r => r.habitId === h.id && r.date === dateStr);
-      entry[h.name] = rec && rec.completed ? 1 : 0;
+      entry[h.name] = rec && rec.completed  ? 1 : 0;
     });
     data.push(entry);
   }
@@ -5662,7 +5709,7 @@ const getHeatMapData = (habits, records, year, month) => {
     const dayRecs = records.filter(r => r.date === dateStr);
     const total = dayRecs.length;
     const completed = dayRecs.filter(r => r.completed).length;
-    const pct = total ? completed / total : 0;
+    const pct = total  ? completed / total : 0;
     const dow = date.getDay();
     data.push({ day: d, date: dateStr, dow, pct, completed, total, label: formatDateShort(date) });
   }
@@ -5677,12 +5724,12 @@ const getHeatMapIntensity = (pct) => {
   return '#006633';
 };
 
-const getDayLabels = () => ['Dom', 'Lun', 'Mar', 'MiÃ©', 'Jue', 'Vie', 'sÃ¡b'];
+const getDayLabels = () => ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'sáb'];
 
 const generateInsights = (habits, records) => {
   const insights = [];
   const today = new Date();
-  const dayNames = ['Domingo', 'Lunes', 'Martes', 'MiÃ©rcoles', 'Jueves', 'Viernes', 'sÃ¡bado'];
+  const dayNames = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'sábado'];
 
   const dayRates = Array(7).fill(0).map(() => ({ total: 0, completed: 0 }));
   for (let i = 0; i < 30; i++) {
@@ -5693,21 +5740,21 @@ const generateInsights = (habits, records) => {
   }
   let bestDay = 0, worstDay = 0;
   dayRates.forEach((d, i) => {
-    if (d.total && d.completed / d.total > (dayRates[bestDay].total ? dayRates[bestDay].completed / dayRates[bestDay].total : 0)) bestDay = i;
-    if (d.total && d.completed / d.total < (dayRates[worstDay].total ? dayRates[worstDay].completed / dayRates[worstDay].total : 1)) worstDay = i;
+    if (d.total && d.completed / d.total > (dayRates[bestDay].total  ? dayRates[bestDay].completed / dayRates[bestDay].total : 0)) bestDay = i;
+    if (d.total && d.completed / d.total < (dayRates[worstDay].total  ? dayRates[worstDay].completed / dayRates[worstDay].total : 1)) worstDay = i;
   });
-  const bestPct = dayRates[bestDay].total ? Math.round((dayRates[bestDay].completed / dayRates[bestDay].total) * 100) : 0;
-  const worstPct = dayRates[worstDay].total ? Math.round((dayRates[worstDay].completed / dayRates[worstDay].total) * 100) : 0;
+  const bestPct = dayRates[bestDay].total  ? Math.round((dayRates[bestDay].completed / dayRates[bestDay].total) * 100) : 0;
+  const worstPct = dayRates[worstDay].total  ? Math.round((dayRates[worstDay].completed / dayRates[worstDay].total) * 100) : 0;
   if (bestDay !== worstDay && dayRates[bestDay].total > 0) {
-    insights.push({ id: 'bestDay', icon: '\u{1F31F}', text: `Tu mejor dÃ­a es el ${dayNames[bestDay]} con un ${bestPct}% de completitud`, type: 'positive' });
-    insights.push({ id: 'worstDay', icon: '\u{26A0}\u{FE0F}', text: `Los ${dayNames[worstDay]} sueles fallar mÃ¡s (${worstPct}% completitud). QuÃ© pasa ese dÃ­a?`, type: 'warning' });
+    insights.push({ id: 'bestDay', icon: '\u{1F31F}', text: `Tu mejor día es el ${dayNames[bestDay]} con un ${bestPct}% de completitud`, type: 'positive' });
+    insights.push({ id: 'worstDay', icon: '\u{26A0}\u{FE0F}', text: `Los ${dayNames[worstDay]} suelen fallar más (${worstPct}% completitud). ¿Qué pasa ese día?`, type: 'warning' });
   }
 
   const scores = habits.filter(h => h.active).map(h => ({ h, score: getHabitStrength(h.id, records) })).sort((a, b) => b.score - a.score);
   if (scores.length > 0) {
-    insights.push({ id: 'strongest', icon: '\u{1F4AA}', text: `Tu hÃ¡bito mÃ¡s consolidado es '${scores[0].h.name}' con ${scores[0].score}% de fuerza`, type: 'positive' });
+    insights.push({ id: 'strongest', icon: '\u{1F4AA}', text: `Tu hábito más consolidado es '${scores[0].h.name}' con ${scores[0].score}% de fuerza`, type: 'positive' });
     if (scores.length > 1) {
-      insights.push({ id: 'weakest', icon: '\u{1F3AF}', text: `'${scores[scores.length - 1].h.name}' necesita mÃ¡s atenciÃ³n (${scores[scores.length - 1].score}% de fuerza)`, type: 'attention' });
+      insights.push({ id: 'weakest', icon: '\u{1F3AF}', text: `'${scores[scores.length - 1].h.name}' necesita más atención (${scores[scores.length - 1].score}% de fuerza)`, type: 'attention' });
     }
   }
 
@@ -5716,15 +5763,15 @@ const generateInsights = (habits, records) => {
   const calcWeekRate = (dates) => {
     let t = 0, c = 0;
     dates.forEach(d => { const r = records.filter(rec => rec.date === d); r.forEach(rec => { t++; if (rec.completed) c++; }); });
-    return t ? c / t : 0;
+    return t  ? c / t : 0;
   };
   const twr = calcWeekRate(thisWeek), lwr = calcWeekRate(lastWeek);
   if (twr > lwr && lwr > 0) {
     const diff = Math.round((twr - lwr) * 100);
-    insights.push({ id: 'trendUp', icon: '\u{1F4C8}', text: `Esta semana vas un ${diff}% mejor que la semana pasada. Â¡Sigue asÃ­!`, type: 'positive' });
+    insights.push({ id: 'trendUp', icon: '\u{1F4C8}', text: `Esta semana vas un ${diff}% mejor que la semana pasada. ¡Sigue as?!`, type: 'positive' });
   } else if (lwr > twr && twr > 0) {
     const diff = Math.round((lwr - twr) * 100);
-    insights.push({ id: 'trendDown', icon: '\u{1F4C9}', text: `Esta semana bajaste un ${diff}% vs la semana pasada. Â¡Puedes recuperarte!`, type: 'warning' });
+    insights.push({ id: 'trendDown', icon: '\u{1F4C9}', text: `Esta semana bajaste un ${diff}% vs la semana pasada. ¿Puedes recuperarte!`, type: 'warning' });
   }
 
   habits.filter(h => h.active).forEach(h => {
@@ -5732,7 +5779,7 @@ const generateInsights = (habits, records) => {
     const todayRec = records.find(r => r.habitId === h.id && r.date === toYYYYMMDD(today));
     const yesterdayRec = records.find(r => r.habitId === h.id && r.date === toYYYYMMDD(addDays(today, -1)));
     if (streak >= 5 && !todayRec?.completed) {
-      insights.push({ id: `risk-${h.id}`, icon: '\u{1F525}', text: `Tu racha en '${h.name}' estÃ¡ en riesgo (${streak} dÃ­as). No la rompas hoy!`, type: 'danger' });
+      insights.push({ id: `risk-${h.id}`, icon: '\u{1F525}', text: `Tu racha en '${h.name}' est ? en riesgo (${streak} días). No la rompas hoy!`, type: 'danger' });
     }
   });
 
@@ -5778,7 +5825,7 @@ const RippleButton = ({ onClick, children, style, disabled }) => {
   };
   return (
     <button ref={btnRef} onClick={handleClick} disabled={disabled}
-      style={{ position: 'relative', overflow: 'hidden', cursor: disabled ? 'not-allowed' : 'pointer', opacity: disabled ? 0.5 : 1, ...style }}>
+      style={{ position: 'relative', overflow: 'hidden', cursor: disabled  ? 'not-allowed' : 'pointer', opacity: disabled  ? 0.5 : 1, ...style }}>
       {children}
     </button>
   );
@@ -5795,7 +5842,7 @@ const CompletionHeatMap = ({ habits, records, days = 30 }) => {
           <div key={i} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2 }}>
             <div style={{
               width: '100%', minHeight: 4, height, borderRadius: '4px 4px 0 0',
-              background: d.pct >= 80 ? COLORS.success : d.pct >= 50 ? COLORS.primary : d.pct > 0 ? '#3a3a5a' : COLORS.card,
+              background: d.pct >= 80  ? COLORS.success : d.pct >= 50  ? COLORS.primary : d.pct > 0  ? '#3a3a5a' : COLORS.card,
               transition: 'height 0.5s ease, background 0.3s',
               animation: `barGrow 0.5s ease-out ${i * 30}ms both`,
               transformOrigin: 'bottom'
@@ -5813,23 +5860,23 @@ const HabitHeatMap30 = ({ habitId, records }) => {
   for (let i = 29; i >= 0; i--) {
     const date = toYYYYMMDD(addDays(now, -i));
     const rec = records.find(r => r.habitId === habitId && r.date === date);
-    data.push({ date, completed: rec ? rec.completed : false });
+    data.push({ date, completed: rec  ? rec.completed : false });
   }
   return (
     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(30, 1fr)', gap: 2 }}>
       {data.map((d, i) => (
         <div key={i} style={{
           width: '100%', aspectRatio: '1', borderRadius: 2,
-          background: d.completed ? COLORS.success : COLORS.card,
+          background: d.completed  ? COLORS.success : COLORS.card,
           transition: 'background 0.3s',
           position: 'relative'
-        }} title={`${d.date}: ${d.completed ? 'Hecho' : 'Pendiente'}`} />
+        }} title={`${d.date}: ${d.completed  ? 'Hecho' : 'Pendiente'}`} />
       ))}
     </div>
   );
 };
 
-const DAY_LABELS = ['Dom', 'Lun', 'Mar', 'MiÃ©', 'Jue', 'Vie', 'sÃ¡b'];
+const DAY_LABELS = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'sáb'];
 
 const HabitForm = ({ initial, onSave, onCancel, categories = CATEGORIES, onCreateCategory }) => {
   const initialCategory = initial?.category || 'salud';
@@ -5875,7 +5922,7 @@ const HabitForm = ({ initial, onSave, onCancel, categories = CATEGORIES, onCreat
   const toggleReminderDay = (day) => {
     const current = form.reminder?.days || [];
     updateReminder('days', current.includes(day)
-      ? current.filter(item => item !== day)
+       ? current.filter(item => item !== day)
       : [...current, day].sort());
   };
 
@@ -5924,7 +5971,7 @@ const HabitForm = ({ initial, onSave, onCancel, categories = CATEGORIES, onCreat
       return;
     }
     if (form.reminder?.enabled && (!form.reminder.time || !form.reminder.days?.length)) {
-      setError('El recordatorio necesita una hora y al menos un dÃ­a.');
+      setError('El recordatorio necesita una hora y al menos un día.');
       return;
     }
     onSave({
@@ -5953,29 +6000,29 @@ const HabitForm = ({ initial, onSave, onCancel, categories = CATEGORIES, onCreat
           autoFocus
           value={form.name}
           onChange={event => { handleChange('name', event.target.value); setError(''); }}
-          placeholder="Ej: Leer 20 pÃ¡ginas"
+          placeholder="Ej: Leer 20 páginas"
           aria-invalid={!!error}
         />
       </div>
 
       <div className="habit-form-field habit-form-field-wide">
-        <label htmlFor="habit-description">DescripciÃ³n</label>
+        <label htmlFor="habit-description">Descripción</label>
         <input
           id="habit-description"
           value={form.description}
           onChange={event => handleChange('description', event.target.value)}
-          placeholder="Opcional Â· Describe tu hÃ¡bito"
+          placeholder="Opcional  ? Describe tu hábito"
         />
       </div>
 
       <div className="habit-form-columns">
         <div className="habit-form-field">
-          <label htmlFor="habit-category">CategorÃ­a</label>
+          <label htmlFor="habit-category">Categoría</label>
           <div className="habit-select-shell">
             <SelectedCategoryIcon size={20} strokeWidth={1.7} />
             <select id="habit-category" value={form.category} onChange={event => handleCategorySelection(event.target.value)}>
               {categories.map(category => <option key={category.id} value={category.id}>{category.label}</option>)}
-              <option value="__new__">+ Crear categorÃ­a</option>
+              <option value="__new__">+ Crear categoría</option>
             </select>
             <ChevronDown size={17} />
           </div>
@@ -5998,8 +6045,8 @@ const HabitForm = ({ initial, onSave, onCancel, categories = CATEGORIES, onCreat
       {showCategoryCreator && (
         <div className="habit-category-creator">
           <div>
-            <strong>Nueva categorÃ­a</strong>
-            <span>Se guardarÃ¡ y aparecerÃ¡ tambiÃ©n en los filtros.</span>
+            <strong>Nueva categoría</strong>
+            <span>Se guardar ? y aparecer ? también en los filtros.</span>
           </div>
           <div className="habit-category-creator-controls">
             <input
@@ -6011,7 +6058,7 @@ const HabitForm = ({ initial, onSave, onCancel, categories = CATEGORIES, onCreat
               type="color"
               value={newCategory.color}
               onChange={event => setNewCategory(current => ({ ...current, color: event.target.value }))}
-              aria-label="Color de la categorÃ­a"
+              aria-label="Color de la categoría"
             />
             <button type="button" onClick={createCategory} disabled={!newCategory.name.trim()}>Crear</button>
             <button type="button" className="is-quiet" onClick={() => setShowCategoryCreator(false)}>Cancelar</button>
@@ -6021,13 +6068,13 @@ const HabitForm = ({ initial, onSave, onCancel, categories = CATEGORIES, onCreat
 
       {form.frequency === 'Personalizado' && (
         <div className="habit-form-field habit-form-days">
-          <label>DÃ­as del hÃ¡bito</label>
+          <label>Días del hábito</label>
           <div>
             {DAY_LABELS.map((label, day) => (
               <button
                 key={label}
                 type="button"
-                className={(form.frequencyDays || []).includes(day) ? 'is-active' : ''}
+                className={(form.frequencyDays || []).includes(day)  ? 'is-active' : ''}
                 onClick={() => toggleDay(day)}
               >
                 {label.slice(0, 1)}
@@ -6040,7 +6087,7 @@ const HabitForm = ({ initial, onSave, onCancel, categories = CATEGORIES, onCreat
       <div className="habit-icon-section">
         <div className="habit-icon-heading">
           <div>
-            <label>Ãcono</label>
+            <label>Ícono</label>
             <span>Elige uno de los iconos disponibles</span>
           </div>
           <span>{HABIT_ICONS.length} iconos</span>
@@ -6053,7 +6100,7 @@ const HabitForm = ({ initial, onSave, onCancel, categories = CATEGORIES, onCreat
               <button
                 key={item.id}
                 type="button"
-                className={selected ? 'is-selected' : ''}
+                className={selected  ? 'is-selected' : ''}
                 onClick={() => handleChange('icon', item.id)}
                 title={item.label}
                 aria-label={item.label}
@@ -6083,13 +6130,13 @@ const HabitForm = ({ initial, onSave, onCancel, categories = CATEGORIES, onCreat
             max="365"
             value={form.targetStreak}
             onChange={event => handleChange('targetStreak', Math.max(3, Math.min(365, Number(event.target.value) || 3)))}
-            aria-label="DÃ­as objetivo"
+            aria-label="Días objetivo"
           />
-          <span>dÃ­as</span>
+          <span>días</span>
         </div>
       </div>
 
-      <section className={`habit-reminder-card ${form.reminder?.enabled ? 'is-enabled' : ''}`}>
+      <section className={`habit-reminder-card ${form.reminder?.enabled  ? 'is-enabled' : ''}`}>
         <div className="habit-reminder-header">
           <div>
             <Bell size={20} strokeWidth={1.7} />
@@ -6100,7 +6147,7 @@ const HabitForm = ({ initial, onSave, onCancel, categories = CATEGORIES, onCreat
           </div>
           <button
             type="button"
-            className={`habit-switch ${form.reminder?.enabled ? 'is-on' : ''}`}
+            className={`habit-switch ${form.reminder?.enabled  ? 'is-on' : ''}`}
             onClick={handleReminderToggle}
             role="switch"
             aria-checked={!!form.reminder?.enabled}
@@ -6120,17 +6167,17 @@ const HabitForm = ({ initial, onSave, onCancel, categories = CATEGORIES, onCreat
                 id="habit-reminder-message"
                 value={form.reminder.message}
                 onChange={event => updateReminder('message', event.target.value)}
-                placeholder={`Es hora de ${form.name || 'tu hÃ¡bito'}`}
+                placeholder={`Es hora de ${form.name || 'tu hábito'}`}
               />
             </div>
             <div className="habit-form-field habit-form-days habit-reminder-days">
-              <label>DÃ­as de aviso</label>
+              <label>Días de aviso</label>
               <div>
                 {DAY_LABELS.map((label, day) => (
                   <button
                     key={label}
                     type="button"
-                    className={(form.reminder.days || []).includes(day) ? 'is-active' : ''}
+                    className={(form.reminder.days || []).includes(day)  ? 'is-active' : ''}
                     onClick={() => toggleReminderDay(day)}
                   >
                     {label.slice(0, 1)}
@@ -6147,7 +6194,7 @@ const HabitForm = ({ initial, onSave, onCancel, categories = CATEGORIES, onCreat
       <div className="habit-form-footer">
         <button type="button" className="habit-form-cancel" onClick={onCancel}>Cancelar</button>
         <button type="button" className="habit-form-submit" onClick={handleSubmit}>
-          {initial ? 'Guardar cambios' : 'Crear hÃ¡bito'}
+          {initial  ? 'Guardar cambios' : 'Crear hábito'}
         </button>
       </div>
     </div>
@@ -6164,10 +6211,10 @@ const ConfirmModal = ({ isOpen, title, message, onConfirm, onCancel, danger }) =
       }}>Cancelar</button>
       <RippleButton onClick={onConfirm} style={{
         padding: '10px 24px', borderRadius: 8, border: 'none',
-        background: danger ? COLORS.alert : COLORS.primary, color: '#fff',
+        background: danger  ? COLORS.alert : COLORS.primary, color: '#fff',
         fontSize: 14, fontFamily: "'Inter', sans-serif"
       }}>
-        {danger ? 'Eliminar' : 'Confirmar'}
+        {danger  ? 'Eliminar' : 'Confirmar'}
       </RippleButton>
     </div>
   </Modal>
@@ -6179,14 +6226,14 @@ const AchievementsSection = ({ habits, records }) => {
     const totalCompletions = records.filter(r => r.completed).length;
     const bestStreak = getGlobalBestStreak(habits, records);
 
-    if (totalCompletions >= 10) list.push({ id: 'a1', icon: '\u{1F331}', label: 'Primeros Pasos', desc: '10 hÃ¡bitos completados', unlocked: true, color: '#ffd93d' });
-    if (totalCompletions >= 50) list.push({ id: 'a2', icon: '\u{1F525}', label: 'Racha de Fuego', desc: '50 hÃ¡bitos completados', unlocked: true, color: '#ff6b6b' });
-    if (totalCompletions >= 100) list.push({ id: 'a3', icon: '\u{1F4AA}', label: 'DedicaciÃ³n', desc: '100 hÃ¡bitos completados', unlocked: true, color: '#e11d48' });
-    if (totalCompletions >= 200) list.push({ id: 'a4', icon: '\u{1F3C6}', label: 'CampeÃ³n', desc: '200 hÃ¡bitos completados', unlocked: true, color: '#ffd93d' });
-    if (bestStreak >= 7) list.push({ id: 'a5', icon: '\u{1F4C5}', label: 'Una Semana', desc: 'Racha de 7 dÃ­as', unlocked: true, color: '#efefef' });
-    if (bestStreak >= 14) list.push({ id: 'a6', icon: '\u{1F680}', label: 'Dos Semanas', desc: 'Racha de 14 dÃ­as', unlocked: true, color: '#ff6b6b' });
-    if (bestStreak >= 21) list.push({ id: 'a7', icon: '\u{2705}', label: '21 dÃ­as', desc: 'Racha de 21 dÃ­as (hÃ¡bito formado)', unlocked: true, color: '#00ff9d' });
-    if (bestStreak >= 30) list.push({ id: 'a8', icon: '\u{1F31F}', label: 'Un Mes', desc: 'Racha de 30 dÃ­as', unlocked: true, color: '#ffd93d' });
+    if (totalCompletions >= 10) list.push({ id: 'a1', icon: '\u{1F331}', label: 'Primeros Pasos', desc: '10 hábitos completados', unlocked: true, color: '#ffd93d' });
+    if (totalCompletions >= 50) list.push({ id: 'a2', icon: '\u{1F525}', label: 'Racha de Fuego', desc: '50 hábitos completados', unlocked: true, color: '#ff6b6b' });
+    if (totalCompletions >= 100) list.push({ id: 'a3', icon: '\u{1F4AA}', label: 'Dedicación', desc: '100 hábitos completados', unlocked: true, color: '#e11d48' });
+    if (totalCompletions >= 200) list.push({ id: 'a4', icon: '\u{1F3C6}', label: 'Campeón', desc: '200 hábitos completados', unlocked: true, color: '#ffd93d' });
+    if (bestStreak >= 7) list.push({ id: 'a5', icon: '\u{1F4C5}', label: 'Una Semana', desc: 'Racha de 7 días', unlocked: true, color: '#efefef' });
+    if (bestStreak >= 14) list.push({ id: 'a6', icon: '\u{1F680}', label: 'Dos Semanas', desc: 'Racha de 14 días', unlocked: true, color: '#ff6b6b' });
+    if (bestStreak >= 21) list.push({ id: 'a7', icon: '\u{2705}', label: '21 días', desc: 'Racha de 21 días (hábito formado)', unlocked: true, color: '#00ff9d' });
+    if (bestStreak >= 30) list.push({ id: 'a8', icon: '\u{1F31F}', label: 'Un Mes', desc: 'Racha de 30 días', unlocked: true, color: '#ffd93d' });
 
    CATEGORIES.forEach(c => {
       const catHabits = habits.filter(h => h.active && h.category === c.id);
@@ -6268,12 +6315,12 @@ const DashboardView = ({ data, onCompleteHabit, workoutData, onNavigate, onUpdat
   const todayCount = getTodayCount(habits, records);
   const greet = greets();
   const dailyQuotes = [
-    'La disciplina no grita: aparece todos los dÃ­as.',
+    'La disciplina no grita: aparece todos los días.',
     'Hoy no necesitas hacerlo perfecto, necesitas hacerlo.',
-    'Un hÃ¡bito cumplido es una promesa que sÃ­ te respetaste.',
-    'La constancia convierte dÃ­as normales en resultados raros.',
-    'Tu futuro se negocia en los minutos pequeÃ±os.',
-    'Hazlo simple, hazlo hoy, repÃ­telo maÃ±ana.',
+    'Un hábito cumplido es una promesa que s ? te respetaste.',
+    'La constancia convierte días normales en resultados raros.',
+    'Tu futuro se negocia en los minutos pequeños.',
+    'Hazlo simple, hazlo hoy, repítelo mañana.',
     'El progreso elegante casi siempre parece aburrido al principio.'
   ];
   const dailyQuote = dailyQuotes[new Date().getDate() % dailyQuotes.length];
@@ -6291,15 +6338,15 @@ const DashboardView = ({ data, onCompleteHabit, workoutData, onNavigate, onUpdat
     habits.filter(h => h.active).map(h => {
       const rec = records.find(r => r.habitId === h.id && r.date === today);
       const cat = getCategoryInfo(h.category);
-      return { ...h, completed: rec ? rec.completed : false, categoryInfo: cat, streak: getCurrentStreak(h.id, records) };
+      return { ...h, completed: rec  ? rec.completed : false, categoryInfo: cat, streak: getCurrentStreak(h.id, records) };
     }), [habits, records, today]);
 
   const isFirstRun = !data.user?.onboardingDone && (habits.length === 0 || records.length === 0);
   const [tourStep, setTourStep] = useState(null);
   const tourSteps = [
-    { title: 'Crea tus primeros hÃ¡bitos', text: 'Empieza con 3 hÃ¡bitos simples. Mejor poco y constante que una lista enorme imposible de cumplir.', view: 'habits' },
-    { title: 'Organiza tu dÃ­a', text: 'Usa Agenda para anotar tareas, poner etiquetas, fechas y alertas. AquÃ­ aterrizas lo que tienes que hacer.', view: 'agenda' },
-    { title: 'EnfÃ³cate y mide progreso', text: 'Pomodoro te ayuda a trabajar por bloques. El Panel te muestra quÃ© estÃ¡ funcionando y quÃ© debes ajustar.', view: 'pomodoro' }
+    { title: 'Crea tus primeros hábitos', text: 'Empieza con 3 hábitos simples. Mejor poco y constante que una lista enorme imposible de cumplir.', view: 'habits' },
+    { title: 'Organiza tu día', text: 'Usa Agenda para anotar tareas, poner etiquetas, fechas y alertas. Aqué aterrizas lo que tienes que hacer.', view: 'agenda' },
+    { title: 'Enfócate y mide progreso', text: 'Pomodoro te ayuda a trabajar por bloques. El Panel te muestra qué est ? funcionando y qué debes ajustar.', view: 'pomodoro' }
   ];
   const finishTour = (view = 'habits') => {
     onUpdateUser?.({ onboardingDone: true });
@@ -6336,31 +6383,31 @@ const DashboardView = ({ data, onCompleteHabit, workoutData, onNavigate, onUpdat
               justifyContent: 'space-between', gap: 14, flexWrap: 'wrap'
             }}>
               <div>
-                <div style={{ color: COLORS.text, fontSize: 17, fontWeight: 800, marginBottom: 4 }}>Empieza con una guÃ­a rÃ¡pida</div>
-                <div style={{ color: COLORS.textDim, fontSize: 12, lineHeight: 1.6 }}>Te muestro en 3 pasos cÃ³mo crear hÃ¡bitos, organizar tareas y medir tu progreso.</div>
+                <div style={{ color: COLORS.text, fontSize: 17, fontWeight: 800, marginBottom: 4 }}>Empieza con una guía rápida</div>
+                <div style={{ color: COLORS.textDim, fontSize: 12, lineHeight: 1.6 }}>Te muestro en 3 pasos cómo crear hábitos, organizar tareas y medir tu progreso.</div>
               </div>
               <button className="lab-cta" onClick={() => setTourStep(0)} style={{
                 borderRadius: 999, padding: '11px 18px', cursor: 'pointer',
                 fontSize: 12, fontFamily: "'Inter', sans-serif", fontWeight: 700
               }}>
-                <span>Activar mis hÃ¡bitos ahora</span>
+                <span>Activar mis hábitos ahora</span>
               </button>
             </div>
           )}
 
-          <Modal isOpen={tourStep !== null} onClose={() => setTourStep(null)} title={tourStep !== null ? tourSteps[tourStep].title : ''} width={460}>
+          <Modal isOpen={tourStep !== null} onClose={() => setTourStep(null)} title={tourStep !== null  ? tourSteps[tourStep].title : ''} width={460}>
             {tourStep !== null && (
               <div>
                 <div style={{ display: 'flex', gap: 6, marginBottom: 16 }}>
-                  {tourSteps.map((_, i) => <div key={i} style={{ flex: 1, height: 5, borderRadius: 99, background: i <= tourStep ? COLORS.primary : COLORS.border }} />)}
+                  {tourSteps.map((_, i) => <div key={i} style={{ flex: 1, height: 5, borderRadius: 99, background: i <= tourStep  ? COLORS.primary : COLORS.border }} />)}
                 </div>
                 <p style={{ color: COLORS.textDim, fontSize: 13, lineHeight: 1.7, marginBottom: 18 }}>{tourSteps[tourStep].text}</p>
                 <div style={{ display: 'flex', justifyContent: 'space-between', gap: 10 }}>
                   <button onClick={() => setTourStep(null)} style={{ padding: '10px 14px', borderRadius: 10, border: `1px solid ${COLORS.border}`, background: 'transparent', color: COLORS.textDim, cursor: 'pointer' }}>Cerrar</button>
                   <div style={{ display: 'flex', gap: 8 }}>
                     {tourStep > 0 && <button onClick={() => setTourStep(s => s - 1)} style={{ padding: '10px 14px', borderRadius: 10, border: `1px solid ${COLORS.border}`, background: COLORS.bg, color: COLORS.text, cursor: 'pointer' }}>Anterior</button>}
-                    <button className="lab-cta" onClick={() => tourStep === tourSteps.length - 1 ? finishTour('habits') : setTourStep(s => s + 1)} style={{ padding: '10px 14px', borderRadius: 999, cursor: 'pointer' }}>
-                      <span>{tourStep === tourSteps.length - 1 ? 'Crear mi primer habito' : 'Siguiente'}</span>
+                    <button className="lab-cta" onClick={() => tourStep === tourSteps.length - 1  ? finishTour('habits') : setTourStep(s => s + 1)} style={{ padding: '10px 14px', borderRadius: 999, cursor: 'pointer' }}>
+                      <span>{tourStep === tourSteps.length - 1  ? 'Crear mi primer hábito' : 'Siguiente'}</span>
                     </button>
                   </div>
                 </div>
@@ -6370,18 +6417,18 @@ const DashboardView = ({ data, onCompleteHabit, workoutData, onNavigate, onUpdat
 
           <div className="kpi-grid" style={{ marginBottom: 24 }}>
             <KPICard icon={'\u{2705}'} title="Completados Hoy" value={kpis.completed} suffix={`/${kpis.total}`}
-              subtitle="HÃ¡bitos marcados hoy" accent={COLORS.secondary}
-              progress={kpis.total > 0 ? kpis.completed / kpis.total : 0} delay={100} />
-            <KPICard icon={'\u{1F525}'} title="Racha Actual" value={kpis.currentStreak} subtitle="dÃ­as consecutivos"
-              accent={COLORS.alert} suffix=" dÃ­as" delay={200} />
-            <KPICard icon={'\u{1F4AA}'} title="Fuerza de HÃ¡bitos" value={getAvgHabitStrength(habits, records)}
-              subtitle="PuntuaciÃ³n promedio (0-100)" accent={COLORS.primary} suffix=" ptos" delay={250}
+              subtitle="Hábitos marcados hoy" accent={COLORS.secondary}
+              progress={kpis.total > 0  ? kpis.completed / kpis.total : 0} delay={100} />
+            <KPICard icon={'\u{1F525}'} title="Racha Actual" value={kpis.currentStreak} subtitle="días consecutivos"
+              accent={COLORS.alert} suffix=" días" delay={200} />
+            <KPICard icon={'\u{1F4AA}'} title="Fuerza de Hábitos" value={getAvgHabitStrength(habits, records)}
+              subtitle="Puntuación promedio (0-100)" accent={COLORS.primary} suffix=" ptos" delay={250}
               progress={getAvgHabitStrength(habits, records) / 100} />
-            <KPICard icon={'\u{1F4C8}'} title="Tasa de Ã©xito" value={kpis.rate} subtitle="Esta semana"
+            <KPICard icon={'\u{1F4C8}'} title="Tasa de Éxito" value={kpis.rate} subtitle="Esta semana"
               accent={COLORS.success} suffix="%" delay={300}
               progress={kpis.rate / 100} />
-            <KPICard icon={'\u{1F3C6}'} title="Mejor Racha" value={kpis.bestStreak} subtitle="RÃ©cord histÃ³rico"
-              accent={COLORS.alert} suffix=" dÃ­as" delay={400} />
+            <KPICard icon={'\u{1F3C6}'} title="Mejor Racha" value={kpis.bestStreak} subtitle="Récord histórico"
+              accent={COLORS.alert} suffix=" días" delay={400} />
           </div>
 
           {workoutData?.sessions?.length > 0 && (() => {
@@ -6389,14 +6436,14 @@ const DashboardView = ({ data, onCompleteHabit, workoutData, onNavigate, onUpdat
             return (
               <div style={{ background: `linear-gradient(135deg, ${COLORS.card}, ${COLORS.surface})`, borderRadius: 16, border: `1px solid ${COLORS.border}`, padding: 20, marginBottom: 24 }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
-                  <div style={{ fontSize: 13, color: COLORS.textDim }}>{'\u{1F3CB}\u{FE0F}'} Ãšltimo Entreno</div>
+                  <div style={{ fontSize: 13, color: COLORS.textDim }}>{'\u{1F3CB}\u{FE0F}'} Último Entreno</div>
                   <div style={{ fontSize: 11, color: COLORS.textDim, fontFamily: "'Inter', sans-serif" }}>{last.date}</div>
                 </div>
                 <div style={{ fontSize: 16, color: COLORS.text, fontFamily: "'DM Serif Display', serif", marginBottom: 8 }}>{last.routineName || 'Entreno Libre'}</div>
                 <div style={{ display: 'flex', gap: 24, fontSize: 12, color: COLORS.textDim }}>
-                  <span><span style={{ color: COLORS.success }}>{(last.totalVolume || 0) > 999 ? `${(last.totalVolume / 1000).toFixed(1)}k` : last.totalVolume || 0}</span> kg</span>
+                  <span><span style={{ color: COLORS.success }}>{(last.totalVolume || 0) > 999  ? `${(last.totalVolume / 1000).toFixed(1)}k` : last.totalVolume || 0}</span> kg</span>
                   <span><span style={{ color: COLORS.primary }}>{last.exercises?.length || 0}</span> ejercicios</span>
-                  <span><span style={{ color: COLORS.alert }}>{last.duration ? `${Math.floor(last.duration / 60)}m` : '--'}</span></span>
+                  <span><span style={{ color: COLORS.alert }}>{last.duration  ? `${Math.floor(last.duration / 60)}m` : '--'}</span></span>
                 </div>
               </div>
             );
@@ -6404,7 +6451,7 @@ const DashboardView = ({ data, onCompleteHabit, workoutData, onNavigate, onUpdat
 
           <div style={{ background: COLORS.card, borderRadius: 16, border: `1px solid ${COLORS.border}`, padding: 24, marginBottom: 24 }}>
             <h3 style={{ fontSize: 18, color: COLORS.text, marginBottom: 16, fontFamily: "'DM Serif Display', serif" }}>
-              Ãšltimos 7 dÃ­as
+              Últimos 7 días
             </h3>
             {(() => {
               const dailyData = getDailyCompletionData(habits, records, 7);
@@ -6420,8 +6467,8 @@ const DashboardView = ({ data, onCompleteHabit, workoutData, onNavigate, onUpdat
                       return (
                         <div style={{ background: '#1a1a26', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 10, padding: '10px 14px', boxShadow: '0 8px 32px rgba(0,0,0,0.4)' }}>
                           <div style={{ fontSize: 13, color: COLORS.text, marginBottom: 4 }}>{d.label}</div>
-                          <div style={{ fontSize: 12, color: COLORS.textDim }}><span style={{ color: COLORS.primary }}>{'\u{2705}'}</span> {d.completed}/{d.total} hÃ¡bitos</div>
-                          <div style={{ fontSize: 12, color: COLORS.textDim }}>Tasa: <span style={{ color: d.pct >= 80 ? COLORS.success : d.pct >= 50 ? COLORS.primary : COLORS.alert }}>{d.pct}%</span></div>
+                          <div style={{ fontSize: 12, color: COLORS.textDim }}><span style={{ color: COLORS.primary }}>{'\u{2705}'}</span> {d.completed}/{d.total} hábitos</div>
+                          <div style={{ fontSize: 12, color: COLORS.textDim }}>Tasa: <span style={{ color: d.pct >= 80  ? COLORS.success : d.pct >= 50  ? COLORS.primary : COLORS.alert }}>{d.pct}%</span></div>
                         </div>
                       );
                     }} />
@@ -6455,7 +6502,7 @@ const DashboardView = ({ data, onCompleteHabit, workoutData, onNavigate, onUpdat
                 );
               })}
               {insights.length === 0 && (
-                <div style={{ color: COLORS.textDim, fontSize: 13, padding: 16 }}>Completa mÃ¡s hÃ¡bitos para recibir perspectivas personalizadas.</div>
+                <div style={{ color: COLORS.textDim, fontSize: 13, padding: 16 }}>Completa más hábitos para recibir perspectivas personalizadas.</div>
               )}
             </div>
           </div>
@@ -6468,20 +6515,20 @@ const DashboardView = ({ data, onCompleteHabit, workoutData, onNavigate, onUpdat
           padding: 20, position: 'sticky', top: 16
         }}>
           <h3 style={{ fontSize: 15, color: COLORS.text, marginBottom: 16, fontFamily: "'DM Serif Display', serif" }}>
-            HÃ¡bitos de Hoy
+            Hábitos de Hoy
           </h3>
-          <div className="today-habits-grid" style={{ display: 'grid', gridTemplateColumns: habitsToday.length > 8 ? 'repeat(2, minmax(0, 1fr))' : '1fr', gap: 7 }}>
+          <div className="today-habits-grid" style={{ display: 'grid', gridTemplateColumns: habitsToday.length > 8  ? 'repeat(2, minmax(0, 1fr))' : '1fr', gap: 7 }}>
             {habitsToday.length === 0 && (
               <div style={{ fontSize: 12, color: COLORS.textDim, textAlign: 'center', padding: 16 }}>
-                No hay hÃ¡bitos activos
+                No hay hábitos activos
               </div>
             )}
             {habitsToday.map(h => (
               <div key={h.id} className="dashboard-today-habit" style={{
                 display: 'flex', alignItems: 'center', gap: 10,
                 padding: '10px 12px', borderRadius: 10,
-                background: h.completed ? 'rgba(0,255,157,0.06)' : 'transparent',
-                border: `1px solid ${h.completed ? 'rgba(0,255,157,0.12)' : 'transparent'}`,
+                background: h.completed  ? 'rgba(0,255,157,0.06)' : 'transparent',
+                border: `1px solid ${h.completed  ? 'rgba(0,255,157,0.12)' : 'transparent'}`,
                 cursor: 'pointer'
               }} onClick={() => onCompleteHabit(h.id)}>
                 <span className="fire-emoji" style={{ width: 28, display: 'grid', placeItems: 'center', flexShrink: 0 }}>
@@ -6490,8 +6537,8 @@ const DashboardView = ({ data, onCompleteHabit, workoutData, onNavigate, onUpdat
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <div style={{
                     fontSize: 13, color: COLORS.text, fontWeight: 500,
-                    textDecoration: h.completed ? 'line-through' : 'none',
-                    opacity: h.completed ? 0.5 : 1
+                    textDecoration: h.completed  ? 'line-through' : 'none',
+                    opacity: h.completed  ? 0.5 : 1
                   }}>{h.name}</div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 1 }}>
                     <span style={{ fontSize: 10, color: h.categoryInfo.color, background: `${h.categoryInfo.color}12`, padding: '1px 6px', borderRadius: 3 }}>
@@ -6504,20 +6551,20 @@ const DashboardView = ({ data, onCompleteHabit, workoutData, onNavigate, onUpdat
                 </div>
                 <div style={{
                   width: 28, height: 28, borderRadius: 8,
-                  background: h.completed ? 'rgba(0,255,157,0.16)' : COLORS.bg,
-                  border: `1px solid ${h.completed ? 'rgba(0,255,157,0.32)' : COLORS.border}`,
-                  boxShadow: h.completed ? 'inset 0 0 0 1px rgba(255,255,255,0.025)' : 'none',
+                  background: h.completed  ? 'rgba(0,255,157,0.16)' : COLORS.bg,
+                  border: `1px solid ${h.completed  ? 'rgba(0,255,157,0.32)' : COLORS.border}`,
+                  boxShadow: h.completed  ? 'inset 0 0 0 1px rgba(255,255,255,0.025)' : 'none',
                   display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0
                 }}>
-                  {h.completed ? <Check size={13} className="completed-badge soft-check" /> : <div style={{ width: 4, height: 4, borderRadius: '50%', background: COLORS.textDim }} />}
+                  {h.completed  ? <Check size={13} className="completed-badge soft-check" /> : <div style={{ width: 4, height: 4, borderRadius: '50%', background: COLORS.textDim }} />}
                 </div>
               </div>
             ))}
           </div>
           <div style={{ marginTop: 12, paddingTop: 12, borderTop: `1px solid ${COLORS.border}`, display: 'flex', justifyContent: 'space-between', fontSize: 11, color: COLORS.textDim }}>
             <span>{kpis.completed}/{kpis.total} completados</span>
-            <span style={{ color: kpis.total > 0 && kpis.completed === kpis.total ? COLORS.success : COLORS.textDim }}>
-              {kpis.total > 0 ? `${Math.round((kpis.completed / kpis.total) * 100)}%` : '--'}
+            <span style={{ color: kpis.total > 0 && kpis.completed === kpis.total  ? COLORS.success : COLORS.textDim }}>
+              {kpis.total > 0  ? `${Math.round((kpis.completed / kpis.total) * 100)}%` : '--'}
             </span>
           </div>
         </div>
@@ -6536,10 +6583,10 @@ const ChallengesView = ({ data, onCompleteChallenge, onJoinChallenge, records })
   const available = PREDEFINED_CHALLENGES.filter(pc => !challenges.some(c => c.id === pc.id));
 
   const handleJoinChallenge = (pc) => {
-    const habitId = pc.target ? `ch_${pc.id}` : null;
+    const habitId = pc.target  ? `ch_${pc.id}` : null;
     let habitData = null;
     if (pc.target && !habits.some(h => h.id === habitId)) {
-      habitData = { id: habitId, name: pc.target.name, category: pc.target.category, icon: isBrokenHabitIcon(pc.target.icon) ? getCategoryIcon(pc.target.category) : pc.target.icon, frequency: pc.target.frequency, targetStreak: pc.target.targetStreak, description: `Reto: ${pc.name}`, createdAt: today, active: true };
+      habitData = { id: habitId, name: pc.target.name, category: pc.target.category, icon: isBrokenHabitIcon(pc.target.icon)  ? getCategoryIcon(pc.target.category) : pc.target.icon, frequency: pc.target.frequency, targetStreak: pc.target.targetStreak, description: `Reto: ${pc.name}`, createdAt: today, active: true };
     }
     const challenge = { id: pc.id, predefinedId: pc.id, name: pc.name, icon: pc.icon, desc: pc.desc, duration: pc.duration, difficulty: pc.difficulty, diffColor: pc.diffColor, target: pc.target, habitId, startDate: today, status: 'active', progress: 0 };
     onJoinChallenge(challenge, habitData);
@@ -6550,26 +6597,26 @@ const ChallengesView = ({ data, onCompleteChallenge, onJoinChallenge, records })
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
         <h3 style={{ fontSize: 18, color: COLORS.text, fontFamily: "'DM Serif Display', serif" }}>
           <Award size={18} style={{ verticalAlign: 'middle', marginRight: 8, color: COLORS.primary }} />
-          DesafÃ­os 30 dÃ­as
+          Desafíos 30 días
         </h3>
         <button onClick={() => setShowCreate(!showCreate)} style={{
           padding: '8px 16px', borderRadius: 8, border: 'none',
-          background: showCreate ? COLORS.border : `${COLORS.primary}15`,
-          color: showCreate ? COLORS.textDim : COLORS.primary,
+          background: showCreate  ? COLORS.border : `${COLORS.primary}15`,
+          color: showCreate  ? COLORS.textDim : COLORS.primary,
           cursor: 'pointer', fontSize: 13, fontFamily: "'Inter', sans-serif"
-        }}>{showCreate ? 'Cerrar' : 'Explorar Retos'}</button>
+        }}>{showCreate  ? 'Cerrar' : 'Explorar Retos'}</button>
       </div>
 
       {showCreate && (
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: 12, marginBottom: 24 }}>
-          {available.length === 0 && <div style={{ color: COLORS.textDim, fontSize: 13, textAlign: 'center', padding: 20, gridColumn: '1 / -1' }}>Â¡Ya uniste todos los retos disponibles!</div>}
+          {available.length === 0 && <div style={{ color: COLORS.textDim, fontSize: 13, textAlign: 'center', padding: 20, gridColumn: '1 / -1' }}>¡Ya uniste todos los retos disponibles!</div>}
           {available.map(pc => (
             <div key={pc.id} style={{ background: COLORS.card, borderRadius: 12, border: `1px solid ${COLORS.border}`, padding: 16 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
                 <span className="fire-emoji" style={{ fontSize: 28 }}>{pc.icon}</span>
                 <div style={{ flex: 1 }}>
                   <div style={{ fontSize: 14, color: COLORS.text, fontWeight: 500 }}>{pc.name}</div>
-                  <span style={{ fontSize: 11, color: pc.diffColor }}>{pc.difficulty}  {pc.duration} dÃ­as</span>
+                  <span style={{ fontSize: 11, color: pc.diffColor }}>{pc.difficulty}  {pc.duration} días</span>
                 </div>
               </div>
               <div style={{ fontSize: 12, color: COLORS.textDim, marginBottom: 12 }}>{pc.desc}</div>
@@ -6604,7 +6651,7 @@ const ChallengesView = ({ data, onCompleteChallenge, onJoinChallenge, records })
                     <span className="fire-emoji" style={{ fontSize: 28 }}>{c.icon}</span>
                     <div style={{ flex: 1 }}>
                       <div style={{ fontSize: 14, color: COLORS.text, fontWeight: 500 }}>{c.name}</div>
-                      <span style={{ fontSize: 11, color: c.diffColor || COLORS.textDim }}>{c.difficulty}  dÃ­a {Math.min(c.duration, diff + 1)} de {c.duration}</span>
+                      <span style={{ fontSize: 11, color: c.diffColor || COLORS.textDim }}>{c.difficulty}  día {Math.min(c.duration, diff + 1)} de {c.duration}</span>
                     </div>
                     <span style={{ fontSize: 13, color: COLORS.primary, fontFamily: "'Inter', sans-serif" }}>{Math.round(progress * 100)}%</span>
                   </div>
@@ -6668,13 +6715,13 @@ const HabitsView = ({ data, onAddHabit, onUpdateHabit, onDeleteHabit, onToggleHa
   });
   const [calSelect, setCalSelect] = useState(null);
 
-  const dayNames = ['Lun', 'Mar', 'MiÃ©', 'Jue', 'Vie', 'sÃ¡b', 'Dom'];
+  const dayNames = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'sáb', 'Dom'];
 
   const getWeekDays = (ref) => {
     const days = [];
     const monday = new Date(ref);
     const dow = monday.getDay();
-    const diff = dow === 0 ? -6 : 1 - dow;
+    const diff = dow === 0  ? -6 : 1 - dow;
     monday.setDate(monday.getDate() + diff);
     for (let i = 0; i < 7; i++) {
       const d = new Date(monday);
@@ -6690,7 +6737,7 @@ const HabitsView = ({ data, onAddHabit, onUpdateHabit, onDeleteHabit, onToggleHa
     const firstDay = new Date(year, month, 1);
     const lastDay = new Date(year, month + 1, 0);
     const startDow = firstDay.getDay();
-    const offset = startDow === 0 ? 6 : startDow - 1;
+    const offset = startDow === 0  ? 6 : startDow - 1;
     const calStart = new Date(firstDay);
     calStart.setDate(calStart.getDate() - offset);
     const weeks = [];
@@ -6735,7 +6782,7 @@ const HabitsView = ({ data, onAddHabit, onUpdateHabit, onDeleteHabit, onToggleHa
   const monthLabel = baseDate.toLocaleDateString('es-ES', { month: 'long', year: 'numeric' }).replace(/\b\w/g, c => c.toUpperCase());
   const weekLabel = `${weekDays[0].dayNum} ${baseDate.toLocaleDateString('es-ES', { month: 'short' })} - ${weekDays[6].dayNum} ${weekDays[6].full.toLocaleDateString('es-ES', { month: 'short', year: 'numeric' })}`;
 
-  const calDayNames = ['Dom', 'Lun', 'Mar', 'MiÃ©', 'Jue', 'Vie', 'sÃ¡b'];
+  const calDayNames = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'sáb'];
 
   const navigate = (dir) => {
     const d = new Date(baseDate);
@@ -6818,7 +6865,7 @@ const HabitsView = ({ data, onAddHabit, onUpdateHabit, onDeleteHabit, onToggleHa
   const renderDayGrid = (h) => {
     const getDayCompletion = (dateStr) => {
       const rec = records.find(r => r.habitId === h.id && r.date === dateStr);
-      return rec ? rec.completed : false;
+      return rec  ? rec.completed : false;
     };
     if (viewMode === 'week') {
       return (
@@ -6838,21 +6885,21 @@ const HabitsView = ({ data, onAddHabit, onUpdateHabit, onDeleteHabit, onToggleHa
               const isPast = new Date(wd.date + 'T00:00:00') <= new Date();
               return (
                 <div key={wi} style={{ textAlign: 'center', padding: '4px 0', position: 'relative' }}>
-                  <div onClick={isPast && isScheduled && h.active ? () => onCompleteHabit(h.id, wd.date) : undefined} style={{
+                  <div onClick={isPast && isScheduled && h.active  ? () => onCompleteHabit(h.id, wd.date) : undefined} style={{
                     width: 28, height: 28, borderRadius: '50%', margin: '0 auto 4px',
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    background: done ? `linear-gradient(135deg, ${COLORS.success}, #9f1239)` : isSkipped ? `${COLORS.textDim}15` : isScheduled ? `${COLORS.primary}12` : 'transparent',
-                    border: done ? 'none' : isSkipped ? `1.5px dashed ${COLORS.textDim}50` : isToday ? `2px solid ${COLORS.primary}80` : isScheduled ? `1.5px solid ${COLORS.primary}55` : `1.5px dashed ${COLORS.border}35`,
+                    background: done  ? `linear-gradient(135deg, ${COLORS.success}, #9f1239)` : isSkipped  ? `${COLORS.textDim}15` : isScheduled  ? `${COLORS.primary}12` : 'transparent',
+                    border: done  ? 'none' : isSkipped  ? `1.5px dashed ${COLORS.textDim}50` : isToday  ? `2px solid ${COLORS.primary}80` : isScheduled  ? `1.5px solid ${COLORS.primary}55` : `1.5px dashed ${COLORS.border}35`,
                     transition: 'all 0.25s ease',
-                    boxShadow: done ? `0 2px 8px ${COLORS.success}40` : 'none',
-                    cursor: isPast && isScheduled && h.active ? 'pointer' : 'default',
-                    opacity: isScheduled ? (isPast || isToday ? 1 : 0.55) : 0.22
+                    boxShadow: done  ? `0 2px 8px ${COLORS.success}40` : 'none',
+                    cursor: isPast && isScheduled && h.active  ? 'pointer' : 'default',
+                    opacity: isScheduled  ? (isPast || isToday  ? 1 : 0.55) : 0.22
                   }}>
-                    {done ? <Check size={13} color="#0a0a0f" strokeWidth={3.5} /> : isSkipped ? <span style={{ fontSize: 11, color: COLORS.textDim }}>-</span> : !isScheduled ? <span style={{ fontSize: 11, color: COLORS.textDim }}>Â·</span> : null}
+                    {done  ? <Check size={13} color="#0a0a0f" strokeWidth={3.5} /> : isSkipped  ? <span style={{ fontSize: 11, color: COLORS.textDim }}>-</span> : !isScheduled  ? <span style={{ fontSize: 11, color: COLORS.textDim }}>?</span> : null}
                   </div>
                   <div style={{
-                    fontSize: 10, color: isToday ? COLORS.primary : COLORS.textDim + '99',
-                    fontWeight: isToday ? 700 : 400,
+                    fontSize: 10, color: isToday  ? COLORS.primary : COLORS.textDim + '99',
+                    fontWeight: isToday  ? 700 : 400,
                     fontFamily: "'Inter', sans-serif"
                   }}>{wd.dayNum}</div>
                   {isToday && <div style={{
@@ -6881,19 +6928,19 @@ const HabitsView = ({ data, onAddHabit, onUpdateHabit, onDeleteHabit, onToggleHa
                 return (
                   <div key={di} style={{
                     textAlign: 'center', padding: '6px 0', borderRadius: 8,
-                    opacity: wd.isCurrentMonth ? (scheduled ? 1 : 0.3) : 0.12,
-                    background: wd.isToday ? `${COLORS.primary}12` : 'transparent',
+                    opacity: wd.isCurrentMonth  ? (scheduled  ? 1 : 0.3) : 0.12,
+                    background: wd.isToday  ? `${COLORS.primary}12` : 'transparent',
                     position: 'relative'
                   }}>
                     <div style={{
-                      fontSize: 11, color: wd.isToday ? COLORS.primary : COLORS.textDim + 'cc',
-                      fontWeight: wd.isToday ? 700 : 400,
+                      fontSize: 11, color: wd.isToday  ? COLORS.primary : COLORS.textDim + 'cc',
+                      fontWeight: wd.isToday  ? 700 : 400,
                       fontFamily: "'Inter', sans-serif", marginBottom: 4
                     }}>{wd.dayNum}</div>
                     {wd.isCurrentMonth && (
                       <div style={{
                         width: 5, height: 5, borderRadius: '50%', margin: '0 auto',
-                        background: done ? COLORS.success : scheduled ? `${COLORS.primary}75` : `${COLORS.border}30`,
+                        background: done  ? COLORS.success : scheduled  ? `${COLORS.primary}75` : `${COLORS.border}30`,
                         transition: 'all 0.2s'
                       }} />
                     )}
@@ -6928,11 +6975,11 @@ const HabitsView = ({ data, onAddHabit, onUpdateHabit, onDeleteHabit, onToggleHa
             const isEnd = wd.date === dateRange.end;
             return (
               <button key={di} onClick={() => handleCalDayClick(wd.date)} disabled={!wd.isCurrentMonth} style={{
-                textAlign: 'center', padding: '6px 0', borderRadius: 6, border: 'none', cursor: wd.isCurrentMonth ? 'pointer' : 'default',
-                background: isStart || isEnd ? `linear-gradient(135deg, ${COLORS.primary}, #7f1028)` : inRange ? `${COLORS.primary}25` : 'transparent',
-                color: (isStart || isEnd) ? '#fff' : wd.isToday ? COLORS.primary : wd.isCurrentMonth ? COLORS.text : COLORS.textDim,
-                fontWeight: (isStart || isEnd || wd.isToday) ? 600 : 400, fontSize: 12,
-                opacity: wd.isCurrentMonth ? 1 : 0.2, transition: 'all 0.15s', fontFamily: "'Inter', sans-serif"
+                textAlign: 'center', padding: '6px 0', borderRadius: 6, border: 'none', cursor: wd.isCurrentMonth  ? 'pointer' : 'default',
+                background: isStart || isEnd  ? `linear-gradient(135deg, ${COLORS.primary}, #7f1028)` : inRange  ? `${COLORS.primary}25` : 'transparent',
+                color: (isStart || isEnd)  ? '#fff' : wd.isToday  ? COLORS.primary : wd.isCurrentMonth  ? COLORS.text : COLORS.textDim,
+                fontWeight: (isStart || isEnd || wd.isToday)  ? 600 : 400, fontSize: 12,
+                opacity: wd.isCurrentMonth  ? 1 : 0.2, transition: 'all 0.15s', fontFamily: "'Inter', sans-serif"
               }}>
                 {wd.dayNum}
               </button>
@@ -6942,14 +6989,14 @@ const HabitsView = ({ data, onAddHabit, onUpdateHabit, onDeleteHabit, onToggleHa
       ))}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 10, paddingTop: 10, borderTop: `1px solid ${COLORS.border}` }}>
         <span style={{ fontSize: 11, color: COLORS.textDim }}>
-          {calSelect ? 'Selecciona el dÃ­a final' : `${formatRangeLabel()} - ${Math.ceil((new Date(dateRange.end + 'T00:00:00') - new Date(dateRange.start + 'T00:00:00')) / 86400000) + 1} dÃ­as`}
+          {calSelect  ? 'Selecciona el día final' : `${formatRangeLabel()} - ${Math.ceil((new Date(dateRange.end + 'T00:00:00') - new Date(dateRange.start + 'T00:00:00')) / 86400000) + 1} días`}
         </span>
         <div style={{ display: 'flex', gap: 4 }}>
           {[7, 14, 30, 60].map(n => (
             <button key={n} onClick={() => handleDateRangeChange(n)} style={{
-              padding: '2px 10px', borderRadius: 6, border: `1px solid ${isRangeActive(n) ? COLORS.primary : COLORS.border}`,
-              background: isRangeActive(n) ? `${COLORS.primary}20` : 'transparent',
-              color: isRangeActive(n) ? COLORS.primary : COLORS.textDim, cursor: 'pointer',
+              padding: '2px 10px', borderRadius: 6, border: `1px solid ${isRangeActive(n)  ? COLORS.primary : COLORS.border}`,
+              background: isRangeActive(n)  ? `${COLORS.primary}20` : 'transparent',
+              color: isRangeActive(n)  ? COLORS.primary : COLORS.textDim, cursor: 'pointer',
               fontSize: 10, fontFamily: "'Inter', sans-serif", transition: 'all 0.2s'
             }}>{n}d</button>
           ))}
@@ -6973,10 +7020,10 @@ const HabitsView = ({ data, onAddHabit, onUpdateHabit, onDeleteHabit, onToggleHa
     return totals;
   }, { expected: 0, completed: 0 });
   const weeklyCompletion = weeklyTotals.expected
-    ? Math.round((weeklyTotals.completed / weeklyTotals.expected) * 100)
+     ? Math.round((weeklyTotals.completed / weeklyTotals.expected) * 100)
     : 0;
   const monthlyCompletion = activeHabits.length
-    ? Math.round(activeHabits.reduce((sum, habit) => sum + getCompletionRate(habit.id, records, 30, habit), 0) / activeHabits.length * 100)
+     ? Math.round(activeHabits.reduce((sum, habit) => sum + getCompletionRate(habit.id, records, 30, habit), 0) / activeHabits.length * 100)
     : 0;
   const globalStreak = getGlobalCurrentStreak(activeHabits, records);
 
@@ -6986,17 +7033,17 @@ const HabitsView = ({ data, onAddHabit, onUpdateHabit, onDeleteHabit, onToggleHa
     <div className="habits-minimal-view">
       <header className="habits-minimal-header">
         <div>
-          <h2>Mis hÃ¡bitos</h2>
-          <p>PequeÃ±as acciones diarias, grandes resultados.</p>
+          <h2>Mis hábitos</h2>
+          <p>Pequeñas acciones diarias, grandes resultados.</p>
         </div>
         <div className="habits-header-actions">
           <button
             className="habits-date-picker"
-            onClick={() => setViewMode(viewMode === 'calendar' ? 'week' : 'calendar')}
+            onClick={() => setViewMode(viewMode === 'calendar'  ? 'week' : 'calendar')}
             aria-expanded={viewMode === 'calendar'}
           >
             <Calendar size={18} strokeWidth={1.7} />
-            <span>{weekLabel.replace(' - ', ' â€“ ')}</span>
+            <span>{weekLabel.replace(' - ', '  ? ')}</span>
           </button>
           <button className="habits-nav-button" onClick={() => {
             const previousWeek = new Date(baseDate);
@@ -7016,7 +7063,7 @@ const HabitsView = ({ data, onAddHabit, onUpdateHabit, onDeleteHabit, onToggleHa
           </button>
           <button className="habits-new-button" onClick={() => { setEditHabit(null); setShowForm(true); }}>
             <Plus size={17} strokeWidth={1.8} />
-            Nuevo hÃ¡bito
+            Nuevo hábito
           </button>
         </div>
       </header>
@@ -7027,14 +7074,14 @@ const HabitsView = ({ data, onAddHabit, onUpdateHabit, onDeleteHabit, onToggleHa
         </div>
       )}
 
-      <div className="habits-minimal-filters" role="tablist" aria-label="CategorÃ­as de hÃ¡bitos">
+      <div className="habits-minimal-filters" role="tablist" aria-label="Categorías de hábitos">
         {[
           { id: 'all', label: 'Todos' },
           ...habitCategories
         ].map(c => (
           <button
             key={c.id}
-            className={filter === c.id ? 'is-active' : ''}
+            className={filter === c.id  ? 'is-active' : ''}
             onClick={() => setFilter(c.id)}
             role="tab"
             aria-selected={filter === c.id}
@@ -7044,12 +7091,12 @@ const HabitsView = ({ data, onAddHabit, onUpdateHabit, onDeleteHabit, onToggleHa
         ))}
       </div>
 
-      <section className="habits-minimal-metrics" aria-label="Resumen de hÃ¡bitos">
+      <section className="habits-minimal-metrics" aria-label="Resumen de hábitos">
         {[
-          { label: 'Racha global', value: `${globalStreak} ${globalStreak === 1 ? 'dÃ­a' : 'dÃ­as'}` },
+          { label: 'Racha global', value: `${globalStreak} ${globalStreak === 1  ? 'día' : 'días'}` },
           { label: 'Cumplimiento semanal', value: `${weeklyCompletion}%` },
           { label: 'Meta mensual', value: `${monthlyCompletion}%` },
-          { label: 'HÃ¡bitos activos', value: activeHabits.length }
+          { label: 'Hábitos activos', value: activeHabits.length }
         ].map(metric => (
           <div key={metric.label} className="habits-metric">
             <span>{metric.label}</span>
@@ -7060,7 +7107,7 @@ const HabitsView = ({ data, onAddHabit, onUpdateHabit, onDeleteHabit, onToggleHa
 
       <div className="habits-minimal-list">
         <div className="habits-minimal-table-header" aria-hidden="true">
-          <span>HÃ¡bito</span>
+          <span>Hábito</span>
           <div className="habits-week-heading">
             <span>Esta semana</span>
             <div>{dayNames.map(day => <small key={day}>{day.charAt(0).toUpperCase()}</small>)}</div>
@@ -7080,19 +7127,19 @@ const HabitsView = ({ data, onAddHabit, onUpdateHabit, onDeleteHabit, onToggleHa
           const completedDays = scheduledDays.filter(day =>
             records.some(record => record.habitId === h.id && record.date === day.date && record.completed)
           );
-          const weekProgress = scheduledDays.length ? Math.round((completedDays.length / scheduledDays.length) * 100) : 0;
+          const weekProgress = scheduledDays.length  ? Math.round((completedDays.length / scheduledDays.length) * 100) : 0;
           const HabitIcon = getHabitIconComponent(h);
-          const statusLabel = !h.active ? 'Pausado' : isTodayComplete ? 'Hecho' : 'En progreso';
+          const statusLabel = !h.active  ? 'Pausado' : isTodayComplete  ? 'Hecho' : 'En progreso';
 
           return (
-            <article key={h.id} className={`habits-minimal-row ${h.active ? '' : 'is-paused'}`}>
+            <article key={h.id} className={`habits-minimal-row ${h.active  ? '' : 'is-paused'}`}>
               <div className="habit-row-main">
                 <div className="habit-line-icon"><HabitIcon size={29} strokeWidth={1.55} /></div>
                 <div>
                   <strong>{h.name}</strong>
                   <span><i />{cat.label}</span>
                   {h.frequency === 'Personalizado' && h.frequencyDays?.length > 0 && (
-                    <small>{h.frequencyDays.map(day => DAY_LABELS[day]).join(' Â· ')}</small>
+                    <small>{h.frequencyDays.map(day => DAY_LABELS[day]).join('  ? ')}</small>
                   )}
                 </div>
               </div>
@@ -7105,10 +7152,10 @@ const HabitsView = ({ data, onAddHabit, onUpdateHabit, onDeleteHabit, onToggleHa
                   return (
                     <button
                       key={day.date}
-                      className={`${complete ? 'is-complete' : ''} ${scheduled ? '' : 'is-unscheduled'} ${day.isToday ? 'is-today' : ''}`}
-                      onClick={clickable ? () => onCompleteHabit(h.id, day.date) : undefined}
+                      className={`${complete  ? 'is-complete' : ''} ${scheduled  ? '' : 'is-unscheduled'} ${day.isToday  ? 'is-today' : ''}`}
+                      onClick={clickable  ? () => onCompleteHabit(h.id, day.date) : undefined}
                       disabled={!clickable}
-                      aria-label={`${day.label} ${complete ? 'completado' : scheduled ? 'pendiente' : 'no programado'}`}
+                      aria-label={`${day.label} ${complete  ? 'completado' : scheduled  ? 'pendiente' : 'no programado'}`}
                     />
                   );
                 })}
@@ -7116,7 +7163,7 @@ const HabitsView = ({ data, onAddHabit, onUpdateHabit, onDeleteHabit, onToggleHa
 
               <div className="habit-row-streak">
                 <span className="mobile-field-label">Racha</span>
-                {streak} {streak === 1 ? 'dÃ­a' : 'dÃ­as'}
+                {streak} {streak === 1  ? 'día' : 'días'}
               </div>
 
               <div className="habit-row-progress">
@@ -7128,7 +7175,7 @@ const HabitsView = ({ data, onAddHabit, onUpdateHabit, onDeleteHabit, onToggleHa
               </div>
 
               <button
-                className={`habit-row-status ${isTodayComplete ? 'is-complete' : ''}`}
+                className={`habit-row-status ${isTodayComplete  ? 'is-complete' : ''}`}
                 onClick={() => h.active && isExpectedDay(h, today) && onCompleteHabit(h.id)}
                 disabled={!h.active || !isExpectedDay(h, today)}
               >
@@ -7139,7 +7186,7 @@ const HabitsView = ({ data, onAddHabit, onUpdateHabit, onDeleteHabit, onToggleHa
               <div className="habit-row-actions">
                 <button
                   className="habit-more-button"
-                  onClick={() => setActionMenu(actionMenu === h.id ? null : h.id)}
+                  onClick={() => setActionMenu(actionMenu === h.id  ? null : h.id)}
                   aria-label={`Acciones para ${h.name}`}
                   aria-expanded={actionMenu === h.id}
                 >
@@ -7150,8 +7197,8 @@ const HabitsView = ({ data, onAddHabit, onUpdateHabit, onDeleteHabit, onToggleHa
                     <button onClick={() => { setViewHabit(h); setActionMenu(null); }}><Eye size={15} /> Ver</button>
                     <button onClick={() => { handleEdit(h); setActionMenu(null); }}><Edit size={15} /> Editar</button>
                     <button onClick={() => { onToggleHabit(h.id); setActionMenu(null); }}>
-                      {h.active ? <EyeOff size={15} /> : <Eye size={15} />}
-                      {h.active ? 'Pausar' : 'Activar'}
+                      {h.active  ? <EyeOff size={15} /> : <Eye size={15} />}
+                      {h.active  ? 'Pausar' : 'Activar'}
                     </button>
                     <button className="is-danger" onClick={() => { handleDelete(h); setActionMenu(null); }}><Trash2 size={15} /> Eliminar</button>
                   </div>
@@ -7163,21 +7210,21 @@ const HabitsView = ({ data, onAddHabit, onUpdateHabit, onDeleteHabit, onToggleHa
         {filtered.length === 0 && (
           <div className="habits-minimal-empty">
             <Target size={30} strokeWidth={1.4} />
-            <strong>No hay hÃ¡bitos en esta categorÃ­a</strong>
+            <strong>No hay hábitos en esta categoría</strong>
             <span>Crea uno nuevo o elige otro filtro.</span>
-            <button onClick={() => { setEditHabit(null); setShowForm(true); }}>Nuevo hÃ¡bito</button>
+            <button onClick={() => { setEditHabit(null); setShowForm(true); }}>Nuevo hábito</button>
           </div>
         )}
       </div>
 
       <Modal isOpen={showForm} onClose={() => { setShowForm(false); setEditHabit(null); }}
-        title={editHabit ? 'Editar hÃ¡bito' : 'Nuevo hÃ¡bito'} width={900} className="habit-form-modal">
+        title={editHabit  ? 'Editar hábito' : 'Nuevo hábito'} width={900} className="habit-form-modal">
         <HabitForm initial={editHabit} onSave={handleSave} categories={habitCategories}
           onCreateCategory={onCreateHabitCategory}
           onCancel={() => { setShowForm(false); setEditHabit(null); }} />
       </Modal>
 
-      <Modal isOpen={!!viewHabit} onClose={() => setViewHabit(null)} title="Detalle del hÃ¡bito">
+      <Modal isOpen={!!viewHabit} onClose={() => setViewHabit(null)} title="Detalle del hábito">
         {viewHabit && (() => {
           const cat = getCategoryInfo(viewHabit.category, data.customHabitCategories);
           const HabitIcon = getHabitIconComponent(viewHabit);
@@ -7191,18 +7238,18 @@ const HabitsView = ({ data, onAddHabit, onUpdateHabit, onDeleteHabit, onToggleHa
               <p><i />{cat.label}</p>
               <dl>
                 <div><dt>Frecuencia</dt><dd>{viewHabit.frequency}</dd></div>
-                <div><dt>Racha actual</dt><dd>{streak} dÃ­as</dd></div>
-                <div><dt>Mejor racha</dt><dd>{best} dÃ­as</dd></div>
-                <div><dt>Ãšltimos 30 dÃ­as</dt><dd>{monthRate}%</dd></div>
+                <div><dt>Racha actual</dt><dd>{streak} días</dd></div>
+                <div><dt>Mejor racha</dt><dd>{best} días</dd></div>
+                <div><dt>Últimos 30 días</dt><dd>{monthRate}%</dd></div>
               </dl>
-              <button onClick={() => { setViewHabit(null); handleEdit(viewHabit); }}>Editar hÃ¡bito</button>
+              <button onClick={() => { setViewHabit(null); handleEdit(viewHabit); }}>Editar hábito</button>
             </div>
           );
         })()}
       </Modal>
 
-      <ConfirmModal isOpen={!!confirmDelete} title="Eliminar HÃ¡bito"
-        message={`Â¿EstÃ¡s seguro de eliminar "${confirmDelete?.name}"? Se perderÃ¡n todos sus registros.`}
+      <ConfirmModal isOpen={!!confirmDelete} title="Eliminar Hábito"
+        message={`¿Estás seguro de eliminar "${confirmDelete?.name}" ? Se perderán todos sus registros.`}
         danger onConfirm={() => { onDeleteHabit(confirmDelete.id); setConfirmDelete(null); }}
         onCancel={() => setConfirmDelete(null)} />
     </div>
@@ -7223,12 +7270,12 @@ const HealthView = ({ data, onUpdateHealth }) => {
   const emptyForm = {
     name: '',
     dose: '',
-    form: 'Tableta / CÃ¡psula',
+    form: 'Tableta / Cápsula',
     color: 'red',
     frequency: 'Cada 8 horas',
     times: ['08:00'],
     mealTiming: 'No importa',
-    duration: '7 dÃ­as',
+    duration: '7 días',
     startDate: today,
     endDate: '',
     instructions: '',
@@ -7284,7 +7331,7 @@ const HealthView = ({ data, onUpdateHealth }) => {
     onUpdateHealth(prev => {
       const current = normalizeHealthData(prev);
       const medications = editingId
-        ? current.medications.map(item => item.id === editingId ? { ...medication, updatedAt: new Date().toISOString() } : item)
+         ? current.medications.map(item => item.id === editingId  ? { ...medication, updatedAt: new Date().toISOString() } : item)
         : [medication, ...current.medications];
       return { ...current, medications };
     });
@@ -7312,7 +7359,7 @@ const HealthView = ({ data, onUpdateHealth }) => {
   };
 
   const deleteMedication = (id) => {
-    if (!window.confirm('Â¿Eliminar este medicamento y sus registros?')) return;
+    if (!window.confirm('¿Eliminar este medicamento y sus registros¿')) return;
     onUpdateHealth(prev => {
       const current = normalizeHealthData(prev);
       return {
@@ -7348,9 +7395,9 @@ const HealthView = ({ data, onUpdateHealth }) => {
 
   const heroStats = [
     { icon: <Pill size={22} />, label: 'Medicamentos activos', value: activeMeds.length, sub: 'Medicamentos', color: '#8b5cf6' },
-    { icon: <Clock size={22} />, label: 'PrÃ³xima toma', value: nextDose?.time || '--:--', sub: nextDose ? `${nextDose.medication.name} ${nextDose.medication.dose}` : 'Sin tomas pendientes', color: COLORS.primary },
-    { icon: <Activity size={22} />, label: 'Adherencia (semana)', value: `${weekly.pct}%`, sub: weekly.pct >= 80 ? 'Excelente' : weekly.pct >= 50 ? 'En progreso' : 'Por construir', color: COLORS.success },
-    { icon: <Bell size={22} />, label: 'Recordatorios hoy', value: todayDoses.length, sub: nextDose ? `PrÃ³xima en ${nextDose.time}` : 'DÃ­a completo', color: '#8b5cf6' },
+    { icon: <Clock size={22} />, label: 'Próxima toma', value: nextDose?.time || '--:--', sub: nextDose  ? `${nextDose.medication.name} ${nextDose.medication.dose}` : 'Sin tomas pendientes', color: COLORS.primary },
+    { icon: <Activity size={22} />, label: 'Adherencia (semana)', value: `${weekly.pct}%`, sub: weekly.pct >= 80  ? 'Excelente' : weekly.pct >= 50  ? 'En progreso' : 'Por construir', color: COLORS.success },
+    { icon: <Bell size={22} />, label: 'Recordatorios hoy', value: todayDoses.length, sub: nextDose  ? `Próxima en ${nextDose.time}` : 'Día completo', color: '#8b5cf6' },
     { icon: <Calendar size={22} />, label: 'Tratamientos activos', value: activeTreatments, sub: 'En curso', color: COLORS.primary }
   ];
 
@@ -7363,7 +7410,7 @@ const HealthView = ({ data, onUpdateHealth }) => {
           <div className="lab-pill" style={{ display: 'inline-flex', padding: '7px 12px', fontSize: 11, fontWeight: 900, marginBottom: 14 }}>SALUD PRO</div>
           <h2 className="lab-hero-title" style={{ fontSize: 38, lineHeight: 1.04, marginBottom: 10 }}>Tu centro de salud personal.</h2>
           <p style={{ color: COLORS.textDim, fontSize: 16, maxWidth: 620, lineHeight: 1.5 }}>
-            Controla tus medicamentos, recordatorios, tratamientos y adherencia para cuidar lo mÃ¡s importante: tÃº.
+            Controla tus medicamentos, recordatorios, tratamientos y adherencia para cuidar lo más importante: t?.
           </p>
         </div>
       </div>
@@ -7441,7 +7488,7 @@ const HealthView = ({ data, onUpdateHealth }) => {
               </select>
             </div>
             <div>
-              <label style={labelStyle}>DuraciÃ³n</label>
+              <label style={labelStyle}>Duración</label>
               <select value={form.duration} onChange={e => updateForm('duration', e.target.value)} style={inputStyle}>
                 {MEDICATION_DURATIONS.map(item => <option key={item} value={item}>{item}</option>)}
               </select>
@@ -7465,10 +7512,10 @@ const HealthView = ({ data, onUpdateHealth }) => {
             <textarea value={form.notes} onChange={e => updateForm('notes', e.target.value)} placeholder="Ej. Para seguimiento personal." rows={2} style={{ ...inputStyle, resize: 'vertical' }} />
           </div>
           {error && <div style={{ color: COLORS.alert, fontSize: 12, marginTop: 10 }}>{error}</div>}
-          <div style={{ display: 'grid', gridTemplateColumns: editingId ? '1fr 1fr' : '1fr', gap: 8, marginTop: 14 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: editingId  ? '1fr 1fr' : '1fr', gap: 8, marginTop: 14 }}>
             {editingId && <button onClick={resetForm} style={{ border: `1px solid ${COLORS.border}`, borderRadius: 12, background: 'transparent', color: COLORS.textDim, padding: '12px 14px', cursor: 'pointer', fontWeight: 800 }}>Cancelar</button>}
             <button onClick={saveMedication} style={{ border: 'none', borderRadius: 12, background: `linear-gradient(135deg, ${COLORS.primary}, #9f1239)`, color: '#fff', padding: '12px 14px', cursor: 'pointer', fontWeight: 900 }}>
-              <Plus size={16} style={{ verticalAlign: 'middle', marginRight: 8 }} /> {editingId ? 'Guardar cambios' : 'Guardar medicamento'}
+              <Plus size={16} style={{ verticalAlign: 'middle', marginRight: 8 }} /> {editingId  ? 'Guardar cambios' : 'Guardar medicamento'}
             </button>
           </div>
         </div>
@@ -7487,7 +7534,7 @@ const HealthView = ({ data, onUpdateHealth }) => {
             {health.medications.map(med => {
               const color = medicationColorMeta(med.color);
               const upcoming = getNextMedicationDose({ ...health, medications: [med] });
-              const nextLabel = upcoming ? `${upcoming.date === today ? 'Hoy' : 'PrÃ³xima'} ${upcoming.time}` : 'Sin tomas pendientes';
+              const nextLabel = upcoming  ? `${upcoming.date === today  ? 'Hoy' : 'Próxima'} ${upcoming.time}` : 'Sin tomas pendientes';
               return (
                 <div key={med.id} className="health-med-row" style={{ display: 'grid', gap: 11, padding: '14px 14px', borderRadius: 16, background: 'rgba(255,255,255,0.028)', border: `1px solid ${COLORS.border}`, overflow: 'hidden' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 12, minWidth: 0 }}>
@@ -7516,7 +7563,7 @@ const HealthView = ({ data, onUpdateHealth }) => {
                       <div className="health-med-chip-value">{med.frequency}</div>
                     </div>
                     <div className="health-med-chip">
-                      <div className="health-med-chip-label">DuraciÃ³n</div>
+                      <div className="health-med-chip-label">Duración</div>
                       <div className="health-med-chip-value">{getMedicationDurationText(med)}</div>
                     </div>
                   </div>
@@ -7530,7 +7577,7 @@ const HealthView = ({ data, onUpdateHealth }) => {
             })}
           </div>
           <div style={{ marginTop: 14, color: COLORS.textDim, fontSize: 11, display: 'flex', gap: 8, alignItems: 'center' }}>
-            <AlertTriangle size={14} /> Esta herramienta es solo para seguimiento personal y no reemplaza la indicaciÃ³n de un profesional de salud.
+            <AlertTriangle size={14} /> Esta herramienta es solo para seguimiento personal y no reemplaza la indicación de un profesional de salud.
           </div>
         </div>
 
@@ -7538,7 +7585,7 @@ const HealthView = ({ data, onUpdateHealth }) => {
           <div className="health-card" style={cardStyle}>
             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 12 }}>
               <h3 style={{ color: COLORS.text, fontSize: 17, display: 'flex', gap: 8, alignItems: 'center' }}><Calendar size={16} color={COLORS.primary} /> Horario de tomas</h3>
-              <span style={{ color: COLORS.primary, fontSize: 12, fontWeight: 800 }}>Plan del dÃ­a</span>
+              <span style={{ color: COLORS.primary, fontSize: 12, fontWeight: 800 }}>Plan del día</span>
             </div>
             <div style={{ display: 'grid', gap: 9 }}>
               {groupedDoses.map(group => (
@@ -7552,8 +7599,8 @@ const HealthView = ({ data, onUpdateHealth }) => {
                     {group.items.map(dose => {
                       const taken = isMedicationDoseTaken(health, dose.medication.id, today, dose.time);
                       return (
-                        <button key={`${dose.medication.id}-${dose.time}`} onClick={() => markDoseTaken(dose.medication, dose.time)} style={{ border: `1px solid ${taken ? COLORS.success : COLORS.primary}30`, borderRadius: 999, background: taken ? `${COLORS.success}14` : `${COLORS.primary}10`, color: taken ? COLORS.success : COLORS.text, padding: '6px 8px', fontSize: 11, cursor: 'pointer' }}>
-                          {taken ? <Check size={11} style={{ verticalAlign: 'middle', marginRight: 4 }} /> : null}{dose.time} Â· {dose.medication.name} {dose.medication.dose}
+                        <button key={`${dose.medication.id}-${dose.time}`} onClick={() => markDoseTaken(dose.medication, dose.time)} style={{ border: `1px solid ${taken  ? COLORS.success : COLORS.primary}30`, borderRadius: 999, background: taken  ? `${COLORS.success}14` : `${COLORS.primary}10`, color: taken  ? COLORS.success : COLORS.text, padding: '6px 8px', fontSize: 11, cursor: 'pointer' }}>
+                          {taken  ? <Check size={11} style={{ verticalAlign: 'middle', marginRight: 4 }} /> : null}{dose.time}  ? {dose.medication.name} {dose.medication.dose}
                         </button>
                       );
                     })}
@@ -7573,7 +7620,7 @@ const HealthView = ({ data, onUpdateHealth }) => {
               <div style={{ padding: 12, borderRadius: 13, background: 'rgba(255,255,255,0.035)', border: `1px solid ${COLORS.border}` }}>
                 <div style={{ color: COLORS.textDim, fontSize: 11 }}>Adherencia semanal</div>
                 <div style={{ color: COLORS.text, fontSize: 26 }}>{weekly.pct}%</div>
-                <div style={{ color: COLORS.success, fontSize: 11 }}>{weekly.pct >= 80 ? 'Excelente' : 'En seguimiento'}</div>
+                <div style={{ color: COLORS.success, fontSize: 11 }}>{weekly.pct >= 80  ? 'Excelente' : 'En seguimiento'}</div>
               </div>
               <div style={{ padding: 12, borderRadius: 13, background: 'rgba(255,255,255,0.035)', border: `1px solid ${COLORS.border}` }}>
                 <div style={{ color: COLORS.textDim, fontSize: 11 }}>Dosis tomadas</div>
@@ -7592,10 +7639,10 @@ const HealthView = ({ data, onUpdateHealth }) => {
               </div>
             </div>
             <div style={{ marginTop: 12, padding: 11, borderRadius: 12, background: `${COLORS.primary}0c`, color: COLORS.textDim, fontSize: 12, lineHeight: 1.45 }}>
-              Consejo seguro del dÃ­a: bebe suficiente agua, descansa bien y sigue siempre las indicaciones de tu profesional de salud.
+              Consejo seguro del día: bebe suficiente agua, descansa bien y sigue siempre las indicaciones de tu profesional de salud.
             </div>
             <div style={{ marginTop: 10, color: COLORS.textDim, fontSize: 11, lineHeight: 1.45 }}>
-              Importante: si tienes sÃ­ntomas fuertes, reacciones adversas o dudas sobre un medicamento, consulta con un profesional.
+              Importante: si tienes síntomas fuertes, reacciones adversas o dudas sobre un medicamento, consulta con un profesional.
             </div>
           </div>
         </div>
@@ -7611,7 +7658,7 @@ const parseFinanceMoneyInput = (value) => {
   if (value === '' || value === null || value === undefined || value === '-') return '';
   const normalized = String(value).replace(/\./g, '').replace(',', '.');
   const parsed = Number(normalized);
-  return Number.isFinite(parsed) ? parsed : '';
+  return Number.isFinite(parsed)  ? parsed : '';
 };
 
 const formatFinanceMoneyInput = (value) => {
@@ -7643,9 +7690,9 @@ const normalizeFinanceMoneyText = (rawValue) => {
   }
 
   const integerDigits = integerText.replace(/\D/g, '');
-  if (!integerDigits && decimalText === null) return negative ? '-' : '';
+  if (!integerDigits && decimalText === null) return negative  ? '-' : '';
   const grouped = Number(integerDigits || 0).toLocaleString('es-CO', { maximumFractionDigits: 0 });
-  return `${negative ? '-' : ''}${grouped}${decimalText !== null ? `,${decimalText}` : ''}`;
+  return `${negative  ? '-' : ''}${grouped}${decimalText !== null  ? `,${decimalText}` : ''}`;
 };
 
 const FinanceMoneyInput = ({ value, onValueChange, ...props }) => {
@@ -7687,7 +7734,7 @@ const FinanceView = ({ data, onUpdateFinance }) => {
     { id: 'cash', label: 'Efectivo' },
     { id: 'bank', label: 'Cuentas bancarias' },
     { id: 'savings', label: 'Ahorros' },
-    { id: 'credit', label: 'CrÃ©dito' },
+    { id: 'credit', label: 'Crédito' },
     { id: 'loan', label: 'Deudas' },
     { id: 'investment', label: 'Inversiones' },
     { id: 'custom', label: 'Otros' }
@@ -7721,21 +7768,21 @@ const FinanceView = ({ data, onUpdateFinance }) => {
   const balance = income - expenses;
   const budget = Number(finance.monthlyBudget || 0);
   const budgetTotal = expenseCategories.reduce((sum, c) => sum + Number(budgets[c.id] || 0), 0) || budget;
-  const budgetPct = budget > 0 ? Math.min(100, Math.round((expenses / budget) * 100)) : 0;
+  const budgetPct = budget > 0  ? Math.min(100, Math.round((expenses / budget) * 100)) : 0;
   const currency = finance.currency || 'USD';
   const copRate = Math.max(1, Number(finance.copRate || 4000));
-  const normalizeCurrency = (value) => value === 'COP' ? 'COP' : 'USD';
-  const toDisplayAmount = (n, targetCurrency = currency) => normalizeCurrency(targetCurrency) === 'COP' ? Number(n || 0) * copRate : Number(n || 0);
-  const fromDisplayAmount = (n, sourceCurrency = currency) => normalizeCurrency(sourceCurrency) === 'COP' ? Number(n || 0) / copRate : Number(n || 0);
+  const normalizeCurrency = (value) => value === 'COP'  ? 'COP' : 'USD';
+  const toDisplayAmount = (n, targetCurrency = currency) => normalizeCurrency(targetCurrency) === 'COP'  ? Number(n || 0) * copRate : Number(n || 0);
+  const fromDisplayAmount = (n, sourceCurrency = currency) => normalizeCurrency(sourceCurrency) === 'COP'  ? Number(n || 0) / copRate : Number(n || 0);
   const cleanDisplayValue = (n, targetCurrency = currency) => {
     const v = toDisplayAmount(n, targetCurrency);
     if (!v) return '';
-    return Number.isInteger(v) ? String(v) : String(Number(v.toFixed(2)));
+    return Number.isInteger(v)  ? String(v) : String(Number(v.toFixed(2)));
   };
   const formatCurrency = (n, targetCurrency = currency) => {
-    const amount = targetCurrency === 'COP' ? Number(n || 0) * copRate : Number(n || 0);
-    const locale = targetCurrency === 'COP' ? 'es-CO' : 'en-US';
-    const decimals = Number.isInteger(amount) ? 0 : 2;
+    const amount = targetCurrency === 'COP'  ? Number(n || 0) * copRate : Number(n || 0);
+    const locale = targetCurrency === 'COP'  ? 'es-CO' : 'en-US';
+    const decimals = Number.isInteger(amount)  ? 0 : 2;
     return amount.toLocaleString(locale, {
       style: 'currency',
       currency: targetCurrency,
@@ -7787,16 +7834,16 @@ const FinanceView = ({ data, onUpdateFinance }) => {
       if (!response.ok) throw new Error(`HTTP ${response.status}`);
       const result = await response.json();
       const nextRate = Number(result?.rates?.COP);
-      if (!Number.isFinite(nextRate) || nextRate <= 0) throw new Error('La respuesta no incluyÃ³ COP');
+      if (!Number.isFinite(nextRate) || nextRate <= 0) throw new Error('La respuesta no incluy ? COP');
       const updatedAt = result?.time_last_update_utc
-        ? new Date(result.time_last_update_utc).toISOString()
+         ? new Date(result.time_last_update_utc).toISOString()
         : new Date().toISOString();
       localStorage.setItem(FINANCE_RATE_CACHE_KEY, JSON.stringify({ rate: nextRate, updatedAt }));
       onUpdateFinance(prev => ({ ...prev, copRate: nextRate, copRateUpdatedAt: updatedAt }));
       setRateStatus('fresh');
     } catch (error) {
       setRateStatus('fallback');
-      setRateError(`No se pudo actualizar; se mantiene la Ãºltima tasa disponible. ${error?.message || ''}`.trim());
+      setRateError(`No se pudo actualizar; se mantiene la Última tasa disponible. ${error?.message || ''}`.trim());
     }
   };
 
@@ -7807,7 +7854,7 @@ const FinanceView = ({ data, onUpdateFinance }) => {
   const byCategory = expenseCategories.map(cat => {
     const spent = monthly.filter(t => t.type === 'expense' && t.category === cat.id).reduce((sum, t) => sum + Number(t.amount || 0), 0);
     const limit = Number(budgets[cat.id] || 0);
-    return { id: cat.id, name: cat.name, value: spent, limit, pct: limit ? Math.min(100, Math.round((spent / limit) * 100)) : 0, color: cat.color };
+    return { id: cat.id, name: cat.name, value: spent, limit, pct: limit  ? Math.min(100, Math.round((spent / limit) * 100)) : 0, color: cat.color };
   }).filter(c => c.value > 0 || c.limit > 0);
 
   const filteredTransactions = transactions.filter(t => {
@@ -7818,7 +7865,7 @@ const FinanceView = ({ data, onUpdateFinance }) => {
   }).slice(0, 18);
 
   const accountBalances = accounts.map(a => {
-    const movement = transactions.filter(t => (t.accountId || accounts[0]?.id) === a.id).reduce((sum, t) => sum + (t.type === 'income' ? Number(t.amount || 0) : -Number(t.amount || 0)), 0);
+    const movement = transactions.filter(t => (t.accountId || accounts[0]?.id) === a.id).reduce((sum, t) => sum + (t.type === 'income'  ? Number(t.amount || 0) : -Number(t.amount || 0)), 0);
     const tag = accountTagById(a.tagId || a.type, a.type);
     return { ...a, currency: normalizeCurrency(a.currency), tag, group: tag.group || a.type || 'custom', current: Number(a.balance || 0) + movement };
   });
@@ -7842,7 +7889,7 @@ const FinanceView = ({ data, onUpdateFinance }) => {
     total: activeSubscriptions.filter(item => item.category === category).reduce((sum, item) => sum + Number(item.amount || 0), 0)
   })).filter(item => item.total > 0);
   const available = income - expenses - recurringExpense - subscriptionsExpense;
-  const savingRate = income ? Math.round((balance / income) * 100) : 0;
+  const savingRate = income  ? Math.round((balance / income) * 100) : 0;
 
   const monthKeys = Array.from({ length: 6 }, (_, i) => {
     const d = new Date(monthDate);
@@ -7867,16 +7914,16 @@ const FinanceView = ({ data, onUpdateFinance }) => {
   ];
 
   const insights = [
-    budgetPct > 90 ? `Alerta: ya usaste ${budgetPct}% del presupuesto mensual.` : `Presupuesto sano: vas en ${budgetPct}% del mes.`,
-    available < 0 ? `Tu disponible proyectado queda negativo: ${money(available)}.` : `Disponible proyectado despues de gastos, recurrentes y suscripciones: ${money(available)}.`,
-    subscriptionsExpense > 0 ? `Suscripciones activas estimadas este mes: ${money(subscriptionsExpense)}.` : 'Agrega tus suscripciones para ver cuÃ¡nto consumen al mes.',
-    recurringExpense > 0 ? `Pagos recurrentes estimados este mes: ${money(recurringExpense)}.` : 'Agrega pagos recurrentes para anticipar obligaciones.'
+    budgetPct > 90  ? `Alerta: ya usaste ${budgetPct}% del presupuesto mensual.` : `Presupuesto sano: vas en ${budgetPct}% del mes.`,
+    available < 0  ? `Tu disponible proyectado queda negativo: ${money(available)}.` : `Disponible proyectado después de gastos, recurrentes y suscripciones: ${money(available)}.`,
+    subscriptionsExpense > 0  ? `Suscripciones activas estimadas este mes: ${money(subscriptionsExpense)}.` : 'Agrega tus suscripciones para ver cuánto consumen al mes.',
+    recurringExpense > 0  ? `Pagos recurrentes estimados este mes: ${money(recurringExpense)}.` : 'Agrega pagos recurrentes para anticipar obligaciones.'
   ];
 
   const addTransaction = () => {
     const amount = fromDisplayAmount(form.amount, transactionCurrency);
     if (!amount || amount <= 0) return;
-    const category = form.type === 'income' ? 'income' : form.category;
+    const category = form.type === 'income'  ? 'income' : form.category;
     onUpdateFinance(prev => ({
       ...prev,
       transactions: [{ ...form, id: `fin_${Date.now()}`, amount, currency: transactionCurrency, category, accountId: form.accountId || (prev.accounts || [])[0]?.id || 'cash' }, ...(prev.transactions || [])]
@@ -7906,13 +7953,13 @@ const FinanceView = ({ data, onUpdateFinance }) => {
     const cleanTag = accountForm.customTag.trim();
     if (isCustomTag && !cleanTag) return;
     const createdAt = Date.now();
-    const tagId = isCustomTag ? `tag_${createdAt}` : accountForm.tagId;
+    const tagId = isCustomTag  ? `tag_${createdAt}` : accountForm.tagId;
     const selectedTag = isCustomTag
-      ? { id: tagId, name: cleanTag, group: accountForm.customGroup || 'custom' }
+       ? { id: tagId, name: cleanTag, group: accountForm.customGroup || 'custom' }
       : accountTagById(accountForm.tagId, 'bank');
     onUpdateFinance(prev => ({
       ...prev,
-      accountTags: isCustomTag ? [...(prev.accountTags || accountTags), selectedTag] : (prev.accountTags || accountTags),
+      accountTags: isCustomTag  ? [...(prev.accountTags || accountTags), selectedTag] : (prev.accountTags || accountTags),
       accounts: [...(prev.accounts || []), {
         id: `acc_${createdAt}`,
         name: clean,
@@ -7933,7 +7980,7 @@ const FinanceView = ({ data, onUpdateFinance }) => {
       return {
         ...prev,
         accounts: currentAccounts.filter(a => a.id !== id),
-        transactions: (prev.transactions || []).map(t => (t.accountId === id ? { ...t, accountId: fallback } : t))
+        transactions: (prev.transactions || []).map(t => (t.accountId === id  ? { ...t, accountId: fallback } : t))
       };
     });
   };
@@ -7952,19 +7999,19 @@ const FinanceView = ({ data, onUpdateFinance }) => {
         ...prev,
         categories: (prev.categories || []).filter(cat => cat.id !== catId),
         budgets: nextBudgets,
-        transactions: (prev.transactions || []).map(item => item.category === catId ? { ...item, category: fallbackCategory } : item),
-        recurring: (prev.recurring || []).map(item => item.category === catId ? { ...item, category: fallbackCategory } : item)
+        transactions: (prev.transactions || []).map(item => item.category === catId  ? { ...item, category: fallbackCategory } : item),
+        recurring: (prev.recurring || []).map(item => item.category === catId  ? { ...item, category: fallbackCategory } : item)
       };
     });
-    setForm(prev => prev.category === catId ? { ...prev, category: fallbackCategory } : prev);
-    setRecurringForm(prev => prev.category === catId ? { ...prev, category: fallbackCategory } : prev);
+    setForm(prev => prev.category === catId  ? { ...prev, category: fallbackCategory } : prev);
+    setRecurringForm(prev => prev.category === catId  ? { ...prev, category: fallbackCategory } : prev);
   };
 
   const updateAccountCurrency = (accountId, nextCurrency) => {
     const cleanCurrency = normalizeCurrency(nextCurrency);
     onUpdateFinance(prev => ({
       ...prev,
-      accounts: (prev.accounts || []).map(account => account.id === accountId ? { ...account, currency: cleanCurrency } : account)
+      accounts: (prev.accounts || []).map(account => account.id === accountId  ? { ...account, currency: cleanCurrency } : account)
     }));
   };
 
@@ -8015,13 +8062,13 @@ const FinanceView = ({ data, onUpdateFinance }) => {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        fontSize: size > 36 ? 13 : 11,
+        fontSize: size > 36  ? 13 : 11,
         fontWeight: 950,
         letterSpacing: '-0.03em',
         boxShadow: `0 10px 26px ${(service.color || COLORS.primary)}18`,
         flexShrink: 0,
         ...s
-      }}>{service.badge || (item.name || '?').slice(0, 2).toUpperCase()}</div>
+      }}>{service.badge || (item.name || '¿').slice(0, 2).toUpperCase()}</div>
     );
   };
 
@@ -8059,7 +8106,7 @@ const FinanceView = ({ data, onUpdateFinance }) => {
         category: 'fun',
         accountId: item.accountId || (prev.accounts || [])[0]?.id || 'cash',
         payee: item.name,
-        note: 'SuscripciÃ³n',
+        note: 'Suscripción',
         date: `${selectedMonth}-${String(item.day || 1).padStart(2, '0')}`
       }, ...(prev.transactions || [])]
     }));
@@ -8078,7 +8125,7 @@ const FinanceView = ({ data, onUpdateFinance }) => {
           </div>
           <div className="finance-available-card" style={{ minWidth: 250 }}>
             <div style={{ fontSize: 11, color: COLORS.textDim, marginBottom: 6, ...s }}>Disponible proyectado</div>
-            <div style={{ fontSize: 34, color: available >= 0 ? COLORS.success : COLORS.alert, fontFamily: "'DM Serif Display', serif" }}>{money(available)}</div>
+            <div style={{ fontSize: 34, color: available >= 0  ? COLORS.success : COLORS.alert, fontFamily: "'DM Serif Display', serif" }}>{money(available)}</div>
             <div style={{ color: COLORS.textDim, fontSize: 11, ...s }}>Mes: {monthDate.toLocaleDateString('es-ES', { month: 'long', year: 'numeric' })}</div>
             <div className="finance-currency-controls" style={{ display: 'grid', gridTemplateColumns: '116px minmax(0, 1fr)', gap: 8, marginTop: 12, alignItems: 'center' }}>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 3, padding: 3, borderRadius: 999, background: COLORS.bg, border: `1px solid ${COLORS.border}` }}>
@@ -8088,8 +8135,8 @@ const FinanceView = ({ data, onUpdateFinance }) => {
                     borderRadius: 999,
                     padding: '7px 0',
                     cursor: 'pointer',
-                    background: currency === cur ? COLORS.primary : 'transparent',
-                    color: currency === cur ? '#fff' : COLORS.textDim,
+                    background: currency === cur  ? COLORS.primary : 'transparent',
+                    color: currency === cur  ? '#fff' : COLORS.textDim,
                     fontSize: 10,
                     fontWeight: 900,
                     ...s
@@ -8101,20 +8148,20 @@ const FinanceView = ({ data, onUpdateFinance }) => {
                 onClick={() => refreshExchangeRate(true)}
                 disabled={rateStatus === 'loading'}
                 title="Actualizar tasa USD/COP"
-                style={{ ...inputStyle, padding: '7px 9px', fontSize: 10, cursor: rateStatus === 'loading' ? 'wait' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8, textAlign: 'left' }}
+                style={{ ...inputStyle, padding: '7px 9px', fontSize: 10, cursor: rateStatus === 'loading'  ? 'wait' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8, textAlign: 'left' }}
               >
                 <span style={{ minWidth: 0 }}>
                   <strong style={{ color: COLORS.text, display: 'block' }}>1 USD = {copRate.toLocaleString('es-CO', { maximumFractionDigits: 2 })} COP</strong>
                   <span style={{ color: COLORS.textDim, display: 'block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                     {finance.copRateUpdatedAt
-                      ? `Actualizada ${new Date(finance.copRateUpdatedAt).toLocaleString('es-CO', { dateStyle: 'short', timeStyle: 'short' })}`
+                       ? `Actualizada ${new Date(finance.copRateUpdatedAt).toLocaleString('es-CO', { dateStyle: 'short', timeStyle: 'short' })}`
                       : 'Tasa de respaldo'}
                   </span>
                 </span>
-                <RefreshCw size={13} style={{ flexShrink: 0, animation: rateStatus === 'loading' ? 'spin 0.8s linear infinite' : 'none' }} />
+                <RefreshCw size={13} style={{ flexShrink: 0, animation: rateStatus === 'loading'  ? 'spin 0.8s linear infinite' : 'none' }} />
               </button>
             </div>
-            <div style={{ color: rateError ? COLORS.alert : COLORS.textDim, fontSize: 10, marginTop: 6, lineHeight: 1.4, ...s }}>
+            <div style={{ color: rateError  ? COLORS.alert : COLORS.textDim, fontSize: 10, marginTop: 6, lineHeight: 1.4, ...s }}>
               {rateError || `Vista global: ${currency}. Cada cuenta puede tener su propia moneda.`}
             </div>
           </div>
@@ -8125,9 +8172,9 @@ const FinanceView = ({ data, onUpdateFinance }) => {
         {[
           { label: 'Ingresos del mes', value: money(income), color: COLORS.success },
           { label: 'Gastos del mes', value: money(expenses), color: COLORS.alert },
-          { label: 'Balance mensual', value: money(balance), color: balance >= 0 ? COLORS.success : COLORS.alert },
+          { label: 'Balance mensual', value: money(balance), color: balance >= 0  ? COLORS.success : COLORS.alert },
           { label: 'Patrimonio', value: money(netWorth), color: COLORS.text },
-          { label: 'Tasa de ahorro', value: `${savingRate}%`, color: savingRate >= 10 ? COLORS.success : COLORS.primary }
+          { label: 'Tasa de ahorro', value: `${savingRate}%`, color: savingRate >= 10  ? COLORS.success : COLORS.primary }
         ].map(k => (
           <div key={k.label} className="kpi-card" style={{ background: COLORS.card, border: `1px solid ${COLORS.border}`, borderRadius: 16, padding: 18 }}>
             <div style={{ fontSize: 10, color: COLORS.textDim, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 8 }}>{k.label}</div>
@@ -8143,9 +8190,9 @@ const FinanceView = ({ data, onUpdateFinance }) => {
           return (
             <button key={item.id} onClick={() => setSection(item.id)} style={{
               display: 'inline-flex', alignItems: 'center', gap: 8,
-              border: `1px solid ${active ? COLORS.primary : COLORS.border}`,
-              background: active ? `${COLORS.primary}18` : COLORS.card,
-              color: active ? COLORS.primary : COLORS.textDim,
+              border: `1px solid ${active  ? COLORS.primary : COLORS.border}`,
+              background: active  ? `${COLORS.primary}18` : COLORS.card,
+              color: active  ? COLORS.primary : COLORS.textDim,
               borderRadius: 999,
               padding: '10px 14px',
               cursor: 'pointer',
@@ -8159,23 +8206,23 @@ const FinanceView = ({ data, onUpdateFinance }) => {
         })}
       </div>
 
-      <div className="finance-layout" style={{ display: 'grid', gridTemplateColumns: ['overview', 'accounts', 'budget'].includes(section) ? 'minmax(0, 1.45fr) minmax(330px, 0.9fr)' : '1fr', gap: 18, alignItems: 'start' }}>
-        <div className="finance-main-column" style={{ display: ['overview', 'movements', 'accounts', 'budget', 'subscriptions'].includes(section) ? 'grid' : 'none', gap: 18 }}>
-          <div className="finance-card finance-transaction-card" style={{ ...cardStyle, display: section === 'movements' ? 'block' : 'none' }}>
+      <div className="finance-layout" style={{ display: 'grid', gridTemplateColumns: ['overview', 'accounts', 'budget'].includes(section)  ? 'minmax(0, 1.45fr) minmax(330px, 0.9fr)' : '1fr', gap: 18, alignItems: 'start' }}>
+        <div className="finance-main-column" style={{ display: ['overview', 'movements', 'accounts', 'budget', 'subscriptions'].includes(section)  ? 'grid' : 'none', gap: 18 }}>
+          <div className="finance-card finance-transaction-card" style={{ ...cardStyle, display: section === 'movements'  ? 'block' : 'none' }}>
             <div className="finance-card-header" style={{ display: 'flex', justifyContent: 'space-between', gap: 12, alignItems: 'center', marginBottom: 14 }}>
               <h3 style={{ fontSize: 17, color: COLORS.text, margin: 0 }}>Registrar movimiento</h3>
               <input type="month" value={selectedMonth} onClick={e => openNativeDatePicker(e.currentTarget)} onFocus={e => openNativeDatePicker(e.currentTarget)} onChange={e => setSelectedMonth(e.target.value || today.slice(0, 7))} style={{ ...inputStyle, width: 160, cursor: 'pointer' }} />
             </div>
             <div className="finance-form-row finance-form-row-3" style={{ display: 'grid', gridTemplateColumns: '110px 1fr 1fr', gap: 10, marginBottom: 10 }}>
-              <select value={form.type} onChange={e => setForm(f => ({ ...f, type: e.target.value, category: e.target.value === 'income' ? 'income' : (expenseCategories[0]?.id || f.category) }))} style={inputStyle}>
+              <select value={form.type} onChange={e => setForm(f => ({ ...f, type: e.target.value, category: e.target.value === 'income'  ? 'income' : (expenseCategories[0]?.id || f.category) }))} style={inputStyle}>
                 <option value="expense">Gasto</option><option value="income">Ingreso</option>
               </select>
               <FinanceMoneyInput value={form.amount} onValueChange={amount => setForm(f => ({ ...f, amount }))} placeholder={`Monto ${transactionCurrency}`} style={inputStyle} />
               <input type="date" value={form.date} onClick={e => openNativeDatePicker(e.currentTarget)} onFocus={e => openNativeDatePicker(e.currentTarget)} onChange={e => setForm(f => ({ ...f, date: e.target.value }))} style={{ ...inputStyle, cursor: 'pointer' }} />
             </div>
             <div className="finance-form-row finance-form-row-4" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr auto', gap: 10 }}>
-              <select value={form.category} disabled={form.type === 'income'} onChange={e => setForm(f => ({ ...f, category: e.target.value }))} style={{ ...inputStyle, opacity: form.type === 'income' ? 0.55 : 1 }}>
-                {(form.type === 'income' ? categories.filter(c => c.id === 'income') : expenseCategories).map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+              <select value={form.category} disabled={form.type === 'income'} onChange={e => setForm(f => ({ ...f, category: e.target.value }))} style={{ ...inputStyle, opacity: form.type === 'income'  ? 0.55 : 1 }}>
+                {(form.type === 'income'  ? categories.filter(c => c.id === 'income') : expenseCategories).map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
               </select>
               <select value={form.accountId} onChange={e => {
                 const previousCurrency = normalizeCurrency(accountById(form.accountId).currency || currency);
@@ -8191,7 +8238,7 @@ const FinanceView = ({ data, onUpdateFinance }) => {
             <input value={form.note} onChange={e => setForm(f => ({ ...f, note: e.target.value }))} placeholder="Nota opcional: supermercado, salario, factura..." style={{ ...inputStyle, width: '100%', marginTop: 10 }} />
           </div>
 
-          <div className="finance-card finance-movements-card" style={{ ...cardStyle, display: section === 'movements' ? 'block' : 'none' }}>
+          <div className="finance-card finance-movements-card" style={{ ...cardStyle, display: section === 'movements'  ? 'block' : 'none' }}>
             <div className="finance-card-header finance-card-header-wrap" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 10, marginBottom: 14, flexWrap: 'wrap' }}>
               <h3 style={{ fontSize: 17, color: COLORS.text, margin: 0 }}>Movimientos</h3>
               <div className="finance-filter-row" style={{ display: 'flex', gap: 8 }}>
@@ -8209,9 +8256,9 @@ const FinanceView = ({ data, onUpdateFinance }) => {
                     <span style={{ width: 8, height: 8, borderRadius: 99, background: cat.color }} />
                     <div style={{ flex: 1 }}>
                       <div style={{ color: COLORS.text, fontSize: 13, fontWeight: 700 }}>{t.payee || t.note || cat.name}</div>
-                      <div style={{ color: COLORS.textDim, fontSize: 11 }}>{cat.name} Â· {accountById(t.accountId).name} Â· {t.date}</div>
+                      <div style={{ color: COLORS.textDim, fontSize: 11 }}>{cat.name}  ? {accountById(t.accountId).name}  ? {t.date}</div>
                     </div>
-                    <div style={{ color: t.type === 'income' ? '#10b981' : COLORS.alert, fontWeight: 800 }}>{t.type === 'income' ? '+' : '-'}{money(t.amount)}</div>
+                    <div style={{ color: t.type === 'income'  ? '#10b981' : COLORS.alert, fontWeight: 800 }}>{t.type === 'income'  ? '+' : '-'}{money(t.amount)}</div>
                     <button onClick={() => removeTransaction(t.id)} style={{ border: 'none', background: 'transparent', color: COLORS.textDim, cursor: 'pointer' }}><Trash2 size={14} /></button>
                   </div>
                 );
@@ -8220,13 +8267,13 @@ const FinanceView = ({ data, onUpdateFinance }) => {
             </div>
           </div>
 
-          <div className="finance-card finance-chart-card" style={{ ...cardStyle, display: section === 'overview' ? 'block' : 'none' }}>
+          <div className="finance-card finance-chart-card" style={{ ...cardStyle, display: section === 'overview'  ? 'block' : 'none' }}>
             <h3 style={{ fontSize: 17, color: COLORS.text, marginBottom: 14 }}>Flujo de caja</h3>
             <ResponsiveContainer width="100%" height={250}>
               <LineChart data={cashFlow}>
                 <CartesianGrid stroke="rgba(255,255,255,0.05)" vertical={false} />
                 <XAxis dataKey="name" stroke={COLORS.textDim} tick={{ fontSize: 11 }} />
-                <YAxis stroke={COLORS.textDim} tick={{ fontSize: 11 }} tickFormatter={v => currency === 'COP' ? `${Math.round(toDisplayAmount(v) / 1000)}k` : `$${Math.round(toDisplayAmount(v))}`} />
+                <YAxis stroke={COLORS.textDim} tick={{ fontSize: 11 }} tickFormatter={v => currency === 'COP'  ? `${Math.round(toDisplayAmount(v) / 1000)}k` : `$${Math.round(toDisplayAmount(v))}`} />
                 <Tooltip formatter={v => money(v)} contentStyle={tooltipStyle} labelStyle={{ color: COLORS.text }} />
                 <Line type="monotone" dataKey="ingresos" stroke={COLORS.success} strokeWidth={2} dot={false} />
                 <Line type="monotone" dataKey="gastos" stroke={COLORS.alert} strokeWidth={2} dot={false} />
@@ -8235,7 +8282,7 @@ const FinanceView = ({ data, onUpdateFinance }) => {
             </ResponsiveContainer>
           </div>
 
-          <div className="finance-card finance-chart-card" style={{ ...cardStyle, display: section === 'accounts' ? 'block' : 'none' }}>
+          <div className="finance-card finance-chart-card" style={{ ...cardStyle, display: section === 'accounts'  ? 'block' : 'none' }}>
             <h3 style={{ fontSize: 17, color: COLORS.text, marginBottom: 14 }}>Balance por cuenta</h3>
             <ResponsiveContainer width="100%" height={250}>
               <BarChart data={accountChartData}>
@@ -8248,19 +8295,19 @@ const FinanceView = ({ data, onUpdateFinance }) => {
             </ResponsiveContainer>
           </div>
 
-          <div className="finance-card finance-budget-card" style={{ ...cardStyle, display: section === 'budget' ? 'block' : 'none' }}>
+          <div className="finance-card finance-budget-card" style={{ ...cardStyle, display: section === 'budget'  ? 'block' : 'none' }}>
             <h3 style={{ fontSize: 17, color: COLORS.text, marginBottom: 14 }}>Presupuesto por categoria</h3>
             <div style={{ display: 'grid', gap: 10 }}>
               {expenseCategories.map(cat => {
                 const spent = monthly.filter(t => t.type === 'expense' && t.category === cat.id).reduce((sum, t) => sum + Number(t.amount || 0), 0);
                 const limit = Number(budgets[cat.id] || 0);
-                const pct = limit ? Math.min(100, Math.round((spent / limit) * 100)) : 0;
+                const pct = limit  ? Math.min(100, Math.round((spent / limit) * 100)) : 0;
                 return (
                   <div key={cat.id} style={{ padding: 12, borderRadius: 14, background: 'rgba(239,239,239,0.03)', border: `1px solid ${COLORS.border}` }}>
                     <div className="finance-budget-category-row" style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) 110px 34px', gap: 10, alignItems: 'center', marginBottom: 9 }}>
                       <div>
-                        <div style={{ color: COLORS.text, fontSize: 13, fontWeight: 800 }}><span style={{ color: cat.color }}>â—</span> {cat.name}</div>
-                        <div style={{ color: pct > 90 ? COLORS.alert : COLORS.textDim, fontSize: 11 }}>{money(spent)} usados de {money(limit)}</div>
+                        <div style={{ color: COLORS.text, fontSize: 13, fontWeight: 800 }}><span style={{ color: cat.color }}>?</span> {cat.name}</div>
+                        <div style={{ color: pct > 90  ? COLORS.alert : COLORS.textDim, fontSize: 11 }}>{money(spent)} usados de {money(limit)}</div>
                       </div>
                       <div style={{ position: 'relative' }}>
                         <FinanceMoneyInput value={toDisplayAmount(limit)} onValueChange={amount => updateBudget(cat.id, amount)} placeholder={`Limite ${currency}`} style={{ ...inputStyle, padding: '8px 42px 8px 9px', fontSize: 11, width: '100%' }} />
@@ -8271,13 +8318,13 @@ const FinanceView = ({ data, onUpdateFinance }) => {
                         onClick={() => removeBudgetCategory(cat.id)}
                         disabled={expenseCategories.length <= 1}
                         title="Eliminar categoria"
-                        style={{ border: `1px solid ${COLORS.border}`, borderRadius: 10, background: 'rgba(255,255,255,0.03)', color: expenseCategories.length <= 1 ? COLORS.textDim : COLORS.alert, cursor: expenseCategories.length <= 1 ? 'not-allowed' : 'pointer', opacity: expenseCategories.length <= 1 ? 0.45 : 1 }}
+                        style={{ border: `1px solid ${COLORS.border}`, borderRadius: 10, background: 'rgba(255,255,255,0.03)', color: expenseCategories.length <= 1  ? COLORS.textDim : COLORS.alert, cursor: expenseCategories.length <= 1  ? 'not-allowed' : 'pointer', opacity: expenseCategories.length <= 1  ? 0.45 : 1 }}
                       >
                         <Trash2 size={13} />
                       </button>
                     </div>
                     <div style={{ height: 7, borderRadius: 99, background: COLORS.bg, overflow: 'hidden' }}>
-                      <div style={{ height: '100%', width: `${pct}%`, borderRadius: 99, background: pct > 90 ? COLORS.alert : `linear-gradient(90deg, ${cat.color}, ${COLORS.primary})` }} />
+                      <div style={{ height: '100%', width: `${pct}%`, borderRadius: 99, background: pct > 90  ? COLORS.alert : `linear-gradient(90deg, ${cat.color}, ${COLORS.primary})` }} />
                     </div>
                   </div>
                 );
@@ -8285,11 +8332,11 @@ const FinanceView = ({ data, onUpdateFinance }) => {
             </div>
           </div>
 
-          <div className="finance-card finance-subscriptions-card" style={{ ...cardStyle, display: section === 'subscriptions' ? 'block' : 'none' }}>
+          <div className="finance-card finance-subscriptions-card" style={{ ...cardStyle, display: section === 'subscriptions'  ? 'block' : 'none' }}>
             <div className="finance-card-header" style={{ display: 'flex', justifyContent: 'space-between', gap: 12, alignItems: 'flex-start', marginBottom: 18 }}>
               <div>
                 <h3 style={{ fontSize: 18, color: COLORS.text, margin: 0 }}>Suscripciones</h3>
-                <div style={{ color: COLORS.textDim, fontSize: 12, marginTop: 5, ...s }}>Servicios mensuales con logo, monto y dÃ­a de cobro.</div>
+                <div style={{ color: COLORS.textDim, fontSize: 12, marginTop: 5, ...s }}>Servicios mensuales con logo, monto y día de cobro.</div>
               </div>
               <div style={{ textAlign: 'right' }}>
                 <div style={{ color: COLORS.textDim, fontSize: 10, textTransform: 'uppercase', letterSpacing: '0.08em', ...s }}>Total mensual</div>
@@ -8305,7 +8352,7 @@ const FinanceView = ({ data, onUpdateFinance }) => {
                 {SUBSCRIPTION_SERVICES.map(service => <option key={service.id} value={service.id}>{service.name}</option>)}
               </select>
               <FinanceMoneyInput value={subscriptionForm.amount} onValueChange={amount => setSubscriptionForm(f => ({ ...f, amount }))} placeholder={`Monto ${subscriptionCurrency}`} style={inputStyle} />
-              <input type="number" min="1" max="31" step="1" value={subscriptionForm.day} onChange={e => setSubscriptionForm(f => ({ ...f, day: e.target.value }))} placeholder="DÃ­a" style={inputStyle} />
+              <input type="number" min="1" max="31" step="1" value={subscriptionForm.day} onChange={e => setSubscriptionForm(f => ({ ...f, day: e.target.value }))} placeholder="Día" style={inputStyle} />
               <select value={subscriptionForm.accountId} onChange={e => {
                 const previousCurrency = normalizeCurrency(accountById(subscriptionForm.accountId).currency || currency);
                 const nextAccount = accounts.find(a => a.id === e.target.value) || accounts[0];
@@ -8332,7 +8379,7 @@ const FinanceView = ({ data, onUpdateFinance }) => {
                         <div style={{ display: 'flex', justifyContent: 'space-between', gap: 8, alignItems: 'start' }}>
                           <div style={{ minWidth: 0 }}>
                             <div style={{ color: COLORS.text, fontSize: 13, fontWeight: 900, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.name}</div>
-                            <div style={{ color: COLORS.textDim, fontSize: 10, marginTop: 2 }}>{item.category} Â· DÃ­a {item.day}</div>
+                            <div style={{ color: COLORS.textDim, fontSize: 10, marginTop: 2 }}>{item.category}  ? Día {item.day}</div>
                           </div>
                           <div style={{ color: COLORS.alert, fontWeight: 900, whiteSpace: 'nowrap' }}>{money(item.amount)}</div>
                         </div>
@@ -8343,18 +8390,18 @@ const FinanceView = ({ data, onUpdateFinance }) => {
                       </div>
                     </div>
                   ))}
-                  {!activeSubscriptions.length && <div style={{ color: COLORS.textDim, fontSize: 13, padding: 18, border: `1px dashed ${COLORS.border}`, borderRadius: 16 }}>AÃºn no tienes suscripciones activas.</div>}
+                  {!activeSubscriptions.length && <div style={{ color: COLORS.textDim, fontSize: 13, padding: 18, border: `1px dashed ${COLORS.border}`, borderRadius: 16 }}>Aún no tienes suscripciones activas.</div>}
                 </div>
               </div>
               <div>
-                <h4 style={{ color: COLORS.text, fontSize: 13, margin: '0 0 10px', ...s }}>CatÃ¡logo rÃ¡pido</h4>
+                <h4 style={{ color: COLORS.text, fontSize: 13, margin: '0 0 10px', ...s }}>Catálogo rápido</h4>
                 <div className="finance-subscription-catalog" style={{ display: 'grid', gap: 10, maxHeight: 430, overflowY: 'auto', paddingRight: 4 }}>
                   {subscriptionCatalogGroups.map(group => (
                     <div key={group.category} style={{ display: 'grid', gap: 7 }}>
                       <div style={{ color: COLORS.textDim, fontSize: 9, fontWeight: 900, letterSpacing: '0.12em', textTransform: 'uppercase', ...s }}>{group.category}</div>
                       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(86px, 1fr))', gap: 7 }}>
                         {group.services.map(service => (
-                          <button key={service.id} onClick={() => setSubscriptionForm(f => ({ ...f, serviceId: service.id, name: service.name, category: service.category }))} style={{ border: `1px solid ${subscriptionForm.serviceId === service.id ? service.color : COLORS.border}`, background: subscriptionForm.serviceId === service.id ? `${service.color}18` : 'rgba(239,239,239,0.03)', borderRadius: 14, padding: '9px 8px', cursor: 'pointer', color: COLORS.text, display: 'grid', justifyItems: 'center', gap: 6, ...s }}>
+                          <button key={service.id} onClick={() => setSubscriptionForm(f => ({ ...f, serviceId: service.id, name: service.name, category: service.category }))} style={{ border: `1px solid ${subscriptionForm.serviceId === service.id  ? service.color : COLORS.border}`, background: subscriptionForm.serviceId === service.id  ? `${service.color}18` : 'rgba(239,239,239,0.03)', borderRadius: 14, padding: '9px 8px', cursor: 'pointer', color: COLORS.text, display: 'grid', justifyItems: 'center', gap: 6, ...s }}>
                             {renderSubscriptionLogo(service, 34)}
                             <span style={{ fontSize: 10, fontWeight: 800, lineHeight: 1.2 }}>{service.name}</span>
                           </button>
@@ -8370,7 +8417,7 @@ const FinanceView = ({ data, onUpdateFinance }) => {
               <div style={{ marginTop: 16, display: 'grid', gap: 8 }}>
                 <h4 style={{ color: COLORS.text, fontSize: 13, margin: 0, ...s }}>Resumen por tipo</h4>
                 {subscriptionTotalsByCategory.map(item => {
-                  const pct = subscriptionsExpense ? Math.round((item.total / subscriptionsExpense) * 100) : 0;
+                  const pct = subscriptionsExpense  ? Math.round((item.total / subscriptionsExpense) * 100) : 0;
                   return (
                     <div key={item.category} style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) auto', gap: 10, alignItems: 'center' }}>
                       <div>
@@ -8386,30 +8433,30 @@ const FinanceView = ({ data, onUpdateFinance }) => {
           </div>
         </div>
 
-        <div className="finance-side-column" style={{ display: ['overview', 'accounts', 'budget', 'recurring'].includes(section) ? 'grid' : 'none', gap: 18 }}>
-          <div className="finance-card finance-insights-card" style={{ ...cardStyle, display: section === 'overview' ? 'block' : 'none' }}>
+        <div className="finance-side-column" style={{ display: ['overview', 'accounts', 'budget', 'recurring'].includes(section)  ? 'grid' : 'none', gap: 18 }}>
+          <div className="finance-card finance-insights-card" style={{ ...cardStyle, display: section === 'overview'  ? 'block' : 'none' }}>
             <h3 style={{ fontSize: 16, color: COLORS.text, marginBottom: 12 }}>Insights</h3>
             <div style={{ display: 'grid', gap: 8 }}>
               {insights.map((item, idx) => (
-                <div key={idx} style={{ display: 'flex', gap: 9, padding: '10px 11px', borderRadius: 12, background: idx === 1 && available < 0 ? 'rgba(255,107,107,0.08)' : 'rgba(239,239,239,0.035)', border: `1px solid ${COLORS.border}`, color: COLORS.text, fontSize: 12, lineHeight: 1.45, ...s }}>
-                  <Sparkles size={14} color={idx === 1 && available < 0 ? COLORS.alert : COLORS.primary} style={{ marginTop: 2, flexShrink: 0 }} />
+                <div key={idx} style={{ display: 'flex', gap: 9, padding: '10px 11px', borderRadius: 12, background: idx === 1 && available < 0  ? 'rgba(255,107,107,0.08)' : 'rgba(239,239,239,0.035)', border: `1px solid ${COLORS.border}`, color: COLORS.text, fontSize: 12, lineHeight: 1.45, ...s }}>
+                  <Sparkles size={14} color={idx === 1 && available < 0  ? COLORS.alert : COLORS.primary} style={{ marginTop: 2, flexShrink: 0 }} />
                   <span>{item}</span>
                 </div>
               ))}
             </div>
           </div>
 
-          <div className="finance-card finance-monthly-budget-card" style={{ ...cardStyle, display: section === 'budget' ? 'block' : 'none' }}>
+          <div className="finance-card finance-monthly-budget-card" style={{ ...cardStyle, display: section === 'budget'  ? 'block' : 'none' }}>
             <h3 style={{ fontSize: 16, color: COLORS.text, marginBottom: 12 }}>Presupuesto mensual</h3>
             <div style={{ position: 'relative', marginBottom: 12 }}>
               <FinanceMoneyInput value={toDisplayAmount(finance.monthlyBudget)} onValueChange={amount => onUpdateFinance(prev => ({ ...prev, monthlyBudget: fromDisplayAmount(amount || 0) }))} placeholder={`Presupuesto ${currency}`} style={{ ...inputStyle, width: '100%', paddingRight: 52 }} />
               <span style={{ position: 'absolute', right: 12, top: '50%', transform: 'translateY(-50%)', color: COLORS.textDim, fontSize: 10, fontWeight: 800 }}>{currency}</span>
             </div>
             <div style={{ height: 8, background: COLORS.bg, borderRadius: 99, overflow: 'hidden' }}><div style={{ height: '100%', width: `${budgetPct}%`, background: `linear-gradient(90deg, ${COLORS.primary}, ${COLORS.alert})`, borderRadius: 99 }} /></div>
-            <div style={{ color: COLORS.textDim, fontSize: 11, marginTop: 8 }}>Usado: {money(expenses)} Â· Plan por categorÃ­as: {money(budgetTotal)}</div>
+            <div style={{ color: COLORS.textDim, fontSize: 11, marginTop: 8 }}>Usado: {money(expenses)}  ? Plan por categorías: {money(budgetTotal)}</div>
           </div>
 
-          <div className="finance-card finance-accounts-card" style={{ ...cardStyle, display: section === 'accounts' ? 'block' : 'none' }}>
+          <div className="finance-card finance-accounts-card" style={{ ...cardStyle, display: section === 'accounts'  ? 'block' : 'none' }}>
             <h3 style={{ fontSize: 16, color: COLORS.text, marginBottom: 12 }}>Cuentas</h3>
             <div style={{ display: 'grid', gap: 12, marginBottom: 14 }}>
               {groupedAccountBalances.map(group => (
@@ -8423,9 +8470,9 @@ const FinanceView = ({ data, onUpdateFinance }) => {
                       </div>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                         <div style={{ textAlign: 'right', minWidth: 94 }}>
-                          <div style={{ color: a.current >= 0 ? COLORS.text : COLORS.alert, fontWeight: 900, whiteSpace: 'nowrap' }}>{accountMoney(a.current, a.currency)}</div>
+                          <div style={{ color: a.current >= 0  ? COLORS.text : COLORS.alert, fontWeight: 900, whiteSpace: 'nowrap' }}>{accountMoney(a.current, a.currency)}</div>
                           {normalizeCurrency(a.currency) !== currency && (
-                            <div style={{ color: COLORS.textDim, fontSize: 9, marginTop: 2, whiteSpace: 'nowrap' }}>â‰ˆ {money(a.current)}</div>
+                            <div style={{ color: COLORS.textDim, fontSize: 9, marginTop: 2, whiteSpace: 'nowrap' }}> ? {money(a.current)}</div>
                           )}
                         </div>
                         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2, padding: 2, borderRadius: 999, background: COLORS.bg, border: `1px solid ${COLORS.border}` }}>
@@ -8435,8 +8482,8 @@ const FinanceView = ({ data, onUpdateFinance }) => {
                               borderRadius: 999,
                               padding: '5px 7px',
                               cursor: 'pointer',
-                              background: normalizeCurrency(a.currency) === cur ? COLORS.primary : 'transparent',
-                              color: normalizeCurrency(a.currency) === cur ? '#fff' : COLORS.textDim,
+                              background: normalizeCurrency(a.currency) === cur  ? COLORS.primary : 'transparent',
+                              color: normalizeCurrency(a.currency) === cur  ? '#fff' : COLORS.textDim,
                               fontSize: 9,
                               fontWeight: 900,
                               minHeight: 0,
@@ -8447,8 +8494,8 @@ const FinanceView = ({ data, onUpdateFinance }) => {
                         <button
                           onClick={() => removeAccount(a.id)}
                           disabled={accounts.length <= 1}
-                          title={accounts.length <= 1 ? 'Debe quedar al menos una cuenta' : 'Eliminar cuenta'}
-                          style={{ width: 30, height: 30, borderRadius: 9, border: `1px solid ${COLORS.border}`, background: accounts.length <= 1 ? 'rgba(255,255,255,0.025)' : `${COLORS.alert}10`, color: accounts.length <= 1 ? COLORS.textDim : COLORS.alert, cursor: accounts.length <= 1 ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                          title={accounts.length <= 1  ? 'Debe quedar al menos una cuenta' : 'Eliminar cuenta'}
+                          style={{ width: 30, height: 30, borderRadius: 9, border: `1px solid ${COLORS.border}`, background: accounts.length <= 1  ? 'rgba(255,255,255,0.025)' : `${COLORS.alert}10`, color: accounts.length <= 1  ? COLORS.textDim : COLORS.alert, cursor: accounts.length <= 1  ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
                         >
                           <Trash2 size={13} />
                         </button>
@@ -8471,8 +8518,8 @@ const FinanceView = ({ data, onUpdateFinance }) => {
                     borderRadius: 999,
                     padding: '7px 0',
                     cursor: 'pointer',
-                    background: normalizeCurrency(accountForm.currency) === cur ? COLORS.primary : 'transparent',
-                    color: normalizeCurrency(accountForm.currency) === cur ? '#fff' : COLORS.textDim,
+                    background: normalizeCurrency(accountForm.currency) === cur  ? COLORS.primary : 'transparent',
+                    color: normalizeCurrency(accountForm.currency) === cur  ? '#fff' : COLORS.textDim,
                     fontSize: 10,
                     fontWeight: 900,
                     minHeight: 0,
@@ -8497,20 +8544,20 @@ const FinanceView = ({ data, onUpdateFinance }) => {
               <button className="finance-submit-button" onClick={addAccount} style={{ border: 'none', borderRadius: 10, background: COLORS.primary, color: '#fff', padding: '0 12px', cursor: 'pointer', fontWeight: 800, whiteSpace: 'nowrap' }}><Plus size={15} /> Agregar cuenta</button>
             </div>
             <div style={{ color: COLORS.textDim, fontSize: 10, marginTop: 8, lineHeight: 1.45 }}>
-              Consejo: si una tarjeta o crÃ©dito debe restar patrimonio, registra su saldo inicial como nÃºmero negativo.
+              Consejo: si una tarjeta o crédito debe restar patrimonio, registra su saldo inicial como número negativo.
             </div>
           </div>
 
-          <div className="finance-card finance-categories-card" style={{ ...cardStyle, display: section === 'budget' ? 'block' : 'none' }}>
-            <h3 style={{ fontSize: 16, color: COLORS.text, marginBottom: 12 }}>CategorÃ­as</h3>
+          <div className="finance-card finance-categories-card" style={{ ...cardStyle, display: section === 'budget'  ? 'block' : 'none' }}>
+            <h3 style={{ fontSize: 16, color: COLORS.text, marginBottom: 12 }}>Categorías</h3>
             <div className="finance-inline-form finance-category-form" style={{ display: 'flex', gap: 8, marginBottom: 12 }}>
-              <input value={catName} onChange={e => setCatName(e.target.value)} placeholder="Nueva categorÃ­a" style={{ ...inputStyle, flex: 1, padding: '9px 11px' }} />
+              <input value={catName} onChange={e => setCatName(e.target.value)} placeholder="Nueva categoría" style={{ ...inputStyle, flex: 1, padding: '9px 11px' }} />
               <button className="finance-icon-button" onClick={addCategory} style={{ border: 'none', borderRadius: 10, background: COLORS.primary, color: '#fff', padding: '0 12px', cursor: 'pointer' }}><Plus size={15} /></button>
             </div>
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 7 }}>{categories.map(c => <span key={c.id} className="lab-pill" style={{ padding: '6px 9px', fontSize: 11 }}><span style={{ color: c.color }}>â—</span> {c.name}</span>)}</div>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 7 }}>{categories.map(c => <span key={c.id} className="lab-pill" style={{ padding: '6px 9px', fontSize: 11 }}><span style={{ color: c.color }}>?</span> {c.name}</span>)}</div>
           </div>
 
-          <div className="finance-card finance-recurring-card" style={{ ...cardStyle, display: section === 'recurring' ? 'block' : 'none' }}>
+          <div className="finance-card finance-recurring-card" style={{ ...cardStyle, display: section === 'recurring'  ? 'block' : 'none' }}>
             <div className="finance-card-header" style={{ display: 'flex', justifyContent: 'space-between', gap: 12, alignItems: 'flex-start', marginBottom: 16 }}>
               <div>
                 <h3 style={{ fontSize: 18, color: COLORS.text, margin: 0 }}>Pagos recurrentes</h3>
@@ -8525,7 +8572,7 @@ const FinanceView = ({ data, onUpdateFinance }) => {
             <div className="finance-compact-form" style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) 110px 74px 130px auto', gap: 8, marginBottom: 16 }}>
               <input value={recurringForm.name} onChange={e => setRecurringForm(f => ({ ...f, name: e.target.value }))} placeholder="Nombre del pago" style={{ ...inputStyle, padding: '9px 10px', fontSize: 12 }} />
               <FinanceMoneyInput value={recurringForm.amount} onValueChange={amount => setRecurringForm(f => ({ ...f, amount }))} placeholder={currency} style={{ ...inputStyle, padding: '9px 10px', fontSize: 12 }} />
-              <input type="number" min="1" max="31" step="1" value={recurringForm.day} onChange={e => setRecurringForm(f => ({ ...f, day: e.target.value }))} placeholder="DÃ­a" style={{ ...inputStyle, padding: '9px 10px', fontSize: 12 }} />
+              <input type="number" min="1" max="31" step="1" value={recurringForm.day} onChange={e => setRecurringForm(f => ({ ...f, day: e.target.value }))} placeholder="Día" style={{ ...inputStyle, padding: '9px 10px', fontSize: 12 }} />
               <select value={recurringForm.category} onChange={e => setRecurringForm(f => ({ ...f, category: e.target.value }))} style={{ ...inputStyle, padding: '9px 10px', fontSize: 12 }}>
                 {expenseCategories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
               </select>
@@ -8538,9 +8585,9 @@ const FinanceView = ({ data, onUpdateFinance }) => {
                   <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) auto', gap: 10, alignItems: 'start' }}>
                     <div style={{ minWidth: 0 }}>
                       <div style={{ color: COLORS.text, fontSize: 13, fontWeight: 900, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{r.name}</div>
-                      <div style={{ color: COLORS.textDim, fontSize: 10, marginTop: 3 }}>DÃ­a {r.day} Â· {catById(r.category).name}</div>
+                      <div style={{ color: COLORS.textDim, fontSize: 10, marginTop: 3 }}>Día {r.day}  ? {catById(r.category).name}</div>
                     </div>
-                    <div style={{ color: r.type === 'income' ? COLORS.success : COLORS.alert, fontWeight: 900, whiteSpace: 'nowrap' }}>{r.type === 'income' ? '+' : '-'}{money(r.amount)}</div>
+                    <div style={{ color: r.type === 'income'  ? COLORS.success : COLORS.alert, fontWeight: 900, whiteSpace: 'nowrap' }}>{r.type === 'income'  ? '+' : '-'}{money(r.amount)}</div>
                   </div>
                   <div className="finance-recurring-actions" style={{ display: 'grid', gridTemplateColumns: '1fr 38px', gap: 8, marginTop: 10 }}>
                     <button className="finance-action-button" onClick={() => payRecurring(r)} style={{ border: 'none', borderRadius: 10, background: `${COLORS.primary}18`, color: COLORS.primary, padding: '8px 10px', cursor: 'pointer', fontSize: 11, fontWeight: 900 }}>Registrar pago</button>
@@ -8548,16 +8595,16 @@ const FinanceView = ({ data, onUpdateFinance }) => {
                   </div>
                 </div>
               ))}
-              {!activeRecurring.length && <div style={{ color: COLORS.textDim, fontSize: 13, padding: 18, border: `1px dashed ${COLORS.border}`, borderRadius: 16 }}>AÃºn no tienes pagos recurrentes activos.</div>}
+              {!activeRecurring.length && <div style={{ color: COLORS.textDim, fontSize: 13, padding: 18, border: `1px dashed ${COLORS.border}`, borderRadius: 16 }}>Aún no tienes pagos recurrentes activos.</div>}
             </div>
           </div>
 
-          <div className="finance-card finance-pie-card" style={{ ...cardStyle, display: section === 'overview' ? 'block' : 'none' }}>
+          <div className="finance-card finance-pie-card" style={{ ...cardStyle, display: section === 'overview'  ? 'block' : 'none' }}>
             <h3 style={{ fontSize: 16, color: COLORS.text, marginBottom: 12 }}>Gastos por categoria</h3>
             <ResponsiveContainer width="100%" height={210}>
-              <PieChart>{byCategory.length ? <Pie data={byCategory} dataKey="value" nameKey="name" outerRadius={78}>{byCategory.map((c, i) => <Cell key={i} fill={c.color} />)}</Pie> : null}<Tooltip formatter={v => money(v)} contentStyle={tooltipStyle} labelStyle={{ color: COLORS.text }} /></PieChart>
+              <PieChart>{byCategory.length  ? <Pie data={byCategory} dataKey="value" nameKey="name" outerRadius={78}>{byCategory.map((c, i) => <Cell key={i} fill={c.color} />)}</Pie> : null}<Tooltip formatter={v => money(v)} contentStyle={tooltipStyle} labelStyle={{ color: COLORS.text }} /></PieChart>
             </ResponsiveContainer>
-            <div style={{ color: COLORS.textDim, fontSize: 11, textAlign: 'center' }}>{byCategory.length ? 'DistribuciÃ³n de gastos del mes.' : 'AÃºn no hay gastos para graficar.'}</div>
+            <div style={{ color: COLORS.textDim, fontSize: 11, textAlign: 'center' }}>{byCategory.length  ? 'Distribución de gastos del mes.' : 'Aún no hay gastos para graficar.'}</div>
           </div>
         </div>
       </div>
@@ -8579,7 +8626,7 @@ const ReadingView = ({ data, onUpdateReading }) => {
   const updateBook = (bookId, updater) => {
     onUpdateReading(prev => ({
       ...prev,
-      books: (prev.books || []).map(book => book.id === bookId ? updater(book) : book),
+      books: (prev.books || []).map(book => book.id === bookId  ? updater(book) : book),
       activeBookId: bookId
     }));
   };
@@ -8614,7 +8661,7 @@ const ReadingView = ({ data, onUpdateReading }) => {
   const addBookmark = () => {
     if (!activeBook) return;
     const page = Math.max(1, Number(bookmarkForm.page || activeBook.currentPage || 1));
-    const label = bookmarkForm.label.trim() || `PÃ¡gina ${page}`;
+    const label = bookmarkForm.label.trim() || `Página ${page}`;
     updateBook(activeBook.id, book => ({
       ...book,
       bookmarks: [{ id: `bm_${Date.now()}`, page, label, createdAt: new Date().toISOString() }, ...(book.bookmarks || [])]
@@ -8634,14 +8681,14 @@ const ReadingView = ({ data, onUpdateReading }) => {
 
   const removeBookmark = (id) => activeBook && updateBook(activeBook.id, book => ({ ...book, bookmarks: (book.bookmarks || []).filter(b => b.id !== id) }));
   const removeNote = (id) => activeBook && updateBook(activeBook.id, book => ({ ...book, notes: (book.notes || []).filter(n => n.id !== id) }));
-  const progress = activeBook?.totalPages ? Math.min(100, Math.round((Number(activeBook.currentPage || 1) / Number(activeBook.totalPages || 1)) * 100)) : 0;
+  const progress = activeBook?.totalPages  ? Math.min(100, Math.round((Number(activeBook.currentPage || 1) / Number(activeBook.totalPages || 1)) * 100)) : 0;
 
   return (
     <div className="reading-view" style={{ animation: 'fadeIn 0.3s ease-out' }}>
       <div className="lab-shell-card" style={{ borderRadius: 28, padding: 30, marginBottom: 20 }}>
         <div className="lab-pill" style={{ display: 'inline-flex', padding: '7px 11px', fontSize: 11, marginBottom: 12 }}><BookOpen size={14} /> Biblioteca personal</div>
         <h2 className="lab-hero-title" style={{ fontSize: 40, lineHeight: 1.05, marginBottom: 8 }}>Lectura con marcadores y notas.</h2>
-        <div style={{ color: COLORS.textDim, fontSize: 13, lineHeight: 1.7, maxWidth: 680 }}>Sube tus PDFs, guarda tu avance, marca pÃ¡ginas importantes y deja notas rÃ¡pidas mientras estudias o lees.</div>
+        <div style={{ color: COLORS.textDim, fontSize: 13, lineHeight: 1.7, maxWidth: 680 }}>Sube tus PDFs, guarda tu avance, marca páginas importantes y deja notas rápidas mientras estudias o lees.</div>
       </div>
 
       <div className="reading-layout" style={{ display: 'grid', gridTemplateColumns: 'minmax(260px, 0.38fr) minmax(0, 1fr)', gap: 18, alignItems: 'start' }}>
@@ -8659,12 +8706,12 @@ const ReadingView = ({ data, onUpdateReading }) => {
             <div style={{ display: 'grid', gap: 8 }}>
               {books.map(book => (
                 <button key={book.id} onClick={() => onUpdateReading(prev => ({ ...prev, activeBookId: book.id }))} style={{
-                  textAlign: 'left', border: `1px solid ${reading.activeBookId === book.id ? COLORS.primary : COLORS.border}`,
-                  background: reading.activeBookId === book.id ? `${COLORS.primary}12` : COLORS.bg,
+                  textAlign: 'left', border: `1px solid ${reading.activeBookId === book.id  ? COLORS.primary : COLORS.border}`,
+                  background: reading.activeBookId === book.id  ? `${COLORS.primary}12` : COLORS.bg,
                   borderRadius: 14, padding: 12, cursor: 'pointer', color: COLORS.text
                 }}>
                   <div style={{ fontWeight: 800, fontSize: 13, marginBottom: 4 }}>{book.title}</div>
-                  <div style={{ color: COLORS.textDim, fontSize: 11 }}>PÃ¡g. {book.currentPage || 1}{book.totalPages ? ` de ${book.totalPages}` : ''} Â· {(book.notes || []).length} notas</div>
+                  <div style={{ color: COLORS.textDim, fontSize: 11 }}>Pág. {book.currentPage || 1}{book.totalPages  ? ` de ${book.totalPages}` : ''}  ? {(book.notes || []).length} notas</div>
                 </button>
               ))}
               {!books.length && <div style={{ color: COLORS.textDim, fontSize: 13, textAlign: 'center', padding: 18 }}>Sube tu primer PDF para empezar.</div>}
@@ -8673,7 +8720,7 @@ const ReadingView = ({ data, onUpdateReading }) => {
         </div>
 
         <div style={{ display: 'grid', gap: 18 }}>
-          {activeBook ? (
+          {activeBook  ? (
             <>
               <div style={cardStyle}>
                 <div className="reading-toolbar" style={{ display: 'flex', justifyContent: 'space-between', gap: 12, alignItems: 'flex-start', marginBottom: 14, flexWrap: 'wrap' }}>
@@ -8687,10 +8734,10 @@ const ReadingView = ({ data, onUpdateReading }) => {
                 <div className="reading-progress-row" style={{ display: 'grid', gridTemplateColumns: '1fr 120px 120px', gap: 10, alignItems: 'center', marginBottom: 14 }}>
                   <div>
                     <div style={{ height: 8, background: COLORS.bg, borderRadius: 99, overflow: 'hidden' }}><div style={{ width: `${progress}%`, height: '100%', background: `linear-gradient(90deg, ${COLORS.primary}, ${COLORS.secondary})` }} /></div>
-                    <div style={{ color: COLORS.textDim, fontSize: 11, marginTop: 6 }}>{progress ? `${progress}% leÃ­do` : 'Agrega total de pÃ¡ginas para ver progreso'}</div>
+                    <div style={{ color: COLORS.textDim, fontSize: 11, marginTop: 6 }}>{progress  ? `${progress}% leído` : 'Agrega total de páginas para ver progreso'}</div>
                   </div>
-                  <input type="number" min="1" value={activeBook.currentPage || ''} onChange={e => updateBook(activeBook.id, book => ({ ...book, currentPage: Math.max(1, Number(e.target.value || 1)) }))} placeholder="PÃ¡gina actual" style={inputStyle} />
-                  <input type="number" min="1" value={activeBook.totalPages || ''} onChange={e => updateBook(activeBook.id, book => ({ ...book, totalPages: e.target.value }))} placeholder="Total pÃ¡ginas" style={inputStyle} />
+                  <input type="number" min="1" value={activeBook.currentPage || ''} onChange={e => updateBook(activeBook.id, book => ({ ...book, currentPage: Math.max(1, Number(e.target.value || 1)) }))} placeholder="Página actual" style={inputStyle} />
+                  <input type="number" min="1" value={activeBook.totalPages || ''} onChange={e => updateBook(activeBook.id, book => ({ ...book, totalPages: e.target.value }))} placeholder="Total páginas" style={inputStyle} />
                 </div>
 
                 <iframe title={activeBook.title} src={activeBook.fileData} style={{ width: '100%', height: 'min(72vh, 760px)', border: `1px solid ${COLORS.border}`, borderRadius: 18, background: COLORS.bg }} />
@@ -8700,25 +8747,25 @@ const ReadingView = ({ data, onUpdateReading }) => {
                 <div style={cardStyle}>
                   <h3 style={{ color: COLORS.text, fontSize: 17, marginBottom: 12 }}>Marcadores</h3>
                   <div style={{ display: 'grid', gridTemplateColumns: '90px 1fr auto', gap: 8, marginBottom: 12 }}>
-                    <input type="number" min="1" value={bookmarkForm.page} onChange={e => setBookmarkForm(f => ({ ...f, page: e.target.value }))} placeholder="PÃ¡g." style={inputStyle} />
+                    <input type="number" min="1" value={bookmarkForm.page} onChange={e => setBookmarkForm(f => ({ ...f, page: e.target.value }))} placeholder="Pág." style={inputStyle} />
                     <input value={bookmarkForm.label} onChange={e => setBookmarkForm(f => ({ ...f, label: e.target.value }))} placeholder="Nombre del marcador" style={inputStyle} />
                     <button onClick={addBookmark} style={{ border: 'none', background: COLORS.primary, color: '#fff', borderRadius: 12, padding: '0 13px', cursor: 'pointer' }}><Plus size={16} /></button>
                   </div>
                   <div style={{ display: 'grid', gap: 8 }}>
                     {(activeBook.bookmarks || []).map(b => (
                       <div key={b.id} style={{ display: 'flex', justifyContent: 'space-between', gap: 10, padding: 10, borderRadius: 12, background: COLORS.bg, border: `1px solid ${COLORS.border}` }}>
-                        <span style={{ color: COLORS.text, fontSize: 12 }}><strong style={{ color: COLORS.primary }}>PÃ¡g. {b.page}</strong> Â· {b.label}</span>
+                        <span style={{ color: COLORS.text, fontSize: 12 }}><strong style={{ color: COLORS.primary }}>Pág. {b.page}</strong>  ? {b.label}</span>
                         <button onClick={() => removeBookmark(b.id)} style={{ border: 'none', background: 'transparent', color: COLORS.textDim, cursor: 'pointer' }}><X size={13} /></button>
                       </div>
                     ))}
-                    {!activeBook.bookmarks?.length && <div style={{ color: COLORS.textDim, fontSize: 12 }}>AÃºn no tienes marcadores.</div>}
+                    {!activeBook.bookmarks?.length && <div style={{ color: COLORS.textDim, fontSize: 12 }}>Aún no tienes marcadores.</div>}
                   </div>
                 </div>
 
                 <div style={cardStyle}>
                   <h3 style={{ color: COLORS.text, fontSize: 17, marginBottom: 12 }}>Notas</h3>
                   <div style={{ display: 'grid', gridTemplateColumns: '90px 1fr auto', gap: 8, marginBottom: 12 }}>
-                    <input type="number" min="1" value={noteForm.page} onChange={e => setNoteForm(f => ({ ...f, page: e.target.value }))} placeholder="PÃ¡g." style={inputStyle} />
+                    <input type="number" min="1" value={noteForm.page} onChange={e => setNoteForm(f => ({ ...f, page: e.target.value }))} placeholder="Pág." style={inputStyle} />
                     <input value={noteForm.text} onChange={e => setNoteForm(f => ({ ...f, text: e.target.value }))} placeholder="Escribe una nota..." style={inputStyle} />
                     <button onClick={addNote} style={{ border: 'none', background: COLORS.primary, color: '#fff', borderRadius: 12, padding: '0 13px', cursor: 'pointer' }}><Plus size={16} /></button>
                   </div>
@@ -8726,13 +8773,13 @@ const ReadingView = ({ data, onUpdateReading }) => {
                     {(activeBook.notes || []).map(n => (
                       <div key={n.id} style={{ padding: 10, borderRadius: 12, background: COLORS.bg, border: `1px solid ${COLORS.border}` }}>
                         <div style={{ display: 'flex', justifyContent: 'space-between', gap: 8, marginBottom: 5 }}>
-                          <strong style={{ color: COLORS.primary, fontSize: 12 }}>PÃ¡g. {n.page}</strong>
+                          <strong style={{ color: COLORS.primary, fontSize: 12 }}>Pág. {n.page}</strong>
                           <button onClick={() => removeNote(n.id)} style={{ border: 'none', background: 'transparent', color: COLORS.textDim, cursor: 'pointer' }}><X size={13} /></button>
                         </div>
                         <div style={{ color: COLORS.text, fontSize: 12, lineHeight: 1.5 }}>{n.text}</div>
                       </div>
                     ))}
-                    {!activeBook.notes?.length && <div style={{ color: COLORS.textDim, fontSize: 12 }}>AÃºn no tienes notas.</div>}
+                    {!activeBook.notes?.length && <div style={{ color: COLORS.textDim, fontSize: 12 }}>Aún no tienes notas.</div>}
                   </div>
                 </div>
               </div>
@@ -8740,7 +8787,7 @@ const ReadingView = ({ data, onUpdateReading }) => {
           ) : (
             <div style={{ ...cardStyle, textAlign: 'center', padding: 46 }}>
               <div className="fire-emoji" style={{ fontSize: 54, marginBottom: 12 }}>{'\u{1F4D6}'}</div>
-              <h3 style={{ color: COLORS.text, fontSize: 22, marginBottom: 8 }}>Tu biblioteca estÃ¡ vacÃ­a</h3>
+              <h3 style={{ color: COLORS.text, fontSize: 22, marginBottom: 8 }}>Tu biblioteca est ? vacía</h3>
               <div style={{ color: COLORS.textDim, fontSize: 13 }}>Sube un PDF para leerlo, guardar progreso, marcadores y notas.</div>
             </div>
           )}
@@ -8754,10 +8801,10 @@ const DreamGoalsView = ({ data, onUpdateDreamGoals }) => {
   const goals = data.dreamGoals || getDreamGoals();
   const s = { fontFamily: "'Inter', sans-serif" };
   const isPinkLight = (data?.user?.themeMode || '') === 'pinkLight';
-  const dreamPanelBg = isPinkLight ? 'rgba(255,255,255,0.92)' : '#080808';
-  const dreamInputBg = isPinkLight ? '#fffafd' : '#050505';
-  const dreamProgressBg = isPinkLight ? 'rgba(190,18,60,0.12)' : '#151515';
-  const dreamSoftShadow = isPinkLight ? '0 20px 58px rgba(190,18,60,0.12)' : '0 24px 80px rgba(0,0,0,0.34)';
+  const dreamPanelBg = isPinkLight  ? 'rgba(255,255,255,0.92)' : '#080808';
+  const dreamInputBg = isPinkLight  ? '#fffafd' : '#050505';
+  const dreamProgressBg = isPinkLight  ? 'rgba(190,18,60,0.12)' : '#151515';
+  const dreamSoftShadow = isPinkLight  ? '0 20px 58px rgba(190,18,60,0.12)' : '0 24px 80px rgba(0,0,0,0.34)';
   const [form, setForm] = useState({
     title: '',
     icon: '\u{1F3AF}',
@@ -8832,11 +8879,11 @@ const DreamGoalsView = ({ data, onUpdateDreamGoals }) => {
           <Target size={13} /> Ecosistema de Metas
         </div>
         <h1 style={{ margin: 0, color: COLORS.text, fontSize: 'clamp(44px, 7vw, 74px)', lineHeight: 0.95, letterSpacing: '-0.07em', fontWeight: 500, ...s }}>
-          Tus sueÃ±os, bajo<br />
-          <span style={{ color: COLORS.primary, fontWeight: 900, textShadow: `0 0 28px ${COLORS.primary}22` }}>control matemÃ¡tico.</span>
+          Tus sueños, bajo<br />
+          <span style={{ color: COLORS.primary, fontWeight: 900, textShadow: `0 0 28px ${COLORS.primary}22` }}>control matemático.</span>
         </h1>
         <p style={{ margin: '24px auto 0', maxWidth: 430, color: COLORS.textDim, fontSize: 14, lineHeight: 1.75, ...s }}>
-          No solo sueÃ±es. Visualiza el progreso exacto y cuÃ¡nto te falta para conquistar tus prÃ³ximos grandes pasos.
+          No solo sueñes. Visualiza el progreso exacto y cuánto te falta para conquistar tus próximos grandes pasos.
         </p>
       </div>
 
@@ -8845,12 +8892,12 @@ const DreamGoalsView = ({ data, onUpdateDreamGoals }) => {
         gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 360px))',
         gap: 24,
         marginBottom: 30,
-        justifyContent: goals.length === 1 ? 'center' : 'start'
+        justifyContent: goals.length === 1  ? 'center' : 'start'
       }}>
         {goals.map((goal, index) => {
           const target = Number(goal.target || 0);
           const current = Number(goal.current || 0);
-          const pct = target ? Math.min(100, Math.round((current / target) * 100)) : 0;
+          const pct = target  ? Math.min(100, Math.round((current / target) * 100)) : 0;
           const missing = Math.max(0, target - current);
           return (
             <div key={goal.id} style={{
@@ -8882,13 +8929,13 @@ const DreamGoalsView = ({ data, onUpdateDreamGoals }) => {
                     <div style={{ width: `${pct}%`, height: '100%', background: goal.accent || COLORS.primary, borderRadius: 99, boxShadow: `0 0 18px ${(goal.accent || COLORS.primary)}66` }} />
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 9, padding: '10px 13px', borderRadius: 14, background: `${goal.accent || COLORS.primary}12`, border: `1px solid ${goal.accent || COLORS.primary}2f`, color: COLORS.text, fontSize: 12, ...s }}>
-                    <span style={{ color: goal.accent || COLORS.primary, fontWeight: 900 }}>{missing === 0 ? 'âœ“' : '$'}</span>
+                    <span style={{ color: goal.accent || COLORS.primary, fontWeight: 900 }}>{missing === 0  ? '¿' : '$'}</span>
                     <span style={{ color: COLORS.textDim }}>Faltan</span>
                     <strong style={{ color: goal.accent || COLORS.primary }}>{money(missing)}</strong>
-                    <span>{missing === 0 ? 'meta completada.' : 'para completar.'}</span>
+                    <span>{missing === 0  ? 'meta completada.' : 'para completar.'}</span>
                   </div>
-                  <div style={{ display: 'grid', gridTemplateColumns: missing === 0 ? '1fr auto' : '1fr auto auto', gap: 8, marginTop: 12 }}>
-                    {missing > 0 ? (
+                  <div style={{ display: 'grid', gridTemplateColumns: missing === 0  ? '1fr auto' : '1fr auto auto', gap: 8, marginTop: 12 }}>
+                    {missing > 0  ? (
                       <>
                         <input type="number" value={adds[goal.id] || ''} onChange={e => setAdds(prev => ({ ...prev, [goal.id]: e.target.value }))} placeholder="Aportar" style={{ ...inputStyle, padding: '8px 10px', fontSize: 11 }} />
                         <button onClick={() => contributeGoal(goal.id)} style={{ border: 'none', borderRadius: 10, background: goal.accent || COLORS.primary, color: '#fff', padding: '0 14px', cursor: 'pointer', fontWeight: 800 }}>+ Aportar</button>
@@ -8919,7 +8966,7 @@ const DreamGoalsView = ({ data, onUpdateDreamGoals }) => {
             width: '100%',
             padding: '10px 12px',
             borderRadius: 12,
-            border: `1px solid ${showIconPicker ? form.accent : COLORS.border}`,
+            border: `1px solid ${showIconPicker  ? form.accent : COLORS.border}`,
             background: dreamInputBg,
             color: COLORS.text,
             cursor: 'pointer',
@@ -8943,15 +8990,15 @@ const DreamGoalsView = ({ data, onUpdateDreamGoals }) => {
               background: dreamPanelBg,
               maxHeight: 250,
               overflowY: 'auto',
-              boxShadow: isPinkLight ? '0 18px 46px rgba(190,18,60,0.12)' : '0 18px 48px rgba(0,0,0,0.35)'
+              boxShadow: isPinkLight  ? '0 18px 46px rgba(190,18,60,0.12)' : '0 18px 48px rgba(0,0,0,0.35)'
             }}>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(38px, 1fr))', gap: 7 }}>
                 {dreamIcons.map(icon => (
                   <button key={icon} onClick={() => { setForm(f => ({ ...f, icon })); setShowIconPicker(false); }} style={{
                     height: 38,
                     borderRadius: 10,
-                    border: `1px solid ${form.icon === icon ? form.accent : COLORS.border}`,
-                    background: form.icon === icon ? `${form.accent}22` : dreamInputBg,
+                    border: `1px solid ${form.icon === icon  ? form.accent : COLORS.border}`,
+                    background: form.icon === icon  ? `${form.accent}22` : dreamInputBg,
                     color: COLORS.text,
                     cursor: 'pointer',
                     fontSize: 17,
@@ -8997,7 +9044,7 @@ const StudyView = ({ data, onUpdateStudy }) => {
   const totalMinutes = sessions.reduce((s, x) => s + Number(x.minutes || 0), 0);
   const completedTopics = subjects.flatMap(s => s.topics || []).filter(t => t.completed).length;
   const totalTopics = subjects.flatMap(s => s.topics || []).length;
-  const fmtTime = (mins) => mins >= 60 ? `${Math.floor(mins / 60)}h ${mins % 60}m` : `${mins}m`;
+  const fmtTime = (mins) => mins >= 60  ? `${Math.floor(mins / 60)}h ${mins % 60}m` : `${mins}m`;
   const subjectById = (id) => subjects.find(s => s.id === id) || subjects[0] || {};
 
   const addSubject = () => {
@@ -9015,7 +9062,7 @@ const StudyView = ({ data, onUpdateStudy }) => {
     if (!clean) return;
     onUpdateStudy(prev => ({
       ...prev,
-      subjects: (prev.subjects || []).map(s => s.id === subjectId ? { ...s, topics: [...(s.topics || []), { id: `top_${Date.now()}`, name: clean, completed: false }] } : s)
+      subjects: (prev.subjects || []).map(s => s.id === subjectId  ? { ...s, topics: [...(s.topics || []), { id: `top_${Date.now()}`, name: clean, completed: false }] } : s)
     }));
     setTopicInputs(prev => ({ ...prev, [subjectId]: '' }));
   };
@@ -9023,7 +9070,7 @@ const StudyView = ({ data, onUpdateStudy }) => {
   const toggleTopic = (subjectId, topicId) => {
     onUpdateStudy(prev => ({
       ...prev,
-      subjects: (prev.subjects || []).map(s => s.id === subjectId ? { ...s, topics: (s.topics || []).map(t => t.id === topicId ? { ...t, completed: !t.completed } : t) } : s)
+      subjects: (prev.subjects || []).map(s => s.id === subjectId  ? { ...s, topics: (s.topics || []).map(t => t.id === topicId  ? { ...t, completed: !t.completed } : t) } : s)
     }));
   };
 
@@ -9052,7 +9099,7 @@ const StudyView = ({ data, onUpdateStudy }) => {
         <div style={{ position: 'relative', zIndex: 1 }}>
           <div className="lab-pill" style={{ display: 'inline-flex', padding: '7px 11px', fontSize: 11, marginBottom: 12 }}>ESTUDIOS REALES</div>
           <h2 className="lab-hero-title" style={{ fontSize: 36, lineHeight: 1.05, marginBottom: 8 }}>Materias, temas y horas bajo control.</h2>
-          <div style={{ color: COLORS.textDim, fontSize: 13, lineHeight: 1.7, maxWidth: 620 }}>Crea materias, divide temas, marca avances y registra sesiones de estudio para ver tu progreso real.</div>
+          <div style={{ color: COLORS.textDim, fontSize: 13, lineHeight: 1.7, maxWidth: 620 }}>Crea materias, divide temas, marca avances y registra sesiónes de estudio para ver tu progreso real.</div>
         </div>
       </div>
 
@@ -9061,7 +9108,7 @@ const StudyView = ({ data, onUpdateStudy }) => {
           { label: 'Materias', value: subjects.length, color: COLORS.text },
           { label: 'Tiempo total', value: fmtTime(totalMinutes), color: COLORS.primary },
           { label: 'Temas completados', value: `${completedTopics}/${totalTopics}`, color: COLORS.success },
-          { label: 'Sesiones', value: sessions.length, color: '#7c85f5' }
+          { label: 'Sesiónes', value: sessions.length, color: '#7c85f5' }
         ].map(k => (
           <div key={k.label} className="kpi-card" style={{ background: COLORS.card, border: `1px solid ${COLORS.border}`, borderRadius: 16, padding: 18 }}>
             <div style={{ fontSize: 10, color: COLORS.textDim, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 8 }}>{k.label}</div>
@@ -9084,19 +9131,19 @@ const StudyView = ({ data, onUpdateStudy }) => {
           {subjects.map(subject => {
             const studied = sessions.filter(s => s.subjectId === subject.id).reduce((sum, s) => sum + Number(s.minutes || 0), 0);
             const goal = Number(subject.goalHours || 0) * 60;
-            const pct = goal ? Math.min(100, Math.round((studied / goal) * 100)) : 0;
+            const pct = goal  ? Math.min(100, Math.round((studied / goal) * 100)) : 0;
             return (
               <div key={subject.id} style={{ background: COLORS.card, borderRadius: 18, border: `1px solid ${COLORS.border}`, padding: 20 }}>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, marginBottom: 12 }}>
-                  <div><div style={{ color: COLORS.text, fontSize: 17, fontWeight: 800 }}><span style={{ color: subject.color }}>â—</span> {subject.name}</div><div style={{ color: COLORS.textDim, fontSize: 11 }}>Meta: {subject.goalHours || 0}h  Estudiado: {fmtTime(studied)}</div></div>
+                  <div><div style={{ color: COLORS.text, fontSize: 17, fontWeight: 800 }}><span style={{ color: subject.color }}>?</span> {subject.name}</div><div style={{ color: COLORS.textDim, fontSize: 11 }}>Meta: {subject.goalHours || 0}h  Estudiado: {fmtTime(studied)}</div></div>
                   <button onClick={() => removeSubject(subject.id)} style={{ border: 'none', background: 'transparent', color: COLORS.textDim, cursor: 'pointer' }}><Trash2 size={15} /></button>
                 </div>
                 <div style={{ height: 7, background: COLORS.bg, borderRadius: 99, overflow: 'hidden', marginBottom: 14 }}><div style={{ height: '100%', width: `${pct}%`, background: `linear-gradient(90deg, ${subject.color}, ${COLORS.primary})`, borderRadius: 99 }} /></div>
                 <div style={{ display: 'grid', gap: 7, marginBottom: 12 }}>
                   {(subject.topics || []).map(topic => (
-                    <button key={topic.id} onClick={() => toggleTopic(subject.id, topic.id)} style={{ display: 'flex', alignItems: 'center', gap: 9, padding: '8px 10px', borderRadius: 10, border: `1px solid ${COLORS.border}`, background: topic.completed ? 'rgba(239,239,239,0.08)' : 'rgba(239,239,239,0.025)', color: COLORS.text, cursor: 'pointer', textAlign: 'left' }}>
-                      <span style={{ width: 17, height: 17, borderRadius: 5, border: `1px solid ${topic.completed ? COLORS.success : COLORS.border}`, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontSize: 11 }}>{topic.completed ? 'âœ“' : ''}</span>
-                      <span style={{ textDecoration: topic.completed ? 'line-through' : 'none', opacity: topic.completed ? 0.55 : 1 }}>{topic.name}</span>
+                    <button key={topic.id} onClick={() => toggleTopic(subject.id, topic.id)} style={{ display: 'flex', alignItems: 'center', gap: 9, padding: '8px 10px', borderRadius: 10, border: `1px solid ${COLORS.border}`, background: topic.completed  ? 'rgba(239,239,239,0.08)' : 'rgba(239,239,239,0.025)', color: COLORS.text, cursor: 'pointer', textAlign: 'left' }}>
+                      <span style={{ width: 17, height: 17, borderRadius: 5, border: `1px solid ${topic.completed  ? COLORS.success : COLORS.border}`, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontSize: 11 }}>{topic.completed  ? '¿' : ''}</span>
+                      <span style={{ textDecoration: topic.completed  ? 'line-through' : 'none', opacity: topic.completed  ? 0.55 : 1 }}>{topic.name}</span>
                     </button>
                   ))}
                 </div>
@@ -9111,7 +9158,7 @@ const StudyView = ({ data, onUpdateStudy }) => {
 
         <div style={{ display: 'grid', gap: 18 }}>
           <div style={{ background: COLORS.card, borderRadius: 18, border: `1px solid ${COLORS.border}`, padding: 20 }}>
-            <h3 style={{ fontSize: 16, color: COLORS.text, marginBottom: 12 }}>Registrar sesion</h3>
+            <h3 style={{ fontSize: 16, color: COLORS.text, marginBottom: 12 }}>Registrar sesión</h3>
             <div style={{ display: 'grid', gap: 9 }}>
               <select value={sessionForm.subjectId || subjects[0]?.id || ''} onChange={e => setSessionForm(f => ({ ...f, subjectId: e.target.value }))} style={{ padding: '10px 12px', background: COLORS.bg, border: `1px solid ${COLORS.border}`, borderRadius: 10, color: COLORS.text }}>
                 {subjects.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
@@ -9119,7 +9166,7 @@ const StudyView = ({ data, onUpdateStudy }) => {
               <input type="number" value={sessionForm.minutes} onChange={e => setSessionForm(f => ({ ...f, minutes: e.target.value }))} placeholder="Minutos" style={{ padding: '10px 12px', background: COLORS.bg, border: `1px solid ${COLORS.border}`, borderRadius: 10, color: COLORS.text }} />
               <input type="date" value={sessionForm.date} onClick={e => openNativeDatePicker(e.currentTarget)} onFocus={e => openNativeDatePicker(e.currentTarget)} onChange={e => setSessionForm(f => ({ ...f, date: e.target.value }))} style={{ padding: '10px 12px', background: COLORS.bg, border: `1px solid ${COLORS.border}`, borderRadius: 10, color: COLORS.text, cursor: 'pointer' }} />
               <input value={sessionForm.note} onChange={e => setSessionForm(f => ({ ...f, note: e.target.value }))} placeholder="Nota de estudio" style={{ padding: '10px 12px', background: COLORS.bg, border: `1px solid ${COLORS.border}`, borderRadius: 10, color: COLORS.text }} />
-              <button className="lab-cta" onClick={addSession} disabled={!subjects.length} style={{ borderRadius: 999, padding: '10px 16px', cursor: subjects.length ? 'pointer' : 'not-allowed', opacity: subjects.length ? 1 : 0.5 }}><span>Guardar sesion</span></button>
+              <button className="lab-cta" onClick={addSession} disabled={!subjects.length} style={{ borderRadius: 999, padding: '10px 16px', cursor: subjects.length  ? 'pointer' : 'not-allowed', opacity: subjects.length  ? 1 : 0.5 }}><span>Guardar sesión</span></button>
             </div>
           </div>
           <div style={{ background: COLORS.card, borderRadius: 18, border: `1px solid ${COLORS.border}`, padding: 20 }}>
@@ -9127,11 +9174,11 @@ const StudyView = ({ data, onUpdateStudy }) => {
             <ResponsiveContainer width="100%" height={210}><BarChart data={chartData}><XAxis dataKey="name" tick={{ fill: COLORS.textDim, fontSize: 10 }} axisLine={false} tickLine={false} /><YAxis tick={{ fill: COLORS.textDim, fontSize: 10 }} axisLine={false} tickLine={false} /><Tooltip /><Bar dataKey="horas" radius={[6, 6, 0, 0]}>{chartData.map((c, i) => <Cell key={i} fill={c.color} />)}</Bar></BarChart></ResponsiveContainer>
           </div>
           <div style={{ background: COLORS.card, borderRadius: 18, border: `1px solid ${COLORS.border}`, padding: 20 }}>
-            <h3 style={{ fontSize: 16, color: COLORS.text, marginBottom: 12 }}>Sesiones recientes</h3>
+            <h3 style={{ fontSize: 16, color: COLORS.text, marginBottom: 12 }}>Sesiónes recientes</h3>
             <div style={{ display: 'grid', gap: 8 }}>
               {sessions.slice(0, 8).map(s => {
                 const subject = subjectById(s.subjectId);
-                return <div key={s.id} style={{ display: 'flex', gap: 10, alignItems: 'center', padding: 10, borderRadius: 12, background: 'rgba(239,239,239,0.035)', border: `1px solid ${COLORS.border}` }}><span style={{ color: subject.color }}>â—</span><div style={{ flex: 1 }}><div style={{ color: COLORS.text, fontSize: 12, fontWeight: 700 }}>{subject.name}  {fmtTime(Number(s.minutes || 0))}</div><div style={{ color: COLORS.textDim, fontSize: 10 }}>{s.date} {s.note ? ` ${s.note}` : ''}</div></div><button onClick={() => removeSession(s.id)} style={{ border: 'none', background: 'transparent', color: COLORS.textDim, cursor: 'pointer' }}><Trash2 size={13} /></button></div>;
+                return <div key={s.id} style={{ display: 'flex', gap: 10, alignItems: 'center', padding: 10, borderRadius: 12, background: 'rgba(239,239,239,0.035)', border: `1px solid ${COLORS.border}` }}><span style={{ color: subject.color }}>?</span><div style={{ flex: 1 }}><div style={{ color: COLORS.text, fontSize: 12, fontWeight: 700 }}>{subject.name}  {fmtTime(Number(s.minutes || 0))}</div><div style={{ color: COLORS.textDim, fontSize: 10 }}>{s.date} {s.note  ? ` ${s.note}` : ''}</div></div><button onClick={() => removeSession(s.id)} style={{ border: 'none', background: 'transparent', color: COLORS.textDim, cursor: 'pointer' }}><Trash2 size={13} /></button></div>;
               })}
             </div>
           </div>
@@ -9171,7 +9218,7 @@ const StatisticsView = ({ data }) => {
     const weak = rates.filter(h => h.rate < 55).sort((a, b) => a.rate - b.rate).slice(0, 3);
     const best = rates.sort((a, b) => b.rate - a.rate)[0];
     const perfectDays = dailyData.filter(d => d.total > 0 && d.completed === d.total).length;
-    const avg = dailyData.length ? Math.round(dailyData.reduce((sum, d) => sum + d.pct, 0) / dailyData.length) : 0;
+    const avg = dailyData.length  ? Math.round(dailyData.reduce((sum, d) => sum + d.pct, 0) / dailyData.length) : 0;
     return { todayDone, todayTotal: todayExpected.length, weak, best, perfectDays, avg };
   }, [habits, records, period, dailyData]);
 
@@ -9182,7 +9229,7 @@ const StatisticsView = ({ data }) => {
       <div className="stats-head" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24, flexWrap: 'wrap', gap: 12 }}>
         <h2 style={{ fontSize: 24, color: COLORS.text, fontFamily: "'DM Serif Display', serif" }}>
           <BarChart3 size={22} style={{ verticalAlign: 'middle', marginRight: 8, color: COLORS.primary }} />
-          EstadÃ­sticas
+          Estadísticas
         </h2>
         <div className="stats-period-row" style={{ display: 'flex', gap: 8 }}>
           {[
@@ -9191,9 +9238,9 @@ const StatisticsView = ({ data }) => {
             { label: '3 Meses', value: 90 }
           ].map(p => (
             <button key={p.value} onClick={() => setPeriod(p.value)} style={{
-              padding: '6px 16px', borderRadius: 8, border: `1px solid ${period === p.value ? COLORS.primary : COLORS.border}`,
-              background: period === p.value ? COLORS.primary : 'transparent',
-              color: period === p.value ? '#fff' : COLORS.textDim, cursor: 'pointer',
+              padding: '6px 16px', borderRadius: 8, border: `1px solid ${period === p.value  ? COLORS.primary : COLORS.border}`,
+              background: period === p.value  ? COLORS.primary : 'transparent',
+              color: period === p.value  ? '#fff' : COLORS.textDim, cursor: 'pointer',
               fontSize: 13, fontFamily: "'Inter', sans-serif", transition: 'all 0.2s'
             }}>{p.label}</button>
           ))}
@@ -9203,10 +9250,10 @@ const StatisticsView = ({ data }) => {
       <div style={{ display: 'grid', gap: 24 }}>
         <div className="stats-useful-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: 12 }}>
           {[
-            ['Hoy', `${statsUseful.todayDone}/${statsUseful.todayTotal}`, 'HÃ¡bitos esperados completados', COLORS.primary],
-            ['Promedio', `${statsUseful.avg}%`, `Ãšltimos ${period} dÃ­as`, statsUseful.avg >= 70 ? COLORS.success : COLORS.alert],
-            ['DÃ­as perfectos', statsUseful.perfectDays, 'DÃ­as con todo completado', '#f59e0b'],
-            ['Mejor hÃ¡bito', statsUseful.best?.name || '--', `${statsUseful.best?.rate || 0}% cumplimiento`, COLORS.success]
+            ['Hoy', `${statsUseful.todayDone}/${statsUseful.todayTotal}`, 'Hábitos esperados completados', COLORS.primary],
+            ['Promedio', `${statsUseful.avg}%`, `Últimos ${period} días`, statsUseful.avg >= 70  ? COLORS.success : COLORS.alert],
+            ['Días perfectos', statsUseful.perfectDays, 'Días con todo completado', '#f59e0b'],
+            ['Mejor hábito', statsUseful.best?.name || '--', `${statsUseful.best?.rate || 0}% cumplimiento`, COLORS.success]
           ].map(([label, value, sub, color]) => (
             <div key={label} style={{ background: COLORS.card, border: `1px solid ${COLORS.border}`, borderRadius: 16, padding: 18 }}>
               <div style={{ color: COLORS.textDim, fontSize: 10, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 8 }}>{label}</div>
@@ -9216,16 +9263,16 @@ const StatisticsView = ({ data }) => {
           ))}
         </div>
         <div style={{ background: COLORS.card, borderRadius: 18, border: `1px solid ${COLORS.border}`, padding: 20 }}>
-          <h3 style={{ fontSize: 16, color: COLORS.text, marginBottom: 12, fontFamily: "'DM Serif Display', serif" }}>QuÃ© ajustar ahora</h3>
+          <h3 style={{ fontSize: 16, color: COLORS.text, marginBottom: 12, fontFamily: "'DM Serif Display', serif" }}>Qué ajustar ahora</h3>
           <div style={{ display: 'grid', gap: 9 }}>
-            {(statsUseful.weak.length ? statsUseful.weak : [{ id: 'ok', name: 'Vas bien', rate: statsUseful.avg, icon: 'âœ¨' }]).map(h => (
+            {(statsUseful.weak.length  ? statsUseful.weak : [{ id: 'ok', name: 'Vas bien', rate: statsUseful.avg, icon: '¿' }]).map(h => (
               <div key={h.id} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: 12, borderRadius: 14, background: `${COLORS.primary}0b`, border: `1px solid ${COLORS.border}` }}>
                 <span className="fire-emoji"><HabitIconGlyph habit={h} size={20} strokeWidth={1.75} /></span>
                 <div style={{ flex: 1 }}>
                   <div style={{ color: COLORS.text, fontWeight: 900, fontSize: 13 }}>{h.name}</div>
-                  <div style={{ color: COLORS.textDim, fontSize: 11 }}>{h.rate < 55 ? 'EstÃ¡ flojo: reduce dificultad, cambia horario o pon recordatorio.' : 'No hay hÃ¡bitos crÃ­ticos en este periodo.'}</div>
+                  <div style={{ color: COLORS.textDim, fontSize: 11 }}>{h.rate < 55  ? 'Est ? flojo: reduce dificultad, cambia horario o pon recordatorio.' : 'No hay hábitos críticos en este periodo.'}</div>
                 </div>
-                <div style={{ color: h.rate < 55 ? COLORS.alert : COLORS.success, fontWeight: 900 }}>{h.rate}%</div>
+                <div style={{ color: h.rate < 55  ? COLORS.alert : COLORS.success, fontWeight: 900 }}>{h.rate}%</div>
               </div>
             ))}
           </div>
@@ -9260,7 +9307,7 @@ const StatisticsView = ({ data }) => {
         <div className="stats-grid-2" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24 }}>
           <div style={{ background: COLORS.card, borderRadius: 16, border: `1px solid ${COLORS.border}`, padding: 24 }}>
             <h3 style={{ fontSize: 16, color: COLORS.text, marginBottom: 16, fontFamily: "'DM Serif Display', serif" }}>
-              Ãšltimos 7 dÃ­as
+              Últimos 7 días
             </h3>
             <div className="chart-container">
               <ResponsiveContainer width="100%" height={280}>
@@ -9280,7 +9327,7 @@ const StatisticsView = ({ data }) => {
 
           <div style={{ background: COLORS.card, borderRadius: 16, border: `1px solid ${COLORS.border}`, padding: 24 }}>
             <h3 style={{ fontSize: 16, color: COLORS.text, marginBottom: 16, fontFamily: "'DM Serif Display', serif" }}>
-              Rendimiento por CategorÃ­a
+              Rendimiento por Categoría
             </h3>
             <div className="chart-container">
               <ResponsiveContainer width="100%" height={280}>
@@ -9305,7 +9352,7 @@ const StatisticsView = ({ data }) => {
         <div className="stats-grid-2" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24 }}>
           <div style={{ background: COLORS.card, borderRadius: 16, border: `1px solid ${COLORS.border}`, padding: 24 }}>
             <h3 style={{ fontSize: 16, color: COLORS.text, marginBottom: 16, fontFamily: "'DM Serif Display', serif" }}>
-              DistribuciÃ³n por CategorÃ­a
+              Distribución por Categoría
             </h3>
             <ResponsiveContainer width="100%" height={280}>
               <PieChart>
@@ -9339,12 +9386,12 @@ const StatisticsView = ({ data }) => {
                   return (
                     <div key={di} style={{
                       aspectRatio: '1', borderRadius: 4,
-                      background: hd ? getHeatMapIntensity(hd.pct) : COLORS.card,
+                      background: hd  ? getHeatMapIntensity(hd.pct) : COLORS.card,
                       display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      fontSize: 10, color: hd && hd.pct > 0.5 ? '#000' : COLORS.textDim,
+                      fontSize: 10, color: hd && hd.pct > 0.5  ? '#000' : COLORS.textDim,
                       cursor: 'pointer', transition: 'all 0.2s',
                       position: 'relative'
-                    }} title={hd ? `${hd.label}: ${hd.completed}/${hd.total}` : ''}>
+                    }} title={hd  ? `${hd.label}: ${hd.completed}/${hd.total}` : ''}>
                       {day}
                     </div>
                   );
@@ -9356,7 +9403,7 @@ const StatisticsView = ({ data }) => {
               {[COLORS.card, '#006633', '#009955', '#9f1239', COLORS.success].map((c, i) => (
                 <div key={i} style={{ width: 14, height: 14, borderRadius: 3, background: c }} />
               ))}
-              <span style={{ fontSize: 10, color: COLORS.textDim }}>MÃ¡s</span>
+              <span style={{ fontSize: 10, color: COLORS.textDim }}>Más</span>
             </div>
           </div>
         </div>
@@ -9493,12 +9540,12 @@ const SettingsView = ({ data, onUpdateUser, onResetData, cloudSync, onGenerateRa
       await handleEnableNotifications();
       return;
     }
-    const ok = await showHabitFlowNotification('HabitFlow â€¢ Prueba', {
+    const ok = await showHabitFlowNotification('HabitFlow  ? Prueba', {
       body: 'Si ves esto, las notificaciones funcionan en este dispositivo.',
       tag: `habitflow-test-${Date.now()}`
     });
     setNotificationPermission(getNotificationPermissionState());
-    setNotificationMsg(ok ? 'NotificaciÃ³n de prueba enviada.' : 'No se pudo enviar la prueba. Revisa permisos del navegador.');
+    setNotificationMsg(ok  ? 'Notificación de prueba enviada.' : 'No se pudo enviar la prueba. Revisa permisos del navegador.');
   };
 
   const handleExport = () => {
@@ -9517,13 +9564,13 @@ const SettingsView = ({ data, onUpdateUser, onResetData, cloudSync, onGenerateRa
     const reader = new FileReader();
     reader.onload = (ev) => {
       try {
-        const parsed = normalizeLoadedData(JSON.parse(ev.target.result));
+        const parsed = normalizeLoadedData(JSON.parse(repairMojibakeText(ev.target.result)));
         if (parsed) {
           saveData(parsed);
-          setImportMsg('\u{2705} Datos importados correctamente. Recarga la pÃ¡gina.');
+          setImportMsg('\u{2705} Datos importados correctamente. Recarga la página.');
           setTimeout(() => window.location.reload(), 1500);
         } else {
-          setImportMsg('\u{26A0}\u{FE0F} Formato de archivo invÃ¡lido');
+          setImportMsg('\u{26A0}\u{FE0F} Formato de archivo inválido');
         }
       } catch {
         setImportMsg('\u{26A0}\u{FE0F} Error al leer el archivo');
@@ -9536,7 +9583,7 @@ const SettingsView = ({ data, onUpdateUser, onResetData, cloudSync, onGenerateRa
     <div className="settings-mobile-view" style={{ animation: 'fadeIn 0.3s ease-out' }}>
       <h2 style={{ fontSize: 24, color: COLORS.text, marginBottom: 24, fontFamily: "'DM Serif Display', serif" }}>
         <Settings size={22} style={{ verticalAlign: 'middle', marginRight: 8, color: COLORS.primary }} />
-       ConfiguraciÃ³n
+       Configuración
       </h2>
 
       <div className="settings-stack" style={{ display: 'grid', gap: 18, maxWidth: 760 }}>
@@ -9548,7 +9595,7 @@ const SettingsView = ({ data, onUpdateUser, onResetData, cloudSync, onGenerateRa
           <div style={{ display: 'grid', gridTemplateColumns: '1fr auto', gap: 12, alignItems: 'center' }}>
             <div>
               <div style={{ color: COLORS.text, fontSize: 13, fontWeight: 900, marginBottom: 4 }}>
-                {cloudSync?.status === 'active' ? 'â˜ï¸ Nube activa' : cloudSync?.status === 'saving' ? 'â†» Guardando en nube' : 'ðŸ’¾ Guardado local'}
+                {cloudSync?.status === 'active'  ? ' ? Nube activa' : cloudSync?.status === 'saving'  ? ' ? Guardando en nube' : ' ? Guardado local'}
               </div>
               <div style={{ color: COLORS.textDim, fontSize: 11, lineHeight: 1.45 }}>
                 {cloudSync?.reason || cloudSync?.label || 'Estado de guardado de HabitFlow.'}
@@ -9594,7 +9641,7 @@ const SettingsView = ({ data, onUpdateUser, onResetData, cloudSync, onGenerateRa
                 }} />
             </div>
             <div>
-              <label style={{ fontSize: 12, color: COLORS.textDim, marginBottom: 4, display: 'block' }}>FRASE DE MOTIVACIÃ“N</label>
+              <label style={{ fontSize: 12, color: COLORS.textDim, marginBottom: 4, display: 'block' }}>FRASE DE MOTIVACIÓN</label>
               <input value={editMotto} onChange={e => setEditMotto(e.target.value)}
                 style={{
                   width: '100%', padding: '10px 14px', background: COLORS.bg, border: `1px solid ${COLORS.border}`,
@@ -9615,32 +9662,32 @@ const SettingsView = ({ data, onUpdateUser, onResetData, cloudSync, onGenerateRa
             Notificaciones
           </h3>
           <div style={{ fontSize: 11, color: COLORS.textDim, marginBottom: 14, lineHeight: 1.55 }}>
-            Recibe alarmas de agenda, recordatorios de habitos pendientes y mensajes de disciplina en todos los dispositivos de tu cuenta.
-            En Mac revisa tambiÃ©n Ajustes del sistema {'>'} Notificaciones {'>'} tu navegador y activa sonidos/banners.
+            Recibe alarmas de agenda, recordatorios de hábitos pendientes y mensajes de disciplina en todos los dispositivos de tu cuenta.
+            En Mac revisa también Ajustes del sistema {'>'} Notificaciones {'>'} tu navegador y activa sonidos/banners.
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
             <span style={{
               display: 'inline-flex', alignItems: 'center', gap: 6, padding: '8px 12px', borderRadius: 999,
-              border: `1px solid ${notificationPermission === 'granted' ? COLORS.success : notificationPermission === 'denied' ? COLORS.alert : COLORS.border}`,
-              background: notificationPermission === 'granted' ? `${COLORS.success}12` : notificationPermission === 'denied' ? `${COLORS.alert}10` : COLORS.bg,
-              color: notificationPermission === 'granted' ? COLORS.success : notificationPermission === 'denied' ? COLORS.alert : COLORS.textDim,
+              border: `1px solid ${notificationPermission === 'granted'  ? COLORS.success : notificationPermission === 'denied'  ? COLORS.alert : COLORS.border}`,
+              background: notificationPermission === 'granted'  ? `${COLORS.success}12` : notificationPermission === 'denied'  ? `${COLORS.alert}10` : COLORS.bg,
+              color: notificationPermission === 'granted'  ? COLORS.success : notificationPermission === 'denied'  ? COLORS.alert : COLORS.textDim,
               fontSize: 12, fontWeight: 800, ...s
             }}>
               ðŸ”” {getNotificationStatusLabel(notificationPermission)}
             </span>
             <button onClick={handleEnableNotifications} style={{
               padding: '10px 14px', borderRadius: 10, border: 'none',
-              background: notificationPermission === 'granted' ? COLORS.bg : COLORS.primary,
-              color: notificationPermission === 'granted' ? COLORS.text : '#fff', cursor: 'pointer',
+              background: notificationPermission === 'granted'  ? COLORS.bg : COLORS.primary,
+              color: notificationPermission === 'granted'  ? COLORS.text : '#fff', cursor: 'pointer',
               fontSize: 12, fontWeight: 800, ...s
-            }}>{notificationPermission === 'granted' ? 'Revisar permiso' : 'Activar notificaciones'}</button>
+            }}>{notificationPermission === 'granted'  ? 'Revisar permiso' : 'Activar notificaciones'}</button>
             <button onClick={handleTestNotification} style={{
               padding: '10px 14px', borderRadius: 10, border: `1px solid ${COLORS.border}`,
               background: COLORS.bg, color: COLORS.text, cursor: 'pointer',
               fontSize: 12, fontWeight: 800, ...s
             }}>Enviar prueba</button>
           </div>
-          {notificationMsg && <div style={{ marginTop: 10, color: notificationPermission === 'denied' ? COLORS.alert : COLORS.textDim, fontSize: 11, lineHeight: 1.45 }}>{notificationMsg}</div>}
+          {notificationMsg && <div style={{ marginTop: 10, color: notificationPermission === 'denied'  ? COLORS.alert : COLORS.textDim, fontSize: 11, lineHeight: 1.45 }}>{notificationMsg}</div>}
         </div>
 
         <div style={{ background: COLORS.card, borderRadius: 16, border: `1px solid ${COLORS.border}`, padding: 22 }}>
@@ -9654,12 +9701,12 @@ const SettingsView = ({ data, onUpdateUser, onResetData, cloudSync, onGenerateRa
               return (
                 <button key={mode.id} onClick={() => onUpdateUser({
                   themeMode: mode.id,
-                  ...(mode.defaultAccent ? { accentColor: mode.defaultAccent } : {}),
-                  ...(mode.defaultIconColor ? { iconColor: mode.defaultIconColor } : {})
+                  ...(mode.defaultAccent  ? { accentColor: mode.defaultAccent } : {}),
+                  ...(mode.defaultIconColor  ? { iconColor: mode.defaultIconColor } : {})
                 })} style={{
                   padding: 14, borderRadius: 12, cursor: 'pointer', textAlign: 'left',
-                  border: `1px solid ${selected ? COLORS.primary + '88' : COLORS.border}`,
-                  background: selected ? `${COLORS.primary}12` : mode.colors.card,
+                  border: `1px solid ${selected  ? COLORS.primary + '88' : COLORS.border}`,
+                  background: selected  ? `${COLORS.primary}12` : mode.colors.card,
                   transition: 'all 0.2s'
                 }}>
                   <div style={{ display: 'flex', gap: 5, marginBottom: 9 }}>
@@ -9667,8 +9714,8 @@ const SettingsView = ({ data, onUpdateUser, onResetData, cloudSync, onGenerateRa
                       <span key={idx} style={{ width: 24, height: 16, borderRadius: 5, background: color, border: `1px solid ${COLORS.border}` }} />
                     ))}
                   </div>
-                  <div style={{ fontSize: 13, color: selected ? COLORS.text : mode.colors.text, fontWeight: 700, fontFamily: "'Inter', sans-serif" }}>{mode.name}</div>
-                  <div style={{ fontSize: 10, color: selected ? COLORS.textDim : mode.colors.textDim, marginTop: 4, lineHeight: 1.45 }}>{mode.desc}</div>
+                  <div style={{ fontSize: 13, color: selected  ? COLORS.text : mode.colors.text, fontWeight: 700, fontFamily: "'Inter', sans-serif" }}>{mode.name}</div>
+                  <div style={{ fontSize: 10, color: selected  ? COLORS.textDim : mode.colors.textDim, marginTop: 4, lineHeight: 1.45 }}>{mode.desc}</div>
                 </button>
               );
             })}
@@ -9700,7 +9747,7 @@ const SettingsView = ({ data, onUpdateUser, onResetData, cloudSync, onGenerateRa
               fontSize: 12, fontFamily: "'Inter', sans-serif"
             }}>Quitar</button>
           </div>
-          {clerkMsg && <div style={{ marginTop: 8, fontSize: 11, color: clerkMsg.includes('debe') ? COLORS.alert : COLORS.success }}>{clerkMsg}</div>}
+          {clerkMsg && <div style={{ marginTop: 8, fontSize: 11, color: clerkMsg.includes('debe')  ? COLORS.alert : COLORS.success }}>{clerkMsg}</div>}
         </div>
 
           <div className="stats-chart-card" style={{ background: COLORS.card, borderRadius: 16, border: `1px solid ${COLORS.border}`, padding: 24 }}>
@@ -9712,8 +9759,8 @@ const SettingsView = ({ data, onUpdateUser, onResetData, cloudSync, onGenerateRa
             {THEME_VARIANTS.map(t => (
               <button key={t.id} onClick={() => onUpdateUser({ accentColor: t.id })} style={{
                 flex: 1, padding: '14px 16px', borderRadius: 12, cursor: 'pointer',
-                border: `2px solid ${user.accentColor === t.id ? t.primary : COLORS.border}`,
-                background: user.accentColor === t.id ? `${t.primary}15` : COLORS.bg,
+                border: `2px solid ${user.accentColor === t.id  ? t.primary : COLORS.border}`,
+                background: user.accentColor === t.id  ? `${t.primary}15` : COLORS.bg,
                 transition: 'all 0.2s', textAlign: 'center'
               }}>
                 <div style={{ display: 'flex', gap: 4, justifyContent: 'center', marginBottom: 6 }}>
@@ -9732,7 +9779,7 @@ const SettingsView = ({ data, onUpdateUser, onResetData, cloudSync, onGenerateRa
             Color de iconos
           </h3>
           <div style={{ fontSize: 11, color: COLORS.textDim, marginBottom: 14, lineHeight: 1.45 }}>
-            Cambia el color global de iconos, emojis de hÃ¡bitos y logo.
+            Cambia el color global de iconos, emojis de hábitos y logo.
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(132px, 1fr))', gap: 10 }}>
             {ICON_COLOR_PALETTE.map(p => {
@@ -9740,8 +9787,8 @@ const SettingsView = ({ data, onUpdateUser, onResetData, cloudSync, onGenerateRa
               return (
                 <button key={p.id} onClick={() => onUpdateUser({ iconColor: p.id })} style={{
                   padding: '11px 12px', borderRadius: 12, cursor: 'pointer',
-                  border: `1px solid ${selected ? p.primary : COLORS.border}`,
-                  background: selected ? `${p.primary}18` : COLORS.bg,
+                  border: `1px solid ${selected  ? p.primary : COLORS.border}`,
+                  background: selected  ? `${p.primary}18` : COLORS.bg,
                   display: 'flex', alignItems: 'center', gap: 10,
                   textAlign: 'left', transition: 'all 0.2s'
                 }}>
@@ -9753,7 +9800,7 @@ const SettingsView = ({ data, onUpdateUser, onResetData, cloudSync, onGenerateRa
                   }} />
                   <span>
                     <span style={{ display: 'block', color: COLORS.text, fontSize: 12, fontWeight: 700, fontFamily: "'Inter', sans-serif" }}>{p.name}</span>
-                    <span style={{ display: 'block', color: selected ? p.primary : COLORS.textDim, fontSize: 10, marginTop: 2 }}>{selected ? 'Activo' : 'Elegir'}</span>
+                    <span style={{ display: 'block', color: selected  ? p.primary : COLORS.textDim, fontSize: 10, marginTop: 2 }}>{selected  ? 'Activo' : 'Elegir'}</span>
                   </span>
                 </button>
               );
@@ -9764,16 +9811,16 @@ const SettingsView = ({ data, onUpdateUser, onResetData, cloudSync, onGenerateRa
           <div className="stats-chart-card" style={{ background: COLORS.card, borderRadius: 16, border: `1px solid ${COLORS.border}`, padding: 24 }}>
           <h3 style={{ fontSize: 16, color: COLORS.text, marginBottom: 16, fontFamily: "'DM Serif Display', serif" }}>
             <TrendingUp size={16} style={{ verticalAlign: 'middle', marginRight: 6, color: COLORS.primary }} />
-           EstadÃ­sticas de Uso
+           Estadísticas de Uso
           </h3>
           <div className="settings-usage-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12 }}>
             <div style={{ background: COLORS.bg, borderRadius: 8, padding: '12px 16px', textAlign: 'center' }}>
               <div style={{ fontSize: 24, color: COLORS.secondary, fontFamily: "'Inter', sans-serif" }}>{daysRegistered}</div>
-              <div style={{ fontSize: 11, color: COLORS.textDim }}>dÃ­as Registrando</div>
+              <div style={{ fontSize: 11, color: COLORS.textDim }}>días Registrando</div>
             </div>
             <div style={{ background: COLORS.bg, borderRadius: 8, padding: '12px 16px', textAlign: 'center' }}>
               <div style={{ fontSize: 24, color: COLORS.primary, fontFamily: "'Inter', sans-serif" }}>{totalHabitsCreated}</div>
-              <div style={{ fontSize: 11, color: COLORS.textDim }}>HÃ¡bitos Creados</div>
+              <div style={{ fontSize: 11, color: COLORS.textDim }}>Hábitos Creados</div>
             </div>
             <div style={{ background: COLORS.bg, borderRadius: 8, padding: '12px 16px', textAlign: 'center' }}>
               <div style={{ fontSize: 24, color: COLORS.success, fontFamily: "'Inter', sans-serif" }}>{totalCompletions}</div>
@@ -9801,7 +9848,7 @@ const SettingsView = ({ data, onUpdateUser, onResetData, cloudSync, onGenerateRa
                 <span>{getXpForLevel((user.level || 1) + 1)} XP</span>
               </div>
               <div style={{ width: '100%', height: 8, background: COLORS.bg, borderRadius: 4, overflow: 'hidden' }}>
-                {(() => { const p = getXpProgress(user.xp || 0); const pct = p.needed > 0 ? (p.xp / p.needed) * 100 : 0; return <div style={{ height: '100%', width: `${pct}%`, background: `linear-gradient(90deg, ${COLORS.primary}, #7f1028, ${COLORS.secondary})`, borderRadius: 4, transition: 'width 0.5s ease', backgroundSize: '200% 100%', animation: 'shimmer 2s ease-in-out infinite' }} />; })()}
+                {(() => { const p = getXpProgress(user.xp || 0); const pct = p.needed > 0  ? (p.xp / p.needed) * 100 : 0; return <div style={{ height: '100%', width: `${pct}%`, background: `linear-gradient(90deg, ${COLORS.primary}, #7f1028, ${COLORS.secondary})`, borderRadius: 4, transition: 'width 0.5s ease', backgroundSize: '200% 100%', animation: 'shimmer 2s ease-in-out infinite' }} />; })()}
               </div>
             </div>
           </div>
@@ -9848,11 +9895,11 @@ const SettingsView = ({ data, onUpdateUser, onResetData, cloudSync, onGenerateRa
             YouTube API Key
           </h3>
           <div style={{ fontSize: 11, color: COLORS.textDim, marginBottom: 12, lineHeight: 1.5 }}>
-            Necesits una API Key de YouTube Data API v3 para buscar videos. Es gratis y sin tarjeta de crÃ©dito.
+            Necesits una API Key de YouTube Data API v3 para buscar videos. Es gratis y sin tarjeta de crédito.
             Obtenela en <span style={{ color: COLORS.primary, cursor: 'pointer' }} onClick={() => window.open('https://console.cloud.google.com/apis/credentials', '_blank')}>console.cloud.google.com</span>.
           </div>
 
-          {!user.youtubeApiKey ? (
+          {!user.youtubeApiKey  ? (
             <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
               <input type="text" value={newApiPwd} onChange={e => setNewApiPwd(e.target.value)}
                 placeholder="AIzaSy..."
@@ -9881,26 +9928,26 @@ const SettingsView = ({ data, onUpdateUser, onResetData, cloudSync, onGenerateRa
               <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '10px 14px', background: COLORS.bg, borderRadius: 8, border: `1px solid ${COLORS.border}` }}>
                 <span style={{ fontSize: 13, color: COLORS.textDim, flexShrink: 0 }}>{'\u{1F511}'}</span>
                 <span style={{ flex: 1, fontSize: 13, color: COLORS.textDim, fontFamily: "'Inter', sans-serif", letterSpacing: '0.15em' }}>
-                  {showApiKey ? user.youtubeApiKey : '****************'}
+                  {showApiKey  ? user.youtubeApiKey : '****************'}
                 </span>
                 <button onClick={() => {
                   if (showApiKey) { setShowApiKey(false); setApiPwd(''); setApiPwdError(''); }
                   else if (!user.youtubeKeyPassword) { setShowApiKey(true); }
                   else { setShowApiKey(true); }
                 }} style={{ background: 'none', border: 'none', color: COLORS.textDim, cursor: 'pointer', fontSize: 12, padding: 2 }}>
-                  {showApiKey ? <EyeOff size={14} /> : <Eye size={14} />}
+                  {showApiKey  ? <EyeOff size={14} /> : <Eye size={14} />}
                 </button>
               </div>
 
               {showApiKey && user.youtubeKeyPassword && (
                 <div style={{ display: 'flex', gap: 8 }}>
                   <input type="password" value={apiPwd} onChange={e => { setApiPwd(e.target.value); setApiPwdError(''); }}
-                    placeholder="ContraseÃ±a para ver la key"
-                    style={{ flex: 1, padding: '8px 12px', background: COLORS.bg, border: `1px solid ${apiPwdError ? COLORS.alert : COLORS.border}`,
+                    placeholder="Contraseña para ver la key"
+                    style={{ flex: 1, padding: '8px 12px', background: COLORS.bg, border: `1px solid ${apiPwdError  ? COLORS.alert : COLORS.border}`,
                       borderRadius: 6, color: COLORS.text, fontSize: 12, outline: 'none', fontFamily: "'Inter', sans-serif" }} />
                   <button onClick={() => {
                     if (apiPwd === user.youtubeKeyPassword) { setShowApiKey(true); setApiPwdError(''); }
-                    else { setApiPwdError('ContraseÃ±a incorrecta'); }
+                    else { setApiPwdError('Contraseña incorrecta'); }
                   }} style={{ padding: '8px 14px', borderRadius: 6, border: 'none', background: COLORS.primary, color: '#fff', cursor: 'pointer', fontSize: 12, fontFamily: "'Inter', sans-serif" }}>Ver</button>
                 </div>
               )}
@@ -9914,13 +9961,13 @@ const SettingsView = ({ data, onUpdateUser, onResetData, cloudSync, onGenerateRa
                   {!user.youtubeKeyPassword && (
                     <div style={{ display: 'flex', gap: 8 }}>
                       <input type="password" value={newApiPwd} onChange={e => setNewApiPwd(e.target.value)}
-                        placeholder="Crear contraseÃ±a" style={{ width: 120, padding: '8px 12px', background: COLORS.bg, border: `1px solid ${COLORS.border}`,
+                        placeholder="Crear contraseña" style={{ width: 120, padding: '8px 12px', background: COLORS.bg, border: `1px solid ${COLORS.border}`,
                           borderRadius: 6, color: COLORS.text, fontSize: 12, outline: 'none', fontFamily: "'Inter', sans-serif" }} />
                       <button onClick={() => { if (newApiPwd) { onUpdateUser({ youtubeKeyPassword: newApiPwd }); setNewApiPwd(''); } }}
                         style={{ padding: '8px 12px', borderRadius: 6, border: 'none', background: COLORS.success, color: '#000', cursor: 'pointer', fontSize: 11, fontFamily: "'Inter', sans-serif", whiteSpace: 'nowrap' }}>{'\u{1F512}'} Fijar</button>
                     </div>
                   )}
-                  {showDeleteConfirm ? (
+                  {showDeleteConfirm  ? (
                     <div style={{ display: 'flex', gap: 4 }}>
                       <button onClick={() => { onUpdateUser({ youtubeApiKey: '', youtubeKeyPassword: '' }); setShowApiKey(false); setShowDeleteConfirm(false); }}
                         style={{ padding: '8px 10px', borderRadius: 6, border: 'none', background: COLORS.alert, color: '#fff', cursor: 'pointer', fontSize: 11, fontFamily: "'Inter', sans-serif" }}>Confirmar</button>
@@ -9945,7 +9992,7 @@ const SettingsView = ({ data, onUpdateUser, onResetData, cloudSync, onGenerateRa
             <h3 style={{ fontSize: 16, color: COLORS.alert, fontFamily: "'DM Serif Display', serif" }}>Zona de Peligro</h3>
           </div>
           <p style={{ fontSize: 13, color: COLORS.textDim, marginBottom: 16, lineHeight: 1.5 }}>
-           Esto eliminar TODOS tus datos incluyendo hÃ¡bitos y registros. Esta acciÃ³n no se puede deshacer.
+           Esto eliminar TODOS tus datos incluyendo hábitos y registros. Esta acción no se puede deshacer.
           </p>
           <RippleButton onClick={() => setShowReset(true)} style={{
             padding: '10px 24px', borderRadius: 8, border: `1px solid ${COLORS.alert}`,
@@ -9956,7 +10003,7 @@ const SettingsView = ({ data, onUpdateUser, onResetData, cloudSync, onGenerateRa
       </div>
 
       <ConfirmModal isOpen={showReset} title="Resetear Datos"
-        message="Â¿estÃ¡s completamente seguro? Se eliminarn todos tus hÃ¡bitos, registros y configuraciÃ³n. Esta acciÃ³n es irreversible."
+        message="¿estás completamente seguro ? Se eliminarn todos tus hábitos, registros y configuración. Esta acción es irreversible."
         danger onConfirm={() => { onResetData(); setShowReset(false); }}
         onCancel={() => setShowReset(false)} />
     </div>
@@ -9979,7 +10026,7 @@ const LevelUpModal = ({ open, level, onClose }) => {
       }} onClick={e => e.stopPropagation()}>
         <div style={{ fontSize: 72, marginBottom: 16, animation: 'float 2s ease-in-out infinite' }}>{'\u{1F389}'}</div>
         <div style={{ fontSize: 14, color: COLORS.primary, textTransform: 'uppercase', letterSpacing: '0.12em', marginBottom: 8 }}>
-          Â¡Felicidades!
+          ¡Felicidades!
         </div>
         <div style={{ fontSize: 48, color: COLORS.text, fontFamily: "'DM Serif Display', serif", marginBottom: 8 }}>
           SUBISTE AL
@@ -9988,7 +10035,7 @@ const LevelUpModal = ({ open, level, onClose }) => {
           NIVEL {level}
         </div>
         <div style={{ fontSize: 14, color: COLORS.textDim, margin: '16px 0 24px' }}>
-          Sigue asÃ­, cada dÃ­a cuenta en tu camino
+          Sigue as?, cada día cuenta en tu camino
         </div>
         <button onClick={onClose} style={{
           padding: '12px 32px', borderRadius: 12, border: 'none',
@@ -10054,7 +10101,7 @@ const FocusMode = ({ habits, records, onCompleteHabit, onClose }) => {
       padding: 40, animation: 'fadeIn 0.2s ease-out'
     }}>
       <div style={{ position: 'absolute', top: 24, right: 24, display: 'flex', gap: 8, alignItems: 'center' }}>
-        <span style={{ fontSize: 13, color: COLORS.textDim }}>HÃ¡bito {step + 1} de {pendingToday.length} pendientes</span>
+        <span style={{ fontSize: 13, color: COLORS.textDim }}>Hábito {step + 1} de {pendingToday.length} pendientes</span>
         <button onClick={onClose} style={{ background: 'none', border: 'none', color: COLORS.textDim, cursor: 'pointer', padding: 8 }}><X size={20} /></button>
       </div>
 
@@ -10068,8 +10115,8 @@ const FocusMode = ({ habits, records, onCompleteHabit, onClose }) => {
         <div style={{ display: 'flex', gap: 12, marginBottom: 32 }}>
           {[5, 10, 15, 25, 30].map(m => (
             <button key={m} onClick={() => setTimerMinutes(m)} style={{
-              width: 56, height: 56, borderRadius: '50%', border: `2px solid ${timerMinutes === m ? COLORS.primary : COLORS.border}`,
-              background: timerMinutes === m ? `${COLORS.primary}20` : 'transparent', color: timerMinutes === m ? COLORS.primary : COLORS.textDim,
+              width: 56, height: 56, borderRadius: '50%', border: `2px solid ${timerMinutes === m  ? COLORS.primary : COLORS.border}`,
+              background: timerMinutes === m  ? `${COLORS.primary}20` : 'transparent', color: timerMinutes === m  ? COLORS.primary : COLORS.textDim,
               cursor: 'pointer', fontSize: 14, fontFamily: "'Inter', sans-serif", transition: 'all 0.2s'
             }}>{m}</button>
           ))}
@@ -10095,14 +10142,14 @@ const FocusMode = ({ habits, records, onCompleteHabit, onClose }) => {
         </svg>
         <div style={{ textAlign: 'center' }}>
           <div style={{ fontSize: 64, fontFamily: "'Inter', sans-serif", color: COLORS.text, fontWeight: 500 }}>
-            {timeLeft !== null ? formatTime(timeLeft) : `${timerMinutes}:00`}
+            {timeLeft !== null  ? formatTime(timeLeft) : `${timerMinutes}:00`}
           </div>
-          {timeLeft !== null && timeLeft === 0 && <div style={{ fontSize: 14, color: COLORS.success, marginTop: 4 }}>Â¡Tiempo!</div>}
+          {timeLeft !== null && timeLeft === 0 && <div style={{ fontSize: 14, color: COLORS.success, marginTop: 4 }}>¿Tiempo!</div>}
         </div>
       </div>
 
       <div style={{ display: 'flex', gap: 12 }}>
-        {timeLeft === null ? (
+        {timeLeft === null  ? (
           <button onClick={() => { setTimeLeft(timerMinutes * 60); setRunning(true); }} style={{
             padding: '12px 32px', borderRadius: 12, border: 'none',
             background: `linear-gradient(135deg, ${COLORS.primary}, #7f1028)`, color: '#fff',
@@ -10114,7 +10161,7 @@ const FocusMode = ({ habits, records, onCompleteHabit, onClose }) => {
               <button onClick={() => setPaused(p => !p)} style={{
                 padding: '12px 24px', borderRadius: 12, border: `1px solid ${COLORS.border}`,
                 background: COLORS.card, color: COLORS.text, cursor: 'pointer', fontSize: 14, fontFamily: "'Inter', sans-serif"
-              }}>{paused ? <Play size={16} /> : <Pause size={16} />} {paused ? 'Reanudar' : 'Pausar'}</button>
+              }}>{paused  ? <Play size={16} /> : <Pause size={16} />} {paused  ? 'Reanudar' : 'Pausar'}</button>
             )}
             <button onClick={() => { setTimeLeft(null); setRunning(false); setPaused(false); }} style={{
               padding: '12px 24px', borderRadius: 12, border: `1px solid ${COLORS.alert}`,
@@ -10179,14 +10226,14 @@ const PomodoroView = ({ data, onUpdateUser, onUpdatePomodoro }) => {
   const ambientTypes = [
     { id: 'none', label: 'Silencio', icon: '\u{1F507}' },
     { id: 'whitenoise', label: 'Ruido Blanco', icon: '\u{1F4FB}' },
-    { id: 'brown', label: 'Ruido MarrÃ³n', icon: '\u{1F3A7}' },
+    { id: 'brown', label: 'Ruido Marrón', icon: '\u{1F3A7}' },
     { id: 'rain', label: 'Lluvia', icon: '\u{1F327}\u{FE0F}' },
     { id: 'ocean', label: 'Olas', icon: '\u{1F30A}' },
     { id: 'fire', label: 'Fogata', icon: '\u{1F525}' },
   ];
   const defaultFavorites = [
     { id: 'fav1', label: 'Top G Songs', videoId: 'aG4kHBL5WlQ', playlist: 'RDaG4kHBL5WlQ' },
-    { id: 'fav2', label: 'MÃºsica ClÃ¡sica Radio', videoId: 'hydk9hHO1Ko', playlist: 'RDhydk9hHO1Ko' },
+    { id: 'fav2', label: 'Música Clásica Radio', videoId: 'hydk9hHO1Ko', playlist: 'RDhydk9hHO1Ko' },
     { id: 'fav3', label: 'Lofi 1 AM Study', videoId: 'lTRiuFIWV54', playlist: '' },
   ];
   const [searchInput, setSearchInput] = useState('');
@@ -10196,7 +10243,7 @@ const PomodoroView = ({ data, onUpdateUser, onUpdatePomodoro }) => {
   const [searchResults, setSearchResults] = useState([]);
   const [searchLoading, setSearchLoading] = useState(false);
   const [searchError, setSearchError] = useState('');
-  const [favorites, setFavorites] = useState(() => data.user?.youtubeFavorites?.length ? data.user.youtubeFavorites : defaultFavorites);
+  const [favorites, setFavorites] = useState(() => data.user?.youtubeFavorites?.length  ? data.user.youtubeFavorites : defaultFavorites);
   const [volume, setVolume] = useState(100);
   const [showVideo, setShowVideo] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
@@ -10204,9 +10251,9 @@ const PomodoroView = ({ data, onUpdateUser, onUpdatePomodoro }) => {
   const seekIntervalRef = useRef(null);
   const durations = { focus: settings.focus * 60, shortBreak: settings.shortBreak * 60, longBreak: settings.longBreak * 60 };
   const modeCopy = {
-    focus: { label: 'sesiÃ³n de enfoque', next: 'Toma un descanso corto. LevÃ¡ntate, respira y vuelve con calma.', tone: 880 },
+    focus: { label: 'sesión de enfoque', next: 'Toma un descanso corto. Levántate, respira y vuelve con calma.', tone: 880 },
     shortBreak: { label: 'descanso corto', next: 'Vuelve al enfoque. El siguiente bloque cuenta.', tone: 660 },
-    longBreak: { label: 'descanso largo', next: 'Tu ciclo largo terminÃ³. Revisa energÃ­a y empieza otro ciclo si quieres.', tone: 520 }
+    longBreak: { label: 'descanso largo', next: 'Tu ciclo largo termin?. Revisa energía y empieza otro ciclo si quieres.', tone: 520 }
   };
   const youtubeContainerRef = useRef(null);
   const youtubePlayerRef = useRef(null);
@@ -10219,7 +10266,7 @@ const PomodoroView = ({ data, onUpdateUser, onUpdatePomodoro }) => {
     if (m) {
       const videoId = m[1];
       const listMatch = t.match(/[?&]list=([a-zA-Z0-9_-]+)/);
-      return { type: 'url', videoId, playlist: listMatch ? listMatch[1] : '', label: t.substring(0, 60) };
+      return { type: 'url', videoId, playlist: listMatch  ? listMatch[1] : '', label: t.substring(0, 60) };
     }
     return { type: 'search', query: t, label: t.substring(0, 60) };
   };
@@ -10302,13 +10349,13 @@ const PomodoroView = ({ data, onUpdateUser, onUpdatePomodoro }) => {
           author: i.snippet.channelTitle,
           lengthSeconds: 0,
           viewCount: 0,
-          publishedText: i.snippet.publishedAt ? new Date(i.snippet.publishedAt).toLocaleDateString() : ''
+          publishedText: i.snippet.publishedAt  ? new Date(i.snippet.publishedAt).toLocaleDateString() : ''
         }));
         setSearchResults(videos); setSearchLoading(false); return;
-      } catch(e) { setSearchError('Error de conexiÃ³n: ' + e.message); setSearchLoading(false); return; }
+      } catch(e) { setSearchError('Error de conexión: ' + e.message); setSearchLoading(false); return; }
     }
     // Fallback: 'YouTube embed with search results
-    setSearchError('Configura una API Key de YouTube en Settings para buscar. Sin key, usÃ³ URLs directas.');
+    setSearchError('Configura una API Key de YouTube en Settings para buscar. Sin key, us ? URLs directas.');
     setSearchLoading(false);
   };
 
@@ -10328,7 +10375,7 @@ const PomodoroView = ({ data, onUpdateUser, onUpdatePomodoro }) => {
 
   const addFavorite = (videoId, playlist, label) => {
     const id = 'fav_' + Date.now();
-    const updated = [...favorites, { id, label: label || 'Sin tÃ­tulo', videoId, playlist: playlist || '' }];
+    const updated = [...favorites, { id, label: label || 'Sin título', videoId, playlist: playlist || '' }];
     setFavorites(updated);
     onUpdateUser({ youtubeFavorites: updated });
   };
@@ -10356,7 +10403,7 @@ const PomodoroView = ({ data, onUpdateUser, onUpdatePomodoro }) => {
   const minutes = Math.floor(timeLeft / 60);
   const seconds = timeLeft % 60;
   const total = durations[mode];
-  const progress = total > 0 ? 1 - timeLeft / total : 0;
+  const progress = total > 0  ? 1 - timeLeft / total : 0;
   const radius = 120;
   const circumference = 2 * Math.PI * radius;
   const offset = circumference * (1 - progress);
@@ -10372,8 +10419,8 @@ const PomodoroView = ({ data, onUpdateUser, onUpdatePomodoro }) => {
     playBeep(copy.tone, 0.75);
     setTimeout(() => playBeep(copy.tone * 1.18, 0.45), 180);
     requestHabitFlowNotifications().then(() => {
-      showHabitFlowNotification('HabitFlow â€¢ Pomodoro terminado', {
-        body: `TerminÃ³ tu ${copy.label}. ${copy.next}`,
+      showHabitFlowNotification('HabitFlow  ? Pomodoro terminado', {
+        body: `Termin ? tu ${copy.label}. ${copy.next}`,
         tag: `habitflow-pomodoro-${finishedMode}-${Date.now()}`,
         renotify: true,
         requireInteraction: true,
@@ -10400,7 +10447,7 @@ const PomodoroView = ({ data, onUpdateUser, onUpdatePomodoro }) => {
 
   const monthlyTotal = records.reduce((sum, r) => sum + r.focusTime, 0);
   const totalSessions = records.length;
-  const avgSession = totalSessions > 0 ? Math.round(monthlyTotal / totalSessions) : 0;
+  const avgSession = totalSessions > 0  ? Math.round(monthlyTotal / totalSessions) : 0;
 
   let bestStreak = 0, currentStreak = 0;
   const uniqueDates = [...new Set(records.map(r => r.date))].sort();
@@ -10620,20 +10667,20 @@ const PomodoroView = ({ data, onUpdateUser, onUpdatePomodoro }) => {
             {'\u{1F345}'} Pomodoro
           </div>
           <div style={{ fontSize: 12, color: COLORS.textDim, marginTop: 4 }}>
-            {todaySessions.length} sesiÃ³n{String(todaySessions.length) !== '1' ? 'es' : ''} completadas hoy
+            {todaySessions.length} sesión{String(todaySessions.length) !== '1'  ? 'es' : ''} completadas hoy
           </div>
         </div>
         <div className="pomodoro-modes" style={{ display: 'flex', gap: 8 }}>
           {['focus', 'shortBreak', 'longBreak'].map(m => (
             <button key={m} onClick={() => switchMode(m)} style={{
               padding: '6px 14px', borderRadius: 8, border: 'none',
-              background: mode === m ? `${COLORS.primary}20` : 'transparent',
-              color: mode === m ? COLORS.primary : COLORS.textDim,
+              background: mode === m  ? `${COLORS.primary}20` : 'transparent',
+              color: mode === m  ? COLORS.primary : COLORS.textDim,
               cursor: 'pointer', fontSize: 11, fontFamily: "'Inter', sans-serif",
-              borderBottom: mode === m ? `2px solid ${COLORS.primary}` : '2px solid transparent',
+              borderBottom: mode === m  ? `2px solid ${COLORS.primary}` : '2px solid transparent',
               transition: 'all 0.2s'
             }}>
-              {m === 'focus' ? 'Enfoque' : m === 'shortBreak' ? 'Descanso' : 'Descanso Largo'}
+              {m === 'focus'  ? 'Enfoque' : m === 'shortBreak'  ? 'Descanso' : 'Descanso Largo'}
             </button>
           ))}
         </div>
@@ -10641,7 +10688,7 @@ const PomodoroView = ({ data, onUpdateUser, onUpdatePomodoro }) => {
 
       <div className="pomodoro-kpis" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', gap: 12, marginBottom: 24 }}>
         <div style={{ background: COLORS.card, borderRadius: 12, border: `1px solid ${COLORS.border}`, padding: 16, textAlign: 'center' }}>
-          <div style={{ fontSize: 11, color: COLORS.textDim, marginBottom: 4 }}>Sesiones hoy</div>
+          <div style={{ fontSize: 11, color: COLORS.textDim, marginBottom: 4 }}>Sesiónes hoy</div>
           <div style={{ fontSize: 28, color: COLORS.alert, fontFamily: "'Inter', sans-serif", fontWeight: 600 }}>{todaySessions.length}</div>
           <div style={{ fontSize: 10, color: COLORS.textDim, marginTop: 2 }}>{'\u{2705}'} completadas</div>
         </div>
@@ -10651,14 +10698,14 @@ const PomodoroView = ({ data, onUpdateUser, onUpdatePomodoro }) => {
           <div style={{ fontSize: 10, color: COLORS.textDim, marginTop: 2 }}>minutos enfocado</div>
         </div>
         <div style={{ background: COLORS.card, borderRadius: 12, border: `1px solid ${COLORS.border}`, padding: 16, textAlign: 'center' }}>
-          <div style={{ fontSize: 11, color: COLORS.textDim, marginBottom: 4 }}>Total sesiones</div>
+          <div style={{ fontSize: 11, color: COLORS.textDim, marginBottom: 4 }}>Total sesiónes</div>
           <div style={{ fontSize: 28, color: COLORS.success, fontFamily: "'Inter', sans-serif", fontWeight: 600 }}>{totalSessions}</div>
           <div style={{ fontSize: 10, color: COLORS.textDim, marginTop: 2 }}>en total - ~{avgSession}m c/u</div>
         </div>
         <div style={{ background: COLORS.card, borderRadius: 12, border: `1px solid ${COLORS.border}`, padding: 16, textAlign: 'center' }}>
           <div style={{ fontSize: 11, color: COLORS.textDim, marginBottom: 4 }}>Mejor racha</div>
           <div style={{ fontSize: 28, color: '#ffd93d', fontFamily: "'Inter', sans-serif", fontWeight: 600 }}>{bestStreak}</div>
-          <div style={{ fontSize: 10, color: COLORS.textDim, marginTop: 2 }}>dÃ­as seguidos</div>
+          <div style={{ fontSize: 10, color: COLORS.textDim, marginTop: 2 }}>días seguidos</div>
         </div>
       </div>
 
@@ -10667,14 +10714,14 @@ const PomodoroView = ({ data, onUpdateUser, onUpdatePomodoro }) => {
           <div className="pomodoro-timer-ring" style={{ position: 'relative', width: 260, height: 260 }}>
             <svg width="260" height="260" viewBox="0 0 260 260" style={{ transform: 'rotate(-90deg)' }}>
               <circle cx="130" cy="130" r={radius} fill="none" stroke={COLORS.border} strokeWidth="6" />
-              <circle cx="130" cy="130" r={radius} fill="none" stroke={mode === 'focus' ? COLORS.alert : COLORS.success} strokeWidth="6" strokeLinecap="round" strokeDasharray={circumference} strokeDashoffset={offset} style={{ transition: 'stroke-dashoffset 0.3s linear' }} />
+              <circle cx="130" cy="130" r={radius} fill="none" stroke={mode === 'focus'  ? COLORS.alert : COLORS.success} strokeWidth="6" strokeLinecap="round" strokeDasharray={circumference} strokeDashoffset={offset} style={{ transition: 'stroke-dashoffset 0.3s linear' }} />
             </svg>
             <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
               <div style={{ fontSize: 56, color: COLORS.text, fontFamily: "'Inter', sans-serif", lineHeight: 1, fontWeight: 300 }}>
                 {String(minutes).padStart(2, '0')}:{String(seconds).padStart(2, '0')}
               </div>
               <div style={{ fontSize: 11, color: COLORS.textDim, marginTop: 8, letterSpacing: '0.12em' }}>
-                {mode === 'focus' ? 'ENFOQUE' : mode === 'shortBreak' ? 'DESCANSO' : 'DESCANSO LARGO'}
+                {mode === 'focus'  ? 'ENFOQUE' : mode === 'shortBreak'  ? 'DESCANSO' : 'DESCANSO LARGO'}
               </div>
             </div>
           </div>
@@ -10687,12 +10734,12 @@ const PomodoroView = ({ data, onUpdateUser, onUpdatePomodoro }) => {
             }}><Repeat size={18} /></button>
             <button onClick={toggleTimer} style={{
               width: 72, height: 72, borderRadius: '50%', border: 'none',
-              background: `linear-gradient(135deg, ${mode === 'focus' ? COLORS.alert : COLORS.success}, ${mode === 'focus' ? '#ff4d6d' : '#9f1239'})`,
+              background: `linear-gradient(135deg, ${mode === 'focus'  ? COLORS.alert : COLORS.success}, ${mode === 'focus'  ? '#ff4d6d' : '#9f1239'})`,
               color: '#000', cursor: 'pointer', fontSize: 28, display: 'flex',
               alignItems: 'center', justifyContent: 'center', transition: 'transform 0.2s',
-              transform: isRunning ? 'scale(1.05)' : 'scale(1)'
+              transform: isRunning  ? 'scale(1.05)' : 'scale(1)'
             }}>
-              {isRunning ? <Pause size={28} /> : <Play size={28} />}
+              {isRunning  ? <Pause size={28} /> : <Play size={28} />}
             </button>
             <button onClick={() => setShowSettings(true)} style={{
               width: 44, height: 44, borderRadius: '50%', border: `1px solid ${COLORS.border}`,
@@ -10707,7 +10754,7 @@ const PomodoroView = ({ data, onUpdateUser, onUpdatePomodoro }) => {
             fontSize: 12, fontFamily: "'Inter', sans-serif", fontWeight: 800
           }}>
             <Sparkles size={14} style={{ verticalAlign: 'middle', marginRight: 6, color: COLORS.primary }} />
-            CÃ³mo usar Pomodoro
+            Cómo usar Pomodoro
           </button>
 
           <div style={{ display: 'flex', gap: 20, marginTop: 20, fontSize: 12, color: COLORS.textDim }}>
@@ -10725,8 +10772,8 @@ const PomodoroView = ({ data, onUpdateUser, onUpdatePomodoro }) => {
                   if (isRunning) { stopAmbient(); if (t.id !== 'none') startAmbient(t.id, settings.ambientVolume); }
                 }} style={{
                   width: 36, height: 36, borderRadius: 8, border: 'none',
-                  background: settings.ambientSound === t.id ? `${COLORS.primary}20` : COLORS.bg,
-                  color: settings.ambientSound === t.id ? COLORS.primary : COLORS.textDim,
+                  background: settings.ambientSound === t.id  ? `${COLORS.primary}20` : COLORS.bg,
+                  color: settings.ambientSound === t.id  ? COLORS.primary : COLORS.textDim,
                   cursor: 'pointer', fontSize: 16, display: 'flex', alignItems: 'center', justifyContent: 'center',
                   transition: 'all 0.2s'
                 }} title={t.label}><span className="fire-emoji">{t.icon}</span></button>
@@ -10743,7 +10790,7 @@ const PomodoroView = ({ data, onUpdateUser, onUpdatePomodoro }) => {
                 {weeklyData.reduce((s, d) => s + d.minutes, 0)} min total
               </div>
             </div>
-            {weeklyData.some(d => d.minutes > 0) ? (
+            {weeklyData.some(d => d.minutes > 0)  ? (
               <ResponsiveContainer width="100%" height={180}>
                 <BarChart data={weeklyData} margin={{ top: 5, right: 5, bottom: 0, left: -20 }}>
                   <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.04)" vertical={false} />
@@ -10754,7 +10801,7 @@ const PomodoroView = ({ data, onUpdateUser, onUpdatePomodoro }) => {
                     const d = payload[0].payload;
                     return <div style={{ background: '#1a1a26', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 8, padding: '8px 12px' }}>
                       <div style={{ fontSize: 12, color: COLORS.text, marginBottom: 2 }}>{d.label}</div>
-                      <div style={{ fontSize: 11, color: COLORS.alert }}>{d.minutes} min - {d.sessions} sesiÃ³n{String(d.sessions) !== '1' ? 'es' : ''}</div>
+                      <div style={{ fontSize: 11, color: COLORS.alert }}>{d.minutes} min - {d.sessions} sesión{String(d.sessions) !== '1'  ? 'es' : ''}</div>
                     </div>;
                   }} />
                   <Bar dataKey="minutes" name="Minutos" fill={COLORS.alert} radius={[4, 4, 0, 0]} maxBarSize={28} />
@@ -10775,11 +10822,11 @@ const PomodoroView = ({ data, onUpdateUser, onUpdatePomodoro }) => {
                 <div style={{ fontSize: 20, color: COLORS.alert, fontFamily: "'Inter', sans-serif", fontWeight: 600 }}>{(monthlyTotal / 60).toFixed(1)}h</div>
               </div>
               <div style={{ background: COLORS.bg, borderRadius: 8, padding: '10px 12px' }}>
-                <div style={{ fontSize: 10, color: COLORS.textDim }}>Promedio/sesiÃ³n</div>
+                <div style={{ fontSize: 10, color: COLORS.textDim }}>Promedio/sesión</div>
                 <div style={{ fontSize: 20, color: COLORS.primary, fontFamily: "'Inter', sans-serif", fontWeight: 600 }}>{avgSession}m</div>
               </div>
               <div style={{ background: COLORS.bg, borderRadius: 8, padding: '10px 12px' }}>
-                <div style={{ fontSize: 10, color: COLORS.textDim }}>dÃ­as activos</div>
+                <div style={{ fontSize: 10, color: COLORS.textDim }}>días activos</div>
                 <div style={{ fontSize: 20, color: COLORS.success, fontFamily: "'Inter', sans-serif", fontWeight: 600 }}>{uniqueDates.length}</div>
               </div>
               <div style={{ background: COLORS.bg, borderRadius: 8, padding: '10px 12px' }}>
@@ -10793,7 +10840,7 @@ const PomodoroView = ({ data, onUpdateUser, onUpdatePomodoro }) => {
 
       {todaySessions.length > 0 && (
         <div style={{ background: COLORS.card, borderRadius: 12, border: `1px solid ${COLORS.border}`, padding: 16, marginBottom: 24 }}>
-          <div style={{ fontSize: 13, color: COLORS.textDim, marginBottom: 10 }}>Sesiones de hoy</div>
+          <div style={{ fontSize: 13, color: COLORS.textDim, marginBottom: 10 }}>Sesiónes de hoy</div>
           <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
             {todaySessions.map((s, i) => (
               <div key={i} style={{
@@ -10896,7 +10943,7 @@ const PomodoroView = ({ data, onUpdateUser, onUpdatePomodoro }) => {
                 <img src={getThumbnail(v.videoId)} alt="" style={{ width: 80, height: 45, borderRadius: 6, objectFit: 'cover', flexShrink: 0 }} />
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <div style={{ fontSize: 12, color: COLORS.text, lineHeight: 1.3, marginBottom: 2, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{v.title}</div>
-                  <div style={{ fontSize: 10, color: COLORS.textDim }}>{v.author || ''} {v.author ? ' - ' : ''} {formatDuration(v.lengthSeconds)}</div>
+                  <div style={{ fontSize: 10, color: COLORS.textDim }}>{v.author || ''} {v.author  ? ' - ' : ''} {formatDuration(v.lengthSeconds)}</div>
                 </div>
                 <button onClick={(e) => { e.stopPropagation(); addFavorite(v.videoId, '', v.title || v.videoId); }} title="Agregar a favoritos" style={{
                   flexShrink: 0, background: 'none', border: 'none', color: COLORS.textDim, cursor: 'pointer', fontSize: 16, padding: 4
@@ -10914,12 +10961,12 @@ const PomodoroView = ({ data, onUpdateUser, onUpdatePomodoro }) => {
             {favorites.map(f => (
               <div key={f.id} style={{
                 display: 'flex', alignItems: 'center', gap: 4, padding: '6px 8px', borderRadius: 8,
-                background: currentVideo?.videoId === f.videoId ? `${COLORS.primary}15` : COLORS.card,
-                border: `1px solid ${currentVideo?.videoId === f.videoId ? COLORS.primary : COLORS.border}`,
+                background: currentVideo?.videoId === f.videoId  ? `${COLORS.primary}15` : COLORS.card,
+                border: `1px solid ${currentVideo?.videoId === f.videoId  ? COLORS.primary : COLORS.border}`,
                 transition: 'all 0.2s'
               }}>
                 <button onClick={() => playYoutube(f.videoId, f.playlist, f.label)} style={{
-                  background: 'none', border: 'none', color: currentVideo?.videoId === f.videoId ? COLORS.primary : COLORS.text,
+                  background: 'none', border: 'none', color: currentVideo?.videoId === f.videoId  ? COLORS.primary : COLORS.text,
                   cursor: 'pointer', fontSize: 11, fontFamily: "'Inter', sans-serif", padding: 0, whiteSpace: 'nowrap'
                 }}>{'\u{1F3B5}'} {f.label}</button>
                 <button onClick={() => removeFavorite(f.id)} style={{
@@ -10935,7 +10982,7 @@ const PomodoroView = ({ data, onUpdateUser, onUpdatePomodoro }) => {
         <Modal isOpen={showSettings} onClose={() => setShowSettings(false)} title="Configurar Pomodoro" width={420}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
             {[
-              { key: 'focus', label: 'DuraciÃ³n de enfoque (min)', min: 1, max: 120 },
+              { key: 'focus', label: 'Duración de enfoque (min)', min: 1, max: 120 },
               { key: 'shortBreak', label: 'Descanso corto (min)', min: 1, max: 30 },
               { key: 'longBreak', label: 'Descanso largo (min)', min: 5, max: 60 },
             ].map(({ key, label, min, max }) => (
@@ -10955,9 +11002,9 @@ const PomodoroView = ({ data, onUpdateUser, onUpdatePomodoro }) => {
               <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
                 {ambientTypes.map(t => (
                   <button key={t.id} onClick={() => setLocalSettings(s => ({ ...s, ambientSound: t.id }))} style={{
-                    padding: '6px 10px', borderRadius: 6, border: `1px solid ${localSettings.ambientSound === t.id ? COLORS.primary : COLORS.border}`,
-                    background: localSettings.ambientSound === t.id ? `${COLORS.primary}15` : 'transparent',
-                    color: localSettings.ambientSound === t.id ? COLORS.primary : COLORS.textDim,
+                    padding: '6px 10px', borderRadius: 6, border: `1px solid ${localSettings.ambientSound === t.id  ? COLORS.primary : COLORS.border}`,
+                    background: localSettings.ambientSound === t.id  ? `${COLORS.primary}15` : 'transparent',
+                    color: localSettings.ambientSound === t.id  ? COLORS.primary : COLORS.textDim,
                     cursor: 'pointer', fontSize: 11, fontFamily: "'Inter', sans-serif",
                     display: 'flex', alignItems: 'center', gap: 4, transition: 'all 0.2s'
                   }}>
@@ -10984,18 +11031,18 @@ const PomodoroView = ({ data, onUpdateUser, onUpdatePomodoro }) => {
       )}
 
       {showGuide && (
-        <Modal isOpen={showGuide} onClose={() => setShowGuide(false)} title="GuÃ­a Pomodoro Pro" width={620}>
+        <Modal isOpen={showGuide} onClose={() => setShowGuide(false)} title="Guía Pomodoro Pro" width={620}>
           <div style={{ display: 'grid', gap: 14, color: COLORS.textDim, fontSize: 13, lineHeight: 1.6 }}>
             <div style={{ background: COLORS.bg, border: `1px solid ${COLORS.border}`, borderRadius: 14, padding: 14 }}>
-              <div style={{ color: COLORS.text, fontWeight: 900, marginBottom: 6 }}>ConfiguraciÃ³n recomendada</div>
-              <div>25 min enfoque + 5 min descanso corto + 15 min descanso largo cada 4 bloques. Si una tarea es pesada, usa 50/10; si estÃ¡s empezando, usa 15/5.</div>
+              <div style={{ color: COLORS.text, fontWeight: 900, marginBottom: 6 }}>Configuración recomendada</div>
+              <div>25 min enfoque + 5 min descanso corto + 15 min descanso largo cada 4 bloques. Si una tarea es pesada, usa 50/10; si estás empezando, usa 15/5.</div>
             </div>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: 10 }}>
               {[
                 ['1', 'Define una sola tarea antes de iniciar.'],
                 ['2', 'Durante enfoque no revises mensajes, redes ni correo.'],
-                ['3', 'En descanso levÃ¡ntate, toma agua y evita pantallas.'],
-                ['4', 'DespuÃ©s de 4 ciclos toma un descanso largo real.']
+                ['3', 'En descanso levántate, toma agua y evita pantallas.'],
+                ['4', 'Después de 4 ciclos toma un descanso largo real.']
               ].map(([n, text]) => (
                 <div key={n} style={{ background: COLORS.card, border: `1px solid ${COLORS.border}`, borderRadius: 14, padding: 13 }}>
                   <div style={{ color: COLORS.primary, fontWeight: 900, marginBottom: 5 }}>{n}</div>
@@ -11004,7 +11051,7 @@ const PomodoroView = ({ data, onUpdateUser, onUpdatePomodoro }) => {
               ))}
             </div>
             <div style={{ color: COLORS.textDim }}>
-              La tÃ©cnica sirve para proteger tu atenciÃ³n: convierte el trabajo en bloques medibles, reduce la fricciÃ³n para empezar y te obliga a descansar antes de quemarte.
+              La técnica sirve para proteger tu atención: convierte el trabajo en bloques medibles, reduce la fricción para empezar y te obliga a descansar antes de quemarte.
             </div>
           </div>
         </Modal>
@@ -11037,8 +11084,8 @@ const WorkoutView = ({ data, onUpdateData, onCompleteHabit, awardXp }) => {
         ].map(t => (
           <button key={t.id} onClick={() => setTab(t.id)} style={{
             padding: '10px 20px', borderRadius: 20, border: 'none',
-            background: tab === t.id ? `linear-gradient(135deg, ${COLORS.primary}, #7f1028)` : COLORS.card,
-            color: tab === t.id ? '#fff' : COLORS.textDim, cursor: 'pointer',
+            background: tab === t.id  ? `linear-gradient(135deg, ${COLORS.primary}, #7f1028)` : COLORS.card,
+            color: tab === t.id  ? '#fff' : COLORS.textDim, cursor: 'pointer',
             fontSize: 14, fontFamily: "'Inter', sans-serif", display: 'flex', alignItems: 'center', gap: 6,
             transition: 'all 0.2s'
           }}><span className="fire-emoji">{t.icon}</span>{t.label}</button>
@@ -11079,7 +11126,7 @@ const WorkoutTrainTab = ({ workoutData, onUpdateData, setGymMode, awardXp, onCom
     const exercisePool = [...exercises, ...(data.createdExercises || [])];
     const findExercise = (id) => exercisePool.find(e => e.id === id);
     const r = { id: editRoutine?.id || `r${Date.now()}`, name: data.name, muscleGroups: [...new Set(data.exercises.map(ex => findExercise(ex.eid)?.mg).filter(Boolean))], exercises: data.exercises, createdAt: toYYYYMMDD(new Date()) };
-    onUpdateData(wd => ({ ...wd, routines: editRoutine ? wd.routines.map(x => x.id === r.id ? r : x) : [...wd.routines, r] }));
+    onUpdateData(wd => ({ ...wd, routines: editRoutine  ? wd.routines.map(x => x.id === r.id  ? r : x) : [...wd.routines, r] }));
     setShowNewRoutine(false); setEditRoutine(null);
   };
 
@@ -11088,7 +11135,7 @@ const WorkoutTrainTab = ({ workoutData, onUpdateData, setGymMode, awardXp, onCom
       <div style={{ background: `linear-gradient(135deg, ${COLORS.primary}15, #7f102810)`, borderRadius: 16, border: `1px solid ${COLORS.primary}30`, padding: 32, marginBottom: 24, textAlign: 'center' }}>
         <div className="fire-emoji" style={{ fontSize: 48, marginBottom: 12 }}>{'\u{1F3CB}\u{FE0F}'}</div>
         <div style={{ fontSize: 20, color: COLORS.text, fontFamily: "'DM Serif Display', serif", marginBottom: 8 }}>Entreno Libre</div>
-        <div style={{ fontSize: 13, color: COLORS.textDim, marginBottom: 20 }}>Empieza sin rutina, aÃ±ade ejercicios sobre la marcha</div>
+        <div style={{ fontSize: 13, color: COLORS.textDim, marginBottom: 20 }}>Empieza sin rutina, añade ejercicios sobre la marcha</div>
         <button onClick={startFreeWorkout} style={{ padding: '14px 40px', borderRadius: 12, border: 'none', background: `linear-gradient(135deg, ${COLORS.primary}, #7f1028)`, color: '#fff', fontSize: 16, fontFamily: "'Inter', sans-serif", cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 8 }}><Play size={18} /> Iniciar Entreno Libre</button>
       </div>
 
@@ -11116,7 +11163,7 @@ const WorkoutTrainTab = ({ workoutData, onUpdateData, setGymMode, awardXp, onCom
                 {r.muscleGroups.map(mg => <span key={mg} style={{ fontSize: 10, padding: '2px 8px', borderRadius: 4, background: `${MUSCLE_COLORS[mg] || COLORS.primary}20`, color: MUSCLE_COLORS[mg] || COLORS.text }}>{mg}</span>)}
               </div>
               <div style={{ fontSize: 12, color: COLORS.textDim, marginBottom: 4 }}>{r.exercises.length} ejercicios - {totalSets} series - ~{Math.floor(estDuration)} min</div>
-              <div style={{ fontSize: 11, color: COLORS.textDim, marginBottom: 16 }}>{last ? `Ãšltima vez: ${daysAgo(last.date)} dÃ­as` : 'Nunca realizada'}</div>
+              <div style={{ fontSize: 11, color: COLORS.textDim, marginBottom: 16 }}>{last  ? `Última vez: ${daysAgo(last.date)} días` : 'Nunca realizada'}</div>
               <button onClick={() => startRoutine(r)} style={{ width: '100%', padding: '10px', borderRadius: 8, border: 'none', background: `linear-gradient(135deg, ${COLORS.primary}, #7f1028)`, color: '#fff', cursor: 'pointer', fontSize: 14, fontFamily: "'Inter', sans-serif" }}><Play size={14} style={{ verticalAlign: 'middle', marginRight: 4 }} /> Iniciar</button>
             </div>
           );
@@ -11139,7 +11186,7 @@ const WorkoutAdvisorModal = ({ exercises, onSave, onClose }) => {
   const s = { fontFamily: "'Inter', sans-serif" };
   const input = { padding: '10px 12px', borderRadius: 10, border: `1px solid ${COLORS.border}`, background: COLORS.bg, color: COLORS.text, outline: 'none', ...s };
   const goalMuscles = {
-    muscle: ['Pecho', 'Espalda', 'Piernas', 'Hombros', 'BÃ­ceps', 'TrÃ­ceps'],
+    muscle: ['Pecho', 'Espalda', 'Piernas', 'Hombros', 'Bíceps', 'Tríceps'],
     strength: ['Pecho', 'Espalda', 'Piernas', 'Hombros'],
     fatloss: ['Cardio', 'Piernas', 'Espalda', 'Pecho', 'Abdomen'],
     glutes: ['Piernas', 'Abdomen', 'Espalda'],
@@ -11148,18 +11195,18 @@ const WorkoutAdvisorModal = ({ exercises, onSave, onClose }) => {
   const buildPlan = () => {
     const muscles = goalMuscles[profile.goal] || goalMuscles.muscle;
     const pool = exercises.filter(ex => muscles.includes(ex.mg) || (profile.equipment === 'home' && ['Peso Corporal', 'Mancuernas'].includes(ex.equip)));
-    const preferred = pool.length ? pool : exercises;
-    const totalExercises = profile.days <= 3 ? 5 : 6;
+    const preferred = pool.length  ? pool : exercises;
+    const totalExercises = profile.days <= 3  ? 5 : 6;
     const selected = preferred.slice(0, Math.max(totalExercises, Math.min(preferred.length, totalExercises + 2)));
-    const reps = profile.goal === 'strength' ? 6 : profile.goal === 'fatloss' ? 12 : 10;
-    const sets = profile.level === 'beginner' ? 3 : profile.level === 'advanced' ? 4 : 3;
-    const rest = profile.goal === 'strength' ? 120 : profile.goal === 'fatloss' ? 60 : 90;
+    const reps = profile.goal === 'strength'  ? 6 : profile.goal === 'fatloss'  ? 12 : 10;
+    const sets = profile.level === 'beginner'  ? 3 : profile.level === 'advanced'  ? 4 : 3;
+    const rest = profile.goal === 'strength'  ? 120 : profile.goal === 'fatloss'  ? 60 : 90;
     const nameMap = {
       muscle: 'Rutina hipertrofia personalizada',
       strength: 'Rutina fuerza progresiva',
-      fatloss: 'Rutina recomposiciÃ³n y cardio',
-      glutes: 'Rutina glÃºteos y piernas',
-      health: 'Rutina salud y energÃ­a'
+      fatloss: 'Rutina recomposición y cardio',
+      glutes: 'Rutina glúteos y piernas',
+      health: 'Rutina salud y energía'
     };
     return {
       name: nameMap[profile.goal] || 'Rutina personalizada',
@@ -11183,10 +11230,10 @@ const WorkoutAdvisorModal = ({ exercises, onSave, onClose }) => {
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(170px, 1fr))', gap: 10 }}>
           <select value={profile.goal} onChange={e => setProfile(p => ({ ...p, goal: e.target.value }))} style={input}>
-            <option value="muscle">Ganar mÃºsculo</option>
+            <option value="muscle">Ganar músculo</option>
             <option value="strength">Fuerza</option>
             <option value="fatloss">Perder grasa</option>
-            <option value="glutes">Pierna / glÃºteos</option>
+            <option value="glutes">Pierna / glúteos</option>
             <option value="health">Salud general</option>
           </select>
           <select value={profile.level} onChange={e => setProfile(p => ({ ...p, level: e.target.value }))} style={input}>
@@ -11201,17 +11248,17 @@ const WorkoutAdvisorModal = ({ exercises, onSave, onClose }) => {
           </select>
           <select value={profile.equipment} onChange={e => setProfile(p => ({ ...p, equipment: e.target.value }))} style={input}>
             <option value="gym">Gimnasio completo</option>
-            <option value="home">Casa / bÃ¡sico</option>
+            <option value="home">Casa / básico</option>
           </select>
-          <input type="number" min="2" max="6" value={profile.days} onChange={e => setProfile(p => ({ ...p, days: Number(e.target.value || 4) }))} placeholder="DÃ­as por semana" style={input} />
-          <input type="number" min="25" max="100" value={profile.time} onChange={e => setProfile(p => ({ ...p, time: Number(e.target.value || 60) }))} placeholder="Minutos por sesiÃ³n" style={input} />
+          <input type="number" min="2" max="6" value={profile.days} onChange={e => setProfile(p => ({ ...p, days: Number(e.target.value || 4) }))} placeholder="Días por semana" style={input} />
+          <input type="number" min="25" max="100" value={profile.time} onChange={e => setProfile(p => ({ ...p, time: Number(e.target.value || 60) }))} placeholder="Minutos por sesión" style={input} />
         </div>
         <div style={{ background: COLORS.bg, border: `1px solid ${COLORS.border}`, borderRadius: 14, padding: 14, color: COLORS.textDim, fontSize: 12, lineHeight: 1.6 }}>
-          Instrucciones: empieza con un peso que te deje 1-2 repeticiones en reserva. Si completas todas las series dos entrenos seguidos, sube 2.5 kg en tren superior o 5 kg en tren inferior. Descansa bien y no sacrifiques tÃ©cnica.
+          Instrucciones: empieza con un peso que te deje 1-2 repeticiones en reserva. Si completas todas las series dos entrenos seguidos, sube 2.5 kg en tren superior o 5 kg en tren inferior. Descansa bien y no sacrifiques técnica.
         </div>
         <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end' }}>
           <button onClick={onClose} style={{ padding: '11px 16px', borderRadius: 10, border: `1px solid ${COLORS.border}`, background: 'transparent', color: COLORS.textDim, cursor: 'pointer' }}>Cancelar</button>
-          <button onClick={save} className="lab-cta" style={{ padding: '11px 18px', borderRadius: 999, cursor: 'pointer' }}><Sparkles size={15} /><span>Crear rutina automÃ¡tica</span></button>
+          <button onClick={save} className="lab-cta" style={{ padding: '11px 18px', borderRadius: 999, cursor: 'pointer' }}><Sparkles size={15} /><span>Crear rutina automática</span></button>
         </div>
       </div>
     </Modal>
@@ -11254,25 +11301,25 @@ const RoutineModal = ({ exercises, initial, onSave, onClose, onCreateExercise })
     setSearch('');
     setShowCustomExercise(false);
   };
-  const updateEx = (idx, field, val) => setExs(x => x.map((e, i) => i === idx ? { ...e, [field]: val } : e));
+  const updateEx = (idx, field, val) => setExs(x => x.map((e, i) => i === idx  ? { ...e, [field]: val } : e));
   const removeEx = (idx) => setExs(x => x.filter((_, i) => i !== idx));
   const moveEx = (idx, dir) => { const a = [...exs]; const t = a[idx]; a[idx] = a[idx + dir]; a[idx + dir] = t; setExs(a); };
 
   return (
-    <Modal isOpen={true} onClose={onClose} title={initial ? 'Editar Rutina' : 'Nueva Rutina'} width={600}>
+    <Modal isOpen={true} onClose={onClose} title={initial  ? 'Editar Rutina' : 'Nueva Rutina'} width={600}>
       <div style={{ marginBottom: 16 }}><label style={{ fontSize: 12, color: COLORS.textDim, display: 'block', marginBottom: 4 }}>NOMBRE DE LA RUTINA</label><input value={name} onChange={e => setName(e.target.value)} style={{ width: '100%', padding: '10px 14px', background: COLORS.bg, border: `1px solid ${COLORS.border}`, borderRadius: 8, color: COLORS.text, fontSize: 14, outline: 'none', fontFamily: "'Inter', sans-serif" }} /></div>
       <div style={{ marginBottom: 12, display: 'flex', gap: 6, flexWrap: 'wrap' }}>
-        <button onClick={() => setMgFilter('all')} style={{ padding: '4px 12px', borderRadius: 12, border: 'none', background: mgFilter === 'all' ? COLORS.primary : COLORS.bg, color: mgFilter === 'all' ? '#fff' : COLORS.textDim, cursor: 'pointer', fontSize: 11, fontFamily: "'Inter', sans-serif" }}>Todos</button>
-        {mgs.map(mg => <button key={mg} onClick={() => setMgFilter(mg)} style={{ padding: '4px 12px', borderRadius: 12, border: 'none', background: mgFilter === mg ? MUSCLE_COLORS[mg] || COLORS.primary : COLORS.bg, color: mgFilter === mg ? '#fff' : COLORS.textDim, cursor: 'pointer', fontSize: 11, fontFamily: "'Inter', sans-serif" }}>{mg}</button>)}
+        <button onClick={() => setMgFilter('all')} style={{ padding: '4px 12px', borderRadius: 12, border: 'none', background: mgFilter === 'all'  ? COLORS.primary : COLORS.bg, color: mgFilter === 'all'  ? '#fff' : COLORS.textDim, cursor: 'pointer', fontSize: 11, fontFamily: "'Inter', sans-serif" }}>Todos</button>
+        {mgs.map(mg => <button key={mg} onClick={() => setMgFilter(mg)} style={{ padding: '4px 12px', borderRadius: 12, border: 'none', background: mgFilter === mg  ? MUSCLE_COLORS[mg] || COLORS.primary : COLORS.bg, color: mgFilter === mg  ? '#fff' : COLORS.textDim, cursor: 'pointer', fontSize: 11, fontFamily: "'Inter', sans-serif" }}>{mg}</button>)}
       </div>
       <div style={{ marginBottom: 10 }}><input value={search} onChange={e => setSearch(e.target.value)} placeholder="Buscar ejercicio..." style={{ width: '100%', padding: '8px 12px', background: COLORS.bg, border: `1px solid ${COLORS.border}`, borderRadius: 8, color: COLORS.text, fontSize: 13, outline: 'none', fontFamily: "'Inter', sans-serif" }} /></div>
-      <div style={{ marginBottom: 16, border: `1px solid ${showCustomExercise ? COLORS.primary + '55' : COLORS.border}`, borderRadius: 12, background: showCustomExercise ? `${COLORS.primary}08` : COLORS.bg, overflow: 'hidden' }}>
+      <div style={{ marginBottom: 16, border: `1px solid ${showCustomExercise  ? COLORS.primary + '55' : COLORS.border}`, borderRadius: 12, background: showCustomExercise  ? `${COLORS.primary}08` : COLORS.bg, overflow: 'hidden' }}>
         <button onClick={() => setShowCustomExercise(value => !value)} style={{ width: '100%', border: 'none', background: 'transparent', color: COLORS.text, cursor: 'pointer', padding: '10px 12px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10, fontSize: 13, fontFamily: "'Inter', sans-serif", fontWeight: 700 }}>
           <span style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             <Plus size={15} color={COLORS.primary} />
             Agregar ejercicio personalizado
           </span>
-          <span style={{ color: COLORS.textDim, fontSize: 11 }}>{showCustomExercise ? 'Cerrar' : 'Crear'}</span>
+          <span style={{ color: COLORS.textDim, fontSize: 11 }}>{showCustomExercise  ? 'Cerrar' : 'Crear'}</span>
         </button>
         {showCustomExercise && (
           <div style={{ padding: '0 12px 12px', display: 'grid', gridTemplateColumns: 'minmax(0, 1.4fr) minmax(110px, 0.8fr)', gap: 8 }}>
@@ -11289,7 +11336,7 @@ const RoutineModal = ({ exercises, initial, onSave, onClose, onCreateExercise })
             </select>
             <input value={customExercise.equip} onChange={e => setCustomExercise(prev => ({ ...prev, equip: e.target.value }))} placeholder="Equipo"
               style={{ padding: '8px 10px', background: COLORS.card, border: `1px solid ${COLORS.border}`, borderRadius: 8, color: COLORS.text, fontSize: 12, outline: 'none', fontFamily: "'Inter', sans-serif" }} />
-            <button onClick={addCustomExercise} disabled={!customExercise.name.trim()} style={{ padding: '8px 12px', borderRadius: 8, border: 'none', background: customExercise.name.trim() ? `linear-gradient(135deg, ${COLORS.primary}, #7f1028)` : COLORS.border, color: customExercise.name.trim() ? '#fff' : COLORS.textDim, cursor: customExercise.name.trim() ? 'pointer' : 'default', fontSize: 12, fontFamily: "'Inter', sans-serif", fontWeight: 800 }}>
+            <button onClick={addCustomExercise} disabled={!customExercise.name.trim()} style={{ padding: '8px 12px', borderRadius: 8, border: 'none', background: customExercise.name.trim()  ? `linear-gradient(135deg, ${COLORS.primary}, #7f1028)` : COLORS.border, color: customExercise.name.trim()  ? '#fff' : COLORS.textDim, cursor: customExercise.name.trim()  ? 'pointer' : 'default', fontSize: 12, fontFamily: "'Inter', sans-serif", fontWeight: 800 }}>
               Agregar
             </button>
           </div>
@@ -11314,7 +11361,7 @@ const RoutineModal = ({ exercises, initial, onSave, onClose, onCreateExercise })
       </div>
       <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
         <button onClick={onClose} style={{ padding: '8px 20px', borderRadius: 8, border: `1px solid ${COLORS.border}`, background: 'transparent', color: COLORS.textDim, cursor: 'pointer', fontSize: 13, fontFamily: "'Inter', sans-serif" }}>Cancelar</button>
-        <button onClick={() => onSave({ name, exercises: exs, createdExercises })} disabled={!name || exs.length === 0} style={{ padding: '8px 20px', borderRadius: 8, border: 'none', background: name && exs.length ? `linear-gradient(135deg, ${COLORS.primary}, #7f1028)` : COLORS.border, color: name && exs.length ? '#fff' : COLORS.textDim, cursor: name && exs.length ? 'pointer' : 'default', fontSize: 13, fontFamily: "'Inter', sans-serif" }}>Guardar Rutina</button>
+        <button onClick={() => onSave({ name, exercises: exs, createdExercises })} disabled={!name || exs.length === 0} style={{ padding: '8px 20px', borderRadius: 8, border: 'none', background: name && exs.length  ? `linear-gradient(135deg, ${COLORS.primary}, #7f1028)` : COLORS.border, color: name && exs.length  ? '#fff' : COLORS.textDim, cursor: name && exs.length  ? 'pointer' : 'default', fontSize: 13, fontFamily: "'Inter', sans-serif" }}>Guardar Rutina</button>
       </div>
     </Modal>
   );
@@ -11333,8 +11380,8 @@ const ExerciseManager = ({ exercises, workoutData, onUpdateData, onClose }) => {
   return (
     <Modal isOpen={true} onClose={onClose} title="Gestionar Ejercicios" width={600}>
       <div style={{ display: 'flex', gap: 6, marginBottom: 12, flexWrap: 'wrap' }}>
-        <button onClick={() => setMgFilter('all')} style={{ padding: '4px 12px', borderRadius: 12, border: 'none', background: mgFilter === 'all' ? COLORS.primary : COLORS.bg, color: mgFilter === 'all' ? '#fff' : COLORS.textDim, cursor: 'pointer', fontSize: 11, fontFamily: "'Inter', sans-serif" }}>Todos</button>
-        {mgs.map(mg => <button key={mg} onClick={() => setMgFilter(mg)} style={{ padding: '4px 12px', borderRadius: 12, border: 'none', background: mgFilter === mg ? MUSCLE_COLORS[mg] || COLORS.primary : COLORS.bg, color: mgFilter === mg ? '#fff' : COLORS.textDim, cursor: 'pointer', fontSize: 11, fontFamily: "'Inter', sans-serif" }}>{mg}</button>)}
+        <button onClick={() => setMgFilter('all')} style={{ padding: '4px 12px', borderRadius: 12, border: 'none', background: mgFilter === 'all'  ? COLORS.primary : COLORS.bg, color: mgFilter === 'all'  ? '#fff' : COLORS.textDim, cursor: 'pointer', fontSize: 11, fontFamily: "'Inter', sans-serif" }}>Todos</button>
+        {mgs.map(mg => <button key={mg} onClick={() => setMgFilter(mg)} style={{ padding: '4px 12px', borderRadius: 12, border: 'none', background: mgFilter === mg  ? MUSCLE_COLORS[mg] || COLORS.primary : COLORS.bg, color: mgFilter === mg  ? '#fff' : COLORS.textDim, cursor: 'pointer', fontSize: 11, fontFamily: "'Inter', sans-serif" }}>{mg}</button>)}
       </div>
       <div style={{ display: 'flex', gap: 8, marginBottom: 16 }}>
         <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Buscar..." style={{ flex: 1, padding: '8px 12px', background: COLORS.bg, border: `1px solid ${COLORS.border}`, borderRadius: 8, color: COLORS.text, fontSize: 13, outline: 'none', fontFamily: "'Inter', sans-serif" }} />
@@ -11357,7 +11404,7 @@ const ExerciseManager = ({ exercises, workoutData, onUpdateData, onClose }) => {
 const GymMode = ({ gymData, workoutData, onUpdateData, onClose, onSaveSession, onCompleteHabit }) => {
   const { exercises: wdExs, sessions: wdSessions } = workoutData;
   const [activeExIdx, setActiveExIdx] = useState(0);
-  const [exState, setExState] = useState(gymData.exercises.length > 0 ? gymData.exercises : []);
+  const [exState, setExState] = useState(gymData.exercises.length > 0  ? gymData.exercises : []);
   const [activeSetIdx, setActiveSetIdx] = useState(0);
   const [restTime, setRestTime] = useState(null);
   const [restRunning, setRestRunning] = useState(false);
@@ -11421,8 +11468,8 @@ const GymMode = ({ gymData, workoutData, onUpdateData, onClose, onSaveSession, o
   const buildWorkoutStats = (state = exState, durations = exerciseDurations) => {
     const durationSeconds = Math.max(0, Math.floor((Date.now() - startTime) / 1000));
     const currentKey = getCurrentExerciseKey(state);
-    const delta = currentKey ? Math.max(0, Math.floor((Date.now() - exerciseStartRef.current) / 1000)) : 0;
-    const mergedDurations = currentKey ? { ...durations, [currentKey]: (durations[currentKey] || 0) + delta } : durations;
+    const delta = currentKey  ? Math.max(0, Math.floor((Date.now() - exerciseStartRef.current) / 1000)) : 0;
+    const mergedDurations = currentKey  ? { ...durations, [currentKey]: (durations[currentKey] || 0) + delta } : durations;
     const doneSets = state.flatMap(e => e.sets.filter(x => x.completed));
     const totalVolume = doneSets.reduce((sum, set) => sum + setVolume(set), 0);
     const bestRm = doneSets.reduce((best, set) => Math.max(best, estimateRm(set)), 0);
@@ -11450,14 +11497,14 @@ const GymMode = ({ gymData, workoutData, onUpdateData, onClose, onSaveSession, o
   const pendingSets = curSets.filter(set => !set.completed).length;
 
   const updateSetField = (setIndex, field, value) => {
-    setExState(items => items.map((ex, ei) => ei === activeExIdx ? {
+    setExState(items => items.map((ex, ei) => ei === activeExIdx  ? {
       ...ex,
-      sets: ex.sets.map((set, si) => si === setIndex ? { ...set, [field]: value } : set)
+      sets: ex.sets.map((set, si) => si === setIndex  ? { ...set, [field]: value } : set)
     } : ex));
   };
   const updateCurrentExerciseRestMinutes = (value) => {
     const rest = Math.max(0, Math.round(Number(value || 0) * 60));
-    setExState(items => items.map((ex, ei) => ei === activeExIdx ? { ...ex, rest } : ex));
+    setExState(items => items.map((ex, ei) => ei === activeExIdx  ? { ...ex, rest } : ex));
   };
   const addSetToCurrentExercise = () => {
     setExState(items => items.map((ex, ei) => {
@@ -11471,7 +11518,7 @@ const GymMode = ({ gymData, workoutData, onUpdateData, onClose, onSaveSession, o
   };
   const removeCurrentSet = (setIndex) => {
     if (curSets.length <= 1) return;
-    setExState(items => items.map((ex, ei) => ei === activeExIdx ? { ...ex, sets: ex.sets.filter((_, si) => si !== setIndex).map((set, si) => ({ ...set, setNumber: si + 1 })) } : ex));
+    setExState(items => items.map((ex, ei) => ei === activeExIdx  ? { ...ex, sets: ex.sets.filter((_, si) => si !== setIndex).map((set, si) => ({ ...set, setNumber: si + 1 })) } : ex));
     setActiveSetIdx(idx => Math.max(0, Math.min(idx, curSets.length - 2)));
   };
   const goToExercise = (nextIdx) => {
@@ -11479,7 +11526,7 @@ const GymMode = ({ gymData, workoutData, onUpdateData, onClose, onSaveSession, o
     captureExerciseDuration();
     setActiveExIdx(nextIdx);
     const firstPending = exState[nextIdx]?.sets.findIndex(set => !set.completed);
-    setActiveSetIdx(firstPending >= 0 ? firstPending : 0);
+    setActiveSetIdx(firstPending >= 0  ? firstPending : 0);
     setRestRunning(false);
     setRestTime(null);
   };
@@ -11497,9 +11544,9 @@ const GymMode = ({ gymData, workoutData, onUpdateData, onClose, onSaveSession, o
       }
       if (!isPR) break;
     }
-    const nextPrs = isPR && curSet.weight > 0 ? [...prs, { exName: getEx(eid)?.name || '', weight: curSet.weight, reps: curSet.reps }] : prs;
+    const nextPrs = isPR && curSet.weight > 0  ? [...prs, { exName: getEx(eid)?.name || '', weight: curSet.weight, reps: curSet.reps }] : prs;
     if (nextPrs !== prs) setPrs(nextPrs);
-    const newExState = exState.map((ex, ei) => ei === activeExIdx ? { ...ex, sets: ex.sets.map((s, si) => si === activeSetIdx ? { ...s, completed: true, isPersonalRecord: isPR } : s) } : ex);
+    const newExState = exState.map((ex, ei) => ei === activeExIdx  ? { ...ex, sets: ex.sets.map((s, si) => si === activeSetIdx  ? { ...s, completed: true, isPersonalRecord: isPR } : s) } : ex);
     setExState(newExState);
     if (activeSetIdx < curSets.length - 1) { setActiveSetIdx(s => s + 1); setRestTime(Number(curEx.rest || 90)); setRestRunning(true); }
     else if (activeExIdx < totalExs - 1) { captureExerciseDuration(newExState); setActiveExIdx(i => i + 1); setActiveSetIdx(0); }
@@ -11540,12 +11587,12 @@ const GymMode = ({ gymData, workoutData, onUpdateData, onClose, onSaveSession, o
   if (finished) return (
     <div style={{ position: 'fixed', inset: 0, zIndex: 2000, background: `radial-gradient(circle at 50% 0%, ${COLORS.primary}18, transparent 38%), ${COLORS.bg}`, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: 40 }}>
       <div style={{ fontSize: 70, marginBottom: 12 }}>{'\u{1F3C6}'}</div>
-      <div style={{ fontSize: 34, color: COLORS.text, fontFamily: "'DM Serif Display', serif", marginBottom: 8 }}>Â¡Entreno completado!</div>
-      <div style={{ color: COLORS.textDim, fontSize: 13, fontFamily: "'Inter', sans-serif", marginBottom: 24 }}>Resumen real de tu sesiÃ³n</div>
+      <div style={{ fontSize: 34, color: COLORS.text, fontFamily: "'DM Serif Display', serif", marginBottom: 8 }}>¿Entreno completado!</div>
+      <div style={{ color: COLORS.textDim, fontSize: 13, fontFamily: "'Inter', sans-serif", marginBottom: 24 }}>Resumen real de tu sesión</div>
       <div style={{ background: COLORS.card, borderRadius: 22, border: `1px solid ${COLORS.border}`, padding: 24, maxWidth: 720, width: '100%', marginBottom: 20, boxShadow: '0 26px 90px rgba(0,0,0,0.16)' }}>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(145px, 1fr))', gap: 12, marginBottom: 16 }}>
           {[
-            ['DuraciÃ³n', durationLabel(summaryStats.durationSeconds), COLORS.primary],
+            ['Duración', durationLabel(summaryStats.durationSeconds), COLORS.primary],
             ['Tiempo activo', durationLabel(summaryStats.activeSeconds), COLORS.success],
             ['Descanso', durationLabel(summaryStats.restSeconds), COLORS.textDim],
             ['Series', summaryStats.totalSetsDone, COLORS.success],
@@ -11558,9 +11605,9 @@ const GymMode = ({ gymData, workoutData, onUpdateData, onClose, onSaveSession, o
             </div>
           ))}
         </div>
-        {prs.length > 0 && <div style={{ marginBottom: 16 }}><div style={{ fontSize: 12, color: '#ffd93d', marginBottom: 8 }}>{'\u{1F3C6}'} Nuevos RÃ©cords Personales</div>{prs.map((p, i) => <div key={i} style={{ fontSize: 11, color: COLORS.text, fontFamily: "'Inter', sans-serif" }}>{p.exName}: {p.weight}kg - {p.reps} reps</div>)}</div>}
+        {prs.length > 0 && <div style={{ marginBottom: 16 }}><div style={{ fontSize: 12, color: '#ffd93d', marginBottom: 8 }}>{'\u{1F3C6}'} Nuevos Récords Personales</div>{prs.map((p, i) => <div key={i} style={{ fontSize: 11, color: COLORS.text, fontFamily: "'Inter', sans-serif" }}>{p.exName}: {p.weight}kg - {p.reps} reps</div>)}</div>}
         <div style={{ borderTop: `1px solid ${COLORS.border}`, paddingTop: 12, marginBottom: 14 }}>
-          <div style={{ color: COLORS.text, fontSize: 13, fontWeight: 800, fontFamily: "'Inter', sans-serif", marginBottom: 8 }}>DuraciÃ³n por ejercicio</div>
+          <div style={{ color: COLORS.text, fontSize: 13, fontWeight: 800, fontFamily: "'Inter', sans-serif", marginBottom: 8 }}>Duración por ejercicio</div>
           <div style={{ display: 'grid', gap: 6 }}>
             {exState.filter(e => e.sets.some(set => set.completed)).map(e => {
               const key = e.eid || e.exerciseId;
@@ -11574,11 +11621,11 @@ const GymMode = ({ gymData, workoutData, onUpdateData, onClose, onSaveSession, o
             })}
           </div>
         </div>
-        <textarea value={sessionNotes} onChange={e => setSessionNotes(e.target.value)} placeholder="Â¿CÃ³mo te sentiste hoy?" rows={2} style={{ width: '100%', padding: '8px 12px', background: COLORS.bg, border: `1px solid ${COLORS.border}`, borderRadius: 8, color: COLORS.text, fontSize: 13, fontFamily: "'Inter', sans-serif", resize: 'vertical' }} />
+        <textarea value={sessionNotes} onChange={e => setSessionNotes(e.target.value)} placeholder="¿Cómo te sentiste hoy?" rows={2} style={{ width: '100%', padding: '8px 12px', background: COLORS.bg, border: `1px solid ${COLORS.border}`, borderRadius: 8, color: COLORS.text, fontSize: 13, fontFamily: "'Inter', sans-serif", resize: 'vertical' }} />
       </div>
       <div style={{ display: 'flex', gap: 12 }}>
         <button onClick={onClose} style={{ padding: '12px 24px', borderRadius: 10, border: `1px solid ${COLORS.border}`, background: 'transparent', color: COLORS.textDim, cursor: 'pointer', fontSize: 14, fontFamily: "'Inter', sans-serif" }}>Descartar</button>
-        <button onClick={saveSession} style={{ padding: '12px 32px', borderRadius: 10, border: 'none', background: `linear-gradient(135deg, ${COLORS.success}, #9f1239)`, color: '#000', cursor: 'pointer', fontSize: 14, fontFamily: "'Inter', sans-serif" }}>{'\u{1F4BE}'} Guardar SesiÃ³n</button>
+        <button onClick={saveSession} style={{ padding: '12px 32px', borderRadius: 10, border: 'none', background: `linear-gradient(135deg, ${COLORS.success}, #9f1239)`, color: '#000', cursor: 'pointer', fontSize: 14, fontFamily: "'Inter', sans-serif" }}>{'\u{1F4BE}'} Guardar Sesión</button>
       </div>
     </div>
   );
@@ -11594,13 +11641,13 @@ const GymMode = ({ gymData, workoutData, onUpdateData, onClose, onSaveSession, o
         </div>
         <div style={{ textAlign: 'center' }}>
           <div style={{ fontSize: 18, color: COLORS.text, fontFamily: "'DM Serif Display', serif" }}>{gymData.routine?.name || 'Entreno Libre'}</div>
-          <div style={{ marginTop: 3, fontSize: 11, color: COLORS.textDim, fontFamily: "'Inter', sans-serif" }}>Ejercicio {activeExIdx + 1} de {totalExs} Â· {completedSets}/{totalSets} series</div>
+          <div style={{ marginTop: 3, fontSize: 11, color: COLORS.textDim, fontFamily: "'Inter', sans-serif" }}>Ejercicio {activeExIdx + 1} de {totalExs}  ? {completedSets}/{totalSets} series</div>
         </div>
-        {confirmSkip ? (
+        {confirmSkip  ? (
           <div style={{ display: 'flex', gap: 8, alignItems: 'center', justifySelf: 'end' }}>
-            <span style={{ fontSize: 11, color: COLORS.alert }}>Â¿Salir sin guardar?</span>
+            <span style={{ fontSize: 11, color: COLORS.alert }}>¿Salir sin guardar?</span>
             <button onClick={() => { setConfirmSkip(false); }} style={{ padding: '6px 12px', borderRadius: 6, border: `1px solid ${COLORS.border}`, background: 'transparent', color: COLORS.textDim, cursor: 'pointer', fontSize: 12, fontFamily: "'Inter', sans-serif" }}>No</button>
-            <button onClick={onClose} style={{ padding: '6px 12px', borderRadius: 6, border: 'none', background: COLORS.alert, color: '#fff', cursor: 'pointer', fontSize: 12, fontFamily: "'Inter', sans-serif" }}>SÃ­</button>
+            <button onClick={onClose} style={{ padding: '6px 12px', borderRadius: 6, border: 'none', background: COLORS.alert, color: '#fff', cursor: 'pointer', fontSize: 12, fontFamily: "'Inter', sans-serif" }}>S?</button>
           </div>
         ) : (
           <button onClick={() => setConfirmSkip(true)} style={{ justifySelf: 'end', padding: '8px 16px', borderRadius: 8, border: 'none', background: COLORS.alert + '20', color: COLORS.alert, cursor: 'pointer', fontSize: 13, fontFamily: "'Inter', sans-serif" }}>Terminar</button>
@@ -11608,9 +11655,9 @@ const GymMode = ({ gymData, workoutData, onUpdateData, onClose, onSaveSession, o
       </div>
 
       <div className="workout-session-progress" style={{ padding: '12px 28px', borderBottom: `1px solid ${COLORS.border}` }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, color: COLORS.textDim, marginBottom: 7, fontFamily: "'Inter', sans-serif" }}><span>Progreso del entreno</span><span>{totalSets ? Math.round((completedSets / totalSets) * 100) : 0}%</span></div>
+        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, color: COLORS.textDim, marginBottom: 7, fontFamily: "'Inter', sans-serif" }}><span>Progreso del entreno</span><span>{totalSets  ? Math.round((completedSets / totalSets) * 100) : 0}%</span></div>
         <div style={{ width: '100%', height: 4, background: COLORS.bg, borderRadius: 2, overflow: 'hidden', display: 'flex' }}>
-          {exState.map((ex, i) => <div key={i} style={{ flex: 1, height: '100%', marginRight: 2, borderRadius: 2, background: i < activeExIdx ? COLORS.success : i === activeExIdx ? COLORS.primary : COLORS.border }} title={getEx(ex.eid || ex.exerciseId)?.name || ''} />)}
+          {exState.map((ex, i) => <div key={i} style={{ flex: 1, height: '100%', marginRight: 2, borderRadius: 2, background: i < activeExIdx  ? COLORS.success : i === activeExIdx  ? COLORS.primary : COLORS.border }} title={getEx(ex.eid || ex.exerciseId)?.name || ''} />)}
         </div>
       </div>
 
@@ -11623,7 +11670,7 @@ const GymMode = ({ gymData, workoutData, onUpdateData, onClose, onSaveSession, o
 
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(145px, 1fr))', gap: 10, marginBottom: 18 }}>
             {[
-              ['DuraciÃ³n ejercicio', durationLabel(currentExerciseDuration), COLORS.primary],
+              ['Duración ejercicio', durationLabel(currentExerciseDuration), COLORS.primary],
               ['Pendientes', pendingSets, COLORS.text]
             ].map(([label, value, color]) => (
               <div key={label} style={{ background: COLORS.bg, border: `1px solid ${COLORS.border}`, borderRadius: 14, padding: '11px 12px' }}>
@@ -11648,30 +11695,30 @@ const GymMode = ({ gymData, workoutData, onUpdateData, onClose, onSaveSession, o
               <span style={{ fontSize: 12, color: COLORS.textDim }}></span>
             </div>
             {curSets.map((set, idx) => (
-              <div className="workout-set-grid" key={idx} style={{ display: 'grid', gridTemplateColumns: '70px 1fr 1fr 48px', gap: 8, padding: '12px 14px', background: set.completed ? `${COLORS.success}08` : idx === activeSetIdx && !restRunning ? `${COLORS.primary}10` : 'rgba(255,255,255,0.015)', borderRadius: 12, marginBottom: 6, border: idx === activeSetIdx && !restRunning ? `1px solid ${COLORS.primary}35` : `1px solid ${COLORS.border}`, transition: 'all 0.2s' }}>
+              <div className="workout-set-grid" key={idx} style={{ display: 'grid', gridTemplateColumns: '70px 1fr 1fr 48px', gap: 8, padding: '12px 14px', background: set.completed  ? `${COLORS.success}08` : idx === activeSetIdx && !restRunning  ? `${COLORS.primary}10` : 'rgba(255,255,255,0.015)', borderRadius: 12, marginBottom: 6, border: idx === activeSetIdx && !restRunning  ? `1px solid ${COLORS.primary}35` : `1px solid ${COLORS.border}`, transition: 'all 0.2s' }}>
                 <span style={{ fontSize: 15, color: COLORS.text, fontFamily: "'Inter', sans-serif", display: 'flex', alignItems: 'center', fontWeight: 800 }}>
-                  {set.completed ? <Check size={14} color={COLORS.success} /> : idx === activeSetIdx && !restRunning ? <span style={{ width: 10, height: 10, borderRadius: '50%', background: COLORS.primary, animation: 'pulseGlow 1.5s infinite' }} /> : <span style={{ width: 10, height: 10, borderRadius: '50%', background: COLORS.border }} />}
+                  {set.completed  ? <Check size={14} color={COLORS.success} /> : idx === activeSetIdx && !restRunning  ? <span style={{ width: 10, height: 10, borderRadius: '50%', background: COLORS.primary, animation: 'pulseGlow 1.5s infinite' }} /> : <span style={{ width: 10, height: 10, borderRadius: '50%', background: COLORS.border }} />}
                   <span style={{ marginLeft: 8 }}>{idx + 1}</span>
                 </span>
                 <input type="number" value={set.weight} onChange={e => updateSetField(idx, 'weight', +e.target.value)} step="0.5" min="0" style={{ padding: '8px 10px', background: COLORS.bg, border: `1px solid ${COLORS.border}`, borderRadius: 10, color: COLORS.text, fontSize: 16, fontFamily: "'Inter', sans-serif", textAlign: 'center', outline: 'none' }} />
                 <input type="number" value={set.reps} onChange={e => updateSetField(idx, 'reps', +e.target.value)} step="1" min="0" style={{ padding: '8px 10px', background: COLORS.bg, border: `1px solid ${COLORS.border}`, borderRadius: 10, color: COLORS.text, fontSize: 16, fontFamily: "'Inter', sans-serif", textAlign: 'center', outline: 'none' }} />
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4 }}>
                   {set.isPersonalRecord && <span style={{ fontSize: 15 }}>{'\u{1F3C6}'}</span>}
-                  <button onClick={() => removeCurrentSet(idx)} disabled={curSets.length <= 1} style={{ width: 26, height: 26, borderRadius: 8, border: 'none', background: 'transparent', color: curSets.length <= 1 ? COLORS.textDim + '55' : COLORS.alert, cursor: curSets.length <= 1 ? 'default' : 'pointer' }}><X size={13} /></button>
+                  <button onClick={() => removeCurrentSet(idx)} disabled={curSets.length <= 1} style={{ width: 26, height: 26, borderRadius: 8, border: 'none', background: 'transparent', color: curSets.length <= 1  ? COLORS.textDim + '55' : COLORS.alert, cursor: curSets.length <= 1  ? 'default' : 'pointer' }}><X size={13} /></button>
                 </div>
               </div>
             ))}
-            <button onClick={addSetToCurrentExercise} style={{ marginTop: 4, padding: '9px 13px', borderRadius: 11, border: `1px dashed ${COLORS.primary}55`, background: `${COLORS.primary}10`, color: COLORS.primary, cursor: 'pointer', fontSize: 12, fontFamily: "'Inter', sans-serif", fontWeight: 800 }}><Plus size={13} style={{ verticalAlign: 'middle', marginRight: 5 }} />AÃ±adir serie</button>
+            <button onClick={addSetToCurrentExercise} style={{ marginTop: 4, padding: '9px 13px', borderRadius: 11, border: `1px dashed ${COLORS.primary}55`, background: `${COLORS.primary}10`, color: COLORS.primary, cursor: 'pointer', fontSize: 12, fontFamily: "'Inter', sans-serif", fontWeight: 800 }}><Plus size={13} style={{ verticalAlign: 'middle', marginRight: 5 }} />Añadir serie</button>
           </div>
 
-          {restRunning && restTime > 0 ? (
-            <div style={{ textAlign: 'center', padding: 20, animation: restTime <= 5 ? 'pulseGlow 1s infinite' : 'none' }}>
-              <div style={{ fontSize: 13, color: COLORS.secondary, marginBottom: 12 }}>DESCANSO {restTime <= 5 ? '\u{23F0}' : ''}</div>
+          {restRunning && restTime > 0  ? (
+            <div style={{ textAlign: 'center', padding: 20, animation: restTime <= 5  ? 'pulseGlow 1s infinite' : 'none' }}>
+              <div style={{ fontSize: 13, color: COLORS.secondary, marginBottom: 12 }}>DESCANSO {restTime <= 5  ? '\u{23F0}' : ''}</div>
               <svg width="160" height="160" viewBox="0 0 160 160" style={{ margin: '0 auto 16px' }}>
                 <circle cx="80" cy="80" r="70" fill="none" stroke={COLORS.border} strokeWidth="6" />
-                <circle cx="80" cy="80" r="70" fill="none" stroke={restTime <= 5 ? COLORS.alert : COLORS.secondary} strokeWidth="6" strokeLinecap="round" transform="rotate(-90 80 80)" strokeDasharray={`${2 * Math.PI * 70}`} strokeDashoffset={`${2 * Math.PI * 70 * (1 - restTime / (curEx.rest || 90))}`} style={{ transition: 'stroke-dashoffset 0.5s linear' }} />
+                <circle cx="80" cy="80" r="70" fill="none" stroke={restTime <= 5  ? COLORS.alert : COLORS.secondary} strokeWidth="6" strokeLinecap="round" transform="rotate(-90 80 80)" strokeDasharray={`${2 * Math.PI * 70}`} strokeDashoffset={`${2 * Math.PI * 70 * (1 - restTime / (curEx.rest || 90))}`} style={{ transition: 'stroke-dashoffset 0.5s linear' }} />
               </svg>
-              <div style={{ fontSize: 48, color: restTime <= 5 ? COLORS.alert : COLORS.secondary, fontFamily: "'Inter', sans-serif" }}>{String(Math.floor(restTime / 60)).padStart(2, '0')}:{String(restTime % 60).padStart(2, '0')}</div>
+              <div style={{ fontSize: 48, color: restTime <= 5  ? COLORS.alert : COLORS.secondary, fontFamily: "'Inter', sans-serif" }}>{String(Math.floor(restTime / 60)).padStart(2, '0')}:{String(restTime % 60).padStart(2, '0')}</div>
               <div style={{ display: 'flex', gap: 8, justifyContent: 'center', marginTop: 12 }}>
                 <button onClick={() => setRestTime(t => Math.min(t + 30, 300))} style={{ padding: '6px 12px', borderRadius: 6, border: `1px solid ${COLORS.border}`, background: COLORS.card, color: COLORS.textDim, cursor: 'pointer', fontSize: 11, fontFamily: "'Inter', sans-serif" }}>+30s</button>
                 <button onClick={() => setRestTime(t => Math.max(0, t - 30))} style={{ padding: '6px 12px', borderRadius: 6, border: `1px solid ${COLORS.border}`, background: COLORS.card, color: COLORS.textDim, cursor: 'pointer', fontSize: 11, fontFamily: "'Inter', sans-serif" }}>-30s</button>
@@ -11679,15 +11726,15 @@ const GymMode = ({ gymData, workoutData, onUpdateData, onClose, onSaveSession, o
               </div>
             </div>
           ) : (
-            <button onClick={curSet?.completed && completedSets >= totalSets ? () => finishWorkout() : completeSet} disabled={curSet?.completed && completedSets < totalSets} className={curSet?.completed ? 'flash-green' : ''} style={{ width: '100%', padding: '17px', borderRadius: 14, border: 'none', background: curSet?.completed && completedSets >= totalSets ? `linear-gradient(135deg, ${COLORS.primary}, #7f1028)` : curSet?.completed ? COLORS.border : `linear-gradient(135deg, ${COLORS.success}, #9f1239)`, color: curSet?.completed && completedSets >= totalSets ? '#fff' : curSet?.completed ? COLORS.textDim : '#000', cursor: curSet?.completed && completedSets < totalSets ? 'default' : 'pointer', fontSize: 16, fontFamily: "'Inter', sans-serif", fontWeight: 800 }}>
-              {curSet?.completed && completedSets >= totalSets ? '\u{1F3C1} Finalizar entreno' : curSet?.completed ? '\u{2705} Completa' : '\u{2705} Completar serie'}
+            <button onClick={curSet?.completed && completedSets >= totalSets  ? () => finishWorkout() : completeSet} disabled={curSet?.completed && completedSets < totalSets} className={curSet?.completed  ? 'flash-green' : ''} style={{ width: '100%', padding: '17px', borderRadius: 14, border: 'none', background: curSet?.completed && completedSets >= totalSets  ? `linear-gradient(135deg, ${COLORS.primary}, #7f1028)` : curSet?.completed  ? COLORS.border : `linear-gradient(135deg, ${COLORS.success}, #9f1239)`, color: curSet?.completed && completedSets >= totalSets  ? '#fff' : curSet?.completed  ? COLORS.textDim : '#000', cursor: curSet?.completed && completedSets < totalSets  ? 'default' : 'pointer', fontSize: 16, fontFamily: "'Inter', sans-serif", fontWeight: 800 }}>
+              {curSet?.completed && completedSets >= totalSets  ? '\u{1F3C1} Finalizar entreno' : curSet?.completed  ? '\u{2705} Completa' : '\u{2705} Completar serie'}
             </button>
           )}
 
           <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 16 }}>
-            <button onClick={() => goToExercise(activeExIdx - 1)} disabled={activeExIdx === 0} style={{ padding: '8px 16px', borderRadius: 8, border: `1px solid ${COLORS.border}`, background: 'transparent', color: COLORS.textDim, cursor: activeExIdx > 0 ? 'pointer' : 'default', fontSize: 13, fontFamily: "'Inter', sans-serif" }}>{'\u{2190}'} Ejercicio Anterior</button>
-            <button onClick={() => setShowAddEx(true)} style={{ padding: '8px 16px', borderRadius: 8, border: 'none', background: `${COLORS.primary}15`, color: COLORS.primary, cursor: 'pointer', fontSize: 13, fontFamily: "'Inter', sans-serif" }}>+ AÃ±adir Ejercicio</button>
-            <button onClick={() => goToExercise(activeExIdx + 1)} disabled={activeExIdx >= totalExs - 1} style={{ padding: '8px 16px', borderRadius: 8, border: `1px solid ${COLORS.border}`, background: 'transparent', color: COLORS.textDim, cursor: activeExIdx < totalExs - 1 ? 'pointer' : 'default', fontSize: 13, fontFamily: "'Inter', sans-serif" }}>Siguiente Ejercicio {'\u{2192}'}</button>
+            <button onClick={() => goToExercise(activeExIdx - 1)} disabled={activeExIdx === 0} style={{ padding: '8px 16px', borderRadius: 8, border: `1px solid ${COLORS.border}`, background: 'transparent', color: COLORS.textDim, cursor: activeExIdx > 0  ? 'pointer' : 'default', fontSize: 13, fontFamily: "'Inter', sans-serif" }}>{'\u{2190}'} Ejercicio Anterior</button>
+            <button onClick={() => setShowAddEx(true)} style={{ padding: '8px 16px', borderRadius: 8, border: 'none', background: `${COLORS.primary}15`, color: COLORS.primary, cursor: 'pointer', fontSize: 13, fontFamily: "'Inter', sans-serif" }}>+ Añadir Ejercicio</button>
+            <button onClick={() => goToExercise(activeExIdx + 1)} disabled={activeExIdx >= totalExs - 1} style={{ padding: '8px 16px', borderRadius: 8, border: `1px solid ${COLORS.border}`, background: 'transparent', color: COLORS.textDim, cursor: activeExIdx < totalExs - 1  ? 'pointer' : 'default', fontSize: 13, fontFamily: "'Inter', sans-serif" }}>Siguiente Ejercicio {'\u{2192}'}</button>
           </div>
         </div>
 
@@ -11700,13 +11747,13 @@ const GymMode = ({ gymData, workoutData, onUpdateData, onClose, onSaveSession, o
               return (
                 <button key={i} onClick={() => goToExercise(i)} style={{
                   padding: '4px 10px', borderRadius: 12, border: 'none',
-                  background: i === activeExIdx ? COLORS.primary : COLORS.card,
-                  color: i === activeExIdx ? '#fff' : COLORS.textDim,
+                  background: i === activeExIdx  ? COLORS.primary : COLORS.card,
+                  color: i === activeExIdx  ? '#fff' : COLORS.textDim,
                   cursor: 'pointer', fontSize: 11, fontFamily: "'Inter', sans-serif",
                   display: 'flex', alignItems: 'center', gap: 4,
-                  opacity: setsDone === ex.sets.length ? 0.7 : 1
+                  opacity: setsDone === ex.sets.length  ? 0.7 : 1
                 }}>
-                  {setsDone === ex.sets.length ? '\u{2705} ' : ''}{exInfo?.name || 'Ex'} ({setsDone}/{ex.sets.length})
+                  {setsDone === ex.sets.length  ? '\u{2705} ' : ''}{exInfo?.name || 'Ex'} ({setsDone}/{ex.sets.length})
                 </button>
               );
             })}
@@ -11717,9 +11764,9 @@ const GymMode = ({ gymData, workoutData, onUpdateData, onClose, onSaveSession, o
           {exState.map((ex, i) => {
             const exInfo = getEx(ex.eid || ex.exerciseId);
             const setsDone = ex.sets.filter(s => s.completed).length;
-            return <button key={i} onClick={() => goToExercise(i)} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '8px 10px', borderRadius: 8, border: 'none', background: i === activeExIdx ? COLORS.primary + '15' : 'transparent', color: COLORS.text, cursor: 'pointer', textAlign: 'left', fontSize: 12, fontFamily: "'Inter', sans-serif" }}>
-              <span>{setsDone === ex.sets.length ? '\u{2705}' : i === activeExIdx ? '\u{1F3CB}\u{FE0F}' : '\u{25CB}'}</span>
-              <span style={{ flex: 1, textDecoration: setsDone === ex.sets.length ? 'line-through' : 'none', opacity: setsDone === ex.sets.length ? 0.6 : 1 }}>{exInfo?.name || 'Ejercicio'}</span>
+            return <button key={i} onClick={() => goToExercise(i)} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '8px 10px', borderRadius: 8, border: 'none', background: i === activeExIdx  ? COLORS.primary + '15' : 'transparent', color: COLORS.text, cursor: 'pointer', textAlign: 'left', fontSize: 12, fontFamily: "'Inter', sans-serif" }}>
+              <span>{setsDone === ex.sets.length  ? '\u{2705}' : i === activeExIdx  ? '\u{1F3CB}\u{FE0F}' : '\u{25CB}'}</span>
+              <span style={{ flex: 1, textDecoration: setsDone === ex.sets.length  ? 'line-through' : 'none', opacity: setsDone === ex.sets.length  ? 0.6 : 1 }}>{exInfo?.name || 'Ejercicio'}</span>
               <span style={{ fontSize: 10, color: COLORS.textDim }}>{setsDone}/{ex.sets.length}</span>
             </button>;
           })}
@@ -11729,8 +11776,8 @@ const GymMode = ({ gymData, workoutData, onUpdateData, onClose, onSaveSession, o
       {showAddEx && <WorkoutExerciseAdder workoutData={workoutData} onUpdateData={onUpdateData} onAdd={(eid) => { setExState(x => [...x, { exerciseId: eid, eid, rest: 90, sets: [{ setNumber: 1, reps: 10, weight: 0, completed: false, isPersonalRecord: false }] }]); setShowAddEx(false); }} onClose={() => setShowAddEx(false)} />}
       {showFitnessToast && (
         <div style={{ position: 'fixed', bottom: 24, left: '50%', transform: 'translateX(-50%)', zIndex: 2001, background: COLORS.card, border: `1px solid ${COLORS.success}40`, borderRadius: 12, padding: '12px 20px', display: 'flex', alignItems: 'center', gap: 12, animation: 'slideIn 0.3s ease-out' }}>
-          <span>{'\u{1F4AA}'} Â¿Marcar tu hÃ¡bito de fitness como completado hoy?</span>
-          <button onClick={() => { onCompleteHabit('h2'); setShowFitnessToast(false); }} style={{ padding: '6px 14px', borderRadius: 6, border: 'none', background: COLORS.success, color: '#000', cursor: 'pointer', fontSize: 12, fontFamily: "'Inter', sans-serif" }}>SÃ­</button>
+          <span>{'\u{1F4AA}'} ¿Marcar tu hábito de fitness como completado hoy?</span>
+          <button onClick={() => { onCompleteHabit('h2'); setShowFitnessToast(false); }} style={{ padding: '6px 14px', borderRadius: 6, border: 'none', background: COLORS.success, color: '#000', cursor: 'pointer', fontSize: 12, fontFamily: "'Inter', sans-serif" }}>S?</button>
           <button onClick={() => setShowFitnessToast(false)} style={{ padding: '6px 14px', borderRadius: 6, border: 'none', background: 'transparent', color: COLORS.textDim, cursor: 'pointer', fontSize: 12, fontFamily: "'Inter', sans-serif" }}>No</button>
         </div>
       )}
@@ -11755,7 +11802,7 @@ const WorkoutExerciseAdder = ({ workoutData, onAdd, onClose, onUpdateData }) => 
   return (
     <div style={{ position: 'fixed', inset: 0, zIndex: 2100, background: 'rgba(0,0,0,0.8)', backdropFilter: 'blur(8px)', display: 'flex', alignItems: 'center', justifyContent: 'center' }} onClick={onClose}>
       <div style={{ background: COLORS.card, borderRadius: 16, border: `1px solid ${COLORS.border}`, padding: 24, maxWidth: 480, width: '90%', maxHeight: '80vh', overflow: 'auto' }} onClick={e => e.stopPropagation()}>
-        <div style={{ fontSize: 16, color: COLORS.text, fontFamily: "'DM Serif Display', serif", marginBottom: 16 }}>AÃ±adir Ejercicio</div>
+        <div style={{ fontSize: 16, color: COLORS.text, fontFamily: "'DM Serif Display', serif", marginBottom: 16 }}>Añadir Ejercicio</div>
         {!showCustom && (
           <button onClick={() => setShowCustom(true)} style={{ width: '100%', display: 'flex', alignItems: 'center', gap: 8, padding: '10px 14px', background: `${COLORS.primary}10`, border: `1px dashed ${COLORS.primary}40`, cursor: 'pointer', borderRadius: 10, color: COLORS.primary, fontSize: 13, fontFamily: "'Inter', sans-serif", textAlign: 'left', marginBottom: 12 }}>
             <Sparkles size={16} /> Personalizar ejercicio
@@ -11764,12 +11811,12 @@ const WorkoutExerciseAdder = ({ workoutData, onAdd, onClose, onUpdateData }) => 
         {showCustom && (
           <div style={{ display: 'flex', gap: 8, marginBottom: 12 }}>
             <input value={customName} onChange={e => setCustomName(e.target.value)} onKeyDown={e => e.key === 'Enter' && addCustom()} placeholder="Nombre del ejercicio" autoFocus style={{ flex: 1, padding: '10px 14px', background: COLORS.bg, border: `1px solid ${COLORS.primary}`, borderRadius: 10, color: COLORS.text, fontSize: 13, outline: 'none', fontFamily: "'Inter', sans-serif" }} />
-            <button onClick={addCustom} style={{ padding: '10px 18px', borderRadius: 10, border: 'none', background: COLORS.primary, color: '#fff', cursor: 'pointer', fontSize: 13, fontFamily: "'Inter', sans-serif", whiteSpace: 'nowrap' }}>AÃ±adir</button>
+            <button onClick={addCustom} style={{ padding: '10px 18px', borderRadius: 10, border: 'none', background: COLORS.primary, color: '#fff', cursor: 'pointer', fontSize: 13, fontFamily: "'Inter', sans-serif", whiteSpace: 'nowrap' }}>Añadir</button>
           </div>
         )}
         <div style={{ display: 'flex', gap: 6, marginBottom: 12, flexWrap: 'wrap' }}>
-          <button onClick={() => setMgFilter('all')} style={{ padding: '4px 12px', borderRadius: 12, border: 'none', background: mgFilter === 'all' ? COLORS.primary : COLORS.bg, color: mgFilter === 'all' ? '#fff' : COLORS.textDim, cursor: 'pointer', fontSize: 11, fontFamily: "'Inter', sans-serif" }}>Todos</button>
-          {mgs.map(mg => <button key={mg} onClick={() => setMgFilter(mg)} style={{ padding: '4px 12px', borderRadius: 12, border: 'none', background: mgFilter === mg ? MUSCLE_COLORS[mg] || COLORS.primary : COLORS.bg, color: mgFilter === mg ? '#fff' : COLORS.textDim, cursor: 'pointer', fontSize: 11, fontFamily: "'Inter', sans-serif" }}>{mg}</button>)}
+          <button onClick={() => setMgFilter('all')} style={{ padding: '4px 12px', borderRadius: 12, border: 'none', background: mgFilter === 'all'  ? COLORS.primary : COLORS.bg, color: mgFilter === 'all'  ? '#fff' : COLORS.textDim, cursor: 'pointer', fontSize: 11, fontFamily: "'Inter', sans-serif" }}>Todos</button>
+          {mgs.map(mg => <button key={mg} onClick={() => setMgFilter(mg)} style={{ padding: '4px 12px', borderRadius: 12, border: 'none', background: mgFilter === mg  ? MUSCLE_COLORS[mg] || COLORS.primary : COLORS.bg, color: mgFilter === mg  ? '#fff' : COLORS.textDim, cursor: 'pointer', fontSize: 11, fontFamily: "'Inter', sans-serif" }}>{mg}</button>)}
         </div>
         <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Buscar..." style={{ width: '100%', padding: '8px 12px', background: COLORS.bg, border: `1px solid ${COLORS.border}`, borderRadius: 8, color: COLORS.text, fontSize: 13, marginBottom: 12, outline: 'none', fontFamily: "'Inter', sans-serif" }} />
         <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>{filtered.map(e => <div key={e.id} style={{ display: 'flex', alignItems: 'center', gap: 4 }}><button onClick={() => onAdd(e.id)} style={{ flex: 1, display: 'flex', alignItems: 'center', gap: 8, padding: '8px 12px', background: 'none', border: 'none', borderRadius: 8, cursor: 'pointer', color: COLORS.text, fontSize: 13, fontFamily: "'Inter', sans-serif", textAlign: 'left' }}><Plus size={14} color={COLORS.primary} />{e.name} <span style={{ fontSize: 10, color: COLORS.textDim }}>- {e.mg}</span></button>{e.custom && <button onClick={() => onUpdateData(wd => ({ ...wd, exercises: wd.exercises.filter(x => x.id !== e.id) }))} style={{ width: 28, height: 28, borderRadius: 6, border: 'none', background: 'transparent', color: COLORS.alert, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: 0.5, flexShrink: 0 }}><Trash2 size={12} /></button>}</div>)}</div>
@@ -11801,7 +11848,7 @@ const WorkoutCalTab = ({ workoutData }) => {
   thisMonthSessions.forEach(s => s.exercises?.forEach(e => { if (e.muscleGroup) { mgCount[e.muscleGroup] = (mgCount[e.muscleGroup] || 0) + 1; } }));
   const topMg = Object.entries(mgCount).sort((a, b) => b[1] - a[1])[0];
 
-  const dayLabels = ['Dom', 'Lun', 'Mar', 'MiÃ©', 'Jue', 'Vie', 'sÃ¡b'];
+  const dayLabels = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'sáb'];
 
   const prevMonth = () => {
     if (currentMonth === 0) { setCurrentYear(y => y - 1); setCurrentMonth(11); }
@@ -11830,7 +11877,7 @@ const WorkoutCalTab = ({ workoutData }) => {
           {Array.from({ length: firstDay }, (_, i) => <div key={`e${i}`} />)}
           {days.map(d => {
             const isToday = d.dateStr === toYYYYMMDD(new Date());
-            return <div key={d.day} onClick={() => d.session && setSelectedDay(d.session)} style={{ height: 34, display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: 9, background: d.session ? `${MUSCLE_COLORS[d.session.exercises?.[0]?.muscleGroup] || COLORS.primary}dd` : 'rgba(255,255,255,0.018)', cursor: d.session ? 'pointer' : 'default', border: isToday ? `2px solid ${COLORS.primary}` : `1px solid ${COLORS.border}`, fontSize: 12, color: d.session ? '#000' : COLORS.textDim, fontFamily: "'Inter', sans-serif", fontWeight: d.session ? 800 : 500 }}>{d.day}</div>;
+            return <div key={d.day} onClick={() => d.session && setSelectedDay(d.session)} style={{ height: 34, display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: 9, background: d.session  ? `${MUSCLE_COLORS[d.session.exercises?.[0]?.muscleGroup] || COLORS.primary}dd` : 'rgba(255,255,255,0.018)', cursor: d.session  ? 'pointer' : 'default', border: isToday  ? `2px solid ${COLORS.primary}` : `1px solid ${COLORS.border}`, fontSize: 12, color: d.session  ? '#000' : COLORS.textDim, fontFamily: "'Inter', sans-serif", fontWeight: d.session  ? 800 : 500 }}>{d.day}</div>;
           })}
         </div>
       </div>
@@ -11850,8 +11897,8 @@ const WorkoutCalTab = ({ workoutData }) => {
       <div style={{ background: COLORS.card, borderRadius: 16, border: `1px solid ${COLORS.border}`, padding: 18, maxWidth: 780, marginInline: 'auto' }}>
         <div style={{ fontSize: 14, color: COLORS.text, fontFamily: "'DM Serif Display', serif", marginBottom: 12 }}>Resumen del Mes</div>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))', gap: 12 }}>
-          <div style={{ background: COLORS.bg, borderRadius: 8, padding: '12px', textAlign: 'center' }}><div style={{ fontSize: 24, color: COLORS.primary, fontFamily: "'Inter', sans-serif" }}>{thisMonthSessions.length}</div><div style={{ fontSize: 10, color: COLORS.textDim }}>Sesiones</div></div>
-          <div style={{ background: COLORS.bg, borderRadius: 8, padding: '12px', textAlign: 'center' }}><div style={{ fontSize: 24, color: COLORS.success, fontFamily: "'Inter', sans-serif" }}>{totalVol > 999 ? `${(totalVol / 1000).toFixed(1)}k` : totalVol}</div><div style={{ fontSize: 10, color: COLORS.textDim }}>Volumen (kg)</div></div>
+          <div style={{ background: COLORS.bg, borderRadius: 8, padding: '12px', textAlign: 'center' }}><div style={{ fontSize: 24, color: COLORS.primary, fontFamily: "'Inter', sans-serif" }}>{thisMonthSessions.length}</div><div style={{ fontSize: 10, color: COLORS.textDim }}>Sesiónes</div></div>
+          <div style={{ background: COLORS.bg, borderRadius: 8, padding: '12px', textAlign: 'center' }}><div style={{ fontSize: 24, color: COLORS.success, fontFamily: "'Inter', sans-serif" }}>{totalVol > 999  ? `${(totalVol / 1000).toFixed(1)}k` : totalVol}</div><div style={{ fontSize: 10, color: COLORS.textDim }}>Volumen (kg)</div></div>
           <div style={{ background: COLORS.bg, borderRadius: 8, padding: '12px', textAlign: 'center' }}><div style={{ fontSize: 24, color: COLORS.alert, fontFamily: "'Inter', sans-serif" }}>{topMg?.[0] || '--'}</div><div style={{ fontSize: 10, color: COLORS.textDim }}>Grupo + Entrenado</div></div>
         </div>
       </div>
@@ -11865,7 +11912,7 @@ const WorkoutProgTab = ({ workoutData }) => {
   const exData = sessions.filter(s => s.exercises?.some(e => e.exerciseId === selectedEx)).sort((a, b) => a.date.localeCompare(b.date));
   const chartData = exData.map(s => {
     const ex = s.exercises.find(e => e.exerciseId === selectedEx);
-    const maxSet = ex?.sets?.reduce((best, set) => set.weight > best.weight ? set : best, { weight: 0, reps: 0 }) || { weight: 0, reps: 0 };
+    const maxSet = ex?.sets?.reduce((best, set) => set.weight > best.weight  ? set : best, { weight: 0, reps: 0 }) || { weight: 0, reps: 0 };
     return { date: s.date.slice(5), maxWeight: maxSet.weight, reps: maxSet.reps, rm: calcRM(maxSet.weight, maxSet.reps), volume: ex?.sets?.reduce((t, set) => t + set.weight * set.reps, 0) || 0 };
   });
   const weeklyData = Array.from({ length: 8 }, (_, i) => {
@@ -11885,8 +11932,8 @@ const WorkoutProgTab = ({ workoutData }) => {
     <div style={{ animation: 'fadeIn 0.3s ease-out' }}>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: 12, marginBottom: 20 }}>
         {[
-          { label: 'Sesiones totales', value: sessions.length, color: COLORS.primary },
-          { label: 'Volumen general', value: totalVolume > 999 ? `${(totalVolume / 1000).toFixed(1)}k kg` : `${totalVolume} kg`, color: COLORS.success },
+          { label: 'Sesiónes totales', value: sessions.length, color: COLORS.primary },
+          { label: 'Volumen general', value: totalVolume > 999  ? `${(totalVolume / 1000).toFixed(1)}k kg` : `${totalVolume} kg`, color: COLORS.success },
           { label: 'Tiempo entrenado', value: `${Math.round(totalDuration / 60)} min`, color: COLORS.alert },
           { label: 'Ejercicios tocados', value: `${trainedExercises}/${exercises.length}`, color: '#ffd93d' }
         ].map(item => (
@@ -11905,7 +11952,7 @@ const WorkoutProgTab = ({ workoutData }) => {
             <XAxis dataKey="week" tick={{ fontSize: 10, fill: COLORS.textDim }} />
             <YAxis tick={{ fontSize: 10, fill: COLORS.textDim }} />
             <Tooltip />
-            <Bar dataKey="sessions" name="Sesiones" fill={COLORS.primary} radius={[5, 5, 0, 0]} />
+            <Bar dataKey="sessions" name="Sesiónes" fill={COLORS.primary} radius={[5, 5, 0, 0]} />
             <Bar dataKey="volume" name="Volumen" fill={COLORS.success} radius={[5, 5, 0, 0]} />
           </BarChart>
         </ResponsiveContainer>
@@ -11919,15 +11966,15 @@ const WorkoutProgTab = ({ workoutData }) => {
         </select>
       </div>
 
-      {chartData.length > 0 ? (
+      {chartData.length > 0  ? (
         <>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24, marginBottom: 24 }}>
             <div style={{ background: COLORS.card, borderRadius: 16, border: `1px solid ${COLORS.border}`, padding: 20 }}>
-              <div style={{ fontSize: 14, color: COLORS.text, marginBottom: 12, fontFamily: "'DM Serif Display', serif" }}>ProgresiÃ³n de Peso MÃ¡ximo</div>
+              <div style={{ fontSize: 14, color: COLORS.text, marginBottom: 12, fontFamily: "'DM Serif Display', serif" }}>Progresión de Peso Máximo</div>
               <ResponsiveContainer width="100%" height={250}><LineChart data={chartData}><XAxis dataKey="date" tick={{ fontSize: 10, fill: COLORS.textDim }} /><YAxis tick={{ fontSize: 10, fill: COLORS.textDim }} /><Tooltip /><defs><linearGradient id="rmGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor={COLORS.primary} stopOpacity={0.3} /><stop offset="100%" stopColor={COLORS.primary} stopOpacity={0} /></linearGradient></defs><Line type="monotone" dataKey="rm" stroke={COLORS.primary} strokeWidth={2} dot={{ fill: COLORS.primary, r: 4 }} activeDot={{ r: 6 }} /></LineChart></ResponsiveContainer>
             </div>
             <div style={{ background: COLORS.card, borderRadius: 16, border: `1px solid ${COLORS.border}`, padding: 20 }}>
-              <div style={{ fontSize: 14, color: COLORS.text, marginBottom: 12, fontFamily: "'DM Serif Display', serif" }}>Volumen por SesiÃ³n</div>
+              <div style={{ fontSize: 14, color: COLORS.text, marginBottom: 12, fontFamily: "'DM Serif Display', serif" }}>Volumen por Sesión</div>
               <ResponsiveContainer width="100%" height={250}><BarChart data={chartData}><XAxis dataKey="date" tick={{ fontSize: 10, fill: COLORS.textDim }} /><YAxis tick={{ fontSize: 10, fill: COLORS.textDim }} /><Tooltip /><defs><linearGradient id="volGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor={COLORS.secondary} stopOpacity={0.8} /><stop offset="100%" stopColor={COLORS.secondary} stopOpacity={0.3} /></linearGradient></defs><Bar dataKey="volume" fill="url(#volGrad)" radius={[4, 4, 0, 0]} /></BarChart></ResponsiveContainer>
             </div>
           </div>
@@ -11936,18 +11983,18 @@ const WorkoutProgTab = ({ workoutData }) => {
             <ResponsiveContainer width="100%" height={200}><BarChart data={weeklyData}><XAxis dataKey="week" tick={{ fontSize: 10, fill: COLORS.textDim }} /><YAxis tick={{ fontSize: 10, fill: COLORS.textDim }} /><Tooltip /><Bar dataKey="sessions" fill={COLORS.primary} radius={[4, 4, 0, 0]} /></BarChart></ResponsiveContainer>
           </div>
         </>
-        ) : <EmptyState icon={'\u{1F3CB}\u{FE0F}'} title="Sin datos de entrenos" subtitle="Registra sesiones para ver tu progreso aquÃ­" compact />}
+        ) : <EmptyState icon={'\u{1F3CB}\u{FE0F}'} title="Sin datos de entrenos" subtitle="Registra sesiónes para ver tu progreso aqué" compact />}
 
       <div style={{ background: COLORS.card, borderRadius: 16, border: `1px solid ${COLORS.border}`, padding: 20, marginBottom: 24 }}>
-        <div style={{ fontSize: 16, color: COLORS.text, fontFamily: "'DM Serif Display', serif", marginBottom: 16 }}>{'\u{1F3C6}'} RÃ©cords Personales</div>
-        {allPRs.length > 0 ? <div style={{ overflowX: 'auto' }}><table style={{ width: '100%', borderCollapse: 'collapse' }}><thead><tr style={{ borderBottom: `1px solid ${COLORS.border}` }}><th style={{ textAlign: 'left', padding: '8px 12px', fontSize: 10, color: COLORS.textDim }}>EJERCICIO</th><th style={{ textAlign: 'center', padding: '8px 12px', fontSize: 10, color: COLORS.textDim }}>PESO</th><th style={{ textAlign: 'center', padding: '8px 12px', fontSize: 10, color: COLORS.textDim }}>REPS</th><th style={{ textAlign: 'center', padding: '8px 12px', fontSize: 10, color: COLORS.textDim }}>1RM EST.</th><th style={{ textAlign: 'center', padding: '8px 12px', fontSize: 10, color: COLORS.textDim }}>FECHA</th></tr></thead><tbody>{allPRs.map((pr, i) => <tr key={i} style={{ borderBottom: `1px solid ${COLORS.border}` }}><td style={{ padding: '8px 12px', fontSize: 12, color: COLORS.text, fontFamily: "'Inter', sans-serif" }}>{pr.exName} {isNewPR(pr.date) && <span style={{ fontSize: 9, background: COLORS.alert, color: '#fff', padding: '1px 6px', borderRadius: 4, marginLeft: 4 }}>NUEVO</span>}</td><td style={{ textAlign: 'center', padding: '8px 12px', fontSize: 12, color: COLORS.text, fontFamily: "'Inter', sans-serif" }}>{pr.weight} kg</td><td style={{ textAlign: 'center', padding: '8px 12px', fontSize: 12, color: COLORS.textDim, fontFamily: "'Inter', sans-serif" }}>{pr.reps}</td><td style={{ textAlign: 'center', padding: '8px 12px', fontSize: 12, color: COLORS.primary, fontFamily: "'Inter', sans-serif" }}>{calcRM(pr.weight, pr.reps)} kg</td><td style={{ textAlign: 'center', padding: '8px 12px', fontSize: 11, color: COLORS.textDim, fontFamily: "'Inter', sans-serif" }}>{pr.date}</td></tr>)}</tbody></table></div> : <div style={{ textAlign: 'center', padding: 20, color: COLORS.textDim }}>AÃºn no hay rÃ©cords personales. Â¡A darle!</div>}
+        <div style={{ fontSize: 16, color: COLORS.text, fontFamily: "'DM Serif Display', serif", marginBottom: 16 }}>{'\u{1F3C6}'} Récords Personales</div>
+        {allPRs.length > 0  ? <div style={{ overflowX: 'auto' }}><table style={{ width: '100%', borderCollapse: 'collapse' }}><thead><tr style={{ borderBottom: `1px solid ${COLORS.border}` }}><th style={{ textAlign: 'left', padding: '8px 12px', fontSize: 10, color: COLORS.textDim }}>EJERCICIO</th><th style={{ textAlign: 'center', padding: '8px 12px', fontSize: 10, color: COLORS.textDim }}>PESO</th><th style={{ textAlign: 'center', padding: '8px 12px', fontSize: 10, color: COLORS.textDim }}>REPS</th><th style={{ textAlign: 'center', padding: '8px 12px', fontSize: 10, color: COLORS.textDim }}>1RM EST.</th><th style={{ textAlign: 'center', padding: '8px 12px', fontSize: 10, color: COLORS.textDim }}>FECHA</th></tr></thead><tbody>{allPRs.map((pr, i) => <tr key={i} style={{ borderBottom: `1px solid ${COLORS.border}` }}><td style={{ padding: '8px 12px', fontSize: 12, color: COLORS.text, fontFamily: "'Inter', sans-serif" }}>{pr.exName} {isNewPR(pr.date) && <span style={{ fontSize: 9, background: COLORS.alert, color: '#fff', padding: '1px 6px', borderRadius: 4, marginLeft: 4 }}>NUEVO</span>}</td><td style={{ textAlign: 'center', padding: '8px 12px', fontSize: 12, color: COLORS.text, fontFamily: "'Inter', sans-serif" }}>{pr.weight} kg</td><td style={{ textAlign: 'center', padding: '8px 12px', fontSize: 12, color: COLORS.textDim, fontFamily: "'Inter', sans-serif" }}>{pr.reps}</td><td style={{ textAlign: 'center', padding: '8px 12px', fontSize: 12, color: COLORS.primary, fontFamily: "'Inter', sans-serif" }}>{calcRM(pr.weight, pr.reps)} kg</td><td style={{ textAlign: 'center', padding: '8px 12px', fontSize: 11, color: COLORS.textDim, fontFamily: "'Inter', sans-serif" }}>{pr.date}</td></tr>)}</tbody></table></div> : <div style={{ textAlign: 'center', padding: 20, color: COLORS.textDim }}>Aún no hay récords personales. ¿A darle!</div>}
       </div>
 
       <div className="stats-grid-2" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: 12 }}>
-        <div style={{ background: COLORS.card, borderRadius: 12, border: `1px solid ${COLORS.border}`, padding: 16, textAlign: 'center' }}><div style={{ fontSize: 28, color: COLORS.primary, fontFamily: "'Inter', sans-serif" }}>{sessions.length}</div><div style={{ fontSize: 11, color: COLORS.textDim }}>Sesiones Registradas</div></div>
-        <div style={{ background: COLORS.card, borderRadius: 12, border: `1px solid ${COLORS.border}`, padding: 16, textAlign: 'center' }}><div style={{ fontSize: 28, color: COLORS.success, fontFamily: "'Inter', sans-serif" }}>{sessions.reduce((t, s) => t + s.totalVolume, 0) > 999 ? `${(sessions.reduce((t, s) => t + s.totalVolume, 0) / 1000).toFixed(1)}k` : sessions.reduce((t, s) => t + s.totalVolume, 0)}</div><div style={{ fontSize: 11, color: COLORS.textDim }}>Volumen Total (kg)</div></div>
-        <div style={{ background: COLORS.card, borderRadius: 12, border: `1px solid ${COLORS.border}`, padding: 16, textAlign: 'center' }}><div style={{ fontSize: 28, color: COLORS.alert, fontFamily: "'Inter', sans-serif" }}>{exercises.reduce((best, e) => { const c = sessions.filter(s => s.exercises?.some(x => x.exerciseId === e.id)).length; return c > best.count ? { count: c, name: e.name } : best; }, { count: 0, name: '--' }).name}</div><div style={{ fontSize: 11, color: COLORS.textDim }}>Ejercicio + Frecuente</div></div>
-        <div style={{ background: COLORS.card, borderRadius: 12, border: `1px solid ${COLORS.border}`, padding: 16, textAlign: 'center' }}><div style={{ fontSize: 28, color: '#ffd93d', fontFamily: "'Inter', sans-serif" }}>{Object.entries(sessions.flatMap(s => s.exercises?.map(e => e.muscleGroup) || []).reduce((acc, mg) => { acc[mg] = (acc[mg] || 0) + 1; return acc; }, {})).sort((a, b) => b[1] - a[1])[0]?.[0] || '--'}</div><div style={{ fontSize: 11, color: COLORS.textDim }}>MÃºsculo + Entrenado</div></div>
+        <div style={{ background: COLORS.card, borderRadius: 12, border: `1px solid ${COLORS.border}`, padding: 16, textAlign: 'center' }}><div style={{ fontSize: 28, color: COLORS.primary, fontFamily: "'Inter', sans-serif" }}>{sessions.length}</div><div style={{ fontSize: 11, color: COLORS.textDim }}>Sesiónes Registradas</div></div>
+        <div style={{ background: COLORS.card, borderRadius: 12, border: `1px solid ${COLORS.border}`, padding: 16, textAlign: 'center' }}><div style={{ fontSize: 28, color: COLORS.success, fontFamily: "'Inter', sans-serif" }}>{sessions.reduce((t, s) => t + s.totalVolume, 0) > 999  ? `${(sessions.reduce((t, s) => t + s.totalVolume, 0) / 1000).toFixed(1)}k` : sessions.reduce((t, s) => t + s.totalVolume, 0)}</div><div style={{ fontSize: 11, color: COLORS.textDim }}>Volumen Total (kg)</div></div>
+        <div style={{ background: COLORS.card, borderRadius: 12, border: `1px solid ${COLORS.border}`, padding: 16, textAlign: 'center' }}><div style={{ fontSize: 28, color: COLORS.alert, fontFamily: "'Inter', sans-serif" }}>{exercises.reduce((best, e) => { const c = sessions.filter(s => s.exercises?.some(x => x.exerciseId === e.id)).length; return c > best.count  ? { count: c, name: e.name } : best; }, { count: 0, name: '--' }).name}</div><div style={{ fontSize: 11, color: COLORS.textDim }}>Ejercicio + Frecuente</div></div>
+        <div style={{ background: COLORS.card, borderRadius: 12, border: `1px solid ${COLORS.border}`, padding: 16, textAlign: 'center' }}><div style={{ fontSize: 28, color: '#ffd93d', fontFamily: "'Inter', sans-serif" }}>{Object.entries(sessions.flatMap(s => s.exercises?.map(e => e.muscleGroup) || []).reduce((acc, mg) => { acc[mg] = (acc[mg] || 0) + 1; return acc; }, {})).sort((a, b) => b[1] - a[1])[0]?.[0] || '--'}</div><div style={{ fontSize: 11, color: COLORS.textDim }}>Músculo + Entrenado</div></div>
       </div>
     </div>
   );
@@ -11959,10 +12006,10 @@ const PRIORITY_COLORS = { 1: '#ff6b6b', 2: '#ff9f43', 3: '#e11d48', 4: '#8888a0'
 const STATUS_LABELS = { pending: 'Pendiente', in_progress: 'En progreso', completed: 'Completada', postponed: 'Pospuesta', cancelled: 'Cancelada' };
 const STATUS_COLORS = { pending: COLORS.textDim, in_progress: COLORS.primary, completed: COLORS.success, postponed: '#ffd93d', cancelled: '#666' };
 const HOURS = Array.from({ length: 18 }, (_, i) => i + 6);
-const SECTION_LABELS = { morning: '\u{1F305} MaÃ±ana', afternoon: '\u{2600}\u{FE0F} Tarde', evening: '\u{1F319} Noche' };
+const SECTION_LABELS = { morning: '\u{1F305} Mañana', afternoon: '\u{2600}\u{FE0F} Tarde', evening: '\u{1F319} Noche' };
 const SECTION_HOURS = { morning: [6, 7, 8, 9, 10, 11], afternoon: [12, 13, 14, 15, 16, 17], evening: [18, 19, 20, 21, 22, 23] };
 const RECURRENCE_TYPES = [
-  { id: 'none', label: 'No repetir' }, { id: 'daily', label: 'Cada dÃ­a' },
+  { id: 'none', label: 'No repetir' }, { id: 'daily', label: 'Cada día' },
   { id: 'weekdays', label: 'Lun - Vie' }, { id: 'weekends', label: 'Fines de semana' },
   { id: 'weekly', label: 'Semanal' }, { id: 'biweekly', label: 'Cada 2 semanas' },
   { id: 'monthly', label: 'Mensual' }, { id: 'yearly', label: 'Anual' },
@@ -11981,10 +12028,10 @@ const REMINDER_OPTIONS = [
   { id: '15min', label: '15 minutos antes', mins: 15 },
   { id: '30min', label: '30 minutos antes', mins: 30 },
   { id: '1hour', label: '1 hora antes', mins: 60 },
-  { id: '1day', label: '1 dÃ­a antes', mins: 1440 }
+  { id: '1day', label: '1 día antes', mins: 1440 }
 ];
-const DAY_NAMES = ['Dom', 'Lun', 'Mar', 'MiÃ©', 'Jue', 'Vie', 'SÃ¡b'];
-const DAY_NAMES_FULL = ['Domingo', 'Lunes', 'Martes', 'MiÃ©rcoles', 'Jueves', 'Viernes', 'SÃ¡bado'];
+const DAY_NAMES = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
+const DAY_NAMES_FULL = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
 const MONTH_NAMES = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
 
 const timeToHour = (t) => { if (!t) return -1; const [h] = t.split(':').map(Number); return h; };
@@ -11997,7 +12044,7 @@ const getTaskIntervalMinutes = (task = {}) => {
   if (mode === 'hour') return 60;
   if (mode === 'customHours') {
     const hours = Number(task.intervalEvery || 1);
-    return Number.isFinite(hours) && hours > 0 ? Math.max(1, Math.round(hours * 60)) : 60;
+    return Number.isFinite(hours) && hours > 0  ? Math.max(1, Math.round(hours * 60)) : 60;
   }
   return 0;
 };
@@ -12006,8 +12053,8 @@ const getTaskIntervalLabel = (task = {}) => {
   if (!mins) return '';
   const untilDate = task.repeatUntilDate || task.dueDate;
   const untilTime = task.repeatUntilTime || '23:59';
-  const cadence = mins === 1 ? 'cada minuto' : mins === 60 ? 'cada hora' : `cada ${Math.round((mins / 60) * 100) / 100}h`;
-  return `${cadence}${untilDate ? ` hasta ${untilDate}${untilTime ? ` ${untilTime}` : ''}` : ''}`;
+  const cadence = mins === 1  ? 'cada minuto' : mins === 60  ? 'cada hora' : `cada ${Math.round((mins / 60) * 100) / 100}h`;
+  return `${cadence}${untilDate  ? ` hasta ${untilDate}${untilTime  ? ` ${untilTime}` : ''}` : ''}`;
 };
 const generateIntervalDates = (task, fromDate, count = 31) => {
   const intervalMins = getTaskIntervalMinutes(task);
@@ -12094,16 +12141,16 @@ const parseNaturalInput = (text, defaultDate) => {
   const timeMatch = clean.match(/\b(\d{1,2}):(\d{2})\b/);
   if (timeMatch) { startTime = timeMatch[0]; clean = clean.replace(timeMatch[0], '').trim(); }
   const today = toYYYYMMDD(new Date());
-  if (/\bpasado maÃ±ana\b/i.test(clean)) { dueDate = toYYYYMMDD(new Date(Date.now() + 2 * 86400000)); clean = clean.replace(/\bpasado maÃ±ana\b/i, '').trim(); }
-  else if (/\bmaÃ±ana\b/i.test(clean)) { dueDate = toYYYYMMDD(new Date(Date.now() + 86400000)); clean = clean.replace(/\bmaÃ±ana\b/i, '').trim(); }
+  if (/\bpasado mañana\b/i.test(clean)) { dueDate = toYYYYMMDD(new Date(Date.now() + 2 * 86400000)); clean = clean.replace(/\bpasado mañana\b/i, '').trim(); }
+  else if (/\mañana\b/i.test(clean)) { dueDate = toYYYYMMDD(new Date(Date.now() + 86400000)); clean = clean.replace(/\mañana\b/i, '').trim(); }
   else if (/\bhoy\b/i.test(clean)) { dueDate = today; clean = clean.replace(/\bhoy\b/i, '').trim(); }
   else {
     const dmMatch = clean.match(/\b(\d{1,2})[\/-](\d{1,2})\b/);
     if (dmMatch) { const d = new Date(); d.setMonth(parseInt(dmMatch[2]) - 1, parseInt(dmMatch[1])); dueDate = toYYYYMMDD(d); clean = clean.replace(dmMatch[0], '').trim(); }
   }
   if (/\balarma\b|\brecordatorio\b/i.test(clean)) { hasAlarm = true; clean = clean.replace(/\balarma\b|\brecordatorio\b/ig, '').trim(); }
-  if (/\bfines? de semana\b/i.test(clean)) { recurrence = 'weekends'; clean = clean.replace(/\bfines? de semana\b/ig, '').trim(); }
-  else if (/\bd[i]as? laborables\b|\blun\s*-\s*vie\b/i.test(clean)) { recurrence = 'weekdays'; clean = clean.replace(/\bd[i]as? laborables\b|\blun\s*-\s*vie\b/ig, '').trim(); }
+  if (/\bfines ? de semana\b/i.test(clean)) { recurrence = 'weekends'; clean = clean.replace(/\bfines ? de semana\b/ig, '').trim(); }
+  else if (/\bd[i]as ? laborables\b|\blun\s*-\s*vie\b/i.test(clean)) { recurrence = 'weekdays'; clean = clean.replace(/\bd[i]as ? laborables\b|\blun\s*-\s*vie\b/ig, '').trim(); }
   else if (/\bsemanal\b/i.test(clean)) { recurrence = 'weekly'; clean = clean.replace(/\bsemanal\b/ig, '').trim(); }
   else if (/\bmensual\b/i.test(clean)) { recurrence = 'monthly'; clean = clean.replace(/\bmensual\b/ig, '').trim(); }
   else if (/\banual\b/i.test(clean)) { recurrence = 'yearly'; clean = clean.replace(/\banual\b/ig, '').trim(); }
@@ -12232,7 +12279,7 @@ const AgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAgendaTo
     return habits.filter(h => h.active && isExpectedDay(h, dateStr)).map(h => {
       const rec = records.find(r => r.habitId === h.id && r.date === dateStr);
       const cat = getCategoryInfo(h.category);
-      return { ...h, completed: rec ? rec.completed : false, skipped: rec ? rec.skipped : false, categoryInfo: cat };
+      return { ...h, completed: rec  ? rec.completed : false, skipped: rec  ? rec.skipped : false, categoryInfo: cat };
     });
   }, [habits, records, dateStr]);
 
@@ -12241,10 +12288,10 @@ const AgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAgendaTo
 
   const completedCount = tasks.filter(t => t.completed).length;
   const totalCount = tasks.length;
-  const pct = totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 0;
+  const pct = totalCount > 0  ? Math.round((completedCount / totalCount) * 100) : 0;
   const overdueCount = Object.entries(expandedAgenda || {}).filter(([d]) => d < todayStr).flatMap(([, ts]) => ts.filter(t => !t.completed)).length;
   const alarmCount = tasks.filter(t => t.alarm && !t.completed).length;
-  const busyMins = timedTasks.filter(t => !t.completed).reduce((acc, t) => acc + (t.endTime ? timeToMinutes(t.endTime) - timeToMinutes(t.dueTime) : 30), 0);
+  const busyMins = timedTasks.filter(t => !t.completed).reduce((acc, t) => acc + (t.endTime  ? timeToMinutes(t.endTime) - timeToMinutes(t.dueTime) : 30), 0);
   const freeMins = Math.max(0, 17 * 60 - busyMins);
 
   const updateTasks = useCallback((updater) => { onUpdateAgenda(dateStr, updater); }, [dateStr, onUpdateAgenda]);
@@ -12286,12 +12333,12 @@ const AgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAgendaTo
     addTask(parsed.text, parsed.priority, parsed.category, parsed.dueDate, parsed.startTime, {
       alarm: parsed.hasAlarm,
       recurrence: parsed.recurrence,
-      reminders: parsed.hasAlarm ? ['exact'] : []
+      reminders: parsed.hasAlarm  ? ['exact'] : []
     });
     setQuickText('');
   };
 
-  const toggleTask = (taskId) => { updateTasks(prev => prev.map(t => t.id === taskId ? { ...t, completed: !t.completed } : t)); };
+  const toggleTask = (taskId) => { updateTasks(prev => prev.map(t => t.id === taskId  ? { ...t, completed: !t.completed } : t)); };
   const findStoredTaskLocation = useCallback((task) => {
     const candidates = [task?._seriesAnchorDate, task?._intervalAnchorDate, task?._originalDueDate, task?.dueDate, dateStr].filter(Boolean);
     for (const ds of candidates) {
@@ -12352,14 +12399,14 @@ const AgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAgendaTo
     deleteStoredTask(task);
     return false;
   };
-  const updateTaskField = (taskId, field, value) => { updateTasks(prev => prev.map(t => t.id === taskId ? { ...t, [field]: value } : t)); };
-  const removeTaskTime = (taskId) => { updateTasks(prev => prev.map(t => t.id === taskId ? { ...t, dueTime: '' } : t)); };
+  const updateTaskField = (taskId, field, value) => { updateTasks(prev => prev.map(t => t.id === taskId  ? { ...t, [field]: value } : t)); };
+  const removeTaskTime = (taskId) => { updateTasks(prev => prev.map(t => t.id === taskId  ? { ...t, dueTime: '' } : t)); };
   const startEdit = (task) => { setEditTaskId(task.id); setEditText(task.text); };
   const saveEdit = () => { if (editTaskId && editText.trim()) updateTaskField(editTaskId, 'text', editText.trim()); setEditTaskId(null); };
-  const toggleExpand = (taskId) => { setExpandedTaskId(expandedTaskId === taskId ? null : taskId); setEditTaskId(null); };
+  const toggleExpand = (taskId) => { setExpandedTaskId(expandedTaskId === taskId  ? null : taskId); setEditTaskId(null); };
   const openTaskModal = (task) => {
     setEditModalTask(task
-      ? { ...JSON.parse(JSON.stringify(task)), _originalDueDate: task.dueDate || '' }
+       ? { ...JSON.parse(JSON.stringify(task)), _originalDueDate: task.dueDate || '' }
       : { text: '', dueDate: dateStr, dueTime: '', priority: inputPrio, category: 'Personal', alarm: false, recurrence: 'none', intervalRepeat: 'none', intervalEvery: 1, repeatUntilDate: dateStr, repeatUntilTime: '23:59', reminders: ['exact'], status: 'pending' }
     );
     setShowModal(true);
@@ -12373,10 +12420,10 @@ const AgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAgendaTo
       task = {
         ...task,
         recurrence: 'none',
-        repeatUntilDate: !task.repeatUntilDate || task.repeatUntilDate < taskStartDate ? taskStartDate : task.repeatUntilDate,
+        repeatUntilDate: !task.repeatUntilDate || task.repeatUntilDate < taskStartDate  ? taskStartDate : task.repeatUntilDate,
         repeatUntilTime: task.repeatUntilTime || '23:59',
         intervalEvery: task.intervalEvery || 1,
-        reminders: task.reminders?.length ? task.reminders : ['exact'],
+        reminders: task.reminders?.length  ? task.reminders : ['exact'],
         alarm: true
       };
       if (task.repeatUntilDate === taskStartDate && task.dueTime && task.repeatUntilTime < task.dueTime) {
@@ -12431,8 +12478,8 @@ const AgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAgendaTo
       { label: 'Completadas', value: completedCount, color: COLORS.success, icon: <Check size={14} /> },
       { label: 'Vencidas', value: overdueCount, color: COLORS.alert, icon: <AlertTriangle size={14} /> },
       { label: 'Alertas', value: alarmCount, color: '#ffd93d', icon: <Clock size={14} /> },
-      { label: 'Ocupado', value: busyMins >= 60 ? `${Math.round(busyMins/60)}h` : `${busyMins}m`, color: COLORS.secondary, icon: <Calendar size={14} /> },
-      { label: 'Libre', value: freeMins >= 60 ? `${Math.round(freeMins/60)}h` : `${freeMins}m`, color: COLORS.textDim, icon: <Sparkles size={14} /> }
+      { label: 'Ocupado', value: busyMins >= 60  ? `${Math.round(busyMins/60)}h` : `${busyMins}m`, color: COLORS.secondary, icon: <Calendar size={14} /> },
+      { label: 'Libre', value: freeMins >= 60  ? `${Math.round(freeMins/60)}h` : `${freeMins}m`, color: COLORS.textDim, icon: <Sparkles size={14} /> }
     ];
     return (
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 8, marginBottom: 12 }}>
@@ -12457,27 +12504,27 @@ const AgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAgendaTo
     const { compact, mini, hideTime, noDrag, onClick } = opts;
     const pc = TASK_BLOCK_COLORS[task.priority || 3];
     return (
-      <div className={compact ? 'agenda-task-block compact' : 'agenda-task-block'} key={task.id} {...(!noDrag ? { draggable: true, onDragStart: e => handleDragStart(e, task.id), onDragEnd: handleDragEnd } : {})}
+      <div className={compact  ? 'agenda-task-block compact' : 'agenda-task-block'} key={task.id} {...(!noDrag  ? { draggable: true, onDragStart: e => handleDragStart(e, task.id), onDragEnd: handleDragEnd } : {})}
         onClick={e => { e.stopPropagation(); if (onClick) onClick(task); }} style={{
-          padding: compact ? '5px 8px' : '8px 10px', borderRadius: 8, marginBottom: compact ? 3 : 5,
-          background: task.completed ? `${COLORS.success}06` : dragTaskId === task.id ? `${COLORS.primary}12` : pc.bg,
-          border: `1px solid ${dragTaskId === task.id ? `${COLORS.primary}50` : task.completed ? `${COLORS.success}15` : 'transparent'}`,
-          borderLeft: `3px solid ${task.completed ? COLORS.success : pc.border}`,
-          cursor: noDrag ? 'pointer' : 'grab', opacity: task.completed ? 0.5 : 1,
-          transition: 'all 0.15s', boxShadow: dragTaskId === task.id ? `0 4px 16px ${COLORS.primary}20` : 'none'
+          padding: compact  ? '5px 8px' : '8px 10px', borderRadius: 8, marginBottom: compact  ? 3 : 5,
+          background: task.completed  ? `${COLORS.success}06` : dragTaskId === task.id  ? `${COLORS.primary}12` : pc.bg,
+          border: `1px solid ${dragTaskId === task.id  ? `${COLORS.primary}50` : task.completed  ? `${COLORS.success}15` : 'transparent'}`,
+          borderLeft: `3px solid ${task.completed  ? COLORS.success : pc.border}`,
+          cursor: noDrag  ? 'pointer' : 'grab', opacity: task.completed  ? 0.5 : 1,
+          transition: 'all 0.15s', boxShadow: dragTaskId === task.id  ? `0 4px 16px ${COLORS.primary}20` : 'none'
         }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: compact ? 5 : 8 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: compact  ? 5 : 8 }}>
           <button className="agenda-timeline-check" onClick={e => { e.stopPropagation(); toggleTask(task.id); }}
-            style={{ width: compact ? 16 : 18, height: compact ? 16 : 18, borderRadius: '50%', border: 'none', flexShrink: 0,
-              background: task.completed ? COLORS.success : 'transparent',
-              border: task.completed ? 'none' : `2px solid ${COLORS.textDim}40`, cursor: 'pointer',
+            style={{ width: compact  ? 16 : 18, height: compact  ? 16 : 18, borderRadius: '50%', border: 'none', flexShrink: 0,
+              background: task.completed  ? COLORS.success : 'transparent',
+              border: task.completed  ? 'none' : `2px solid ${COLORS.textDim}40`, cursor: 'pointer',
               display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            {task.completed && <Check size={compact ? 7 : 9} color="#0a0a0f" strokeWidth={4} />}
+            {task.completed && <Check size={compact  ? 7 : 9} color="#0a0a0f" strokeWidth={4} />}
           </button>
           <div style={{ flex: 1, minWidth: 0 }}>
             <div style={{
-              fontSize: compact ? 10 : 12, color: task.completed ? COLORS.textDim : COLORS.text,
-              textDecoration: task.completed ? 'line-through' : 'none', fontWeight: task.completed ? 400 : 500,
+              fontSize: compact  ? 10 : 12, color: task.completed  ? COLORS.textDim : COLORS.text,
+              textDecoration: task.completed  ? 'line-through' : 'none', fontWeight: task.completed  ? 400 : 500,
               overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', ...s
             }} onDoubleClick={e => { e.stopPropagation(); startEdit(task); }}>
               {!hideTime && task.dueTime && !compact && (
@@ -12521,7 +12568,7 @@ const AgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAgendaTo
                 {AGENDA_CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
               </select>
               <button onClick={() => { if (!task.alarm) requestHabitFlowNotifications(); updateTaskField(task.id, 'alarm', !task.alarm); }}
-                style={{ ...btnBase, padding: '2px 6px', background: task.alarm ? `${COLORS.primary}15` : `${COLORS.alert}08`, color: task.alarm ? COLORS.primary : COLORS.alert, fontSize: 9 }}><Clock size={11} /></button>
+                style={{ ...btnBase, padding: '2px 6px', background: task.alarm  ? `${COLORS.primary}15` : `${COLORS.alert}08`, color: task.alarm  ? COLORS.primary : COLORS.alert, fontSize: 9 }}><Clock size={11} /></button>
               <button onClick={() => openTaskModal(task)} style={{ ...btnBase, padding: '2px 8px', background: `${COLORS.primary}10`, color: COLORS.primary, fontSize: 9 }}>Editar</button>
             </div>
           </div>
@@ -12532,20 +12579,20 @@ const AgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAgendaTo
 
   const renderDayView = () => (
     <div style={{ background: COLORS.card, borderRadius: 16, border: `1px solid ${COLORS.border}`, overflow: 'hidden' }}>
-      {timedTasks.length === 0 && untimedTasks.length === 0 ? (
+      {timedTasks.length === 0 && untimedTasks.length === 0  ? (
         <div style={{ textAlign: 'center', padding: '40px 20px', color: COLORS.textDim }}>
           <div className="fire-emoji" style={{ fontSize: 36, marginBottom: 8, opacity: 0.8 }}>
-            {isToday ? '\u{1F305}' : '\u{1F4C5}'}
+            {isToday  ? '\u{1F305}' : '\u{1F4C5}'}
           </div>
           <div style={{ fontSize: 14, fontWeight: 600, color: COLORS.text, ...s, marginBottom: 4 }}>
-            {isToday ? 'Tu dÃ­a estÃ¡ libre' : 'No hay tareas para este dÃ­a'}
+            {isToday  ? 'Tu día está libre' : 'No hay tareas para este día'}
           </div>
           <div style={{ fontSize: 11, color: COLORS.textDim, ...s, marginBottom: 12 }}>
-            {isToday ? 'AÃ±ade una tarea o bloquea tiempo para enfocarte' : 'Selecciona otro dÃ­a o crea una tarea aquÃ­'}
+            {isToday  ? 'Añade una tarea o bloquea tiempo para enfocarte' : 'Selecciona otro día o crea una tarea aqué'}
           </div>
           <button onClick={() => { setEditModalTask({ dueDate: dateStr, priority: inputPrio }); setShowModal(true); }}
             style={{ ...btnBase, padding: '8px 20px', background: `linear-gradient(135deg, ${COLORS.primary}, #7f1028)`, color: '#fff', margin: '0 auto', fontSize: 12 }}>
-            <Plus size={14} /> AÃ±adir tarea
+            <Plus size={14} /> Añadir tarea
           </button>
         </div>
       ) : (
@@ -12555,32 +12602,32 @@ const AgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAgendaTo
             const isDrop = dropHour === hour;
             const isCurrent = hour === new Date().getHours() && isToday;
             const isSectionStart = Object.values(SECTION_HOURS).some(hrs => hrs[0] === hour);
-            const sectionLabel = isSectionStart ? Object.entries(SECTION_HOURS).find(([_, hrs]) => hrs[0] === hour)?.[0] : null;
+            const sectionLabel = isSectionStart  ? Object.entries(SECTION_HOURS).find(([_, hrs]) => hrs[0] === hour)?.[0] : null;
             return (
               <div key={hour} onDragOver={e => { e.preventDefault(); setDropHour(hour); }}
                 onDragLeave={() => setDropHour(null)} onDrop={e => { e.preventDefault(); handleDropOnHour(hour); }}
                 style={{ display: 'flex', position: 'relative',
-                  borderTop: isSectionStart ? `1px solid ${COLORS.border}` : 'none',
-                  background: isDrop ? `${COLORS.primary}06` : isCurrent ? `${COLORS.primary}04` : 'transparent',
-                  paddingTop: isSectionStart ? 10 : 0, marginTop: isSectionStart ? 6 : 0 }}>
+                  borderTop: isSectionStart  ? `1px solid ${COLORS.border}` : 'none',
+                  background: isDrop  ? `${COLORS.primary}06` : isCurrent  ? `${COLORS.primary}04` : 'transparent',
+                  paddingTop: isSectionStart  ? 10 : 0, marginTop: isSectionStart  ? 6 : 0 }}>
                 {isCurrent && <div style={{ position: 'absolute', left: 38, right: 0, top: 0, height: 2, background: `linear-gradient(90deg, ${COLORS.primary}, transparent)`, zIndex: 2, pointerEvents: 'none' }} />}
                 <div style={{ width: 40, flexShrink: 0, textAlign: 'center', padding: '4px 0', alignSelf: 'flex-start' }}>
                   {isSectionStart && sectionLabel && (
                     <div style={{ fontSize: 7, color: COLORS.textDim + '70', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 3 }}>{SECTION_LABELS[sectionLabel]}</div>
                   )}
-                  <div style={{ fontSize: 10, color: isCurrent ? COLORS.primary : COLORS.textDim + 'bb', fontWeight: isCurrent ? 700 : 500, background: isCurrent ? `${COLORS.primary}15` : 'transparent', borderRadius: 4, padding: '0 4px', display: 'inline-block', ...s }}>
+                  <div style={{ fontSize: 10, color: isCurrent  ? COLORS.primary : COLORS.textDim + 'bb', fontWeight: isCurrent  ? 700 : 500, background: isCurrent  ? `${COLORS.primary}15` : 'transparent', borderRadius: 4, padding: '0 4px', display: 'inline-block', ...s }}>
                     {String(hour).padStart(2, '0')}
                   </div>
                   <button onClick={e => { e.stopPropagation(); setEditModalTask({ dueTime: `${String(hour).padStart(2,'0')}:00`, dueDate: dateStr, priority: inputPrio }); setShowModal(true); }}
                     style={{ width: 14, height: 14, borderRadius: '50%', border: 'none', background: 'transparent', cursor: 'pointer', color: COLORS.textDim + '44', fontSize: 9, display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '1px auto', padding: 0 }}>+</button>
-                  {hour < 23 && <div style={{ width: 1, height: 10, background: isCurrent ? COLORS.primary : COLORS.border, margin: '0 auto' }} />}
+                  {hour < 23 && <div style={{ width: 1, height: 10, background: isCurrent  ? COLORS.primary : COLORS.border, margin: '0 auto' }} />}
                 </div>
                 <div onClick={() => {
                   setEditModalTask({ dueTime: `${String(hour).padStart(2,'0')}:00`, dueDate: dateStr, priority: inputPrio });
                   setShowModal(true);
-                }} style={{ flex: 1, padding: '2px 8px', minHeight: hourTasks.length > 0 ? undefined : 28, borderRadius: 4 }}>
+                }} style={{ flex: 1, padding: '2px 8px', minHeight: hourTasks.length > 0  ? undefined : 28, borderRadius: 4 }}>
                   {isDrop && hourTasks.length === 0 && (
-                    <div style={{ margin: '3px 0', padding: '6px 10px', borderRadius: 8, border: `1.5px dashed ${COLORS.primary}50`, fontSize: 10, color: COLORS.primary + '88', textAlign: 'center' }}>Soltar aquÃ­</div>
+                    <div style={{ margin: '3px 0', padding: '6px 10px', borderRadius: 8, border: `1.5px dashed ${COLORS.primary}50`, fontSize: 10, color: COLORS.primary + '88', textAlign: 'center' }}>Soltar aqué</div>
                   )}
                   {hourTasks.map(task => renderTaskBlock(task))}
                 </div>
@@ -12599,13 +12646,13 @@ const AgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAgendaTo
         const isSel = ds === dateStr;
         const isT = ds === todayStr;
         const dayTasks = (expandedAgenda[ds] || []).map(t => ({ ...t, dueDate: t.dueDate || ds, dueTime: t.dueTime || t.time || '' }));
-        const dayPct = dayTasks.length > 0 ? Math.round(dayTasks.filter(t => t.completed).length / dayTasks.length * 100) : 0;
+        const dayPct = dayTasks.length > 0  ? Math.round(dayTasks.filter(t => t.completed).length / dayTasks.length * 100) : 0;
         return (
           <div key={i} onClick={() => { setCurrentDate(d); }}
-            style={{ background: isSel ? `${COLORS.primary}08` : 'transparent', borderRadius: 14, padding: 10, border: `1px solid ${isSel ? COLORS.primary + '35' : COLORS.border}`, cursor: 'pointer', minHeight: 142 }}>
-            <div style={{ textAlign: 'center', marginBottom: 9, padding: '7px 0', borderRadius: 10, background: isT ? COLORS.primary : 'transparent' }}>
-              <div style={{ fontSize: 10, color: isT ? '#fff' : COLORS.textDim, fontWeight: 700, letterSpacing: '0.03em', ...s }}>{DAY_NAMES[i]}</div>
-              <div style={{ fontSize: 22, fontWeight: 800, color: isT ? '#fff' : COLORS.text, lineHeight: 1.1, ...s }}>{d.getDate()}</div>
+            style={{ background: isSel  ? `${COLORS.primary}08` : 'transparent', borderRadius: 14, padding: 10, border: `1px solid ${isSel  ? COLORS.primary + '35' : COLORS.border}`, cursor: 'pointer', minHeight: 142 }}>
+            <div style={{ textAlign: 'center', marginBottom: 9, padding: '7px 0', borderRadius: 10, background: isT  ? COLORS.primary : 'transparent' }}>
+              <div style={{ fontSize: 10, color: isT  ? '#fff' : COLORS.textDim, fontWeight: 700, letterSpacing: '0.03em', ...s }}>{DAY_NAMES[i]}</div>
+              <div style={{ fontSize: 22, fontWeight: 800, color: isT  ? '#fff' : COLORS.text, lineHeight: 1.1, ...s }}>{d.getDate()}</div>
             </div>
             {dayTasks.length > 0 && <div style={{ height: 4, borderRadius: 4, background: COLORS.bg, marginBottom: 7, overflow: 'hidden' }}>
               <div style={{ width: `${dayPct}%`, height: '100%', borderRadius: 4, background: COLORS.success, transition: 'width 0.3s' }} />
@@ -12614,10 +12661,10 @@ const AgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAgendaTo
               {dayTasks.filter(t => !hideDone || !t.completed).slice(0, 4).map(t => (
                 <div key={t.id} style={{
                   padding: '4px 6px', borderRadius: 6, fontSize: 10, lineHeight: 1.25, fontWeight: 700, ...s,
-                  background: t.completed ? `${COLORS.success}10` : `${TASK_BLOCK_COLORS[t.priority || 3].bg}`,
-                  borderLeft: `2px solid ${t.completed ? COLORS.success : TASK_BLOCK_COLORS[t.priority || 3].border}`,
-                  color: t.completed ? COLORS.textDim : COLORS.text,
-                  textDecoration: t.completed ? 'line-through' : 'none',
+                  background: t.completed  ? `${COLORS.success}10` : `${TASK_BLOCK_COLORS[t.priority || 3].bg}`,
+                  borderLeft: `2px solid ${t.completed  ? COLORS.success : TASK_BLOCK_COLORS[t.priority || 3].border}`,
+                  color: t.completed  ? COLORS.textDim : COLORS.text,
+                  textDecoration: t.completed  ? 'line-through' : 'none',
                   overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap'
                 }}>
                   {t.dueTime && <span style={{ color: TASK_BLOCK_COLORS[t.priority || 3].text, marginRight: 4 }}>{t.dueTime}</span>}
@@ -12648,9 +12695,9 @@ const AgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAgendaTo
           return (
             <div key={i} onClick={() => { setCurrentDate(d); setViewMode('day'); }}
               style={{ padding: '9px 7px', minHeight: 92, cursor: 'pointer', borderBottom: `1px solid ${COLORS.border}`,
-                borderRight: (i + 1) % 7 === 0 ? 'none' : `1px solid ${COLORS.border}`,
-                background: isSel ? `${COLORS.primary}15` : isT ? `${COLORS.primary}08` : 'transparent' }}>
-              <div style={{ fontSize: 14, fontWeight: isT || isSel ? 800 : 600, color: isT ? COLORS.primary : isCurr ? COLORS.text : COLORS.textDim + '40', ...s, marginBottom: 7 }}>
+                borderRight: (i + 1) % 7 === 0  ? 'none' : `1px solid ${COLORS.border}`,
+                background: isSel  ? `${COLORS.primary}15` : isT  ? `${COLORS.primary}08` : 'transparent' }}>
+              <div style={{ fontSize: 14, fontWeight: isT || isSel  ? 800 : 600, color: isT  ? COLORS.primary : isCurr  ? COLORS.text : COLORS.textDim + '40', ...s, marginBottom: 7 }}>
                 {d.getDate()}
                 {hasOverdue && <span style={{ color: COLORS.alert, marginLeft: 2 }}></span>}
               </div>
@@ -12658,8 +12705,8 @@ const AgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAgendaTo
                 {dayTasks.slice(0, 4).map(t => (
                   <div key={t.id} style={{
                     padding: '3px 6px', borderRadius: 5, fontSize: 9, lineHeight: 1.25, fontWeight: 600, ...s,
-                    background: t.completed ? `${COLORS.success}15` : `${TASK_BLOCK_COLORS[t.priority || 3].bg}`,
-                    color: t.completed ? COLORS.textDim : TASK_BLOCK_COLORS[t.priority || 3].text,
+                    background: t.completed  ? `${COLORS.success}15` : `${TASK_BLOCK_COLORS[t.priority || 3].bg}`,
+                    color: t.completed  ? COLORS.textDim : TASK_BLOCK_COLORS[t.priority || 3].text,
                     overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap'
                   }}>{t.text}</div>
                 ))}
@@ -12676,7 +12723,7 @@ const AgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAgendaTo
     const filtered = getFilteredAgenda(expandedAgenda);
     return (
       <div style={{ background: COLORS.card, borderRadius: 16, border: `1px solid ${COLORS.border}`, overflow: 'hidden' }}>
-        {filtered.length === 0 ? (
+        {filtered.length === 0  ? (
           <div style={{ textAlign: 'center', padding: 40, color: COLORS.textDim }}>
             <div style={{ fontSize: 28, marginBottom: 8, opacity: 0.6 }}>{'\u{1F4CB}'}</div>
             <div style={{ fontSize: 14, fontWeight: 600, color: COLORS.text, ...s, marginBottom: 4 }}>No hay tareas</div>
@@ -12685,7 +12732,7 @@ const AgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAgendaTo
         ) : filtered.map(([date, ts]) => (
           <div key={date}>
             <div style={{ padding: '8px 14px', fontSize: 11, color: COLORS.textDim, fontWeight: 600, background: COLORS.bg, borderBottom: `1px solid ${COLORS.border}`, display: 'flex', justifyContent: 'space-between', alignItems: 'center', ...s }}>
-              <span>{date === todayStr ? 'Hoy' : date === toYYYYMMDD(new Date(Date.now() + 86400000)) ? 'MaÃ±ana' : new Date(date + 'T12:00:00').toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'short' })}</span>
+              <span>{date === todayStr  ? 'Hoy' : date === toYYYYMMDD(new Date(Date.now() + 86400000))  ? 'Mañana' : new Date(date + 'T12:00:00').toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'short' })}</span>
               <span style={{ fontSize: 10, color: COLORS.textDim + '88' }}>{ts.length} tareas</span>
             </div>
             <div style={{ padding: '5px 10px' }}>
@@ -12718,9 +12765,9 @@ const AgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAgendaTo
             const cnt = (expandedAgenda[ds] || []).filter(t => !t.completed).length;
             return (
               <button key={i} onClick={() => setCurrentDate(new Date(d))} style={{
-                padding: '2px 0', border: 'none', background: isSel ? COLORS.primary : 'transparent',
-                color: isSel ? '#fff' : isT ? COLORS.primary : isCurr ? COLORS.text : COLORS.textDim + '40',
-                fontSize: 9, fontWeight: isSel || isT ? 700 : 400, borderRadius: 4, cursor: 'pointer', position: 'relative', ...s
+                padding: '2px 0', border: 'none', background: isSel  ? COLORS.primary : 'transparent',
+                color: isSel  ? '#fff' : isT  ? COLORS.primary : isCurr  ? COLORS.text : COLORS.textDim + '40',
+                fontSize: 9, fontWeight: isSel || isT  ? 700 : 400, borderRadius: 4, cursor: 'pointer', position: 'relative', ...s
               }}>
                 {d.getDate()}
                 {cnt > 0 && !isSel && <div style={{ position: 'absolute', bottom: 1, left: '50%', transform: 'translateX(-50%)', width: 3, height: 3, borderRadius: '50%', background: COLORS.primary + '66' }} />}
@@ -12743,19 +12790,19 @@ const AgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAgendaTo
           ].map(tab => (
             <button key={tab.id} onClick={() => setSidebarTab(tab.id)} style={{
               flex: 1, padding: '8px 4px', border: 'none',
-              background: sidebarTab === tab.id ? `${COLORS.primary}12` : 'transparent',
-              color: sidebarTab === tab.id ? COLORS.primary : COLORS.textDim, cursor: 'pointer',
+              background: sidebarTab === tab.id  ? `${COLORS.primary}12` : 'transparent',
+              color: sidebarTab === tab.id  ? COLORS.primary : COLORS.textDim, cursor: 'pointer',
               fontSize: 8, fontWeight: 600, ...s,
-              borderBottom: sidebarTab === tab.id ? `2px solid ${COLORS.primary}` : 'none',
+              borderBottom: sidebarTab === tab.id  ? `2px solid ${COLORS.primary}` : 'none',
               transition: 'all 0.15s'
             }}><div className="fire-emoji" style={{ fontSize: 12, marginBottom: 2 }}>{tab.icon}</div>{tab.label}</button>
           ))}
         </div>
         <div style={{ padding: 8 }}>
           {sidebarTab === 'unscheduled' && (
-            untimedTasks.length === 0 ? (
+            untimedTasks.length === 0  ? (
               <div style={{ textAlign: 'center', padding: '16px 8px', color: COLORS.textDim + '99' }}>
-                <div style={{ fontSize: 20, marginBottom: 4 }}>âœ…</div>
+                <div style={{ fontSize: 20, marginBottom: 4 }}>?</div>
                 <div style={{ fontSize: 10, ...s }}>Todo programado</div>
               </div>
             ) : untimedTasks.map(task => renderTaskBlock(task, { compact: true }))
@@ -12764,7 +12811,7 @@ const AgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAgendaTo
             <div>
               {renderMiniCalendar()}
               <div style={{ borderTop: `1px solid ${COLORS.border}`, paddingTop: 8, marginTop: 4 }}>
-                <div style={{ fontSize: 10, fontWeight: 600, color: COLORS.text, ...s, marginBottom: 6 }}>Resumen del dÃ­a</div>
+                <div style={{ fontSize: 10, fontWeight: 600, color: COLORS.text, ...s, marginBottom: 6 }}>Resumen del día</div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
                   <span style={{ fontSize: 9, color: COLORS.textDim, ...s }}>Progreso</span>
                   <span style={{ fontSize: 9, color: COLORS.text, fontWeight: 600, ...s }}>{pct}%</span>
@@ -12776,8 +12823,8 @@ const AgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAgendaTo
                   ['Pendientes', totalCount - completedCount, COLORS.primary],
                   ['Completadas', completedCount, COLORS.success],
                   ['Vencidas', overdueCount, COLORS.alert],
-                  ['Ocupado', busyMins >= 60 ? `${Math.round(busyMins/60)}h` : `${busyMins}m`, COLORS.secondary],
-                  ['Libre', freeMins >= 60 ? `${Math.round(freeMins/60)}h` : `${freeMins}m`, COLORS.textDim]
+                  ['Ocupado', busyMins >= 60  ? `${Math.round(busyMins/60)}h` : `${busyMins}m`, COLORS.secondary],
+                  ['Libre', freeMins >= 60  ? `${Math.round(freeMins/60)}h` : `${freeMins}m`, COLORS.textDim]
                 ].map(([label, val, color]) => (
                   <div key={label} style={{ display: 'flex', justifyContent: 'space-between', fontSize: 9, color: COLORS.textDim, ...s, marginBottom: 2 }}>
                     <span>{label}</span>
@@ -12789,11 +12836,11 @@ const AgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAgendaTo
           )}
           {sidebarTab === 'alarms' && (
             <div>
-              <div style={{ fontSize: 10, fontWeight: 600, color: COLORS.text, ...s, marginBottom: 6 }}>PrÃ³ximas alarmas</div>
-              {tasks.filter(t => t.alarm && !t.completed && t.dueTime).length === 0 ? (
+              <div style={{ fontSize: 10, fontWeight: 600, color: COLORS.text, ...s, marginBottom: 6 }}>Próximas alarmas</div>
+              {tasks.filter(t => t.alarm && !t.completed && t.dueTime).length === 0  ? (
                 <div style={{ textAlign: 'center', padding: '12px 8px', color: COLORS.textDim + '99' }}>
                   <div style={{ fontSize: 18, marginBottom: 4 }}>{'\u{1F515}'}</div>
-                  <div style={{ fontSize: 9, ...s }}>No hay alarmas prÃ³ximas</div>
+                  <div style={{ fontSize: 9, ...s }}>No hay alarmas próximas</div>
                 </div>
               ) : tasks.filter(t => t.alarm && !t.completed && t.dueTime).sort((a, b) => (a.dueTime || '').localeCompare(b.dueTime || '')).slice(0, 5).map(t => (
                 <div key={t.id} style={{ padding: '5px 8px', borderRadius: 6, marginBottom: 3, background: COLORS.bg, display: 'flex', alignItems: 'center', gap: 5 }}>
@@ -12804,14 +12851,14 @@ const AgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAgendaTo
               ))}
               {overdueCount > 0 && <>
                 <div style={{ fontSize: 10, fontWeight: 600, color: COLORS.alert, ...s, margin: '8px 0 4px', display: 'flex', alignItems: 'center', gap: 4 }}>
-                  <span>Â Ã¯Â¸Â Vencidas ({overdueCount})</span>
+                  <span>  Vencidas ({overdueCount})</span>
                 </div>
                 {getOverdueTasks().slice(0, 3).map(t => (
                   <div key={t.id} style={{ padding: '4px 8px', borderRadius: 6, marginBottom: 2, background: `${COLORS.alert}06`, display: 'flex', alignItems: 'center', gap: 4 }}>
                     <span style={{ fontSize: 9, color: COLORS.text, ...s, flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{t.text}</span>
                     <button onClick={() => { const d = new Date(t.dueDate + 'T12:00:00'); d.setDate(d.getDate() + 1); onMoveTaskToDate(t.id, t.dueDate, toYYYYMMDD(d)); }}
                       style={{ ...btnBase, fontSize: 8, padding: '1px 5px', background: `${COLORS.primary}10`, color: COLORS.primary }}>Mover</button>
-                    <button onClick={() => toggleTask(t.id)} style={{ ...btnBase, fontSize: 8, padding: '1px 5px', background: `${COLORS.success}10`, color: COLORS.success }}>âœ“</button>
+                    <button onClick={() => toggleTask(t.id)} style={{ ...btnBase, fontSize: 8, padding: '1px 5px', background: `${COLORS.success}10`, color: COLORS.success }}>?</button>
                   </div>
                 ))}
               </>}
@@ -12827,10 +12874,10 @@ const AgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAgendaTo
       <div style={{ display: 'flex', gap: 7, alignItems: 'center' }}>
         <Plus size={15} color={COLORS.primary} style={{ marginLeft: 4 }} />
         <input value={quickText} onChange={e => setQuickText(e.target.value)} onKeyDown={e => { if (e.key === 'Enter') handleQuickAdd(); }}
-          placeholder="AÃ±ade una tarea... prueba: pagar luz maÃ±ana 18:00 p1 @finanzas"
+          placeholder="Añade una tarea... prueba: pagar luz mañana 18:00 p1 @finanzas"
           style={{ flex: 1, padding: '8px 4px', border: 'none', background: 'transparent', color: COLORS.text, fontSize: 12, ...s, outline: 'none' }} />
         <button onClick={handleQuickAdd} style={{ ...btnBase, padding: '7px 11px', background: `${COLORS.primary}16`, color: COLORS.primary, fontWeight: 700 }}>
-          AÃ±adir
+          Añadir
         </button>
       </div>
     </div>
@@ -12840,19 +12887,19 @@ const AgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAgendaTo
     const priorityColor = PRIORITY_COLORS[task.priority || 3];
     return (
       <div className="agenda-clean-task-row" key={task.id} style={{ display: 'flex', alignItems: 'center', gap: 11, padding: '11px 4px', borderBottom: `1px solid ${COLORS.border}` }}>
-        <button className="agenda-plan-check" onClick={() => toggleTask(task.id)} style={{ width: 18, height: 18, borderRadius: '50%', flexShrink: 0, border: task.completed ? 'none' : `2px solid ${priorityColor}88`, background: task.completed ? COLORS.success : 'transparent', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0 }}>
+        <button className="agenda-plan-check" onClick={() => toggleTask(task.id)} style={{ width: 18, height: 18, borderRadius: '50%', flexShrink: 0, border: task.completed  ? 'none' : `2px solid ${priorityColor}88`, background: task.completed  ? COLORS.success : 'transparent', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0 }}>
           {task.completed && <Check size={10} color={COLORS.bg} strokeWidth={4} />}
         </button>
-        <div style={{ width: 45, flexShrink: 0, fontSize: 10, fontWeight: 700, color: task.dueTime ? priorityColor : COLORS.textDim, ...s }}>
+        <div style={{ width: 45, flexShrink: 0, fontSize: 10, fontWeight: 700, color: task.dueTime  ? priorityColor : COLORS.textDim, ...s }}>
           {task.dueTime || 'Sin hora'}
         </div>
         <div style={{ flex: 1, minWidth: 0 }}>
-          <div style={{ fontSize: 12, color: task.completed ? COLORS.textDim : COLORS.text, textDecoration: task.completed ? 'line-through' : 'none', ...s, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{task.text}</div>
+          <div style={{ fontSize: 12, color: task.completed  ? COLORS.textDim : COLORS.text, textDecoration: task.completed  ? 'line-through' : 'none', ...s, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{task.text}</div>
           <div style={{ display: 'flex', gap: 6, alignItems: 'center', marginTop: 3 }}>
             <span style={{ fontSize: 8, color: COLORS.textDim, ...s }}>{task.category || 'Personal'}</span>
             {task.alarm && <Clock size={10} color="#ffd93d" />}
             {task.recurrence && task.recurrence !== 'none' && <Repeat size={10} color={COLORS.primary} />}
-            {getTaskIntervalMinutes(task) > 0 && <span>{getTaskIntervalMinutes(task) === 1 ? 'cada minuto' : getTaskIntervalMinutes(task) === 60 ? 'cada hora' : `cada ${Math.round((getTaskIntervalMinutes(task) / 60) * 100) / 100}h`}</span>}
+            {getTaskIntervalMinutes(task) > 0 && <span>{getTaskIntervalMinutes(task) === 1  ? 'cada minuto' : getTaskIntervalMinutes(task) === 60  ? 'cada hora' : `cada ${Math.round((getTaskIntervalMinutes(task) / 60) * 100) / 100}h`}</span>}
           </div>
         </div>
         <button onClick={() => openTaskModal(task)} style={{ ...btnBase, width: 26, height: 26, color: COLORS.textDim, background: 'transparent' }} title="Editar"><Edit size={13} /></button>
@@ -12866,21 +12913,21 @@ const AgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAgendaTo
     const visibleDone = tasks.filter(t => t.completed && !hideDone);
     const sections = [
       { id: 'timed', label: 'Programadas', hint: 'Con una hora definida', tasks: visibleTimed },
-      { id: 'untimed', label: 'Por ordenar', hint: 'Decide cuÃ¡ndo hacerlas', tasks: visibleUntimed }
+      { id: 'untimed', label: 'Por ordenar', hint: 'Decide cuándo hacerlas', tasks: visibleUntimed }
     ];
     return (
       <div className="agenda-plan-card" style={{ background: COLORS.card, borderRadius: 16, border: `1px solid ${COLORS.border}`, padding: '18px 20px', minHeight: 470 }}>
         <div className="agenda-plan-head" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12, paddingBottom: 13, borderBottom: `1px solid ${COLORS.border}` }}>
           <div>
-            <div style={{ fontSize: 15, color: COLORS.text, fontWeight: 700, ...s }}>Plan del dÃ­a</div>
-            <div style={{ marginTop: 3, fontSize: 10, color: COLORS.textDim, ...s }}>{totalCount - completedCount} pendientes  {freeMins >= 60 ? `${Math.floor(freeMins / 60)}h ${freeMins % 60}m` : `${freeMins}m`} disponibles</div>
+            <div style={{ fontSize: 15, color: COLORS.text, fontWeight: 700, ...s }}>Plan del día</div>
+            <div style={{ marginTop: 3, fontSize: 10, color: COLORS.textDim, ...s }}>{totalCount - completedCount} pendientes  {freeMins >= 60  ? `${Math.floor(freeMins / 60)}h ${freeMins % 60}m` : `${freeMins}m`} disponibles</div>
           </div>
           <button className="agenda-add-task-button" onClick={() => openTaskModal(null)} style={{ ...btnBase, padding: '7px 10px', color: COLORS.primary, background: `${COLORS.primary}12`, fontWeight: 700 }}><Plus size={13} /> Tarea</button>
         </div>
-        {tasks.length === 0 ? (
+        {tasks.length === 0  ? (
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: 330, textAlign: 'center' }}>
             <div style={{ width: 46, height: 46, borderRadius: 14, background: `${COLORS.primary}12`, display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 12 }}><Check size={21} color={COLORS.primary} /></div>
-            <div style={{ color: COLORS.text, fontSize: 15, fontWeight: 700, ...s }}>Tu dÃ­a estÃ¡ despejado</div>
+            <div style={{ color: COLORS.text, fontSize: 15, fontWeight: 700, ...s }}>Tu día est ? despejado</div>
             <div style={{ color: COLORS.textDim, fontSize: 11, marginTop: 5, maxWidth: 260, lineHeight: 1.5, ...s }}>Captura algo arriba o disfruta del espacio libre. No hace falta llenar cada hora.</div>
           </div>
         ) : (
@@ -12914,10 +12961,10 @@ const AgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAgendaTo
         const today = ds === todayStr;
         const count = (expandedAgenda[ds] || []).filter(task => !task.completed).length;
         return (
-          <button key={ds} onClick={() => setCurrentDate(new Date(day))} style={{ padding: '8px 4px', borderRadius: 10, border: `1px solid ${selected ? COLORS.primary + '55' : 'transparent'}`, background: selected ? `${COLORS.primary}16` : 'transparent', color: selected ? COLORS.text : COLORS.textDim, cursor: 'pointer' }}>
+          <button key={ds} onClick={() => setCurrentDate(new Date(day))} style={{ padding: '8px 4px', borderRadius: 10, border: `1px solid ${selected  ? COLORS.primary + '55' : 'transparent'}`, background: selected  ? `${COLORS.primary}16` : 'transparent', color: selected  ? COLORS.text : COLORS.textDim, cursor: 'pointer' }}>
             <div style={{ fontSize: 8, textTransform: 'uppercase', letterSpacing: '0.08em', ...s }}>{DAY_NAMES[index]}</div>
-            <div style={{ fontSize: 15, marginTop: 3, fontWeight: today || selected ? 700 : 500, color: today ? COLORS.primary : 'inherit', ...s }}>{day.getDate()}</div>
-            <div style={{ margin: '5px auto 0', width: 4, height: 4, borderRadius: '50%', background: count > 0 ? COLORS.primary : 'transparent' }} />
+            <div style={{ fontSize: 15, marginTop: 3, fontWeight: today || selected  ? 700 : 500, color: today  ? COLORS.primary : 'inherit', ...s }}>{day.getDate()}</div>
+            <div style={{ margin: '5px auto 0', width: 4, height: 4, borderRadius: '50%', background: count > 0  ? COLORS.primary : 'transparent' }} />
           </button>
         );
       })}
@@ -12928,11 +12975,11 @@ const AgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAgendaTo
     const upcoming = getUpcomingTasks().filter(task => task.dueDate !== dateStr).slice(0, 5);
     return (
       <div>
-        <div style={{ color: COLORS.text, fontSize: 12, fontWeight: 700, marginBottom: 9, ...s }}>PrÃ³ximos dÃ­as</div>
-        {upcoming.length === 0 ? <div style={{ color: COLORS.textDim, fontSize: 10, lineHeight: 1.5, ...s }}>No tienes tareas prÃ³ximas. Tu semana se ve tranquila.</div> : upcoming.map(task => (
+        <div style={{ color: COLORS.text, fontSize: 12, fontWeight: 700, marginBottom: 9, ...s }}>Próximos días</div>
+        {upcoming.length === 0  ? <div style={{ color: COLORS.textDim, fontSize: 10, lineHeight: 1.5, ...s }}>No tienes tareas próximas. Tu semana se ve tranquila.</div> : upcoming.map(task => (
           <div key={`${task.id}-${task.dueDate}`} style={{ padding: '8px 0', borderBottom: `1px solid ${COLORS.border}` }}>
             <div style={{ color: COLORS.text, fontSize: 10, ...s }}>{task.text}</div>
-            <div style={{ color: COLORS.textDim, fontSize: 8, marginTop: 3, ...s }}>{new Date(task.dueDate + 'T12:00:00').toLocaleDateString('es-ES', { weekday: 'short', day: 'numeric', month: 'short' })}{task.dueTime ? `  ${task.dueTime}` : ''}</div>
+            <div style={{ color: COLORS.textDim, fontSize: 8, marginTop: 3, ...s }}>{new Date(task.dueDate + 'T12:00:00').toLocaleDateString('es-ES', { weekday: 'short', day: 'numeric', month: 'short' })}{task.dueTime  ? `  ${task.dueTime}` : ''}</div>
           </div>
         ))}
       </div>
@@ -12959,9 +13006,9 @@ const AgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAgendaTo
       onUpdateAgendaTodos(dateStr, prev => [...prev, { id: Date.now().toString(36), text: todoText.trim(), completed: false, label: todoLabel }]);
       setTodoText('');
     };
-    const toggleTodo = (todoId) => onUpdateAgendaTodos(dateStr, prev => prev.map(todo => todo.id === todoId ? { ...todo, completed: !todo.completed } : todo));
+    const toggleTodo = (todoId) => onUpdateAgendaTodos(dateStr, prev => prev.map(todo => todo.id === todoId  ? { ...todo, completed: !todo.completed } : todo));
     const deleteTodo = (todoId) => onUpdateAgendaTodos(dateStr, prev => prev.filter(todo => todo.id !== todoId));
-    const updateTodoLabel = (todoId, label) => onUpdateAgendaTodos(dateStr, prev => prev.map(todo => todo.id === todoId ? { ...todo, label } : todo));
+    const updateTodoLabel = (todoId, label) => onUpdateAgendaTodos(dateStr, prev => prev.map(todo => todo.id === todoId  ? { ...todo, label } : todo));
     const addTodoLabel = () => {
       const label = newTodoLabel.trim();
       if (!label || agendaTodoLabels.some(existing => existing.toLowerCase() === label.toLowerCase())) return;
@@ -12971,16 +13018,16 @@ const AgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAgendaTo
     };
     const deleteTodoLabel = (label) => {
       onUpdateAgendaTodoLabels(prev => prev.filter(existing => existing !== label));
-      onUpdateAgendaTodos(dateStr, prev => prev.map(todo => todo.label === label ? { ...todo, label: '' } : todo));
+      onUpdateAgendaTodos(dateStr, prev => prev.map(todo => todo.label === label  ? { ...todo, label: '' } : todo));
       if (todoLabel === label) setTodoLabel('');
     };
     return (
       <div className="agenda-todo-list" style={{ marginTop: 0, paddingTop: 0, borderTop: 'none' }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}>
           <div style={{ color: COLORS.text, fontSize: 12, fontWeight: 700, ...s }}>To-do list</div>
-          <button onClick={() => setShowTodoLabels(value => !value)} style={{ ...btnBase, padding: '4px 6px', color: showTodoLabels ? COLORS.primary : COLORS.textDim, background: showTodoLabels ? `${COLORS.primary}12` : 'transparent', fontSize: 9 }}><Hash size={10} /> Etiquetas</button>
+          <button onClick={() => setShowTodoLabels(value => !value)} style={{ ...btnBase, padding: '4px 6px', color: showTodoLabels  ? COLORS.primary : COLORS.textDim, background: showTodoLabels  ? `${COLORS.primary}12` : 'transparent', fontSize: 9 }}><Hash size={10} /> Etiquetas</button>
         </div>
-        <div style={{ color: COLORS.textDim, fontSize: 9, marginTop: 2, marginBottom: 8, ...s }}>Anota algo rÃ¡pido y mÃ¡rcalo cuando estÃ© hecho.</div>
+        <div style={{ color: COLORS.textDim, fontSize: 9, marginTop: 2, marginBottom: 8, ...s }}>Anota algo rápido y márcalo cuando est ? hecho.</div>
         {showTodoLabels && (
           <div style={{ marginBottom: 7, padding: 7, borderRadius: 8, background: COLORS.bg, border: `1px solid ${COLORS.border}` }}>
             <div style={{ display: 'flex', gap: 5 }}>
@@ -12993,42 +13040,42 @@ const AgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAgendaTo
             </div>}
           </div>
         )}
-        {agendaTodoLabels.length > 0 && <select value={todoLabel} onChange={e => setTodoLabel(e.target.value)} style={{ width: '100%', marginBottom: 6, padding: '5px 6px', borderRadius: 6, border: `1px solid ${COLORS.border}`, background: COLORS.bg, color: todoLabel ? getTodoLabelColor(todoLabel) : COLORS.textDim, fontSize: 9, ...s, outline: 'none' }}>
-          <option value="">AÃ±adir sin etiqueta</option>
+        {agendaTodoLabels.length > 0 && <select value={todoLabel} onChange={e => setTodoLabel(e.target.value)} style={{ width: '100%', marginBottom: 6, padding: '5px 6px', borderRadius: 6, border: `1px solid ${COLORS.border}`, background: COLORS.bg, color: todoLabel  ? getTodoLabelColor(todoLabel) : COLORS.textDim, fontSize: 9, ...s, outline: 'none' }}>
+          <option value="">Añadir sin etiqueta</option>
           {agendaTodoLabels.map(label => <option key={label} value={label}>{label}</option>)}
         </select>}
         <div className="agenda-todo-add-row" style={{ display: 'flex', gap: 5, marginBottom: 6 }}>
           <input value={todoText} onChange={e => setTodoText(e.target.value)} onKeyDown={e => { if (e.key === 'Enter') addTodo(); }} placeholder="Ej: compras supermercado"
             style={{ flex: 1, minWidth: 0, padding: '7px 8px', borderRadius: 7, border: `1px solid ${COLORS.border}`, background: COLORS.bg, color: COLORS.text, fontSize: 10, ...s, outline: 'none' }} />
-          <button onClick={addTodo} style={{ ...btnBase, width: 30, color: COLORS.primary, background: `${COLORS.primary}14` }} title="AÃ±adir pendiente"><Plus size={13} /></button>
+          <button onClick={addTodo} style={{ ...btnBase, width: 30, color: COLORS.primary, background: `${COLORS.primary}14` }} title="Añadir pendiente"><Plus size={13} /></button>
         </div>
-        {todoItems.length === 0 ? (
-          <div style={{ padding: '7px 0 2px', color: COLORS.textDim, fontSize: 10, lineHeight: 1.45, ...s }}>TodavÃ­a no hay pendientes.</div>
+        {todoItems.length === 0  ? (
+          <div style={{ padding: '7px 0 2px', color: COLORS.textDim, fontSize: 10, lineHeight: 1.45, ...s }}>Todavía no hay pendientes.</div>
         ) : todoGroups.map(([label, groupTodos]) => {
-          const labelColor = label ? getTodoLabelColor(label) : COLORS.textDim;
+          const labelColor = label  ? getTodoLabelColor(label) : COLORS.textDim;
           return (
             <div key={label || '__unlabeled__'} style={{ marginTop: 10 }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 5, paddingBottom: 4, borderBottom: `1px solid ${label ? labelColor + '35' : COLORS.border}` }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 5, paddingBottom: 4, borderBottom: `1px solid ${label  ? labelColor + '35' : COLORS.border}` }}>
                 <span style={{ width: 6, height: 6, borderRadius: '50%', background: labelColor }} />
                 <span style={{ color: labelColor, fontSize: 8, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', ...s }}>{label || 'Sin etiqueta'}</span>
                 <span style={{ marginLeft: 'auto', color: COLORS.textDim, fontSize: 8, ...s }}>{groupTodos.length}</span>
               </div>
               {groupTodos.map(todo => (
                 <div className="agenda-todo-row" key={todo.id} style={{ display: 'flex', alignItems: 'center', gap: 7, padding: '7px 0', borderBottom: `1px solid ${COLORS.border}` }}>
-                  <button className="agenda-todo-check" onClick={() => toggleTodo(todo.id)} style={{ width: 16, height: 16, borderRadius: '50%', flexShrink: 0, border: todo.completed ? 'none' : `2px solid ${COLORS.textDim}88`, background: todo.completed ? COLORS.success : 'transparent', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0 }}>
+                  <button className="agenda-todo-check" onClick={() => toggleTodo(todo.id)} style={{ width: 16, height: 16, borderRadius: '50%', flexShrink: 0, border: todo.completed  ? 'none' : `2px solid ${COLORS.textDim}88`, background: todo.completed  ? COLORS.success : 'transparent', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0 }}>
                     {todo.completed && <Check size={8} color={COLORS.bg} strokeWidth={4} />}
                   </button>
                   <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ color: todo.completed ? COLORS.textDim : COLORS.text, fontSize: 10, textDecoration: todo.completed ? 'line-through' : 'none', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', ...s }}>{todo.text}</div>
+                    <div style={{ color: todo.completed  ? COLORS.textDim : COLORS.text, fontSize: 10, textDecoration: todo.completed  ? 'line-through' : 'none', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', ...s }}>{todo.text}</div>
                     {agendaTodoLabels.length > 0 && (
-                      editingTodoLabelId === todo.id ? (
+                      editingTodoLabelId === todo.id  ? (
                         <select autoFocus value={todo.label || ''} onChange={e => { updateTodoLabel(todo.id, e.target.value); setEditingTodoLabelId(null); }} onBlur={() => setEditingTodoLabelId(null)}
-                          style={{ maxWidth: 105, marginTop: 3, padding: '1px 3px', borderRadius: 5, border: `1px solid ${COLORS.border}`, background: COLORS.bg, color: todo.label ? getTodoLabelColor(todo.label) : COLORS.textDim, fontSize: 8, ...s, outline: 'none' }}>
+                          style={{ maxWidth: 105, marginTop: 3, padding: '1px 3px', borderRadius: 5, border: `1px solid ${COLORS.border}`, background: COLORS.bg, color: todo.label  ? getTodoLabelColor(todo.label) : COLORS.textDim, fontSize: 8, ...s, outline: 'none' }}>
                           <option value="">Sin etiqueta</option>
                           {agendaTodoLabels.map(todoLabelOption => <option key={todoLabelOption} value={todoLabelOption}>{todoLabelOption}</option>)}
                         </select>
                       ) : (
-                        <button className="agenda-todo-label-chip" onClick={() => setEditingTodoLabelId(todo.id)} style={{ marginTop: 4, padding: todo.label ? '2px 6px' : '1px 0', borderRadius: 10, border: 'none', background: todo.label ? `${getTodoLabelColor(todo.label)}16` : 'transparent', color: todo.label ? getTodoLabelColor(todo.label) : COLORS.textDim + '99', fontSize: 8, lineHeight: 1, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4, ...s }}>
+                        <button className="agenda-todo-label-chip" onClick={() => setEditingTodoLabelId(todo.id)} style={{ marginTop: 4, padding: todo.label  ? '2px 6px' : '1px 0', borderRadius: 10, border: 'none', background: todo.label  ? `${getTodoLabelColor(todo.label)}16` : 'transparent', color: todo.label  ? getTodoLabelColor(todo.label) : COLORS.textDim + '99', fontSize: 8, lineHeight: 1, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4, ...s }}>
                           {todo.label && <span style={{ width: 5, height: 5, borderRadius: '50%', background: getTodoLabelColor(todo.label) }} />}
                           {todo.label || '+ etiqueta'}
                         </button>
@@ -13051,9 +13098,9 @@ const AgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAgendaTo
         {[
           { id: 'todos', label: 'To-do', icon: <Check size={11} /> },
           { id: 'calendar', label: 'Mes', icon: <Calendar size={11} /> },
-          { id: 'upcoming', label: 'PrÃ³ximo', icon: <List size={11} /> }
+          { id: 'upcoming', label: 'Próximo', icon: <List size={11} /> }
         ].map(item => (
-          <button key={item.id} onClick={() => setSidePanel(item.id)} style={{ ...btnBase, flex: 1, padding: '6px 3px', background: sidePanel === item.id ? COLORS.card : 'transparent', color: sidePanel === item.id ? COLORS.text : COLORS.textDim, fontSize: 9 }}>{item.icon}{item.label}</button>
+          <button key={item.id} onClick={() => setSidePanel(item.id)} style={{ ...btnBase, flex: 1, padding: '6px 3px', background: sidePanel === item.id  ? COLORS.card : 'transparent', color: sidePanel === item.id  ? COLORS.text : COLORS.textDim, fontSize: 9 }}>{item.icon}{item.label}</button>
         ))}
       </div>
       {sidePanel === 'todos' && (
@@ -13093,7 +13140,7 @@ const AgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAgendaTo
             </div>
           </div>
           <div style={{ color: COLORS.textDim, fontSize: 12, lineHeight: 1.6, ...s, margin: '14px 0 18px' }}>
-            â€œ{deleteChoiceTask.text}â€ pertenece a una repeticiÃ³n. Elige si quieres borrar solo esta apariciÃ³n o cortar la serie desde aquÃ­.
+            ?{deleteChoiceTask.text} ? pertenece a una repetición. Elige si quieres borrar solo esta aparición o cortar la serie desde aqué.
           </div>
           <div style={{ display: 'grid', gap: 8 }}>
             <button onClick={() => { deleteSingleOccurrence(deleteChoiceTask); close(); closeTaskModal(); }} style={{ ...btnBase, width: '100%', padding: '11px 12px', background: COLORS.bg, border: `1px solid ${COLORS.border}`, color: COLORS.text, fontWeight: 700, justifyContent: 'flex-start' }}>
@@ -13119,11 +13166,11 @@ const AgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAgendaTo
       <div onClick={closeTaskModal} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.62)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20, boxSizing: 'border-box', backdropFilter: 'blur(8px)' }}>
         <div onClick={e => e.stopPropagation()} style={modalStyle}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24, flexShrink: 0 }}>
-            <div style={{ fontSize: 18, color: COLORS.text, fontFamily: "'DM Serif Display', serif" }}>{t.id ? 'Editar tarea' : 'Nueva tarea'}</div>
-            <button onClick={closeTaskModal} style={{ width: 28, height: 28, borderRadius: 8, border: 'none', background: COLORS.bg, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: COLORS.textDim, fontSize: 14 }}>âœ•</button>
+            <div style={{ fontSize: 18, color: COLORS.text, fontFamily: "'DM Serif Display', serif" }}>{t.id  ? 'Editar tarea' : 'Nueva tarea'}</div>
+            <button onClick={closeTaskModal} style={{ width: 28, height: 28, borderRadius: 8, border: 'none', background: COLORS.bg, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: COLORS.textDim, fontSize: 14 }}>✕</button>
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 16, flex: 1, minHeight: 0, overflowY: 'auto', paddingRight: 2 }}>
-            <input value={t.text || ''} onChange={e => setEditModalTask(p => ({ ...p, text: e.target.value }))} placeholder="TÃ­tulo de la tarea"
+            <input value={t.text || ''} onChange={e => setEditModalTask(p => ({ ...p, text: e.target.value }))} placeholder="Título de la tarea"
               style={{ width: '100%', height: 44, flexShrink: 0, boxSizing: 'border-box', padding: '0 14px', borderRadius: 10, border: `1px solid ${COLORS.border}`, background: COLORS.bg, color: COLORS.text, fontSize: 14, fontWeight: 500, ...s, outline: 'none' }} />
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
               <div><div style={{ fontSize: 9, color: COLORS.textDim, marginBottom: 3, ...s }}>Fecha</div>
@@ -13154,8 +13201,8 @@ const AgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAgendaTo
                               const isSel = ds === (t.dueDate || dateStr);
                               const isT = ds === todayStr;
                               return (
-                                <button key={i} onClick={() => { setEditModalTask(p => ({ ...p, dueDate: ds, repeatUntilDate: !p.repeatUntilDate || p.repeatUntilDate < ds ? ds : p.repeatUntilDate })); setShowDatePicker(false); }}
-                                  style={{ padding: '2px 0', border: 'none', background: isSel ? COLORS.primary : isT ? `${COLORS.primary}15` : 'transparent', color: isSel ? '#fff' : isT ? COLORS.primary : isCurr ? COLORS.text : COLORS.textDim + '40', fontSize: 9, fontWeight: isSel || isT ? 700 : 400, borderRadius: 4, cursor: 'pointer', ...s }}>{d.getDate()}</button>
+                                <button key={i} onClick={() => { setEditModalTask(p => ({ ...p, dueDate: ds, repeatUntilDate: !p.repeatUntilDate || p.repeatUntilDate < ds  ? ds : p.repeatUntilDate })); setShowDatePicker(false); }}
+                                  style={{ padding: '2px 0', border: 'none', background: isSel  ? COLORS.primary : isT  ? `${COLORS.primary}15` : 'transparent', color: isSel  ? '#fff' : isT  ? COLORS.primary : isCurr  ? COLORS.text : COLORS.textDim + '40', fontSize: 9, fontWeight: isSel || isT  ? 700 : 400, borderRadius: 4, cursor: 'pointer', ...s }}>{d.getDate()}</button>
                               );
                             })}
                           </div>
@@ -13167,15 +13214,15 @@ const AgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAgendaTo
               </div>
               <div><div style={{ fontSize: 9, color: COLORS.textDim, marginBottom: 3, ...s }}>Hora</div>
                 {(() => {
-                  const h24 = t.dueTime ? parseInt(t.dueTime.split(':')[0]) : -1;
-                  const mins = t.dueTime ? t.dueTime.split(':')[1]?.slice(0,2) || '00' : '00';
-                  const h12 = h24 >= 0 ? (h24 % 12 || 12) : 12;
-                  const ampm = h24 >= 0 ? (h24 >= 12 ? 'PM' : 'AM') : 'AM';
+                  const h24 = t.dueTime  ? parseInt(t.dueTime.split(':')[0]) : -1;
+                  const mins = t.dueTime  ? t.dueTime.split(':')[1]?.slice(0,2) || '00' : '00';
+                  const h12 = h24 >= 0  ? (h24 % 12 || 12) : 12;
+                  const ampm = h24 >= 0  ? (h24 >= 12  ? 'PM' : 'AM') : 'AM';
                   return (
                     <div style={{ display: 'flex', gap: 3 }}>
                       <select value={h12} onChange={e => {
                         const nh = parseInt(e.target.value);
-                        const n24 = ampm === 'PM' ? (nh === 12 ? 12 : nh + 12) : (nh === 12 ? 0 : nh);
+                        const n24 = ampm === 'PM'  ? (nh === 12  ? 12 : nh + 12) : (nh === 12  ? 0 : nh);
                         setEditModalTask(p => ({ ...p, dueTime: `${String(n24).padStart(2,'0')}:${mins}` }));
                       }} style={{ flex: 1, padding: '6px 4px', borderRadius: 6, border: `1px solid ${COLORS.border}`, background: COLORS.bg, color: COLORS.text, fontSize: 10, ...s, outline: 'none', textAlign: 'center', cursor: 'pointer' }}>
                         {Array.from({ length: 12 }, (_, i) => i + 1).map(h => <option key={h} value={h}>{String(h).padStart(2,'0')}</option>)}
@@ -13183,14 +13230,14 @@ const AgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAgendaTo
                       <span style={{ color: COLORS.textDim, fontSize: 13, display: 'flex', alignItems: 'center', fontWeight: 600 }}>:</span>
                       <select value={mins} onChange={e => {
                         const nm = e.target.value;
-                        const n24 = ampm === 'PM' ? (h12 === 12 ? 12 : h12 + 12) : (h12 === 12 ? 0 : h12);
+                        const n24 = ampm === 'PM'  ? (h12 === 12  ? 12 : h12 + 12) : (h12 === 12  ? 0 : h12);
                         setEditModalTask(p => ({ ...p, dueTime: `${String(n24).padStart(2,'0')}:${nm}` }));
                       }} style={{ flex: 1, padding: '6px 4px', borderRadius: 6, border: `1px solid ${COLORS.border}`, background: COLORS.bg, color: COLORS.text, fontSize: 10, ...s, outline: 'none', textAlign: 'center', cursor: 'pointer' }}>
                         {Array.from({ length: 60 }, (_, i) => String(i).padStart(2,'0')).map(m => <option key={m} value={m}>{m}</option>)}
                       </select>
                       <select value={ampm} onChange={e => {
                         const na = e.target.value;
-                        const nh = na === 'PM' ? (h12 === 12 ? 12 : h12 + 12) : (h12 === 12 ? 0 : h12);
+                        const nh = na === 'PM'  ? (h12 === 12  ? 12 : h12 + 12) : (h12 === 12  ? 0 : h12);
                         setEditModalTask(p => ({ ...p, dueTime: `${String(nh).padStart(2,'0')}:${mins}` }));
                       }} style={{ flex: 0.7, padding: '6px 4px', borderRadius: 6, border: `1px solid ${COLORS.border}`, background: COLORS.bg, color: COLORS.text, fontSize: 10, ...s, outline: 'none', textAlign: 'center', cursor: 'pointer' }}>
                         <option value="AM">AM</option>
@@ -13206,10 +13253,10 @@ const AgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAgendaTo
                 <div style={{ display: 'flex', gap: 3 }}>{[1, 2, 3, 4].map(p => (
                   <button key={p} onClick={() => setEditModalTask(prev => ({ ...prev, priority: p }))}
                     style={{ flex: 1, padding: '5px 0', borderRadius: 6, border: 'none', cursor: 'pointer',
-                      background: (t.priority || 3) === p ? PRIORITY_COLORS[p] : `${PRIORITY_COLORS[p]}15`,
-                      color: (t.priority || 3) === p ? '#fff' : PRIORITY_COLORS[p], fontWeight: 700, fontSize: 9, ...s }}>{PRIORITY_LABELS[p]}</button>
+                      background: (t.priority || 3) === p  ? PRIORITY_COLORS[p] : `${PRIORITY_COLORS[p]}15`,
+                      color: (t.priority || 3) === p  ? '#fff' : PRIORITY_COLORS[p], fontWeight: 700, fontSize: 9, ...s }}>{PRIORITY_LABELS[p]}</button>
                 ))}</div></div>
-              <div><div style={{ fontSize: 9, color: COLORS.textDim, marginBottom: 3, ...s }}>CategorÃ­a</div>
+              <div><div style={{ fontSize: 9, color: COLORS.textDim, marginBottom: 3, ...s }}>Categoría</div>
                 <select value={t.category || 'Personal'} onChange={e => setEditModalTask(p => ({ ...p, category: e.target.value }))}
                   style={{ width: '100%', padding: '6px 8px', borderRadius: 6, border: `1px solid ${COLORS.border}`, background: COLORS.bg, color: COLORS.text, fontSize: 10, ...s, outline: 'none' }}>
                   {AGENDA_CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
@@ -13221,8 +13268,8 @@ const AgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAgendaTo
                   style={{ accentColor: COLORS.primary }} />
                 <span style={{ fontSize: 10, ...s }}>Alerta</span>
               </label>
-              <select value={getTaskIntervalMinutes(t) > 0 ? 'none' : (t.recurrence || 'none')} disabled={getTaskIntervalMinutes(t) > 0} onChange={e => setEditModalTask(p => ({ ...p, recurrence: e.target.value }))}
-                style={{ padding: '4px 8px', borderRadius: 6, border: `1px solid ${COLORS.border}`, background: COLORS.bg, color: getTaskIntervalMinutes(t) > 0 ? COLORS.textDim : COLORS.text, fontSize: 9, ...s, outline: 'none', opacity: getTaskIntervalMinutes(t) > 0 ? 0.6 : 1 }}>
+              <select value={getTaskIntervalMinutes(t) > 0  ? 'none' : (t.recurrence || 'none')} disabled={getTaskIntervalMinutes(t) > 0} onChange={e => setEditModalTask(p => ({ ...p, recurrence: e.target.value }))}
+                style={{ padding: '4px 8px', borderRadius: 6, border: `1px solid ${COLORS.border}`, background: COLORS.bg, color: getTaskIntervalMinutes(t) > 0  ? COLORS.textDim : COLORS.text, fontSize: 9, ...s, outline: 'none', opacity: getTaskIntervalMinutes(t) > 0  ? 0.6 : 1 }}>
                 {RECURRENCE_TYPES.map(r => <option key={r.id} value={r.id}>{r.label}</option>)}
               </select>
               <select value={t.status || 'pending'} onChange={e => setEditModalTask(p => ({ ...p, status: e.target.value }))}
@@ -13240,7 +13287,7 @@ const AgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAgendaTo
               </div>
             )}
             <div style={{ padding: 12, borderRadius: 12, border: `1px solid ${COLORS.border}`, background: `${COLORS.primary}08` }}>
-              <div style={{ fontSize: 10, color: COLORS.text, fontWeight: 700, marginBottom: 8, ...s }}>RepeticiÃ³n de alarma</div>
+              <div style={{ fontSize: 10, color: COLORS.text, fontWeight: 700, marginBottom: 8, ...s }}>Repetición de alarma</div>
               <select value={t.intervalRepeat || 'none'} onChange={e => {
                 const value = e.target.value;
                 if (value !== 'none') requestHabitFlowNotifications();
@@ -13249,11 +13296,11 @@ const AgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAgendaTo
                 setEditModalTask(p => ({
                   ...p,
                   intervalRepeat: value,
-                  recurrence: value !== 'none' ? 'none' : p.recurrence,
-                  recurrenceDays: value !== 'none' ? [] : p.recurrenceDays,
-                  alarm: value !== 'none' ? true : p.alarm,
-                  reminders: value !== 'none' ? (p.reminders?.length ? p.reminders : ['exact']) : p.reminders,
-                  dueTime: value !== 'none' && !p.dueTime ? fallbackTime : p.dueTime,
+                  recurrence: value !== 'none'  ? 'none' : p.recurrence,
+                  recurrenceDays: value !== 'none'  ? [] : p.recurrenceDays,
+                  alarm: value !== 'none'  ? true : p.alarm,
+                  reminders: value !== 'none'  ? (p.reminders?.length  ? p.reminders : ['exact']) : p.reminders,
+                  dueTime: value !== 'none' && !p.dueTime  ? fallbackTime : p.dueTime,
                   repeatUntilDate: p.repeatUntilDate || p.dueDate || dateStr,
                   repeatUntilTime: p.repeatUntilTime || '23:59',
                   intervalEvery: p.intervalEvery || 1
@@ -13263,7 +13310,7 @@ const AgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAgendaTo
               </select>
               {(t.intervalRepeat || 'none') === 'customHours' && (
                 <div style={{ marginTop: 8 }}>
-                  <div style={{ fontSize: 9, color: COLORS.textDim, marginBottom: 3, ...s }}>Repetir cada cuÃ¡ntas horas</div>
+                  <div style={{ fontSize: 9, color: COLORS.textDim, marginBottom: 3, ...s }}>Repetir cada cuántas horas</div>
                   <input type="number" min="0.25" step="0.25" value={t.intervalEvery || 1} onChange={e => setEditModalTask(p => ({ ...p, intervalEvery: e.target.value }))}
                     style={{ width: '100%', padding: '7px 9px', borderRadius: 8, border: `1px solid ${COLORS.border}`, background: COLORS.bg, color: COLORS.text, fontSize: 10, ...s, outline: 'none' }} />
                 </div>
@@ -13271,7 +13318,7 @@ const AgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAgendaTo
               {(t.intervalRepeat || 'none') !== 'none' && (
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginTop: 8 }}>
                   <div>
-                    <div style={{ fontSize: 9, color: COLORS.textDim, marginBottom: 3, ...s }}>Finaliza el dÃ­a</div>
+                    <div style={{ fontSize: 9, color: COLORS.textDim, marginBottom: 3, ...s }}>Finaliza el día</div>
                     <input type="date" value={t.repeatUntilDate || t.dueDate || dateStr} min={t.dueDate || dateStr} onClick={e => openNativeDatePicker(e.currentTarget)} onFocus={e => openNativeDatePicker(e.currentTarget)} onChange={e => setEditModalTask(p => ({ ...p, repeatUntilDate: e.target.value }))}
                       style={{ width: '100%', padding: '7px 9px', borderRadius: 8, border: `1px solid ${COLORS.border}`, background: COLORS.bg, color: COLORS.text, fontSize: 10, ...s, outline: 'none', cursor: 'pointer' }} />
                   </div>
@@ -13284,24 +13331,24 @@ const AgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAgendaTo
               )}
               {(t.intervalRepeat || 'none') !== 'none' && (
                 <div style={{ marginTop: 8, fontSize: 9, color: COLORS.textDim, lineHeight: 1.5, ...s }}>
-                  Ejemplo: una tarea a las {t.dueTime || '--:--'} con â€œcada horaâ€ sonarÃ¡ cada hora hasta {t.repeatUntilDate || t.dueDate || dateStr} {t.repeatUntilTime || '23:59'}.
+                  Ejemplo: una tarea a las {t.dueTime || '--:--'} con ¿cada hora ? sonar ? cada hora hasta {t.repeatUntilDate || t.dueDate || dateStr} {t.repeatUntilTime || '23:59'}.
                 </div>
               )}
             </div>
             {t.recurrence === 'custom' && (
               <div>
-                <div style={{ fontSize: 9, color: COLORS.textDim, marginBottom: 4, ...s }}>Repetir estos dÃ­as</div>
+                <div style={{ fontSize: 9, color: COLORS.textDim, marginBottom: 4, ...s }}>Repetir estos días</div>
                 <div style={{ display: 'flex', gap: 4 }}>
                   {DAY_NAMES.map((day, idx) => {
                     const active = (t.recurrenceDays || []).includes(idx);
-                    return <button key={day} onClick={() => setEditModalTask(p => ({ ...p, recurrenceDays: active ? (p.recurrenceDays || []).filter(d => d !== idx) : [...(p.recurrenceDays || []), idx] }))}
-                      style={{ ...btnBase, flex: 1, padding: '5px 0', background: active ? COLORS.primary : COLORS.bg, color: active ? '#fff' : COLORS.textDim, fontSize: 8 }}>{day}</button>;
+                    return <button key={day} onClick={() => setEditModalTask(p => ({ ...p, recurrenceDays: active  ? (p.recurrenceDays || []).filter(d => d !== idx) : [...(p.recurrenceDays || []), idx] }))}
+                      style={{ ...btnBase, flex: 1, padding: '5px 0', background: active  ? COLORS.primary : COLORS.bg, color: active  ? '#fff' : COLORS.textDim, fontSize: 8 }}>{day}</button>;
                   })}
                 </div>
               </div>
             )}
             <div style={{ display: 'flex', gap: 8, marginTop: 'auto', paddingTop: 18, borderTop: `1px solid ${COLORS.border}` }}>
-              {t.id ? (
+              {t.id  ? (
                 <>
                   <button onClick={saveTaskModal}
                     style={{ flex: 1, padding: '9px 0', borderRadius: 8, border: 'none', background: `linear-gradient(135deg, ${COLORS.primary}, #7f1028)`, color: '#fff', cursor: 'pointer', fontSize: 11, fontWeight: 600, ...s }}>Guardar cambios</button>
@@ -13323,11 +13370,11 @@ const AgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAgendaTo
   const formattedDate = currentDate.toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' });
 
   return (
-    <div className="agenda-mobile-view" style={{ maxWidth: viewMode === 'month' || viewMode === 'week' ? 1280 : 1100, margin: '0 auto', animation: 'fadeIn 0.3s ease' }}>
+    <div className="agenda-mobile-view" style={{ maxWidth: viewMode === 'month' || viewMode === 'week'  ? 1280 : 1100, margin: '0 auto', animation: 'fadeIn 0.3s ease' }}>
       <div className="agenda-topbar" style={{ display: 'flex', justifyContent: 'space-between', gap: 18, alignItems: 'flex-start', marginBottom: 16 }}>
         <div>
           <div style={{ color: COLORS.primary, fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.14em', ...s }}>Agenda</div>
-          <div style={{ marginTop: 4, fontSize: 28, color: COLORS.text, fontFamily: "'DM Serif Display', serif", letterSpacing: '-0.03em' }}>{isToday ? 'Hoy' : dayName.charAt(0).toUpperCase() + dayName.slice(1)}</div>
+          <div style={{ marginTop: 4, fontSize: 28, color: COLORS.text, fontFamily: "'DM Serif Display', serif", letterSpacing: '-0.03em' }}>{isToday  ? 'Hoy' : dayName.charAt(0).toUpperCase() + dayName.slice(1)}</div>
           <div style={{ marginTop: 3, color: COLORS.textDim, fontSize: 11, ...s }}>{formattedDate}</div>
         </div>
         <div className="agenda-top-actions" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -13336,7 +13383,7 @@ const AgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAgendaTo
             <div style={{ width: 96, height: 3, borderRadius: 3, marginTop: 5, overflow: 'hidden', background: COLORS.card }}><div style={{ width: `${pct}%`, height: '100%', background: COLORS.success }} /></div>
           </div>}
           <button onClick={goPrev} style={{ ...btnBase, width: 32, height: 32, color: COLORS.textDim, background: COLORS.card }}><ChevronLeft size={14} /></button>
-          <button onClick={goToday} style={{ ...btnBase, padding: '0 10px', height: 32, color: isToday ? COLORS.primary : COLORS.textDim, background: COLORS.card, fontWeight: 700 }}>Hoy</button>
+          <button onClick={goToday} style={{ ...btnBase, padding: '0 10px', height: 32, color: isToday  ? COLORS.primary : COLORS.textDim, background: COLORS.card, fontWeight: 700 }}>Hoy</button>
           <button onClick={goNext} style={{ ...btnBase, width: 32, height: 32, color: COLORS.textDim, background: COLORS.card }}><ChevronRight size={14} /></button>
           <button onClick={() => openTaskModal(null)} style={{ ...btnBase, marginLeft: 5, height: 32, padding: '0 13px', color: '#fff', background: COLORS.primary, fontWeight: 700 }}><Plus size={14} /> Nueva tarea</button>
         </div>
@@ -13344,13 +13391,13 @@ const AgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAgendaTo
 
       <div className="agenda-view-tabs" style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 14, borderBottom: `1px solid ${COLORS.border}`, paddingBottom: 9 }}>
         {[
-          { id: 'day', label: 'Mi dÃ­a' },
+          { id: 'day', label: 'Mi día' },
           { id: 'week', label: 'Semana' },
           { id: 'month', label: 'Mes' },
           { id: 'list', label: 'Todas' }
-        ].map(item => <button key={item.id} onClick={() => setViewMode(item.id)} style={{ ...btnBase, padding: '6px 9px', borderRadius: 7, background: viewMode === item.id ? `${COLORS.primary}14` : 'transparent', color: viewMode === item.id ? COLORS.primary : COLORS.textDim, fontWeight: viewMode === item.id ? 700 : 500 }}>{item.label}</button>)}
+        ].map(item => <button key={item.id} onClick={() => setViewMode(item.id)} style={{ ...btnBase, padding: '6px 9px', borderRadius: 7, background: viewMode === item.id  ? `${COLORS.primary}14` : 'transparent', color: viewMode === item.id  ? COLORS.primary : COLORS.textDim, fontWeight: viewMode === item.id  ? 700 : 500 }}>{item.label}</button>)}
         <div style={{ flex: 1 }} />
-        <button onClick={() => setShowFilters(v => !v)} style={{ ...btnBase, padding: '6px 9px', color: showFilters ? COLORS.primary : COLORS.textDim, background: showFilters ? `${COLORS.primary}12` : 'transparent' }}><Hash size={12} /> Filtros</button>
+        <button onClick={() => setShowFilters(v => !v)} style={{ ...btnBase, padding: '6px 9px', color: showFilters  ? COLORS.primary : COLORS.textDim, background: showFilters  ? `${COLORS.primary}12` : 'transparent' }}><Hash size={12} /> Filtros</button>
         <button onClick={() => setShowPlanner(true)} style={{ ...btnBase, padding: '6px 9px', color: COLORS.textDim, background: 'transparent' }}><Sparkles size={12} /> Planificar</button>
       </div>
 
@@ -13361,24 +13408,24 @@ const AgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAgendaTo
           <Search size={12} color={COLORS.textDim} />
           <input value={searchQuery} onChange={e => setSearchQuery(e.target.value)} placeholder="Buscar tareas..." style={{ width: 145, padding: '5px 2px', background: 'transparent', color: COLORS.text, border: 'none', outline: 'none', fontSize: 10, ...s }} />
           <div style={{ width: 1, height: 16, background: COLORS.border }} />
-          {[0, 1, 2, 3, 4].map(priority => <button key={priority} onClick={() => setFilterPrio(priority)} style={{ ...btnBase, padding: '4px 7px', borderRadius: 6, color: filterPrio === priority ? '#fff' : COLORS.textDim, background: filterPrio === priority ? (priority ? PRIORITY_COLORS[priority] : COLORS.primary) : 'transparent', fontSize: 9 }}>{priority ? PRIORITY_LABELS[priority] : 'Todas'}</button>)}
-          <select value={filterCat} onChange={e => setFilterCat(e.target.value)} style={{ padding: '4px 7px', borderRadius: 6, border: `1px solid ${COLORS.border}`, background: COLORS.bg, color: COLORS.text, fontSize: 9, ...s }}><option value="">CategorÃ­as</option>{AGENDA_CATEGORIES.map(category => <option key={category} value={category}>{category}</option>)}</select>
+          {[0, 1, 2, 3, 4].map(priority => <button key={priority} onClick={() => setFilterPrio(priority)} style={{ ...btnBase, padding: '4px 7px', borderRadius: 6, color: filterPrio === priority  ? '#fff' : COLORS.textDim, background: filterPrio === priority  ? (priority  ? PRIORITY_COLORS[priority] : COLORS.primary) : 'transparent', fontSize: 9 }}>{priority  ? PRIORITY_LABELS[priority] : 'Todas'}</button>)}
+          <select value={filterCat} onChange={e => setFilterCat(e.target.value)} style={{ padding: '4px 7px', borderRadius: 6, border: `1px solid ${COLORS.border}`, background: COLORS.bg, color: COLORS.text, fontSize: 9, ...s }}><option value="">Categorías</option>{AGENDA_CATEGORIES.map(category => <option key={category} value={category}>{category}</option>)}</select>
           <div style={{ flex: 1 }} />
-          <button onClick={() => setHideDone(v => !v)} style={{ ...btnBase, padding: '4px 7px', color: hideDone ? COLORS.primary : COLORS.textDim, background: hideDone ? `${COLORS.primary}12` : 'transparent', fontSize: 9 }}>{hideDone ? 'Mostrar completadas' : 'Ocultar completadas'}</button>
+          <button onClick={() => setHideDone(v => !v)} style={{ ...btnBase, padding: '4px 7px', color: hideDone  ? COLORS.primary : COLORS.textDim, background: hideDone  ? `${COLORS.primary}12` : 'transparent', fontSize: 9 }}>{hideDone  ? 'Mostrar completadas' : 'Ocultar completadas'}</button>
         </div>
       )}
 
       {viewMode === 'day' && renderWeekStrip()}
 
-      {viewMode === 'day' ? (
+      {viewMode === 'day'  ? (
         <>
           <div className="agenda-layout-toggle" style={{ display: 'flex', justifyContent: 'flex-end', gap: 3, marginBottom: 7 }}>
-            <button onClick={() => setDayLayout('list')} style={{ ...btnBase, padding: '5px 8px', background: dayLayout === 'list' ? `${COLORS.primary}12` : 'transparent', color: dayLayout === 'list' ? COLORS.primary : COLORS.textDim, fontSize: 9 }}><List size={11} /> Lista</button>
-            <button onClick={() => setDayLayout('timeline')} style={{ ...btnBase, padding: '5px 8px', background: dayLayout === 'timeline' ? `${COLORS.primary}12` : 'transparent', color: dayLayout === 'timeline' ? COLORS.primary : COLORS.textDim, fontSize: 9 }}><Clock size={11} /> Cronograma</button>
+            <button onClick={() => setDayLayout('list')} style={{ ...btnBase, padding: '5px 8px', background: dayLayout === 'list'  ? `${COLORS.primary}12` : 'transparent', color: dayLayout === 'list'  ? COLORS.primary : COLORS.textDim, fontSize: 9 }}><List size={11} /> Lista</button>
+            <button onClick={() => setDayLayout('timeline')} style={{ ...btnBase, padding: '5px 8px', background: dayLayout === 'timeline'  ? `${COLORS.primary}12` : 'transparent', color: dayLayout === 'timeline'  ? COLORS.primary : COLORS.textDim, fontSize: 9 }}><Clock size={11} /> Cronograma</button>
           </div>
           <div className="agenda-day-grid" style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) 270px', gap: 14, alignItems: 'start' }}>
             <div>
-            {dayLayout === 'list' ? renderCalmDayView() : renderDayView()}
+            {dayLayout === 'list'  ? renderCalmDayView() : renderDayView()}
             </div>
             {renderSidePanel()}
           </div>
@@ -13395,11 +13442,11 @@ const AgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAgendaTo
       {showPlanner && (
         <div onClick={() => setShowPlanner(false)} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.65)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20, backdropFilter: 'blur(4px)' }}>
           <div onClick={e => e.stopPropagation()} style={{ background: COLORS.card, borderRadius: 20, border: `1px solid ${COLORS.border}`, padding: 28, maxWidth: 520, width: '100%', maxHeight: '85vh', overflow: 'auto', boxShadow: '0 24px 64px rgba(0,0,0,0.5)' }}>
-            <div style={{ fontSize: 18, color: COLORS.text, fontFamily: "'DM Serif Display', serif", marginBottom: 20 }}>{'\u{1F9E0}'} Planificar dÃ­a</div>
+            <div style={{ fontSize: 18, color: COLORS.text, fontFamily: "'DM Serif Display', serif", marginBottom: 20 }}>{'\u{1F9E0}'} Planificar día</div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
               <div style={{ padding: '12px 16px', borderRadius: 10, background: `${COLORS.primary}08`, border: `1px solid ${COLORS.primary}20` }}>
                 <div style={{ fontSize: 10, color: COLORS.textDim, ...s, marginBottom: 2 }}>Tiempo libre disponible</div>
-                <div style={{ fontSize: 16, fontWeight: 700, color: COLORS.text, ...s }}>{freeMins >= 60 ? `${Math.round(freeMins/60)}h ${freeMins%60}m` : `${freeMins}m`}</div>
+                <div style={{ fontSize: 16, fontWeight: 700, color: COLORS.text, ...s }}>{freeMins >= 60  ? `${Math.round(freeMins/60)}h ${freeMins%60}m` : `${freeMins}m`}</div>
               </div>
               {untimedTasks.length > 0 && (
                 <div>
@@ -13421,17 +13468,17 @@ const AgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAgendaTo
                     <div key={t.id} style={{ padding: '6px 10px', borderRadius: 6, marginBottom: 2, background: `${COLORS.alert}06`, display: 'flex', alignItems: 'center', gap: 5 }}>
                       <span style={{ fontSize: 10, color: COLORS.text, ...s, flex: 1 }}>{t.text}</span>
                       <button onClick={() => { onMoveTaskToDate(t.id, t.dueDate, todayStr); }} style={{ ...btnBase, padding: '2px 6px', background: `${COLORS.primary}10`, color: COLORS.primary, fontSize: 8 }}>Mover a hoy</button>
-                      <button onClick={() => toggleTask(t.id)} style={{ ...btnBase, padding: '2px 6px', background: `${COLORS.success}10`, color: COLORS.success, fontSize: 8 }}>âœ“</button>
+                      <button onClick={() => toggleTask(t.id)} style={{ ...btnBase, padding: '2px 6px', background: `${COLORS.success}10`, color: COLORS.success, fontSize: 8 }}>?</button>
                     </div>
                   ))}
                 </div>
               )}
               <div style={{ marginTop: 4, fontSize: 10, color: COLORS.textDim, ...s, padding: '8px 12px', borderRadius: 8, background: COLORS.bg, border: `1px solid ${COLORS.border}` }}>
                 <span style={{ color: COLORS.primary, fontWeight: 600 }}>{'\u{1F4A1}'} Sugerencia:</span>{' '}
-                {freeMins > 120 ? 'Tienes tiempo libre amplio. Ideal para programar tus tareas P1 en bloques de enfoque.' :
-                 untimedTasks.length > 0 ? `Tienes ${untimedTasks.length} tareas sin hora. AsÃ­gnales un horario para mejorar tu productividad.` :
-                 overdueCount > 0 ? `Tienes ${overdueCount} tareas vencidas. Reprogramarlas te ayudarÃ¡ a cerrar el dÃ­a.` :
-                 'Tu dÃ­a estÃ¡ bien organizado. Buen trabajo!'}
+                {freeMins > 120  ? 'Tienes tiempo libre amplio. Ideal para programar tus tareas P1 en bloques de enfoque.' :
+                 untimedTasks.length > 0  ? `Tienes ${untimedTasks.length} tareas sin hora. Asígnales un horario para mejorar tu productividad.` :
+                 overdueCount > 0  ? `Tienes ${overdueCount} tareas vencidas. Reprogramarlas te ayudará a cerrar el día.` :
+                 'Tu día est ? bien organizado. Buen trabajo!'}
               </div>
             </div>
           </div>
@@ -13449,7 +13496,7 @@ const HabitFlowApp = () => {
   const [data, setData] = useState(null);
   const [view, setView] = useState(() => {
     const saved = localStorage.getItem('habitflow_active_view');
-    return saved && !['reading', 'stats'].includes(saved) ? saved : 'dashboard';
+    return saved && !['reading', 'stats'].includes(saved)  ? saved : 'dashboard';
   });
   const [confetti, setConfetti] = useState(null);
   const [mobileMenu, setMobileMenu] = useState(false);
@@ -13500,7 +13547,7 @@ const HabitFlowApp = () => {
         const saved = await saveCloudDataNow(loaded);
         if (cancelled) return;
         setCloudSync(saved.ok
-          ? { status: 'active', label: 'Nube activa', reason: 'Tus datos locales se subieron a tu usuario.' }
+           ? { status: 'active', label: 'Nube activa', reason: 'Tus datos locales se subieron a tu usuario.' }
           : { status: 'local', label: 'Guardado local', reason: saved.reason });
         return;
       }
@@ -13570,9 +13617,9 @@ const HabitFlowApp = () => {
               if (sentMap[key]) return;
               sentMap[key] = now.getTime();
               changed = true;
-              const category = task.category ? ` Â· ${task.category}` : '';
-              showHabitFlowNotification('HabitFlow â€¢ Agenda', {
-                body: `${task.text}\n${reminder.mins > 0 ? `${reminder.label} Â· ` : 'Es hora Â· '}${slot.time}${category}`,
+              const category = task.category  ? `  ? ${task.category}` : '';
+              showHabitFlowNotification('HabitFlow  ? Agenda', {
+                body: `${task.text}\n${reminder.mins > 0  ? `${reminder.label}  ? ` : 'Es hora  ? '}${slot.time}${category}`,
                 tag: key,
                 data: { view: 'agenda', taskId: task.id, date: slot.date },
                 renotify: true
@@ -13590,9 +13637,9 @@ const HabitFlowApp = () => {
           if (sentMap[key]) return;
           sentMap[key] = now.getTime();
           changed = true;
-          const when = reminder.mins > 0 ? `${reminder.label} Â· ${task.dueTime}` : `Es hora Â· ${task.dueTime}`;
-          const category = task.category ? ` Â· ${task.category}` : '';
-          showHabitFlowNotification('HabitFlow â€¢ Agenda', {
+          const when = reminder.mins > 0  ? `${reminder.label}  ? ${task.dueTime}` : `Es hora  ? ${task.dueTime}`;
+          const category = task.category  ? `  ? ${task.category}` : '';
+          showHabitFlowNotification('HabitFlow  ? Agenda', {
             body: `${task.text}\n${when}${category}`,
             tag: key,
             data: { view: 'agenda', taskId: task.id, date: dateStr },
@@ -13633,7 +13680,7 @@ const HabitFlowApp = () => {
         const reminder = habit.reminder;
         if (habit.active === false || !reminder?.enabled || !reminder.time) return;
         if (!isExpectedDay(habit, dateStr)) return;
-        const reminderDays = Array.isArray(reminder.days) ? reminder.days.map(Number) : [];
+        const reminderDays = Array.isArray(reminder.days)  ? reminder.days.map(Number) : [];
         if (reminderDays.length && !reminderDays.includes(weekday)) return;
         if ((data.records || []).some(record => record.habitId === habit.id && record.date === dateStr && record.completed)) return;
 
@@ -13646,7 +13693,7 @@ const HabitFlowApp = () => {
         if (sentMap[key]) return;
         sentMap[key] = now.getTime();
         changed = true;
-        showHabitFlowNotification('HabitFlow â€¢ HÃ¡bito', {
+        showHabitFlowNotification('HabitFlow  ? Hábito', {
           body: String(reminder.message || '').trim() || `Es hora de ${habit.name}.`,
           tag: key,
           data: { view: 'habits', habitId: habit.id, date: dateStr },
@@ -13694,8 +13741,8 @@ const HabitFlowApp = () => {
         if (sentMap[key]) return;
         sentMap[key] = now.getTime();
         changed = true;
-        showHabitFlowNotification('HabitFlow â€¢ Salud', {
-          body: `${dose.medication.name} Â· ${dose.medication.dose}\nEs hora Â· ${dose.time}${dose.medication.instructions ? ` Â· ${dose.medication.instructions}` : ''}`,
+        showHabitFlowNotification('HabitFlow  ? Salud', {
+          body: `${dose.medication.name}  ? ${dose.medication.dose}\nEs hora  ? ${dose.time}${dose.medication.instructions  ? `  ? ${dose.medication.instructions}` : ''}`,
           tag: key,
           data: { view: 'health', medicationId: dose.medication.id, date: dateStr },
           renotify: true,
@@ -13729,7 +13776,7 @@ const HabitFlowApp = () => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
 
   const navigateTo = useCallback((nextView) => {
-    const safeView = ['reading', 'stats'].includes(nextView) ? 'dashboard' : nextView;
+    const safeView = ['reading', 'stats'].includes(nextView)  ? 'dashboard' : nextView;
     setView(safeView);
     localStorage.setItem('habitflow_active_view', safeView);
     requestAnimationFrame(() => {
@@ -13857,7 +13904,7 @@ const HabitFlowApp = () => {
   const onCompleteChallenge = useCallback((challengeId, habitId) => {
     setData(prev => {
       const challenges = prev.challenges.map(c =>
-        c.id === challengeId ? { ...c, status: 'completed', completedDate: toYYYYMMDD(new Date()) } : c
+        c.id === challengeId  ? { ...c, status: 'completed', completedDate: toYYYYMMDD(new Date()) } : c
       );
       let newData = awardXp({ ...prev, challenges }, 200);
       saveData(newData);
@@ -13868,7 +13915,7 @@ const HabitFlowApp = () => {
 
   const onJoinChallenge = useCallback((challengeData, habitData) => {
     setData(prev => {
-      const habits = habitData ? [...prev.habits, habitData] : prev.habits;
+      const habits = habitData  ? [...prev.habits, habitData] : prev.habits;
       const challenges = [...(prev.challenges || []), challengeData];
       let newData = awardXp({ ...prev, habits, challenges }, 50);
       saveData(newData);
@@ -13886,7 +13933,7 @@ const HabitFlowApp = () => {
 
   const onUpdateHabit = useCallback((habit) => {
     setData(prev => {
-      const habits = prev.habits.map(h => h.id === habit.id ? habit : h);
+      const habits = prev.habits.map(h => h.id === habit.id  ? habit : h);
       const newData = { ...prev, habits };
       saveData(newData);
       return newData;
@@ -13921,7 +13968,7 @@ const HabitFlowApp = () => {
 
   const onToggleHabit = useCallback((id) => {
     setData(prev => {
-      const habits = prev.habits.map(h => h.id === id ? { ...h, active: !h.active } : h);
+      const habits = prev.habits.map(h => h.id === id  ? { ...h, active: !h.active } : h);
       const newData = { ...prev, habits };
       saveData(newData);
       return newData;
@@ -14042,7 +14089,7 @@ const HabitFlowApp = () => {
       if (idx === -1) return prev;
       const [task] = fromTasks.splice(idx, 1);
       const moved = { ...task, dueDate: toDate };
-      agenda[fromDate] = fromTasks.length > 0 ? fromTasks : undefined;
+      agenda[fromDate] = fromTasks.length > 0  ? fromTasks : undefined;
       agenda[toDate] = [...(agenda[toDate] || []), moved];
       const newData = { ...prev, agenda };
       saveData(newData);
@@ -14062,7 +14109,7 @@ const HabitFlowApp = () => {
   }, [data]);
 
   const onGenerateRandomData = useCallback(() => {
-    if (!window.confirm('Esto reemplazarÃ¡ tus datos actuales con datos aleatorios de demostraciÃ³n. Â¿Quieres continuar?')) return;
+    if (!window.confirm('Esto reemplazará tus datos actuales con datos aleatorios de demostración. ¿Quieres continuar¿')) return;
     setData(prev => {
       const uid = () => `${Date.now()}_${Math.random().toString(36).slice(2, 7)}`;
       const pick = (arr) => arr[Math.floor(Math.random() * arr.length)];
@@ -14091,7 +14138,7 @@ const HabitFlowApp = () => {
         ...h,
         targetStreak: h.targetStreak || rand(14, 45),
         icon: normalizeHabitIconId(h.icon, h.category, h.name),
-        lastFocusSession: Math.random() > 0.55 ? toYYYYMMDD(addDays(new Date(), -rand(0, 8))) : null,
+        lastFocusSession: Math.random() > 0.55  ? toYYYYMMDD(addDays(new Date(), -rand(0, 8))) : null,
         order: index
       }));
       const today = toYYYYMMDD(new Date());
@@ -14099,7 +14146,7 @@ const HabitFlowApp = () => {
       allHabits.forEach(h => {
         const existing = newRecords.find(r => r.habitId === h.id && r.date === today);
         if (!existing) {
-          newRecords.push({ habitId: h.id, date: today, completed: Math.random() > 0.22, note: Math.random() > 0.7 ? 'Dato demo aleatorio' : '', mood: rand(3, 5) });
+          newRecords.push({ habitId: h.id, date: today, completed: Math.random() > 0.22, note: Math.random() > 0.7  ? 'Dato demo aleatorio' : '', mood: rand(3, 5) });
         }
       });
 
@@ -14119,24 +14166,24 @@ const HabitFlowApp = () => {
           const startHour = rand(8, 19);
           const startTime = `${String(startHour).padStart(2, '0')}:${String([0, 15, 30, 45][rand(0, 3)]).padStart(2, '0')}`;
           const endTime = minutesToTime(timeToMinutes(startTime) + rand(30, 100));
-          const recurrence = Math.random() > 0.82 ? pick(['daily', 'weekdays', 'weekly', 'monthly']) : 'none';
+          const recurrence = Math.random() > 0.82  ? pick(['daily', 'weekdays', 'weekly', 'monthly']) : 'none';
           return {
             id: `task_${uid()}_${dayIndex}_${i}`,
             text: pick(taskTexts),
-            completed: dayIndex < 5 ? Math.random() > 0.35 : Math.random() > 0.75,
+            completed: dayIndex < 5  ? Math.random() > 0.35 : Math.random() > 0.75,
             priority: rand(1, 4),
             category: pick(AGENDA_CATEGORIES),
-            note: Math.random() > 0.45 ? pick(['Importante', 'Hacerlo temprano', 'Revisar despues', 'Bloque de enfoque']) : '',
+            note: Math.random() > 0.45  ? pick(['Importante', 'Hacerlo temprano', 'Revisar después', 'Bloque de enfoque']) : '',
             dueDate: ds,
             startTime,
             endTime,
             dueTime: startTime,
             alarm: Math.random() > 0.55,
             recurrence,
-            reminders: Math.random() > 0.55 ? [pick(['exact', '10min', '30min', '1hour'])] : [],
+            reminders: Math.random() > 0.55  ? [pick(['exact', '10min', '30min', '1hour'])] : [],
             subtasks: Array.from({ length: rand(0, 3) }, (_, si) => ({ text: pick(['Preparar', 'Revisar', 'Confirmar', 'Enviar']), completed: Math.random() > 0.5 })),
             tags: [],
-            status: Math.random() > 0.75 ? 'in_progress' : 'pending',
+            status: Math.random() > 0.75  ? 'in_progress' : 'pending',
             order: i
           };
         });
@@ -14179,7 +14226,7 @@ const HabitFlowApp = () => {
         financeTransactions.push({
           id: `fin_${uid()}_${i}`,
           type: 'expense',
-          amount: moneyAmount(8, cat.id === 'home' ? 620 : 180),
+          amount: moneyAmount(8, cat.id === 'home'  ? 620 : 180),
           category: cat.id,
           accountId: pick(financeAccounts).id,
           payee: pick(payees[cat.id] || ['Movimiento']),
@@ -14220,7 +14267,7 @@ const HabitFlowApp = () => {
             serviceId: service.id,
             name: service.name,
             category: service.category,
-            amount: moneyAmount(6, service.id === 'chatgpt' ? 25 : 18),
+            amount: moneyAmount(6, service.id === 'chatgpt'  ? 25 : 18),
             day: rand(1, 28),
             accountId: 'bank',
             logoUrl: '',
@@ -14262,7 +14309,7 @@ const HabitFlowApp = () => {
         completedAt: new Date(Date.now() - rand(0, 30) * 86400000).toISOString()
       }));
       const dreamGoals = getDreamGoals().map((goal, i) => {
-        const target = moneyAmount(i === 0 ? 55000 : 8000, i === 0 ? 120000 : 45000);
+        const target = moneyAmount(i === 0  ? 55000 : 8000, i === 0  ? 120000 : 45000);
         return {
           ...goal,
           id: `dream_${uid()}_${i}`,
@@ -14293,7 +14340,7 @@ const HabitFlowApp = () => {
         pomodoroRecords,
         dreamGoals,
         dailyNotes,
-        challenges: allHabits.slice(0, 3).map((h, i) => ({ id: `ch_${uid()}_${i}`, habitId: h.id, startDate: toYYYYMMDD(addDays(new Date(), -rand(7, 30))), status: Math.random() > 0.25 ? 'active' : 'completed' })),
+        challenges: allHabits.slice(0, 3).map((h, i) => ({ id: `ch_${uid()}_${i}`, habitId: h.id, startDate: toYYYYMMDD(addDays(new Date(), -rand(7, 30))), status: Math.random() > 0.25  ? 'active' : 'completed' })),
         user: { ...prev.user, xp, level: getLevel(xp), levelUpShown: getLevel(xp) }
       };
       saveData(newData);
@@ -14352,14 +14399,14 @@ const HabitFlowApp = () => {
 
   const navItems = [
     { id: 'dashboard', label: 'Panel', icon: <Activity size={20} /> },
-    { id: 'habits', label: 'HÃ¡bitos', icon: <Target size={20} /> },
+    { id: 'habits', label: 'Hábitos', icon: <Target size={20} /> },
     { id: 'pomodoro', label: 'Pomodoro', icon: <Clock size={20} /> },
     { id: 'workout', label: 'Entreno', icon: <Dumbbell size={20} /> },
     { id: 'agenda', label: 'Agenda', icon: <List size={20} /> },
     { id: 'dreams', label: 'Metas', icon: <Sparkles size={20} /> },
     { id: 'finance', label: 'Finanzas', icon: <CreditCard size={20} /> },
     { id: 'health', label: 'Salud', icon: <Heart size={20} /> },
-    { id: 'settings', label:  'ConfiguraciÃ³n', icon: <Settings size={20} /> }
+    { id: 'settings', label:  'Configuración', icon: <Settings size={20} /> }
   ];
 
   const renderView = () => {
@@ -14377,7 +14424,7 @@ const HabitFlowApp = () => {
     }
   };
 
-  const sidebarWidth = sidebarOpen ? 240 : 64;
+  const sidebarWidth = sidebarOpen  ? 240 : 64;
 
   return (
     <div style={{ display: 'flex', minHeight: '100vh', background: COLORS.bg }}>
@@ -14385,7 +14432,7 @@ const HabitFlowApp = () => {
       {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
       <Modal isOpen={showUpdateNotes} onClose={closeUpdateNotes} title="Novedades de HabitFlow" width={620}>
         <div style={{ color: COLORS.textDim, fontSize: 13, lineHeight: 1.65, marginBottom: 18 }}>
-          Actualizamos la experiencia para que la app se sienta mÃ¡s ordenada, mÃ¡s premium y mÃ¡s fÃ¡cil de usar. Esto se muestra una sola vez por dispositivo.
+          Actualizamos la experiencia para que la app se sienta más ordenada, más premium y más fácil de usar. Esto se muestra una sola vez por dispositivo.
         </div>
         <div style={{ display: 'grid', gap: 10, marginBottom: 20 }}>
           {APP_UPDATE_NOTES.map((note, index) => (
@@ -14404,51 +14451,51 @@ const HabitFlowApp = () => {
       <button className="sidebar-toggle" onClick={() => setSidebarOpen(s => !s)} style={{
         position: 'fixed', left: sidebarWidth - 12, top: 24, zIndex: 110,
         width: 28, height: 28, borderRadius: '50%', border: `1px solid ${COLORS.border}`,
-        background: sidebarOpen ? COLORS.surface : COLORS.card, color: COLORS.textDim, cursor: 'pointer',
+        background: sidebarOpen  ? COLORS.surface : COLORS.card, color: COLORS.textDim, cursor: 'pointer',
         display: 'flex', alignItems: 'center', justifyContent: 'center',
         transition: 'left 0.3s ease, background 0.3s ease', padding: 0, boxShadow: '0 2px 8px rgba(0,0,0,0.2)'
-      }} title={sidebarOpen ? 'Ocultar nombres' : 'Mostrar nombres'}>
-        {sidebarOpen ? <ChevronLeft size={16} /> : <ChevronRight size={16} />}
+      }} title={sidebarOpen  ? 'Ocultar nombres' : 'Mostrar nombres'}>
+        {sidebarOpen  ? <ChevronLeft size={16} /> : <ChevronRight size={16} />}
       </button>
 
-      <aside className={`sidebar ${sidebarOpen ? 'sidebar-open' : 'sidebar-collapsed'}`} style={{
+      <aside className={`sidebar ${sidebarOpen  ? 'sidebar-open' : 'sidebar-collapsed'}`} style={{
         width: sidebarWidth, overflow: 'hidden',
         background: COLORS.surface, borderRight: 'none',
         display: 'flex', flexDirection: 'column', position: 'fixed', top: 0, left: 0,
         height: '100vh', zIndex: 100, transition: 'width 0.3s ease'
       }}>
-        <div className="user-info" style={{ padding: sidebarOpen ? '20px 16px' : '16px 8px', borderBottom: `1px solid ${COLORS.border}`, transition: 'padding 0.3s ease', textAlign: sidebarOpen ? 'left' : 'center' }}>
-          <div style={{ display: sidebarOpen ? 'block' : 'none', marginBottom: 6 }}>
+        <div className="user-info" style={{ padding: sidebarOpen  ? '20px 16px' : '16px 8px', borderBottom: `1px solid ${COLORS.border}`, transition: 'padding 0.3s ease', textAlign: sidebarOpen  ? 'left' : 'center' }}>
+          <div style={{ display: sidebarOpen  ? 'block' : 'none', marginBottom: 6 }}>
             <BrandLogo size="sm" />
           </div>
-          <div style={{ display: sidebarOpen ? 'block' : 'none', fontSize: 11, color: COLORS.textDim, lineHeight: 1.4, marginTop: 4 }}>
+          <div style={{ display: sidebarOpen  ? 'block' : 'none', fontSize: 11, color: COLORS.textDim, lineHeight: 1.4, marginTop: 4 }}>
               {data.user.motto}
           </div>
-          <div style={{ marginTop: sidebarOpen ? 12 : 10, display: 'flex', alignItems: 'center', justifyContent: sidebarOpen ? 'flex-start' : 'center', gap: 8 }}>
+          <div style={{ marginTop: sidebarOpen  ? 12 : 10, display: 'flex', alignItems: 'center', justifyContent: sidebarOpen  ? 'flex-start' : 'center', gap: 8 }}>
             <div style={{ width: 28, height: 28, borderRadius: 8, background: `linear-gradient(135deg, ${theme.primary}, #7f1028)`, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: 11, fontFamily: "'Inter', sans-serif", fontWeight: 600 }}>
               {data.user.level || 1}
             </div>
-            <div style={{ flex: 1, display: sidebarOpen ? 'block' : 'none' }}>
+            <div style={{ flex: 1, display: sidebarOpen  ? 'block' : 'none' }}>
               <div style={{ height: 6, background: COLORS.bg, borderRadius: 3, overflow: 'hidden' }}>
-                {(() => { const p = getXpProgress(data.user.xp || 0); const pct = p.needed > 0 ? (p.xp / p.needed) * 100 : 0; return <div style={{ height: '100%', width: `${pct}%`, background: `linear-gradient(90deg, ${theme.primary}, #7f1028)`, borderRadius: 3, transition: 'width 0.5s ease' }} />; })()}
+                {(() => { const p = getXpProgress(data.user.xp || 0); const pct = p.needed > 0  ? (p.xp / p.needed) * 100 : 0; return <div style={{ height: '100%', width: `${pct}%`, background: `linear-gradient(90deg, ${theme.primary}, #7f1028)`, borderRadius: 3, transition: 'width 0.5s ease' }} />; })()}
               </div>
               <div style={{ fontSize: 9, color: COLORS.textDim, marginTop: 2 }}>Nv.{data.user.level || 1} - {(data.user.xp || 0)} XP</div>
             </div>
           </div>
         </div>
 
-        <nav style={{ flex: 1, padding: sidebarOpen ? '16px 12px' : '16px 8px', display: 'flex', flexDirection: 'column', gap: 4, transition: 'padding 0.3s ease' }}>
+        <nav style={{ flex: 1, padding: sidebarOpen  ? '16px 12px' : '16px 8px', display: 'flex', flexDirection: 'column', gap: 4, transition: 'padding 0.3s ease' }}>
           {navItems.map(item => (
             <button key={item.id} aria-label={item.label} title={item.label} onClick={() => { navigateTo(item.id); setMobileMenu(false); }} style={{
-              display: 'flex', alignItems: 'center', justifyContent: sidebarOpen ? 'flex-start' : 'center', gap: sidebarOpen ? 12 : 0,
-              padding: sidebarOpen ? '12px 16px' : '12px 0', borderRadius: 10,
-              border: 'none', background: view === item.id ? `${theme.primary}15` : 'transparent',
-              color: view === item.id ? theme.primary : COLORS.textDim,
+              display: 'flex', alignItems: 'center', justifyContent: sidebarOpen  ? 'flex-start' : 'center', gap: sidebarOpen  ? 12 : 0,
+              padding: sidebarOpen  ? '12px 16px' : '12px 0', borderRadius: 10,
+              border: 'none', background: view === item.id  ? `${theme.primary}15` : 'transparent',
+              color: view === item.id  ? theme.primary : COLORS.textDim,
               cursor: 'pointer', fontSize: 14, fontFamily: "'Inter', sans-serif",
               transition: 'all 0.2s', position: 'relative', width: '100%', textAlign: 'left'
             }}>
               <span className="nav-icon" style={{ display: 'flex' }}>{item.icon}</span>
-              <span className="nav-label" style={{ display: sidebarOpen ? 'inline' : 'none' }}>{item.label}</span>
+              <span className="nav-label" style={{ display: sidebarOpen  ? 'inline' : 'none' }}>{item.label}</span>
               {view === item.id && (
                 <div className="nav-indicator" style={{
                   position: 'absolute', left: 0, top: '50%', transform: 'translateY(-50%)',
@@ -14460,11 +14507,11 @@ const HabitFlowApp = () => {
           ))}
         </nav>
 
-        <div className="user-info" style={{ padding: sidebarOpen ? '16px 20px' : '14px 8px', borderTop: `1px solid ${COLORS.border}`, fontSize: 11, color: COLORS.textDim }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: sidebarOpen ? 'flex-start' : 'center', gap: sidebarOpen ? 8 : 4, margin: sidebarOpen ? 0 : '0 auto', minHeight: 24, borderRadius: 9, background: sidebarOpen ? 'transparent' : `${COLORS.alert}10`, border: sidebarOpen ? 'none' : `1px solid ${COLORS.alert}24`, color: sidebarOpen ? COLORS.textDim : COLORS.text, fontWeight: sidebarOpen ? 400 : 700 }} title={`Racha global: ${getGlobalCurrentStreak(data.habits, data.records)} dÃ­as`}>
-            <Flame size={sidebarOpen ? 14 : 13} color={COLORS.alert} />
+        <div className="user-info" style={{ padding: sidebarOpen  ? '16px 20px' : '14px 8px', borderTop: `1px solid ${COLORS.border}`, fontSize: 11, color: COLORS.textDim }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: sidebarOpen  ? 'flex-start' : 'center', gap: sidebarOpen  ? 8 : 4, margin: sidebarOpen  ? 0 : '0 auto', minHeight: 24, borderRadius: 9, background: sidebarOpen  ? 'transparent' : `${COLORS.alert}10`, border: sidebarOpen  ? 'none' : `1px solid ${COLORS.alert}24`, color: sidebarOpen  ? COLORS.textDim : COLORS.text, fontWeight: sidebarOpen  ? 400 : 700 }} title={`Racha global: ${getGlobalCurrentStreak(data.habits, data.records)} días`}>
+            <Flame size={sidebarOpen  ? 14 : 13} color={COLORS.alert} />
             {!sidebarOpen && <span className="streak-compact-count">{getGlobalCurrentStreak(data.habits, data.records)}</span>}
-            Racha global: {getGlobalCurrentStreak(data.habits, data.records)} dÃ­as
+            Racha global: {getGlobalCurrentStreak(data.habits, data.records)} días
           </div>
         </div>
       </aside>
@@ -14504,7 +14551,7 @@ const HabitFlowApp = () => {
               <Award size={14} color={theme.primary} />
               <span>Nv.{data.user.level || 1}</span>
               <div style={{ width: 60, height: 5, background: COLORS.bg, borderRadius: 3, overflow: 'hidden' }}>
-                {(() => { const p = getXpProgress(data.user.xp || 0); const pct = p.needed > 0 ? (p.xp / p.needed) * 100 : 0; return <div style={{ height: '100%', width: `${pct}%`, background: `linear-gradient(90deg, ${theme.primary}, #7f1028)`, borderRadius: 3, transition: 'width 0.5s ease' }} />; })()}
+                {(() => { const p = getXpProgress(data.user.xp || 0); const pct = p.needed > 0  ? (p.xp / p.needed) * 100 : 0; return <div style={{ height: '100%', width: `${pct}%`, background: `linear-gradient(90deg, ${theme.primary}, #7f1028)`, borderRadius: 3, transition: 'width 0.5s ease' }} />; })()}
               </div>
               <span style={{ fontSize: 10 }}>{(data.user.xp || 0)}</span>
             </div>
@@ -14513,7 +14560,7 @@ const HabitFlowApp = () => {
         </header>
 
         <main id="habitflow-main" className="app-main" tabIndex="-1">
-          <div className={`view-enter ${view === 'dashboard' ? 'dashboard-view-enter' : ''}`} key={view}>
+          <div className={`view-enter ${view === 'dashboard'  ? 'dashboard-view-enter' : ''}`} key={view}>
             <ErrorBoundary>
               {renderView()}
             </ErrorBoundary>
@@ -14537,8 +14584,8 @@ const HabitFlowApp = () => {
           <button key={item.id} aria-label={item.label} title={item.label} onClick={() => { navigateTo(item.id); setShowMoreNav(false); }} style={{
             display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2,
             padding: '8px 12px', borderRadius: 8, border: 'none',
-            background: view === item.id ? `${theme.primary}15` : 'transparent',
-            color: view === item.id ? theme.primary : COLORS.textDim,
+            background: view === item.id  ? `${theme.primary}15` : 'transparent',
+            color: view === item.id  ? theme.primary : COLORS.textDim,
             cursor: 'pointer', fontSize: 10, fontFamily: "'Inter', sans-serif",
             transition: 'all 0.2s', flex: 1
           }}>
@@ -14547,16 +14594,16 @@ const HabitFlowApp = () => {
           </button>
         ))}
         <div style={{ position: 'relative', flex: 1 }}>
-          <button aria-label="MÃ¡s secciones" title="MÃ¡s secciones" onClick={() => setShowMoreNav(s => !s)} style={{
+          <button aria-label="Más secciones" title="Más secciones" onClick={() => setShowMoreNav(s => !s)} style={{
             display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2,
             padding: '8px 12px', borderRadius: 8, border: 'none', width: '100%',
-            background: showMoreNav ? `${theme.primary}15` : 'transparent',
-            color: showMoreNav ? theme.primary : COLORS.textDim,
+            background: showMoreNav  ? `${theme.primary}15` : 'transparent',
+            color: showMoreNav  ? theme.primary : COLORS.textDim,
             cursor: 'pointer', fontSize: 10, fontFamily: "'Inter', sans-serif",
             transition: 'all 0.2s'
           }}>
             <Menu size={20} />
-            <span>MÃ¡s</span>
+            <span>Más</span>
           </button>
           {showMoreNav && (
             <div className="mobile-more-popover" style={{
@@ -14569,8 +14616,8 @@ const HabitFlowApp = () => {
                 <button className="mobile-more-item" key={item.id} aria-label={item.label} title={item.label} onClick={() => { navigateTo(item.id); setShowMoreNav(false); }} style={{
                   display: 'flex', alignItems: 'center', gap: 10, width: '100%',
                   padding: '10px 14px', borderRadius: 8, border: 'none',
-                  background: view === item.id ? `${theme.primary}15` : 'transparent',
-                  color: view === item.id ? theme.primary : COLORS.textDim,
+                  background: view === item.id  ? `${theme.primary}15` : 'transparent',
+                  color: view === item.id  ? theme.primary : COLORS.textDim,
                   cursor: 'pointer', fontSize: 13, fontFamily: "'Inter', sans-serif",
                   textAlign: 'left', transition: 'all 0.2s'
                 }}>
