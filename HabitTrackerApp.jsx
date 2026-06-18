@@ -807,6 +807,82 @@ const addDays = (d, n) => {
   return r;
 };
 
+const WEEKDAY_KEYS = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'];
+const WEEKDAY_META = [
+  { key: 'mon', label: 'Lun', full: 'Lunes', jsDay: 1 },
+  { key: 'tue', label: 'Mar', full: 'Martes', jsDay: 2 },
+  { key: 'wed', label: 'Mié', full: 'Miércoles', jsDay: 3 },
+  { key: 'thu', label: 'Jue', full: 'Jueves', jsDay: 4 },
+  { key: 'fri', label: 'Vie', full: 'Viernes', jsDay: 5 },
+  { key: 'sat', label: 'Sáb', full: 'Sábado', jsDay: 6 },
+  { key: 'sun', label: 'Dom', full: 'Domingo', jsDay: 0 }
+];
+const JS_DAY_TO_KEY = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'];
+const DAY_KEY_LABEL = Object.fromEntries(WEEKDAY_META.map(day => [day.key, day.label]));
+const DAY_KEY_TO_JS_DAY = Object.fromEntries(WEEKDAY_META.map(day => [day.key, day.jsDay]));
+const DAY_KEY_FROM_JS_DAY = (day) => JS_DAY_TO_KEY[((Number(day) % 7) + 7) % 7] || 'sun';
+const DATE_FROM_INPUT = (value) => {
+  if (value instanceof Date) return new Date(value);
+  if (typeof value === 'string') return new Date(`${value.slice(0, 10)}T12:00:00`);
+  return new Date(value);
+};
+const getDayKey = (date) => DAY_KEY_FROM_JS_DAY(DATE_FROM_INPUT(date).getDay());
+const getWeekStart = (date, weekStartsOn = 'monday') => {
+  const start = DATE_FROM_INPUT(date);
+  start.setHours(12, 0, 0, 0);
+  const day = start.getDay();
+  const diff = weekStartsOn === 'monday'
+    ? (day === 0 ? -6 : 1 - day)
+    : -day;
+  start.setDate(start.getDate() + diff);
+  return start;
+};
+const normalizeHabitDayKey = (value) => {
+  if (typeof value === 'string') {
+    const clean = value.trim().toLowerCase();
+    const aliases = {
+      monday: 'mon', lunes: 'mon', lun: 'mon', mon: 'mon',
+      tuesday: 'tue', martes: 'tue', mar: 'tue', tue: 'tue',
+      wednesday: 'wed', miercoles: 'wed', miércoles: 'wed', mie: 'wed', mié: 'wed', wed: 'wed',
+      thursday: 'thu', jueves: 'thu', jue: 'thu', thu: 'thu',
+      friday: 'fri', viernes: 'fri', vie: 'fri', fri: 'fri',
+      saturday: 'sat', sabado: 'sat', sábado: 'sat', sab: 'sat', sáb: 'sat', sat: 'sat',
+      sunday: 'sun', domingo: 'sun', dom: 'sun', sun: 'sun'
+    };
+    return aliases[clean] || (WEEKDAY_KEYS.includes(clean) ? clean : null);
+  }
+  if (Number.isFinite(Number(value))) return DAY_KEY_FROM_JS_DAY(Number(value));
+  return null;
+};
+const normalizeHabitFrequencyDays = (days = []) => {
+  const raw = Array.isArray(days) ? days : [];
+  const numeric = raw.filter(item => Number.isFinite(Number(item))).map(Number);
+  const sortedNumeric = [...numeric].sort((a, b) => a - b).join(',');
+  const looksLikeMondayFirstWeekdays = sortedNumeric === '0,1,2,3,4';
+  const looksLikeJsWeekdays = sortedNumeric === '1,2,3,4,5';
+
+  if (looksLikeMondayFirstWeekdays || looksLikeJsWeekdays) return WEEKDAY_KEYS.slice(0, 5);
+
+  const keys = raw.map(normalizeHabitDayKey).filter(Boolean);
+  return Array.from(new Set(keys)).sort((a, b) => WEEKDAY_KEYS.indexOf(a) - WEEKDAY_KEYS.indexOf(b));
+};
+const getHabitScheduledDayKeys = (habit = {}) => {
+  if (!habit || !habit.frequency || habit.frequency === 'Diario') return WEEKDAY_KEYS;
+  if (habit.frequency === 'Lun-Vie') return WEEKDAY_KEYS.slice(0, 5);
+  if (habit.frequency === 'Fines de semana') return ['sat', 'sun'];
+  if (habit.frequency === 'Personalizado') {
+    const keys = normalizeHabitFrequencyDays(habit.frequencyDays || habit.days || []);
+    return keys.length ? keys : WEEKDAY_KEYS;
+  }
+  return WEEKDAY_KEYS;
+};
+const isHabitScheduledForDate = (habit, date) => getHabitScheduledDayKeys(habit).includes(getDayKey(date));
+const canToggleHabitForDate = (habit, date) => {
+  const dateStr = typeof date === 'string' ? date.slice(0, 10) : toYYYYMMDD(DATE_FROM_INPUT(date));
+  return !!habit && habit.active !== false && dateStr <= toYYYYMMDD(new Date()) && isHabitScheduledForDate(habit, dateStr);
+};
+const getHabitDayLabel = (day) => DAY_KEY_LABEL[normalizeHabitDayKey(day)] || '';
+
 const daysAgo = (dateStr) => {
   const d = new Date(dateStr + 'T00:00:00');
   const now = new Date();
@@ -946,6 +1022,7 @@ const normalizeLoadedData = (parsed) => {
   if (!parsed.dailyNotes) parsed.dailyNotes = {};
   if (!parsed.challenges) parsed.challenges = [];
   if (!parsed.customHabitCategories) parsed.customHabitCategories = [];
+  if (!parsed.agendaTaskCategories) parsed.agendaTaskCategories = [];
   if (!parsed.xpAwards) {
     parsed.xpAwards = Object.fromEntries(
       parsed.records.filter(record => record.completed).map(record => [`habit:${record.habitId}:${record.date}`, 0])
@@ -960,11 +1037,16 @@ const normalizeLoadedData = (parsed) => {
   parsed.habits.forEach(h => {
     if (!h.lastFocusSession) h.lastFocusSession = null;
     h.icon = normalizeHabitIconId(h.icon, h.category, h.name);
+    if (h.frequency === 'Personalizado' || h.frequencyDays) {
+      h.frequencyDays = normalizeHabitFrequencyDays(h.frequencyDays || h.days || []);
+    }
     if (!h.reminder) {
       h.reminder = {
         enabled: false,
         time: '08:00',
-        days: h.frequencyDays?.length  ? [...h.frequencyDays] : [0, 1, 2, 3, 4, 5, 6],
+        days: h.frequencyDays?.length
+          ? normalizeHabitFrequencyDays(h.frequencyDays).map(key => DAY_KEY_TO_JS_DAY[key]).filter(day => day !== undefined)
+          : [0, 1, 2, 3, 4, 5, 6],
         message: ''
       };
     }
@@ -5513,12 +5595,7 @@ const getCategoryInfo = (catId, customCategories = []) =>
   [...CATEGORIES, ...(customCategories || [])].find(c => c.id === catId) || CATEGORIES[6];
 
 const isExpectedDay = (habit, date) => {
-  if (!habit || !habit.frequency || habit.frequency === 'Diario') return true;
-  const day = new Date(date).getDay();
-  if (habit.frequency === 'Lun-Vie') return day >= 1 && day <= 5;
-  if (habit.frequency === 'Fines de semana') return day === 0 || day === 6;
-  if (habit.frequency === 'Personalizado' && habit.frequencyDays) return habit.frequencyDays.includes(day);
-  return true;
+  return isHabitScheduledForDate(habit, date);
 };
 
 const getCompletionRate = (habitId, records, days = 30, habit) => {
@@ -5876,11 +5953,14 @@ const HabitHeatMap30 = ({ habitId, records }) => {
   );
 };
 
-const DAY_LABELS = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'sáb'];
+const DAY_LABELS = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
 
 const HabitForm = ({ initial, onSave, onCancel, categories = CATEGORIES, onCreateCategory }) => {
   const initialCategory = initial?.category || 'salud';
   const initialReminder = initial?.reminder || {};
+  const initialFrequencyDays = initial
+    ? normalizeHabitFrequencyDays(initial.frequencyDays || initial.days || [])
+    : WEEKDAY_KEYS.slice(0, 5);
   const [form, setForm] = useState({
     name: '',
     description: '',
@@ -5888,10 +5968,11 @@ const HabitForm = ({ initial, onSave, onCancel, categories = CATEGORIES, onCreat
     icon: normalizeHabitIconId(initial?.icon, initialCategory, initial?.name),
     color: getCategoryInfo(initialCategory, categories.filter(c => !CATEGORIES.some(base => base.id === c.id))).color,
     frequency: 'Diario',
-    frequencyDays: [1, 2, 3, 4, 5],
+    frequencyDays: WEEKDAY_KEYS.slice(0, 5),
     targetStreak: 21,
     active: true,
     ...initial,
+    frequencyDays: initialFrequencyDays,
     reminder: {
       enabled: false,
       time: '08:00',
@@ -5911,11 +5992,11 @@ const HabitForm = ({ initial, onSave, onCancel, categories = CATEGORIES, onCreat
   }));
 
   const toggleDay = (day) => {
-    const current = form.frequencyDays || [1, 2, 3, 4, 5];
+    const current = normalizeHabitFrequencyDays(form.frequencyDays || WEEKDAY_KEYS.slice(0, 5));
     if (current.includes(day)) {
       if (current.length > 1) handleChange('frequencyDays', current.filter(item => item !== day));
     } else {
-      handleChange('frequencyDays', [...current, day].sort());
+      handleChange('frequencyDays', [...current, day].sort((a, b) => WEEKDAY_KEYS.indexOf(a) - WEEKDAY_KEYS.indexOf(b)));
     }
   };
 
@@ -5978,6 +6059,7 @@ const HabitForm = ({ initial, onSave, onCancel, categories = CATEGORIES, onCreat
       ...form,
       name: form.name.trim(),
       description: form.description.trim(),
+      frequencyDays: normalizeHabitFrequencyDays(form.frequencyDays),
       icon: normalizeHabitIconId(form.icon, form.category, form.name),
       reminder: {
         ...form.reminder,
@@ -6033,7 +6115,7 @@ const HabitForm = ({ initial, onSave, onCancel, categories = CATEGORIES, onCreat
             <select id="habit-frequency" value={form.frequency} onChange={event => {
               const value = event.target.value;
               handleChange('frequency', value);
-              if (value === 'Personalizado' && !form.frequencyDays?.length) handleChange('frequencyDays', [1, 2, 3, 4, 5]);
+              if (value === 'Personalizado' && !normalizeHabitFrequencyDays(form.frequencyDays).length) handleChange('frequencyDays', WEEKDAY_KEYS.slice(0, 5));
             }}>
               {FREQUENCIES.map(frequency => <option key={frequency} value={frequency}>{frequency}</option>)}
             </select>
@@ -6070,12 +6152,12 @@ const HabitForm = ({ initial, onSave, onCancel, categories = CATEGORIES, onCreat
         <div className="habit-form-field habit-form-days">
           <label>Días del hábito</label>
           <div>
-            {DAY_LABELS.map((label, day) => (
+            {WEEKDAY_META.map(({ key, label }) => (
               <button
-                key={label}
+                key={key}
                 type="button"
-                className={(form.frequencyDays || []).includes(day)  ? 'is-active' : ''}
-                onClick={() => toggleDay(day)}
+                className={normalizeHabitFrequencyDays(form.frequencyDays).includes(key)  ? 'is-active' : ''}
+                onClick={() => toggleDay(key)}
               >
                 {label.slice(0, 1)}
               </button>
@@ -6715,20 +6797,12 @@ const HabitsView = ({ data, onAddHabit, onUpdateHabit, onDeleteHabit, onToggleHa
   });
   const [calSelect, setCalSelect] = useState(null);
 
-  const dayNames = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'sáb', 'Dom'];
-
   const getWeekDays = (ref) => {
-    const days = [];
-    const monday = new Date(ref);
-    const dow = monday.getDay();
-    const diff = dow === 0  ? -6 : 1 - dow;
-    monday.setDate(monday.getDate() + diff);
-    for (let i = 0; i < 7; i++) {
-      const d = new Date(monday);
-      d.setDate(d.getDate() + i);
-      days.push({ date: toYYYYMMDD(d), label: dayNames[i], dayNum: d.getDate(), full: d, isToday: toYYYYMMDD(d) === toYYYYMMDD(new Date()) });
-    }
-    return days;
+    const monday = getWeekStart(ref, 'monday');
+    return WEEKDAY_META.map((day, index) => {
+      const d = addDays(monday, index);
+      return { date: toYYYYMMDD(d), label: day.label, dayNum: d.getDate(), full: d, isToday: toYYYYMMDD(d) === toYYYYMMDD(new Date()) };
+    });
   };
 
   const getMonthWeeks = (ref) => {
@@ -6882,17 +6956,18 @@ const HabitsView = ({ data, onAddHabit, onUpdateHabit, onDeleteHabit, onToggleHa
               const isSkipped = rec && rec.skipped;
               const isToday = wd.isToday;
               const isScheduled = isExpectedDay(h, wd.date);
-              const isPast = new Date(wd.date + 'T00:00:00') <= new Date();
+              const isPast = wd.date <= today;
+              const canToggle = canToggleHabitForDate(h, wd.date);
               return (
                 <div key={wi} style={{ textAlign: 'center', padding: '4px 0', position: 'relative' }}>
-                  <div onClick={isPast && isScheduled && h.active  ? () => onCompleteHabit(h.id, wd.date) : undefined} style={{
+                  <div onClick={canToggle  ? () => onCompleteHabit(h.id, wd.date) : undefined} style={{
                     width: 28, height: 28, borderRadius: '50%', margin: '0 auto 4px',
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                     background: done  ? `linear-gradient(135deg, ${COLORS.success}, #9f1239)` : isSkipped  ? `${COLORS.textDim}15` : isScheduled  ? `${COLORS.primary}12` : 'transparent',
                     border: done  ? 'none' : isSkipped  ? `1.5px dashed ${COLORS.textDim}50` : isToday  ? `2px solid ${COLORS.primary}80` : isScheduled  ? `1.5px solid ${COLORS.primary}55` : `1.5px dashed ${COLORS.border}35`,
                     transition: 'all 0.25s ease',
                     boxShadow: done  ? `0 2px 8px ${COLORS.success}40` : 'none',
-                    cursor: isPast && isScheduled && h.active  ? 'pointer' : 'default',
+                    cursor: canToggle  ? 'pointer' : 'default',
                     opacity: isScheduled  ? (isPast || isToday  ? 1 : 0.55) : 0.22
                   }}>
                     {done  ? <Check size={13} color="#0a0a0f" strokeWidth={3.5} /> : isSkipped  ? <span style={{ fontSize: 11, color: COLORS.textDim }}>-</span> : !isScheduled  ? <span style={{ fontSize: 11, color: COLORS.textDim }}>?</span> : null}
@@ -7139,7 +7214,7 @@ const HabitsView = ({ data, onAddHabit, onUpdateHabit, onDeleteHabit, onToggleHa
                   <strong>{h.name}</strong>
                   <span><i />{cat.label}</span>
                   {h.frequency === 'Personalizado' && h.frequencyDays?.length > 0 && (
-                    <small>{h.frequencyDays.map(day => DAY_LABELS[day]).join('  ? ')}</small>
+                    <small>{normalizeHabitFrequencyDays(h.frequencyDays).map(day => getHabitDayLabel(day)).filter(Boolean).join(' · ')}</small>
                   )}
                 </div>
               </div>
@@ -7148,7 +7223,7 @@ const HabitsView = ({ data, onAddHabit, onUpdateHabit, onDeleteHabit, onToggleHa
                 {weekDays.map(day => {
                   const scheduled = isExpectedDay(h, day.date);
                   const complete = records.some(record => record.habitId === h.id && record.date === day.date && record.completed);
-                  const clickable = day.date <= today && scheduled && h.active;
+                  const clickable = canToggleHabitForDate(h, day.date);
                   return (
                     <button
                       key={day.date}
@@ -7176,8 +7251,8 @@ const HabitsView = ({ data, onAddHabit, onUpdateHabit, onDeleteHabit, onToggleHa
 
               <button
                 className={`habit-row-status ${isTodayComplete  ? 'is-complete' : ''}`}
-                onClick={() => h.active && isExpectedDay(h, today) && onCompleteHabit(h.id)}
-                disabled={!h.active || !isExpectedDay(h, today)}
+                onClick={() => canToggleHabitForDate(h, today) && onCompleteHabit(h.id)}
+                disabled={!canToggleHabitForDate(h, today)}
               >
                 <i />
                 {statusLabel}
@@ -12001,6 +12076,40 @@ const WorkoutProgTab = ({ workoutData }) => {
 };
 
 const AGENDA_CATEGORIES = ['Personal', 'Trabajo', 'Salud', 'Finanzas', 'Estudios', 'Hogar', 'Social', 'Trading', 'Otro'];
+const AGENDA_CATEGORY_COLORS = ['#ff7d95', '#7dd3fc', '#34d399', '#fbbf24', '#a78bfa', '#fb7185', '#f472b6', '#22d3ee', '#94a3b8'];
+const slugifyAgendaCategory = (name) => String(name || '')
+  .trim()
+  .toLowerCase()
+  .normalize('NFD')
+  .replace(/[\u0300-\u036f]/g, '')
+  .replace(/[^a-z0-9]+/g, '_')
+  .replace(/^_+|_+$/g, '') || 'categoria';
+const DEFAULT_AGENDA_TASK_CATEGORIES = AGENDA_CATEGORIES.map((name, index) => ({
+  id: `base_${slugifyAgendaCategory(name)}`,
+  name,
+  color: AGENDA_CATEGORY_COLORS[index % AGENDA_CATEGORY_COLORS.length],
+  icon: '',
+  base: true
+}));
+const normalizeAgendaTaskCategories = (customCategories = []) => {
+  const byName = new Map();
+  DEFAULT_AGENDA_TASK_CATEGORIES.forEach(category => byName.set(category.name.toLowerCase(), category));
+  (customCategories || []).forEach(category => {
+    const name = String(category?.name || category?.label || '').trim();
+    if (!name) return;
+    const key = name.toLowerCase();
+    if (byName.has(key)) return;
+    byName.set(key, {
+      id: category.id || `agenda_cat_${slugifyAgendaCategory(name)}`,
+      name,
+      color: category.color || COLORS.primary,
+      icon: category.icon || '',
+      createdAt: category.createdAt || new Date().toISOString(),
+      custom: true
+    });
+  });
+  return Array.from(byName.values());
+};
 const PRIORITY_LABELS = { 1: 'P1', 2: 'P2', 3: 'P3', 4: 'P4' };
 const PRIORITY_COLORS = { 1: '#ff6b6b', 2: '#ff9f43', 3: '#e11d48', 4: '#8888a0' };
 const STATUS_LABELS = { pending: 'Pendiente', in_progress: 'En progreso', completed: 'Completada', postponed: 'Pospuesta', cancelled: 'Cancelada' };
@@ -12103,7 +12212,7 @@ const getIntervalNotificationSlots = (task, now, reminderMins = 0) => {
 };
 
 const getWeekDays = (date) => {
-  const start = new Date(date); start.setDate(start.getDate() - start.getDay());
+  const start = getWeekStart(date, 'monday');
   return Array.from({ length: 7 }, (_, i) => addDays(start, i));
 };
 
@@ -12253,8 +12362,8 @@ const generateRecurrenceDates = (task, fromDate, count = 90) => {
   return dates;
 };
 
-const AgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAgendaTodos, onUpdateAgendaTodoLabels, onMoveTaskToDate, onCompleteHabit }) => {
-  const { habits, records, agenda = {}, agendaNotes = {}, agendaTodos = {}, agendaTodoLabels = [] } = data;
+const AgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAgendaTodos, onUpdateAgendaTodoLabels, onUpdateAgendaTaskCategories, onMoveTaskToDate, onCompleteHabit }) => {
+  const { habits, records, agenda = {}, agendaNotes = {}, agendaTodos = {}, agendaTodoLabels = [], agendaTaskCategories = [] } = data;
   const [currentDate, setCurrentDate] = useState(() => new Date());
   const [viewMode, setViewMode] = useState('day');
   const [inputPrio, setInputPrio] = useState(3);
@@ -12284,12 +12393,16 @@ const AgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAgendaTo
   const [showTodoLabels, setShowTodoLabels] = useState(false);
   const [editingTodoLabelId, setEditingTodoLabelId] = useState(null);
   const [deleteChoiceTask, setDeleteChoiceTask] = useState(null);
+  const [showNewTaskCategory, setShowNewTaskCategory] = useState(false);
+  const [newTaskCategory, setNewTaskCategory] = useState({ name: '', color: COLORS.primary, icon: '' });
   const dragRef = useRef(null);
 
   const s = { fontFamily: "'Inter', sans-serif" };
   const dateStr = toYYYYMMDD(currentDate);
   const todayStr = toYYYYMMDD(new Date());
   const isToday = dateStr === todayStr;
+  const taskCategories = useMemo(() => normalizeAgendaTaskCategories(agendaTaskCategories), [agendaTaskCategories]);
+  const getTaskCategoryMeta = useCallback((name) => taskCategories.find(category => category.name === name) || taskCategories[0] || DEFAULT_AGENDA_TASK_CATEGORIES[0], [taskCategories]);
   const weekDays = useMemo(() => getWeekDays(currentDate), [currentDate]);
   const monthGrid = useMemo(() => getMonthGrid(currentDate), [currentDate]);
 
@@ -12342,6 +12455,38 @@ const AgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAgendaTo
   const freeMins = Math.max(0, 17 * 60 - busyMins);
 
   const updateTasks = useCallback((updater) => { onUpdateAgenda(dateStr, updater); }, [dateStr, onUpdateAgenda]);
+
+  const handleTaskCategorySelection = (value) => {
+    if (value === '__create__') {
+      setShowNewTaskCategory(true);
+      return;
+    }
+    setEditModalTask(prev => ({ ...prev, category: value || 'Personal' }));
+    setShowNewTaskCategory(false);
+  };
+
+  const saveTaskCategory = () => {
+    const name = String(newTaskCategory.name || '').trim();
+    if (!name) return;
+    const existing = taskCategories.find(category => category.name.toLowerCase() === name.toLowerCase());
+    if (existing) {
+      setEditModalTask(prev => ({ ...prev, category: existing.name }));
+      setShowNewTaskCategory(false);
+      setNewTaskCategory({ name: '', color: COLORS.primary, icon: '' });
+      return;
+    }
+    const category = {
+      id: `agenda_cat_${Date.now().toString(36)}_${slugifyAgendaCategory(name)}`,
+      name,
+      color: newTaskCategory.color || COLORS.primary,
+      icon: String(newTaskCategory.icon || '').trim(),
+      createdAt: new Date().toISOString()
+    };
+    onUpdateAgendaTaskCategories?.(prev => [...(prev || []), category]);
+    setEditModalTask(prev => ({ ...prev, category: category.name }));
+    setShowNewTaskCategory(false);
+    setNewTaskCategory({ name: '', color: COLORS.primary, icon: '' });
+  };
 
   const goPrev = () => {
     if (viewMode === 'month') setCurrentDate(d => new Date(d.getFullYear(), d.getMonth() - 1, 1));
@@ -12645,7 +12790,7 @@ const AgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAgendaTo
                 style={{ ...btnBase, padding: '2px 6px', background: `${COLORS.alert}08`, color: COLORS.alert, fontSize: 9 }}>Sin hora</button>}
               <select value={task.category} onChange={e => updateTaskField(task.id, 'category', e.target.value)}
                 style={{ padding: '2px 6px', borderRadius: 5, border: `1px solid ${COLORS.border}`, background: COLORS.surface, color: COLORS.text, fontSize: 9, ...s, outline: 'none' }}>
-                {AGENDA_CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
+                {taskCategories.map(c => <option key={c.id} value={c.name}>{c.name}</option>)}
               </select>
               <button onClick={() => { if (!task.alarm) requestHabitFlowNotifications(); updateTaskField(task.id, 'alarm', !task.alarm); }}
                 style={{ ...btnBase, padding: '2px 6px', background: task.alarm  ? `${COLORS.primary}15` : `${COLORS.alert}08`, color: task.alarm  ? COLORS.primary : COLORS.alert, fontSize: 9 }}><Clock size={11} /></button>
@@ -13334,11 +13479,51 @@ const AgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAgendaTo
                       color: (t.priority || 3) === p  ? '#fff' : PRIORITY_COLORS[p], fontWeight: 700, fontSize: 9, ...s }}>{PRIORITY_LABELS[p]}</button>
                 ))}</div></div>
               <div><div style={{ fontSize: 9, color: COLORS.textDim, marginBottom: 3, ...s }}>Categoría</div>
-                <select value={t.category || 'Personal'} onChange={e => setEditModalTask(p => ({ ...p, category: e.target.value }))}
+                <select value={t.category || 'Personal'} onChange={e => handleTaskCategorySelection(e.target.value)}
                   style={{ width: '100%', padding: '6px 8px', borderRadius: 6, border: `1px solid ${COLORS.border}`, background: COLORS.bg, color: COLORS.text, fontSize: 10, ...s, outline: 'none' }}>
-                  {AGENDA_CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
+                  {taskCategories.map(c => <option key={c.id} value={c.name}>{c.name}</option>)}
+                  <option value="__create__">+ Crear categoría</option>
                 </select></div>
             </div>
+            {showNewTaskCategory && (
+              <div style={{ display: 'grid', gap: 8, padding: 12, borderRadius: 12, border: `1px solid ${COLORS.border}`, background: `${COLORS.primary}08` }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 10 }}>
+                  <div>
+                    <div style={{ color: COLORS.text, fontWeight: 800, fontSize: 12, ...s }}>Crear categoría</div>
+                    <div style={{ color: COLORS.textDim, fontSize: 9, marginTop: 2, ...s }}>Se guardará para futuras tareas y filtros.</div>
+                  </div>
+                  <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, color: COLORS.textDim, fontSize: 10, ...s }}>
+                    <i style={{ width: 9, height: 9, borderRadius: 999, background: newTaskCategory.color || COLORS.primary, display: 'inline-block' }} />
+                    {newTaskCategory.name.trim() || 'Vista previa'}
+                  </span>
+                </div>
+                <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0,1fr) 44px minmax(0,0.75fr) auto', gap: 8, alignItems: 'center' }}>
+                  <input
+                    value={newTaskCategory.name}
+                    onChange={e => setNewTaskCategory(prev => ({ ...prev, name: e.target.value }))}
+                    placeholder="Nombre de la categoría"
+                    style={{ width: '100%', minWidth: 0, padding: '8px 10px', borderRadius: 8, border: `1px solid ${COLORS.border}`, background: COLORS.bg, color: COLORS.text, fontSize: 11, ...s, outline: 'none', boxSizing: 'border-box' }}
+                  />
+                  <input
+                    type="color"
+                    value={newTaskCategory.color || COLORS.primary}
+                    onChange={e => setNewTaskCategory(prev => ({ ...prev, color: e.target.value }))}
+                    aria-label="Color de la categoría"
+                    style={{ width: 44, height: 34, padding: 3, borderRadius: 8, border: `1px solid ${COLORS.border}`, background: COLORS.bg, cursor: 'pointer' }}
+                  />
+                  <input
+                    value={newTaskCategory.icon || ''}
+                    onChange={e => setNewTaskCategory(prev => ({ ...prev, icon: e.target.value }))}
+                    placeholder="Icono opcional"
+                    style={{ width: '100%', minWidth: 0, padding: '8px 10px', borderRadius: 8, border: `1px solid ${COLORS.border}`, background: COLORS.bg, color: COLORS.text, fontSize: 11, ...s, outline: 'none', boxSizing: 'border-box' }}
+                  />
+                  <button type="button" onClick={saveTaskCategory} disabled={!newTaskCategory.name.trim()}
+                    style={{ ...btnBase, padding: '8px 12px', background: newTaskCategory.name.trim() ? COLORS.primary : COLORS.border, color: '#fff', fontWeight: 800, fontSize: 10, opacity: newTaskCategory.name.trim() ? 1 : 0.55 }}>
+                    Guardar
+                  </button>
+                </div>
+              </div>
+            )}
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
               <label style={{ display: 'flex', alignItems: 'center', gap: 5, cursor: 'pointer' }}>
                 <input type="checkbox" checked={t.alarm || false} onChange={e => { if (e.target.checked) requestHabitFlowNotifications(); setEditModalTask(p => ({ ...p, alarm: e.target.checked })); }}
@@ -13487,7 +13672,7 @@ const AgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAgendaTo
           <input value={searchQuery} onChange={e => setSearchQuery(e.target.value)} placeholder="Buscar tareas..." style={{ width: 145, padding: '5px 2px', background: 'transparent', color: COLORS.text, border: 'none', outline: 'none', fontSize: 10, ...s }} />
           <div style={{ width: 1, height: 16, background: COLORS.border }} />
           {[0, 1, 2, 3, 4].map(priority => <button key={priority} onClick={() => setFilterPrio(priority)} style={{ ...btnBase, padding: '4px 7px', borderRadius: 6, color: filterPrio === priority  ? '#fff' : COLORS.textDim, background: filterPrio === priority  ? (priority  ? PRIORITY_COLORS[priority] : COLORS.primary) : 'transparent', fontSize: 9 }}>{priority  ? PRIORITY_LABELS[priority] : 'Todas'}</button>)}
-          <select value={filterCat} onChange={e => setFilterCat(e.target.value)} style={{ padding: '4px 7px', borderRadius: 6, border: `1px solid ${COLORS.border}`, background: COLORS.bg, color: COLORS.text, fontSize: 9, ...s }}><option value="">Categorías</option>{AGENDA_CATEGORIES.map(category => <option key={category} value={category}>{category}</option>)}</select>
+          <select value={filterCat} onChange={e => setFilterCat(e.target.value)} style={{ padding: '4px 7px', borderRadius: 6, border: `1px solid ${COLORS.border}`, background: COLORS.bg, color: COLORS.text, fontSize: 9, ...s }}><option value="">Categorías</option>{taskCategories.map(category => <option key={category.id} value={category.name}>{category.name}</option>)}</select>
           <div style={{ flex: 1 }} />
           <button onClick={() => setHideDone(v => !v)} style={{ ...btnBase, padding: '4px 7px', color: hideDone  ? COLORS.primary : COLORS.textDim, background: hideDone  ? `${COLORS.primary}12` : 'transparent', fontSize: 9 }}>{hideDone  ? 'Mostrar completadas' : 'Ocultar completadas'}</button>
         </div>
@@ -14159,6 +14344,15 @@ const HabitFlowApp = () => {
     });
   }, []);
 
+  const onUpdateAgendaTaskCategories = useCallback((updater) => {
+    setData(prev => {
+      const agendaTaskCategories = updater(prev.agendaTaskCategories || []);
+      const newData = { ...prev, agendaTaskCategories };
+      saveData(newData);
+      return newData;
+    });
+  }, []);
+
   const onMoveTaskToDate = useCallback((taskId, fromDate, toDate) => {
     setData(prev => {
       const agenda = { ...(prev.agenda || {}) };
@@ -14493,7 +14687,7 @@ const HabitFlowApp = () => {
       case 'habits': return <HabitsView data={data} onAddHabit={onAddHabit} onUpdateHabit={onUpdateHabit} onDeleteHabit={onDeleteHabit} onToggleHabit={onToggleHabit} onCompleteHabit={onCompleteHabit} onUpdateRecord={onUpdateRecord} onCreateHabitCategory={onCreateHabitCategory} records={data.records} />;
       case 'pomodoro': return <PomodoroView data={data} onUpdateUser={onUpdateUser} onUpdatePomodoro={onUpdatePomodoro} />;
       case 'workout': return <WorkoutView data={data} onUpdateData={onUpdateWorkout} onCompleteHabit={onCompleteHabit} awardXp={(prev, amt) => awardXp(prev, amt)} />;
-      case 'agenda': return <AgendaView data={data} onUpdateAgenda={onUpdateAgenda} onUpdateAgendaNote={onUpdateAgendaNote} onUpdateAgendaTodos={onUpdateAgendaTodos} onUpdateAgendaTodoLabels={onUpdateAgendaTodoLabels} onMoveTaskToDate={onMoveTaskToDate} onCompleteHabit={onCompleteHabit} />;
+      case 'agenda': return <AgendaView data={data} onUpdateAgenda={onUpdateAgenda} onUpdateAgendaNote={onUpdateAgendaNote} onUpdateAgendaTodos={onUpdateAgendaTodos} onUpdateAgendaTodoLabels={onUpdateAgendaTodoLabels} onUpdateAgendaTaskCategories={onUpdateAgendaTaskCategories} onMoveTaskToDate={onMoveTaskToDate} onCompleteHabit={onCompleteHabit} />;
       case 'dreams': return <DreamGoalsView data={data} onUpdateDreamGoals={onUpdateDreamGoals} />;
       case 'finance': return <FinanceView data={data} onUpdateFinance={onUpdateFinance} />;
       case 'health': return <HealthView data={data} onUpdateHealth={onUpdateHealth} />;
