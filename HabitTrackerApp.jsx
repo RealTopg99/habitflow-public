@@ -2686,10 +2686,10 @@ const injectStyles = () => {
       --habit-modal-accent: #ff5f7f;
       --habit-modal-accent-hover: #ff7691;
       --habit-modal-track: #343a43;
-      width: min(94vw, 900px) !important;
+      width: min(92vw, 900px) !important;
       max-width: 900px !important;
-      max-height: min(92vh, 1040px) !important;
-      padding: clamp(24px, 4vw, 50px) !important;
+      max-height: min(82vh, 760px) !important;
+      padding: clamp(22px, 2.8vw, 40px) !important;
       color: var(--habit-modal-text) !important;
       background: #0b0e12 !important;
       border: 1px solid var(--habit-modal-border) !important;
@@ -2713,13 +2713,13 @@ const injectStyles = () => {
       box-shadow: 0 28px 78px rgba(99,57,73,0.18) !important;
     }
     .habit-form-modal .hf-modal-header {
-      margin-bottom: 34px !important;
+      margin-bottom: 24px !important;
     }
     .habit-form-modal .hf-modal-header h2 {
       margin: 0 !important;
       color: var(--habit-modal-text) !important;
       background: none !important;
-      font: 400 clamp(38px, 5vw, 52px)/1 'DM Serif Display', Georgia, serif !important;
+      font: 400 clamp(34px, 4vw, 48px)/1 'DM Serif Display', Georgia, serif !important;
       letter-spacing: -0.025em !important;
     }
     .habit-form-modal .hf-modal-header button {
@@ -2915,10 +2915,10 @@ const injectStyles = () => {
       font-size: 12px;
     }
     .habit-icon-grid {
-      max-height: 255px;
+      max-height: min(28vh, 220px);
       padding: 2px 8px 2px 1px;
       display: grid;
-      grid-template-columns: repeat(9, minmax(46px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(56px, 1fr));
       gap: 10px;
       overflow-y: auto;
       scrollbar-width: thin;
@@ -2927,7 +2927,7 @@ const injectStyles = () => {
     .habit-icon-grid button {
       aspect-ratio: 1;
       min-width: 0;
-      min-height: 52px;
+      min-height: 50px;
       display: inline-flex;
       align-items: center;
       justify-content: center;
@@ -5253,12 +5253,94 @@ const injectStyles = () => {
       backdrop-filter: blur(14px) saturate(0.92) !important;
       -webkit-backdrop-filter: blur(14px) saturate(0.92) !important;
     }
+    :root {
+      --modal-overlay-soft: rgba(0,0,0,0.58);
+      --modal-surface: linear-gradient(145deg, #111720, #080a0e);
+      --modal-text: #f8fafc;
+      --modal-muted: #aab3c2;
+      --modal-border: rgba(255,255,255,0.13);
+      --modal-input: #0b0f15;
+      --modal-row: rgba(255,255,255,0.035);
+      --modal-shadow: 0 28px 90px rgba(0,0,0,0.56), inset 0 1px 0 rgba(255,255,255,0.05);
+    }
+    html[data-theme-mode="pinkLight"] {
+      --modal-overlay-soft: rgba(42,27,33,0.42);
+      --modal-surface: linear-gradient(145deg, #fffafb, #ffffff);
+      --modal-text: #25171d;
+      --modal-muted: #765d68;
+      --modal-border: rgba(206,144,158,0.34);
+      --modal-input: #fff7fa;
+      --modal-row: rgba(255,255,255,0.72);
+      --modal-shadow: 0 28px 80px rgba(104,62,78,0.20), inset 0 1px 0 rgba(255,255,255,0.82);
+    }
+    .hf-modal-backdrop,
+    .agenda-task-backdrop,
+    .workout-exercise-backdrop,
+    .finance-modal-backdrop {
+      position: fixed !important;
+      inset: 0 !important;
+      z-index: 10000 !important;
+      overflow: auto !important;
+      padding: clamp(16px, 3vw, 30px) !important;
+      background: var(--modal-overlay-soft) !important;
+      backdrop-filter: blur(10px) saturate(0.92) !important;
+      -webkit-backdrop-filter: blur(10px) saturate(0.92) !important;
+    }
+    body:has(.hf-modal-backdrop) .app-main > .view-enter,
+    body:has(.agenda-task-backdrop) .app-main > .view-enter,
+    body:has(.workout-exercise-backdrop) .app-main > .view-enter,
+    body:has(.finance-modal-backdrop) .app-main > .view-enter {
+      animation: none !important;
+      transform: none !important;
+      will-change: auto !important;
+    }
     .hf-modal-panel {
       border-radius: var(--hf-radius-lg) !important;
       box-shadow: var(--hf-shadow-raised) !important;
     }
     .hf-modal-header {
       border-color: var(--hf-card-border) !important;
+    }
+    .agenda-task-modal,
+    .workout-exercise-modal,
+    .finance-modal-card {
+      background: var(--modal-surface) !important;
+      color: var(--modal-text) !important;
+      border-color: var(--modal-border) !important;
+      box-shadow: var(--modal-shadow) !important;
+    }
+    .finance-modal-card h1,
+    .finance-modal-card h2,
+    .finance-modal-card h3,
+    .finance-modal-card h4,
+    .finance-modal-card strong,
+    .finance-modal-card label,
+    .agenda-task-modal,
+    .workout-exercise-modal {
+      color: var(--modal-text) !important;
+    }
+    .finance-modal-card p,
+    .finance-modal-card small,
+    .finance-modal-card [style*="textDim"] {
+      color: var(--modal-muted) !important;
+    }
+    .finance-modal-card input,
+    .finance-modal-card select,
+    .finance-modal-card textarea,
+    .agenda-task-modal input,
+    .agenda-task-modal select,
+    .agenda-task-modal textarea,
+    .workout-exercise-modal input {
+      background: var(--modal-input) !important;
+      color: var(--modal-text) !important;
+      border-color: var(--modal-border) !important;
+    }
+    .finance-modal-card [style*="rgba(255,255,255,0.035)"],
+    .finance-modal-card [style*="rgba(255,255,255,0.025)"],
+    .finance-modal-card [style*="rgba(255,255,255,0.04)"],
+    .workout-exercise-modal [style*="rgba(255,255,255,0.035)"] {
+      background: var(--modal-row) !important;
+      border-color: var(--modal-border) !important;
     }
     .recharts-cartesian-grid line {
       stroke: var(--hf-grid) !important;
@@ -5638,13 +5720,14 @@ const Modal = ({ isOpen, onClose, title, children, width = 480, className = '' }
     <div className="hf-modal-backdrop" role="presentation" style={{
       position: 'fixed', inset: 0, zIndex: 1000,
       display: 'flex', alignItems: 'center', justifyContent: 'center',
-      background: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(8px)',
+      background: 'var(--modal-overlay-soft, rgba(0,0,0,0.58))', backdropFilter: 'blur(10px)',
+      padding: 'clamp(16px, 3vw, 30px)', boxSizing: 'border-box', overflowY: 'auto',
       animation: 'fadeIn 0.2s ease-out'
     }} onClick={onClose}>
       <div className={`hf-modal-panel ${className}`.trim()} role="dialog" aria-modal="true" aria-label={title} style={{
         background: COLORS.surface, borderRadius: 16,
         border: `1px solid ${COLORS.border}`, padding: 32,
-        width: '90%', maxWidth: width, maxHeight: '85vh', overflowY: 'auto',
+        width: 'min(90%, calc(100vw - 32px))', maxWidth: width, maxHeight: 'min(85vh, 780px)', overflowY: 'auto',
         animation: 'slideIn 0.3s ease-out'
       }} onClick={e => e.stopPropagation()}>
         <div className="hf-modal-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
@@ -13516,8 +13599,8 @@ const WorkoutExerciseAdder = ({ workoutData, onAdd, onClose, onUpdateData }) => 
     setShowCustom(false);
   };
   return (
-    <div style={{ position: 'fixed', inset: 0, zIndex: 2100, background: 'rgba(0,0,0,0.8)', backdropFilter: 'blur(8px)', display: 'flex', alignItems: 'center', justifyContent: 'center' }} onClick={onClose}>
-      <div style={{ background: COLORS.card, borderRadius: 16, border: `1px solid ${COLORS.border}`, padding: 24, maxWidth: 480, width: '90%', maxHeight: '80vh', overflow: 'auto' }} onClick={e => e.stopPropagation()}>
+    <div className="workout-exercise-backdrop" style={{ position: 'fixed', inset: 0, zIndex: 2100, background: 'rgba(0,0,0,0.62)', backdropFilter: 'blur(8px)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24, boxSizing: 'border-box' }} onClick={onClose}>
+      <div className="workout-exercise-modal" style={{ background: COLORS.card, borderRadius: 18, border: `1px solid ${COLORS.border}`, padding: 24, maxWidth: 560, width: 'min(560px, calc(100vw - 48px))', maxHeight: 'min(82vh, 760px)', overflow: 'auto', margin: 'auto' }} onClick={e => e.stopPropagation()}>
         <div style={{ fontSize: 16, color: COLORS.text, fontFamily: "'DM Serif Display', serif", marginBottom: 16 }}>Añadir Ejercicio</div>
         {!showCustom && (
           <button onClick={() => setShowCustom(true)} style={{ width: '100%', display: 'flex', alignItems: 'center', gap: 8, padding: '10px 14px', background: `${COLORS.primary}10`, border: `1px dashed ${COLORS.primary}40`, cursor: 'pointer', borderRadius: 10, color: COLORS.primary, fontSize: 13, fontFamily: "'Inter', sans-serif", textAlign: 'left', marginBottom: 12 }}>
@@ -15029,8 +15112,8 @@ const AgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAgendaTo
     const t = editModalTask || {};
     const modalStyle = { background: COLORS.card, borderRadius: 24, border: `1px solid ${COLORS.border}`, padding: '24px 26px', maxWidth: 560, width: 'min(94vw, 560px)', maxHeight: '88vh', overflow: 'hidden', boxSizing: 'border-box', boxShadow: '0 34px 100px rgba(0,0,0,0.52)', display: 'flex', flexDirection: 'column' };
     return (
-      <div onClick={closeTaskModal} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.62)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20, boxSizing: 'border-box', backdropFilter: 'blur(8px)' }}>
-        <div onClick={e => e.stopPropagation()} style={modalStyle}>
+      <div className="agenda-task-backdrop" onClick={closeTaskModal} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.54)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20, boxSizing: 'border-box', backdropFilter: 'blur(8px)' }}>
+        <div className="agenda-task-modal" onClick={e => e.stopPropagation()} style={modalStyle}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24, flexShrink: 0 }}>
             <div style={{ fontSize: 18, color: COLORS.text, fontFamily: "'DM Serif Display', serif" }}>{t.id  ? 'Editar tarea' : 'Nueva tarea'}</div>
             <button onClick={closeTaskModal} style={{ width: 28, height: 28, borderRadius: 8, border: 'none', background: COLORS.bg, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: COLORS.textDim, fontSize: 14 }}>×</button>
