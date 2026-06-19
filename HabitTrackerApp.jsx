@@ -8030,7 +8030,7 @@ const FinanceView = ({ data, onUpdateFinance }) => {
     const spent = monthly.filter(t => t.type === 'expense' && t.category === cat.id).reduce((sum, t) => sum + Number(t.amount || 0), 0);
     const limit = Number(budgets[cat.id] || 0);
     return { id: cat.id, name: cat.name, value: spent, limit, pct: limit  ? Math.min(100, Math.round((spent / limit) * 100)) : 0, color: cat.color };
-  }).filter(c => c.value > 0 || c.limit > 0);
+  });
 
   const filteredTransactions = transactions.filter(t => {
     const typeOk = filterType === 'all' || (filterType === 'transfer' ? t.category === 'transfer' : t.type === filterType);
@@ -8173,12 +8173,42 @@ const FinanceView = ({ data, onUpdateFinance }) => {
   const addCategory = () => {
     const clean = catName.trim();
     if (!clean) return;
+    const existing = categories.find(category => category.id !== 'income' && category.name.trim().toLowerCase() === clean.toLowerCase());
+    if (existing) {
+      setForm(prev => ({ ...prev, category: existing.id }));
+      setRecurringForm(prev => ({ ...prev, category: existing.id }));
+      setCatName('');
+      setSection('budget');
+      return;
+    }
+    const createdAt = Date.now();
+    const idBase = clean
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '_')
+      .replace(/^_+|_+$/g, '')
+      .slice(0, 28) || 'categoria';
+    const nextId = `cat_${idBase}_${createdAt}`;
     const colors = ['#e11d48', '#efefef', '#ff6b6b', '#00ff9d', '#ffd93d', '#a0a0b8'];
     onUpdateFinance(prev => ({
       ...prev,
-      categories: [...(prev.categories || []), { id: `cat_${Date.now()}`, name: clean, color: colors[(prev.categories || []).length % colors.length] }]
+      categories: [
+        ...(prev.categories || []),
+        {
+          id: nextId,
+          name: clean,
+          color: colors[(prev.categories || []).length % colors.length],
+          type: 'expense',
+          createdAt: new Date(createdAt).toISOString()
+        }
+      ],
+      budgets: { ...(prev.budgets || {}), [nextId]: 0 }
     }));
+    setForm(prev => ({ ...prev, category: nextId }));
+    setRecurringForm(prev => ({ ...prev, category: nextId }));
     setCatName('');
+    setSection('budget');
   };
 
   const addAccount = () => {
@@ -8512,9 +8542,7 @@ const FinanceView = ({ data, onUpdateFinance }) => {
   ].filter(item => item.value > 0);
   const moneyFlowTotal = moneyFlowData.reduce((sum, item) => sum + item.value, 0) || 1;
   const categorySpendData = byCategory
-    .filter(item => item.value > 0)
-    .sort((a, b) => b.value - a.value)
-    .slice(0, 7)
+    .sort((a, b) => (b.value - a.value) || (b.limit - a.limit) || String(a.name).localeCompare(String(b.name), 'es'))
     .map(item => ({ ...item, share: expenses ? Math.round((item.value / expenses) * 100) : 0 }));
   const recentTransactions = filteredTransactions.slice(0, 6);
 
