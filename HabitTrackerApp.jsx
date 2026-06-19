@@ -8651,22 +8651,38 @@ const FinanceView = ({ data, onUpdateFinance }) => {
     </div>
   );
 
+  const balanceCenterLabel = money(balance);
+  const balanceCenterFontSize = balanceCenterLabel.length > 15 ? 14 : balanceCenterLabel.length > 12 ? 15 : currency === 'COP' ? 16 : 20;
+
   const renderMoneyFlow = () => (
     <div className="finance-summary-grid" style={{ display: 'grid', gridTemplateColumns: 'minmax(230px, 0.8fr) minmax(260px, 1.2fr)', gap: 24, alignItems: 'center', paddingTop: 18 }}>
       <div style={{ minWidth: 0 }}>
-        <div style={{ height: 250, position: 'relative' }}>
+        <div style={{ height: 250, position: 'relative', padding: '8px 0' }}>
           <ResponsiveContainer width="100%" height="100%">
             <PieChart>
-              <Pie data={moneyFlowData} dataKey="value" innerRadius="58%" outerRadius="82%" paddingAngle={3} animationDuration={700}>
+              <Pie data={moneyFlowData} dataKey="value" innerRadius="64%" outerRadius="82%" paddingAngle={3} animationDuration={700}>
                 {moneyFlowData.map(entry => <Cell key={entry.name} fill={entry.color} />)}
               </Pie>
               <Tooltip contentStyle={tooltipStyle} formatter={(value) => money(Number(value || 0))} />
             </PieChart>
           </ResponsiveContainer>
           <div style={{ position: 'absolute', inset: 0, display: 'grid', placeItems: 'center', pointerEvents: 'none' }}>
-            <div style={{ textAlign: 'center' }}>
-              <div style={{ color: COLORS.text, fontSize: 20, fontWeight: 850, ...s }}>{money(balance)}</div>
-              <div style={{ color: COLORS.textDim, fontSize: 11, ...s }}>Balance neto</div>
+            <div style={{ textAlign: 'center', width: '42%', minWidth: 82, maxWidth: 112, display: 'grid', gap: 5 }}>
+              <div
+                style={{
+                  color: COLORS.text,
+                  fontSize: balanceCenterFontSize,
+                  lineHeight: 1.05,
+                  fontWeight: 850,
+                  letterSpacing: '-0.03em',
+                  overflowWrap: 'anywhere',
+                  wordBreak: 'break-word',
+                  ...s
+                }}
+              >
+                {balanceCenterLabel}
+              </div>
+              <div style={{ color: COLORS.textDim, fontSize: 11, lineHeight: 1.1, ...s }}>Balance neto</div>
             </div>
           </div>
         </div>
