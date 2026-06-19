@@ -7813,7 +7813,7 @@ const HealthView = ({ data, onUpdateHealth }) => {
 };
 
 const FINANCE_RATE_CACHE_KEY = 'habitflow_usd_cop_rate_v1';
-const FINANCE_RATE_CACHE_TTL = 6 * 60 * 60 * 1000;
+const FINANCE_RATE_CACHE_TTL = 30 * 60 * 1000;
 
 const parseFinanceMoneyInput = (value) => {
   if (value === '' || value === null || value === undefined || value === '-') return '';
@@ -7965,7 +7965,7 @@ const FinanceView = ({ data, onUpdateFinance }) => {
   };
   const moneyUSD = (n) => formatCurrency(n, 'USD');
   const money = (n) => formatCurrency(n, currency);
-  const accountMoney = (n, accountCurrency) => formatCurrency(n, normalizeCurrency(accountCurrency));
+  const accountMoney = (n) => formatCurrency(n, currency);
   const switchDraftCurrency = (amount, fromCurrency, toCurrency) => {
     if (amount === '' || amount === null || amount === undefined) return '';
     const asUsd = fromDisplayAmount(amount, fromCurrency);
@@ -8024,7 +8024,15 @@ const FinanceView = ({ data, onUpdateFinance }) => {
 
   useEffect(() => {
     refreshExchangeRate(false);
+    const rateTimer = setInterval(() => refreshExchangeRate(false), FINANCE_RATE_CACHE_TTL);
+    return () => clearInterval(rateTimer);
   }, []);
+
+  const changeFinanceCurrency = (nextCurrency) => {
+    const cleanCurrency = normalizeCurrency(nextCurrency);
+    onUpdateFinance(prev => ({ ...prev, currency: cleanCurrency }));
+    if (cleanCurrency === 'COP') refreshExchangeRate(false);
+  };
 
   const byCategory = expenseCategories.map(cat => {
     const spent = monthly.filter(t => t.type === 'expense' && t.category === cat.id).reduce((sum, t) => sum + Number(t.amount || 0), 0);
@@ -9526,6 +9534,52 @@ const FinanceView = ({ data, onUpdateFinance }) => {
               {monthPickerOptions.map(item => <option key={item.key} value={item.key}>{item.label}</option>)}
             </select>
           </label>
+          <div
+            className="finance-global-currency-switch"
+            title="Cambiar toda la vista de Finanzas entre USD y COP"
+            style={{
+              display: 'grid',
+              gridTemplateColumns: '1fr 1fr',
+              gap: 3,
+              padding: 3,
+              minHeight: 42,
+              minWidth: 122,
+              borderRadius: 14,
+              background: COLORS.bg,
+              border: `1px solid ${COLORS.border}`,
+              boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.035)',
+              ...s
+            }}
+          >
+            {['USD', 'COP'].map(cur => {
+              const active = currency === cur;
+              return (
+                <button
+                  key={cur}
+                  type="button"
+                  onClick={() => changeFinanceCurrency(cur)}
+                  aria-pressed={active}
+                  style={{
+                    border: 'none',
+                    borderRadius: 11,
+                    background: active ? COLORS.primary : 'transparent',
+                    color: active ? '#fff' : COLORS.textDim,
+                    cursor: 'pointer',
+                    fontSize: 12,
+                    fontWeight: 900,
+                    letterSpacing: '0.04em',
+                    transition: 'background 180ms ease, color 180ms ease, transform 180ms ease',
+                    transform: active ? 'translateY(-1px)' : 'none',
+                    minHeight: 34,
+                    padding: '0 10px',
+                    ...s
+                  }}
+                >
+                  {cur}
+                </button>
+              );
+            })}
+          </div>
           <button onClick={() => openTransactionFlow()} style={proButtonStyle}><Plus size={16} /> Nueva transacción</button>
         </div>
       </div>
