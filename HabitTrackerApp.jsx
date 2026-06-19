@@ -1409,6 +1409,15 @@ const injectStyles = () => {
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=DM+Serif+Display:ital@0;1&display=swap');
 
     * { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --motion-fast: 150ms;
+      --motion-base: 220ms;
+      --motion-page: 360ms;
+      --motion-slow: 520ms;
+      --motion-ease: cubic-bezier(0.22, 1, 0.36, 1);
+      --motion-ease-soft: cubic-bezier(0.16, 1, 0.3, 1);
+      --motion-ease-out: cubic-bezier(0.2, 0.8, 0.2, 1);
+    }
     input, select, textarea { font-size: 14px; }
     button:focus-visible { outline: 2px solid var(--primary, #e11d48); outline-offset: 2px; }
     button:active { transform: scale(0.97); }
@@ -1426,10 +1435,16 @@ const injectStyles = () => {
     ::-webkit-scrollbar-thumb:hover { background: #3a3a4a; }
 
     @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes fadeInUp { from { opacity: 0; transform: translate3d(0, 14px, 0); } to { opacity: 1; transform: translate3d(0, 0, 0); } }
     @keyframes fadeInLeft { from { opacity: 0; transform: translateX(-20px); } to { opacity: 1; transform: translateX(0); } }
     @keyframes countUp { from { opacity: 0; transform: scale(0.5); } to { opacity: 1; transform: scale(1); } }
     @keyframes pulseGlow { 0%, 100% { box-shadow: 0 0 5px rgba(var(--icon-rgb,225,29,72),0.12); } 50% { box-shadow: 0 0 14px rgba(var(--icon-rgb,225,29,72),0.20); } }
     @keyframes slideIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes hfPageEnter { from { opacity: 0; transform: translate3d(0, 12px, 0) scale(0.998); } to { opacity: 1; transform: translate3d(0, 0, 0) scale(1); } }
+    @keyframes hfModalBackdropIn { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes hfModalPanelIn { from { opacity: 0; transform: translate3d(0, 18px, 0) scale(0.985); } to { opacity: 1; transform: translate3d(0, 0, 0) scale(1); } }
+    @keyframes hfPopoverIn { from { opacity: 0; transform: translate3d(0, 8px, 0) scale(0.98); } to { opacity: 1; transform: translate3d(0, 0, 0) scale(1); } }
+    @keyframes hfProgressSweep { from { transform: scaleX(0); opacity: 0.55; } to { transform: scaleX(1); opacity: 1; } }
     @keyframes shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
     @keyframes confettiFall { 0% { transform: translateY(0) translateX(0) rotate(0deg) scale(1); opacity: 1; } 100% { transform: translateY(var(--ty, 80px)) translateX(var(--tx, 40px)) rotate(720deg) scale(0); opacity: 0; } }
     @keyframes rippleAnim { to { transform: scale(4); opacity: 0; } }
@@ -5323,6 +5338,140 @@ const injectStyles = () => {
     html[data-theme-mode="pinkLight"] .auth-form-card .cl-footer {
       background: rgba(255,247,250,0.84) !important;
       border-color: var(--hf-card-border) !important;
+    }
+    .app-main > .view-enter {
+      animation: hfPageEnter var(--motion-page) var(--motion-ease-soft) both !important;
+      transform-origin: 50% 24px;
+      will-change: opacity, transform;
+    }
+    .dashboard-view-enter .kpi-card,
+    .dashboard-view-enter .today-habits-panel,
+    .dashboard-view-enter .finance-card,
+    .dashboard-view-enter .lab-shell-card {
+      animation: fadeInUp 360ms var(--motion-ease-soft) both;
+    }
+    .dashboard-view-enter .kpi-card:nth-child(1) { animation-delay: 20ms; }
+    .dashboard-view-enter .kpi-card:nth-child(2) { animation-delay: 50ms; }
+    .dashboard-view-enter .kpi-card:nth-child(3) { animation-delay: 80ms; }
+    .dashboard-view-enter .kpi-card:nth-child(4) { animation-delay: 110ms; }
+    .dashboard-view-enter .kpi-card:nth-child(5) { animation-delay: 140ms; }
+    .lab-shell-card,
+    .finance-card,
+    .kpi-card,
+    .habit-card,
+    .today-habits-panel,
+    .health-med-row,
+    .agenda-task-block,
+    .agenda-clean-task-row,
+    .workout-set-grid,
+    .dream-goal-form-card,
+    .settings-mobile-view > div,
+    .pomodoro-mobile-view > div {
+      transform: translateZ(0);
+      transition:
+        transform var(--motion-base) var(--motion-ease),
+        border-color var(--motion-base) ease,
+        background-color var(--motion-base) ease,
+        box-shadow var(--motion-base) ease,
+        opacity var(--motion-base) ease,
+        filter var(--motion-base) ease !important;
+      will-change: transform;
+    }
+    .habits-minimal-row,
+    .habit-week-dots button,
+    .habit-row-status,
+    .habit-actions-menu,
+    .finance-action-strip button,
+    .agenda-view-tabs button,
+    .agenda-side-tabs button,
+    .mobile-bottom-nav button,
+    .mobile-more-popover button,
+    .sidebar nav button,
+    .sidebar-toggle {
+      transition:
+        transform var(--motion-fast) var(--motion-ease),
+        background-color var(--motion-fast) ease,
+        border-color var(--motion-fast) ease,
+        color var(--motion-fast) ease,
+        box-shadow var(--motion-fast) ease,
+        opacity var(--motion-fast) ease !important;
+    }
+    .nav-label {
+      transition: opacity var(--motion-base) ease, transform var(--motion-base) var(--motion-ease), color var(--motion-fast) ease;
+    }
+    .hf-modal-backdrop {
+      animation: hfModalBackdropIn var(--motion-base) ease both !important;
+    }
+    .hf-modal-panel {
+      animation: hfModalPanelIn 280ms var(--motion-ease-soft) both !important;
+      transform-origin: 50% 22%;
+    }
+    .mobile-more-popover,
+    .habit-actions-menu {
+      animation: hfPopoverIn 180ms var(--motion-ease-soft) both;
+      transform-origin: 90% 100%;
+    }
+    .recharts-wrapper,
+    .recharts-surface {
+      overflow: visible;
+    }
+    .recharts-line-curve,
+    .recharts-area-area,
+    .recharts-bar-rectangle,
+    .recharts-pie-sector {
+      transition: opacity var(--motion-base) ease, filter var(--motion-base) ease;
+    }
+    .recharts-active-dot,
+    .recharts-dot {
+      transition: r var(--motion-fast) ease, opacity var(--motion-fast) ease;
+    }
+    .habit-row-progress i,
+    .finance-card [style*="width:"][style*="%"],
+    .health-med-chip [style*="width:"][style*="%"] {
+      transform-origin: left center;
+    }
+    @media (hover: hover) and (pointer: fine) {
+      .lab-shell-card:hover,
+      .finance-card:hover,
+      .kpi-card:hover,
+      .habit-card:hover,
+      .today-habits-panel:hover,
+      .health-med-row:hover,
+      .agenda-clean-task-row:hover,
+      .agenda-task-block:hover {
+        transform: translate3d(0, -2px, 0);
+      }
+      .habits-minimal-row:hover,
+      .mobile-more-popover button:hover,
+      .sidebar nav button:hover,
+      .finance-action-strip button:hover,
+      .agenda-view-tabs button:hover,
+      .agenda-side-tabs button:hover {
+        transform: translate3d(0, -1px, 0);
+      }
+      .habit-week-dots button:not(:disabled):hover,
+      .habit-row-status:not(:disabled):hover,
+      .sidebar-toggle:hover {
+        transform: scale(1.04);
+      }
+    }
+    @media (max-width: 768px) {
+      :root {
+        --motion-fast: 120ms;
+        --motion-base: 180ms;
+        --motion-page: 260ms;
+        --motion-slow: 360ms;
+      }
+      .app-main > .view-enter {
+        animation-name: fadeIn !important;
+        transform-origin: center top;
+      }
+      .dashboard-view-enter .kpi-card,
+      .dashboard-view-enter .today-habits-panel,
+      .dashboard-view-enter .finance-card,
+      .dashboard-view-enter .lab-shell-card {
+        animation-delay: 0ms !important;
+      }
     }
     @media (max-width: 768px) {
       .lab-shell-card,
