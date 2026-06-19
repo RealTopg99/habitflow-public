@@ -5123,6 +5123,55 @@ const injectStyles = () => {
     .kpi-card {
       isolation: isolate;
     }
+    .spotlight-card {
+      position: relative;
+      overflow: hidden;
+      isolation: isolate;
+      --spotlight-x: 50%;
+      --spotlight-y: 50%;
+      --spotlight-opacity: 0;
+    }
+    .spotlight-card::before,
+    .spotlight-card::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      border-radius: inherit;
+      opacity: var(--spotlight-opacity, 0);
+      transition: opacity 0.22s ease;
+    }
+    .spotlight-card::before {
+      z-index: 0;
+      background:
+        radial-gradient(
+          190px 190px at var(--spotlight-x, 50%) var(--spotlight-y, 50%),
+          rgba(var(--icon-rgb,225,29,72),0.18),
+          transparent 68%
+        );
+    }
+    .spotlight-card::after {
+      z-index: 0;
+      box-shadow: inset 0 0 0 1px rgba(var(--icon-rgb,225,29,72),0.22);
+    }
+    .spotlight-card > * {
+      position: relative;
+      z-index: 1;
+    }
+    html[data-theme-mode="pinkLight"] .spotlight-card::before {
+      background:
+        radial-gradient(
+          210px 210px at var(--spotlight-x, 50%) var(--spotlight-y, 50%),
+          rgba(var(--icon-rgb,225,29,72),0.12),
+          transparent 70%
+        );
+    }
+    @media (max-width: 768px), (prefers-reduced-motion: reduce) {
+      .spotlight-card::before,
+      .spotlight-card::after {
+        display: none !important;
+      }
+    }
     @media (min-width: 1101px) and (max-width: 1599px) {
       .dashboard-layout-grid {
         grid-template-columns: minmax(0, 1fr) minmax(320px, 0.42fr) !important;
@@ -5862,6 +5911,52 @@ const AnimatedCounter = ({ value, duration = 1000, prefix = '', suffix = '', sty
   return <span className="dashboard-counter" style={style}>{prefix}{display}{suffix}</span>;
 };
 
+const GLOW_COLOR_MAP = {
+  blue: { base: 220, spread: 200 },
+  purple: { base: 280, spread: 300 },
+  green: { base: 120, spread: 200 },
+  red: { base: 350, spread: 24 },
+  orange: { base: 30, spread: 120 }
+};
+
+const GlowCard = ({ children, className = '', glowColor = 'red', style = {}, disabled = false, ...props }) => {
+  const cardRef = useRef(null);
+  const glow = GLOW_COLOR_MAP[glowColor] || GLOW_COLOR_MAP.red;
+
+  const handlePointerMove = useCallback((event) => {
+    if (disabled || !cardRef.current) return;
+    const rect = cardRef.current.getBoundingClientRect();
+    const x = Math.max(0, Math.min(rect.width, event.clientX - rect.left));
+    const y = Math.max(0, Math.min(rect.height, event.clientY - rect.top));
+    cardRef.current.style.setProperty('--spotlight-x', `${x.toFixed(1)}px`);
+    cardRef.current.style.setProperty('--spotlight-y', `${y.toFixed(1)}px`);
+    cardRef.current.style.setProperty('--spotlight-opacity', '1');
+  }, [disabled]);
+
+  const handlePointerLeave = useCallback(() => {
+    if (!cardRef.current) return;
+    cardRef.current.style.setProperty('--spotlight-opacity', '0');
+  }, []);
+
+  return (
+    <div
+      ref={cardRef}
+      data-glow-card
+      className={`spotlight-card ${className}`.trim()}
+      onPointerMove={handlePointerMove}
+      onPointerLeave={handlePointerLeave}
+      style={{
+        '--spotlight-base': glow.base,
+        '--spotlight-spread': glow.spread,
+        ...style
+      }}
+      {...props}
+    >
+      {children}
+    </div>
+  );
+};
+
 const KPICard = ({ icon, title, value, subtitle, accent, suffix = '', delay = 0, progress }) => {
   const progressCircle = progress !== undefined  ? (
     <svg className="kpi-progress-ring" width="38" height="38" viewBox="0 0 38 38" style={{ flexShrink: 0, opacity: 0.82 }}>
@@ -5881,7 +5976,7 @@ const KPICard = ({ icon, title, value, subtitle, accent, suffix = '', delay = 0,
   ) : null;
 
   return (
-    <div className="kpi-card dashboard-kpi-card" style={{
+    <GlowCard className="kpi-card dashboard-kpi-card" glowColor="red" style={{
       background: COLORS.card, borderRadius: 12, padding: 16,
       border: `1px solid ${COLORS.border}`
     }}>
@@ -5897,7 +5992,7 @@ const KPICard = ({ icon, title, value, subtitle, accent, suffix = '', delay = 0,
         {progressCircle}
       </div>
       <div style={{ fontSize: 11, color: COLORS.textDim }}>{subtitle}</div>
-    </div>
+    </GlowCard>
   );
 };
 
