@@ -5342,6 +5342,193 @@ const injectStyles = () => {
       background: var(--modal-row) !important;
       border-color: var(--modal-border) !important;
     }
+    @media (max-width: 768px) {
+      .content-area {
+        padding-bottom: calc(118px + env(safe-area-inset-bottom)) !important;
+      }
+      .app-main {
+        padding-bottom: calc(132px + env(safe-area-inset-bottom)) !important;
+      }
+      .finance-mobile-view,
+      .finance-dashboard-pro,
+      .agenda-mobile-view,
+      .health-mobile-view,
+      .habits-mobile-view,
+      .pomodoro-mobile-view,
+      .workout-mobile-view,
+      .settings-mobile-view {
+        padding-bottom: calc(128px + env(safe-area-inset-bottom)) !important;
+      }
+      .mobile-bottom-nav {
+        left: max(10px, env(safe-area-inset-left)) !important;
+        right: max(10px, env(safe-area-inset-right)) !important;
+        bottom: max(8px, env(safe-area-inset-bottom)) !important;
+        height: 64px !important;
+        min-height: 64px !important;
+        padding: 6px !important;
+        border: 1px solid var(--hf-card-border-strong) !important;
+        border-top: 1px solid var(--hf-card-border-strong) !important;
+        border-radius: 24px !important;
+        background: rgba(7, 8, 11, 0.92) !important;
+        box-shadow: 0 18px 48px rgba(0,0,0,0.48), 0 0 0 1px rgba(var(--icon-rgb,225,29,72),0.08) inset !important;
+        backdrop-filter: blur(24px) saturate(145%) !important;
+        -webkit-backdrop-filter: blur(24px) saturate(145%) !important;
+        z-index: 9000 !important;
+        overflow: visible !important;
+      }
+      html[data-theme-mode="pinkLight"] .mobile-bottom-nav {
+        background: rgba(255, 246, 249, 0.94) !important;
+        box-shadow: 0 18px 44px rgba(92, 33, 48, 0.16), 0 0 0 1px rgba(225,29,72,0.08) inset !important;
+      }
+      .mobile-bottom-nav button {
+        min-width: 0 !important;
+        height: 52px !important;
+        min-height: 52px !important;
+        padding: 6px 4px !important;
+        border-radius: 18px !important;
+      }
+      .mobile-bottom-nav button span {
+        max-width: 62px !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+        white-space: nowrap !important;
+      }
+      .mobile-bottom-nav .mobile-more-popover {
+        right: 0 !important;
+        bottom: calc(100% + 8px) !important;
+        max-height: min(60vh, 420px) !important;
+        overflow-y: auto !important;
+      }
+      body:has(.hf-modal-backdrop),
+      body:has(.agenda-task-backdrop),
+      body:has(.finance-modal-backdrop),
+      body:has(.workout-exercise-backdrop) {
+        overflow: hidden !important;
+      }
+      body:has(.hf-modal-backdrop) .mobile-bottom-nav,
+      body:has(.agenda-task-backdrop) .mobile-bottom-nav,
+      body:has(.finance-modal-backdrop) .mobile-bottom-nav,
+      body:has(.workout-exercise-backdrop) .mobile-bottom-nav {
+        visibility: hidden !important;
+        opacity: 0 !important;
+        pointer-events: none !important;
+      }
+      .finance-transaction-row {
+        grid-template-columns: minmax(0, 1fr) auto 40px !important;
+        gap: 8px !important;
+        align-items: center !important;
+      }
+      .finance-transaction-row > div:first-child {
+        min-width: 0 !important;
+        overflow: hidden !important;
+      }
+      .finance-transaction-row > div:first-child > div {
+        min-width: 0 !important;
+      }
+      .finance-transaction-row > div:nth-child(2) {
+        max-width: 116px !important;
+        font-size: 14px !important;
+        text-align: right !important;
+        white-space: nowrap !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+      }
+      .finance-transaction-row .finance-icon-button {
+        width: 40px !important;
+        min-width: 40px !important;
+        height: 40px !important;
+        min-height: 40px !important;
+      }
+      .finance-movement-row {
+        grid-template-columns: 8px minmax(0, 1fr) auto 38px !important;
+      }
+    }
+    @media (max-width: 600px) {
+      .agenda-task-backdrop,
+      .finance-modal-backdrop,
+      .workout-exercise-backdrop {
+        align-items: flex-start !important;
+        justify-content: center !important;
+        padding: max(12px, env(safe-area-inset-top)) 12px calc(100px + env(safe-area-inset-bottom)) !important;
+        overflow-y: auto !important;
+        overflow-x: hidden !important;
+        z-index: 10000 !important;
+      }
+      .agenda-task-modal {
+        width: 100% !important;
+        max-width: calc(100vw - 24px) !important;
+        max-height: calc(100dvh - 30px) !important;
+        margin: 0 auto !important;
+        padding: 18px 16px !important;
+        border-radius: 22px !important;
+        overflow: hidden !important;
+      }
+      .agenda-task-modal,
+      .agenda-task-modal * {
+        box-sizing: border-box !important;
+      }
+      .agenda-task-modal > div:first-child {
+        margin-bottom: 16px !important;
+      }
+      .agenda-task-modal > div:nth-child(2) {
+        max-width: 100% !important;
+        overflow-y: auto !important;
+        overflow-x: hidden !important;
+        padding-right: 0 !important;
+        gap: 12px !important;
+        overscroll-behavior: contain !important;
+      }
+      .agenda-task-modal input,
+      .agenda-task-modal select,
+      .agenda-task-modal button,
+      .agenda-task-modal textarea {
+        min-width: 0 !important;
+        max-width: 100% !important;
+      }
+      .agenda-task-modal input[type="time"],
+      .agenda-task-modal input[type="date"],
+      .agenda-task-modal select {
+        min-height: 44px !important;
+        font-size: 16px !important;
+      }
+      .agenda-task-modal [style*="grid-template-columns: 1fr 1fr"],
+      .agenda-task-modal [style*="grid-template-columns: minmax(0,1fr) 44px auto"] {
+        grid-template-columns: 1fr !important;
+      }
+      .agenda-task-modal [style*="display: flex"][style*="gap: 3"] {
+        display: grid !important;
+        grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+        gap: 6px !important;
+      }
+      .agenda-task-modal [style*="display: flex"][style*="flex-wrap: wrap"] {
+        display: grid !important;
+        grid-template-columns: 1fr 1fr !important;
+        gap: 8px !important;
+        align-items: stretch !important;
+      }
+      .agenda-task-modal [style*="margin-top: auto"][style*="border-top"] {
+        display: grid !important;
+        grid-template-columns: 1fr !important;
+      }
+      .agenda-task-modal input[type="color"] {
+        width: 48px !important;
+      }
+      .finance-transaction-row {
+        grid-template-columns: minmax(0, 1fr) 92px 38px !important;
+      }
+      .finance-transaction-row > div:nth-child(2) {
+        max-width: 92px !important;
+        font-size: 13px !important;
+      }
+      .finance-transaction-row > div:first-child {
+        gap: 9px !important;
+      }
+      .finance-transaction-row > div:first-child > span {
+        width: 30px !important;
+        height: 30px !important;
+        border-radius: 11px !important;
+      }
+    }
     .recharts-cartesian-grid line {
       stroke: var(--hf-grid) !important;
       stroke-opacity: 1 !important;
@@ -9419,7 +9606,7 @@ const FinanceView = ({ data, onUpdateFinance }) => {
         const isIncome = t.type === 'income';
         const isTransfer = t.category === 'transfer';
         return (
-          <div key={t.id} className="finance-transaction-item" style={{ display: 'grid', gridTemplateColumns: 'minmax(0,1fr) auto auto', gap: 12, alignItems: 'center', padding: '12px 0', borderBottom: `1px solid ${COLORS.border}` }}>
+          <div key={t.id} className="finance-transaction-item finance-transaction-row" style={{ display: 'grid', gridTemplateColumns: 'minmax(0,1fr) auto auto', gap: 12, alignItems: 'center', padding: '12px 0', borderBottom: `1px solid ${COLORS.border}` }}>
             <div style={{ minWidth: 0, display: 'flex', alignItems: 'center', gap: 12 }}>
               <span style={{ width: 34, height: 34, borderRadius: 12, display: 'grid', placeItems: 'center', background: isIncome ? 'rgba(53,196,106,0.12)' : 'rgba(255,63,120,0.12)', color: isIncome ? '#35C46A' : COLORS.primary }}>
                 {isIncome ? <ArrowUp size={16} /> : <ArrowDown size={16} />}
@@ -10036,7 +10223,7 @@ const FinanceView = ({ data, onUpdateFinance }) => {
               {filteredTransactions.map(t => {
                 const cat = catById(t.category);
                 return (
-                  <div className="finance-transaction-item" key={t.id} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '11px 12px', borderRadius: 12, background: 'rgba(239,239,239,0.035)', border: `1px solid ${COLORS.border}` }}>
+                  <div className="finance-transaction-item finance-movement-row" key={t.id} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '11px 12px', borderRadius: 12, background: 'rgba(239,239,239,0.035)', border: `1px solid ${COLORS.border}` }}>
                     <span style={{ width: 8, height: 8, borderRadius: 99, background: cat.color }} />
                     <div style={{ flex: 1 }}>
                       <div style={{ color: COLORS.text, fontSize: 13, fontWeight: 700 }}>{t.payee || t.note || cat.name}</div>
