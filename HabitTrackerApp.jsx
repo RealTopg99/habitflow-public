@@ -8042,6 +8042,7 @@ const FinanceMoneyInput = ({ value, onValueChange, ...props }) => {
 const FinanceView = ({ data, onUpdateFinance }) => {
   const finance = data.financeData || getFinanceData();
   const s = { fontFamily: "'Inter', sans-serif" };
+  const isPinkLightFinance = (data?.user?.themeMode || '') === 'pinkLight';
   const ACCOUNT_GROUPS = [
     { id: 'cash', label: 'Efectivo' },
     { id: 'bank', label: 'Cuentas bancarias' },
@@ -8134,6 +8135,17 @@ const FinanceView = ({ data, onUpdateFinance }) => {
   );
   const accountTagChoices = accountTags.filter(tag => tag.group !== 'loan' && tag.id !== 'loan');
   const accountGroupChoices = ACCOUNT_GROUPS.filter(group => group.id !== 'loan');
+  const financePanelText = isPinkLightFinance ? COLORS.text : '#f6f7fb';
+  const financePanelMuted = isPinkLightFinance ? COLORS.textDim : '#9ba3b4';
+  const financePanelBg = isPinkLightFinance
+    ? 'linear-gradient(145deg, rgba(255,255,255,0.98), rgba(255,246,249,0.94))'
+    : 'linear-gradient(145deg, rgba(18,24,32,0.96), rgba(9,12,17,0.99))';
+  const financePanelBorder = isPinkLightFinance ? COLORS.border : 'rgba(255,255,255,0.085)';
+  const financePanelShadow = isPinkLightFinance
+    ? '0 18px 48px rgba(99,57,73,0.11), inset 0 1px 0 rgba(255,255,255,0.94)'
+    : '0 18px 46px rgba(0,0,0,0.28), inset 0 1px 0 rgba(255,255,255,0.035)';
+  const financeButtonBg = isPinkLightFinance ? 'rgba(255,255,255,0.72)' : 'rgba(255,255,255,0.025)';
+  const financeTrackBg = isPinkLightFinance ? 'rgba(104,60,77,0.12)' : 'rgba(255,255,255,0.07)';
   const inputStyle = { padding: '10px 12px', background: COLORS.bg, border: `1px solid ${COLORS.border}`, borderRadius: 10, color: COLORS.text, outline: 'none', boxSizing: 'border-box', ...s };
   const strongInputStyle = { ...inputStyle, border: `1px solid ${COLORS.primary}55`, boxShadow: `0 0 0 1px ${COLORS.primary}12 inset` };
   const cardStyle = { background: COLORS.card, borderRadius: 18, border: `1px solid ${COLORS.border}`, padding: 20, boxShadow: '0 18px 50px rgba(0,0,0,0.18)', minWidth: 0, overflow: 'hidden' };
@@ -8740,7 +8752,7 @@ const FinanceView = ({ data, onUpdateFinance }) => {
   const ghostButtonStyle = {
     border: `1px solid ${COLORS.border}`,
     borderRadius: 12,
-    background: 'rgba(255,255,255,0.025)',
+    background: financeButtonBg,
     color: COLORS.text,
     padding: '11px 14px',
     minHeight: 42,
@@ -8749,16 +8761,17 @@ const FinanceView = ({ data, onUpdateFinance }) => {
     ...s
   };
   const financeCardStyle = {
-    background: `linear-gradient(145deg, rgba(18,24,32,0.96), rgba(9,12,17,0.99))`,
-    border: `1px solid rgba(255,255,255,0.085)`,
+    background: financePanelBg,
+    border: `1px solid ${financePanelBorder}`,
     borderRadius: 16,
     padding: 18,
-    boxShadow: '0 18px 46px rgba(0,0,0,0.28), inset 0 1px 0 rgba(255,255,255,0.035)',
+    boxShadow: financePanelShadow,
+    color: financePanelText,
     minWidth: 0,
     overflow: 'hidden'
   };
   const progressBar = (pct, color = COLORS.primary) => (
-    <div style={{ height: 5, borderRadius: 999, background: 'rgba(255,255,255,0.07)', overflow: 'hidden' }}>
+    <div style={{ height: 5, borderRadius: 999, background: financeTrackBg, overflow: 'hidden' }}>
       <div style={{ width: `${Math.min(100, Math.max(0, pct || 0))}%`, height: '100%', borderRadius: 999, background: color, transition: 'width 420ms ease' }} />
     </div>
   );
@@ -11172,6 +11185,12 @@ const SettingsView = ({ data, onUpdateUser, onResetData, cloudSync, onGenerateRa
   const daysRegistered = new Set(records.map(r => r.date)).size;
   const totalHabitsCreated = habits.length;
   const currentStreak = getGlobalCurrentStreak(habits, records);
+  const CloudStatusIcon = cloudSync?.status === 'active' ? Check : cloudSync?.status === 'saving' ? RefreshCw : Download;
+  const cloudStatusLabel = cloudSync?.status === 'active'
+    ? 'Nube activa'
+    : cloudSync?.status === 'saving'
+      ? 'Guardando en nube'
+      : 'Guardado local';
 
   useEffect(() => {
     setEditName(user.name || '');
@@ -11283,7 +11302,16 @@ const SettingsView = ({ data, onUpdateUser, onResetData, cloudSync, onGenerateRa
           <div style={{ display: 'grid', gridTemplateColumns: '1fr auto', gap: 12, alignItems: 'center' }}>
             <div>
               <div style={{ color: COLORS.text, fontSize: 13, fontWeight: 900, marginBottom: 4 }}>
-                {cloudSync?.status === 'active'  ? ' ? Nube activa' : cloudSync?.status === 'saving'  ? ' ? Guardando en nube' : ' ? Guardado local'}
+                <CloudStatusIcon
+                  size={14}
+                  style={{
+                    verticalAlign: 'middle',
+                    marginRight: 6,
+                    color: cloudSync?.status === 'active' ? COLORS.success : COLORS.primary,
+                    animation: cloudSync?.status === 'saving' ? 'spin 0.8s linear infinite' : 'none'
+                  }}
+                />
+                {cloudStatusLabel}
               </div>
               <div style={{ color: COLORS.textDim, fontSize: 11, lineHeight: 1.45 }}>
                 {cloudSync?.reason || cloudSync?.label || 'Estado de guardado de HabitFlow.'}
