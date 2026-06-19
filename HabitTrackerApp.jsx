@@ -996,6 +996,8 @@ const TEXT_ENCODING_REPAIRS = [
   ['\u00c2\u00bf', '\u00bf'], ['\u00c2\u00a1', '\u00a1'], ['\u00c2\u00a0', ' '],
   ['\u00e2\u20ac\u0153', '\u201c'], ['\u00e2\u20ac\u009d', '\u201d'], ['\u00e2\u20ac\u02dc', '\u2018'], ['\u00e2\u20ac\u2122', '\u2019'],
   ['\u00e2\u20ac\u201c', '\u2013'], ['\u00e2\u20ac\u201d', '\u2014'],
+  ['t?.', 't\u00fa.'], [' t? ', ' t\u00fa '], ['s ? te', 's\u00ed te'], ['qued ? suscrito', 'qued\u00f3 suscrito'],
+  ['  ? ', ' \u00b7 '], [' ? ', ' \u00b7 '],
   ...buildLostAccentRepairs()
 ];
 
@@ -1295,7 +1297,7 @@ const requestHabitFlowNotifications = async () => {
         return {
           ok: true,
           permission,
-          reason: `Permiso activo para avisos locales, pero el push cerrado no qued ? suscrito: ${error?.message || 'revisa el dispositivo.'}`
+          reason: `Permiso activo para avisos locales, pero el push cerrado no quedó suscrito: ${error?.message || 'revisa el dispositivo.'}`
         };
       }
     }
@@ -5583,7 +5585,7 @@ const ClerkSignInScreen = ({ clerk }) => {
           </div>
           <div style={{ display: 'grid', gap: 10 }}>
             <div className="auth-feature-pill"><span className="fire-emoji">{'\u{1F525}'}</span> Rachas y progreso diario</div>
-            <div className="auth-feature-pill"><span className="fire-emoji">?</span> Acceso seguro con Google o email</div>
+            <div className="auth-feature-pill"><span className="fire-emoji">✓</span> Acceso seguro con Google o email</div>
             <div className="auth-feature-pill"><span className="fire-emoji">{'\u{1F319}'}</span> Dark puro con identidad visual propia</div>
           </div>
         </div>
@@ -6484,7 +6486,7 @@ const DashboardView = ({ data, onCompleteHabit, workoutData, onNavigate, onUpdat
   const dailyQuotes = [
     'La disciplina no grita: aparece todos los días.',
     'Hoy no necesitas hacerlo perfecto, necesitas hacerlo.',
-    'Un hábito cumplido es una promesa que s ? te respetaste.',
+    'Un hábito cumplido es una promesa que sí te respetaste.',
     'La constancia convierte días normales en resultados raros.',
     'Tu futuro se negocia en los minutos pequeños.',
     'Hazlo simple, hazlo hoy, repítelo mañana.',
@@ -7056,7 +7058,7 @@ const HabitsView = ({ data, onAddHabit, onUpdateHabit, onDeleteHabit, onToggleHa
                     cursor: canToggle  ? 'pointer' : 'default',
                     opacity: isScheduled  ? (isPast || isToday  ? 1 : 0.55) : 0.22
                   }}>
-                    {done  ? <Check size={13} color="#0a0a0f" strokeWidth={3.5} /> : isSkipped  ? <span style={{ fontSize: 11, color: COLORS.textDim }}>-</span> : !isScheduled  ? <span style={{ fontSize: 11, color: COLORS.textDim }}>?</span> : null}
+                    {done  ? <Check size={13} color="#0a0a0f" strokeWidth={3.5} /> : isSkipped  ? <span style={{ fontSize: 11, color: COLORS.textDim }}>-</span> : !isScheduled  ? <span style={{ fontSize: 11, color: COLORS.textDim }}>-</span> : null}
                   </div>
                   <div style={{
                     fontSize: 10, color: isToday  ? COLORS.primary : COLORS.textDim + '99',
@@ -7204,7 +7206,7 @@ const HabitsView = ({ data, onAddHabit, onUpdateHabit, onDeleteHabit, onToggleHa
             aria-expanded={viewMode === 'calendar'}
           >
             <Calendar size={18} strokeWidth={1.7} />
-            <span>{weekLabel.replace(' - ', '  ? ')}</span>
+            <span>{weekLabel.replace(' - ', ' - ')}</span>
           </button>
           <button className="habits-nav-button" onClick={() => {
             const previousWeek = new Date(baseDate);
@@ -7410,7 +7412,7 @@ const HabitsView = ({ data, onAddHabit, onUpdateHabit, onDeleteHabit, onToggleHa
       </Modal>
 
       <ConfirmModal isOpen={!!confirmDelete} title="Eliminar Hábito"
-        message={`¿Estás seguro de eliminar "${confirmDelete?.name}" ? Se perderán todos sus registros.`}
+        message={`¿Estás seguro de eliminar "${confirmDelete?.name}"? Se perderán todos sus registros.`}
         danger onConfirm={() => { onDeleteHabit(confirmDelete.id); setConfirmDelete(null); }}
         onCancel={() => setConfirmDelete(null)} />
     </div>
@@ -7571,7 +7573,7 @@ const HealthView = ({ data, onUpdateHealth }) => {
           <div className="lab-pill" style={{ display: 'inline-flex', padding: '7px 12px', fontSize: 11, fontWeight: 900, marginBottom: 14 }}>SALUD PRO</div>
           <h2 className="lab-hero-title" style={{ fontSize: 38, lineHeight: 1.04, marginBottom: 10 }}>Tu centro de salud personal.</h2>
           <p style={{ color: COLORS.textDim, fontSize: 16, maxWidth: 620, lineHeight: 1.5 }}>
-            Controla tus medicamentos, recordatorios, tratamientos y adherencia para cuidar lo más importante: t?.
+            Controla tus medicamentos, recordatorios, tratamientos y adherencia para cuidar lo más importante: tú.
           </p>
         </div>
       </div>
@@ -7761,7 +7763,7 @@ const HealthView = ({ data, onUpdateHealth }) => {
                       const taken = isMedicationDoseTaken(health, dose.medication.id, today, dose.time);
                       return (
                         <button key={`${dose.medication.id}-${dose.time}`} onClick={() => markDoseTaken(dose.medication, dose.time)} style={{ border: `1px solid ${taken  ? COLORS.success : COLORS.primary}30`, borderRadius: 999, background: taken  ? `${COLORS.success}14` : `${COLORS.primary}10`, color: taken  ? COLORS.success : COLORS.text, padding: '6px 8px', fontSize: 11, cursor: 'pointer' }}>
-                          {taken  ? <Check size={11} style={{ verticalAlign: 'middle', marginRight: 4 }} /> : null}{dose.time}  ? {dose.medication.name} {dose.medication.dose}
+                          {taken  ? <Check size={11} style={{ verticalAlign: 'middle', marginRight: 4 }} /> : null}{dose.time} - {dose.medication.name} {dose.medication.dose}
                         </button>
                       );
                     })}
@@ -7949,14 +7951,13 @@ const FinanceView = ({ data, onUpdateFinance }) => {
     return Number.isInteger(v)  ? String(v) : String(Number(v.toFixed(2)));
   };
   const formatCurrency = (n, targetCurrency = currency) => {
-    const amount = targetCurrency === 'COP'  ? Number(n || 0) * copRate : Number(n || 0);
+    const amount = Math.round(targetCurrency === 'COP'  ? Number(n || 0) * copRate : Number(n || 0));
     const locale = targetCurrency === 'COP'  ? 'es-CO' : 'en-US';
-    const decimals = Number.isInteger(amount)  ? 0 : 2;
     return amount.toLocaleString(locale, {
       style: 'currency',
       currency: targetCurrency,
-      minimumFractionDigits: decimals,
-      maximumFractionDigits: 2
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0
     });
   };
   const moneyCOP = (n) => {
@@ -10808,7 +10809,7 @@ const StatisticsView = ({ data }) => {
                 <span className="fire-emoji"><HabitIconGlyph habit={h} size={20} strokeWidth={1.75} /></span>
                 <div style={{ flex: 1 }}>
                   <div style={{ color: COLORS.text, fontWeight: 900, fontSize: 13 }}>{h.name}</div>
-                  <div style={{ color: COLORS.textDim, fontSize: 11 }}>{h.rate < 55  ? 'Est ? flojo: reduce dificultad, cambia horario o pon recordatorio.' : 'No hay hábitos críticos en este periodo.'}</div>
+                  <div style={{ color: COLORS.textDim, fontSize: 11 }}>{h.rate < 55  ? 'Está flojo: reduce dificultad, cambia horario o pon recordatorio.' : 'No hay hábitos críticos en este periodo.'}</div>
                 </div>
                 <div style={{ color: h.rate < 55  ? COLORS.alert : COLORS.success, fontWeight: 900 }}>{h.rate}%</div>
               </div>
@@ -11541,7 +11542,7 @@ const SettingsView = ({ data, onUpdateUser, onResetData, cloudSync, onGenerateRa
       </div>
 
       <ConfirmModal isOpen={showReset} title="Resetear Datos"
-        message="¿estás completamente seguro ? Se eliminarn todos tus hábitos, registros y configuración. Esta acción es irreversible."
+        message="¿Estás completamente seguro? Se eliminarán todos tus hábitos, registros y configuración. Esta acción es irreversible."
         danger onConfirm={() => { onResetData(); setShowReset(false); }}
         onCancel={() => setShowReset(false)} />
     </div>
@@ -11893,7 +11894,7 @@ const PomodoroView = ({ data, onUpdateUser, onUpdatePomodoro }) => {
       } catch(e) { setSearchError('Error de conexión: ' + e.message); setSearchLoading(false); return; }
     }
     // Fallback: 'YouTube embed with search results
-    setSearchError('Configura una API Key de YouTube en Settings para buscar. Sin key, us ? URLs directas.');
+    setSearchError('Configura una API Key de YouTube en Settings para buscar. Sin key, usa URLs directas.');
     setSearchLoading(false);
   };
 
@@ -11958,7 +11959,7 @@ const PomodoroView = ({ data, onUpdateUser, onUpdatePomodoro }) => {
     setTimeout(() => playBeep(copy.tone * 1.18, 0.45), 180);
     requestHabitFlowNotifications().then(() => {
       showHabitFlowNotification('HabitFlow - Pomodoro terminado', {
-        body: `Termin ? tu ${copy.label}. ${copy.next}`,
+        body: `Terminó tu ${copy.label}. ${copy.next}`,
         tag: `habitflow-pomodoro-${finishedMode}-${Date.now()}`,
         renotify: true,
         requireInteraction: true,
@@ -15336,9 +15337,9 @@ const HabitFlowApp = () => {
               if (sentMap[key]) return;
               sentMap[key] = now.getTime();
               changed = true;
-              const category = task.category  ? `  ? ${task.category}` : '';
+              const category = task.category  ? ` - ${task.category}` : '';
               showHabitFlowNotification('HabitFlow - Agenda', {
-                body: `${task.text}\n${reminder.mins > 0  ? `${reminder.label}  ? ` : 'Es hora  ? '}${slot.time}${category}`,
+                body: `${task.text}\n${reminder.mins > 0  ? `${reminder.label} - ` : 'Es hora - '}${slot.time}${category}`,
                 tag: key,
                 data: { view: 'agenda', taskId: task.id, date: slot.date },
                 renotify: true
@@ -15356,8 +15357,8 @@ const HabitFlowApp = () => {
           if (sentMap[key]) return;
           sentMap[key] = now.getTime();
           changed = true;
-          const when = reminder.mins > 0  ? `${reminder.label}  ? ${task.dueTime}` : `Es hora  ? ${task.dueTime}`;
-          const category = task.category  ? `  ? ${task.category}` : '';
+          const when = reminder.mins > 0  ? `${reminder.label} - ${task.dueTime}` : `Es hora - ${task.dueTime}`;
+          const category = task.category  ? ` - ${task.category}` : '';
           showHabitFlowNotification('HabitFlow - Agenda', {
             body: `${task.text}\n${when}${category}`,
             tag: key,
@@ -15461,7 +15462,7 @@ const HabitFlowApp = () => {
         sentMap[key] = now.getTime();
         changed = true;
         showHabitFlowNotification('HabitFlow - Salud', {
-          body: `${dose.medication.name}  ? ${dose.medication.dose}\nEs hora  ? ${dose.time}${dose.medication.instructions  ? `  ? ${dose.medication.instructions}` : ''}`,
+          body: `${dose.medication.name} - ${dose.medication.dose}\nEs hora - ${dose.time}${dose.medication.instructions  ? ` - ${dose.medication.instructions}` : ''}`,
           tag: key,
           data: { view: 'health', medicationId: dose.medication.id, date: dateStr },
           renotify: true,
@@ -15502,10 +15503,11 @@ const HabitFlowApp = () => {
       const formatDebtAmount = (amount, accountCurrency = finance.currency || 'USD') => {
         const currency = accountCurrency === 'COP' ? 'COP' : 'USD';
         const displayAmount = currency === 'COP' ? Number(amount || 0) * copRate : Number(amount || 0);
-        return displayAmount.toLocaleString(currency === 'COP' ? 'es-CO' : 'en-US', {
+        return Math.round(displayAmount).toLocaleString(currency === 'COP' ? 'es-CO' : 'en-US', {
           style: 'currency',
           currency,
-          maximumFractionDigits: currency === 'COP' ? 0 : 2
+          minimumFractionDigits: 0,
+          maximumFractionDigits: 0
         });
       };
 
