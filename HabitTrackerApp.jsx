@@ -8009,7 +8009,7 @@ const FinanceView = ({ data, onUpdateFinance }) => {
       if (!response.ok) throw new Error(`HTTP ${response.status}`);
       const result = await response.json();
       const nextRate = Number(result?.rates?.COP);
-      if (!Number.isFinite(nextRate) || nextRate <= 0) throw new Error('La respuesta no incluy ? COP');
+      if (!Number.isFinite(nextRate) || nextRate <= 0) throw new Error('La respuesta no incluyó COP');
       const updatedAt = result?.time_last_update_utc
          ? new Date(result.time_last_update_utc).toISOString()
         : new Date().toISOString();
@@ -8489,7 +8489,7 @@ const FinanceView = ({ data, onUpdateFinance }) => {
     ...activeSubscriptions.map(item => ({
       id: `sub_${item.id}`,
       name: item.name,
-      subtitle: item.category || 'Suscripcion',
+      subtitle: item.category || 'Suscripción',
       amount: Number(item.amount || 0),
       type: 'expense',
       date: paymentDateForDay(item.day || 1)
@@ -9141,7 +9141,7 @@ const FinanceView = ({ data, onUpdateFinance }) => {
   );
 
   const renderAccountsCompact = () => (
-    <div style={financeCardStyle}>
+    <div className="finance-card" style={financeCardStyle}>
       {sectionTitle('Cuentas', <button onClick={() => setSection('accounts')} style={{ ...ghostButtonStyle, minHeight: 34, padding: '8px 10px' }}>Ver todas <ChevronRight size={14} /></button>)}
       <div style={{ display: 'grid', gap: 10 }}>
         {standardAccountBalances.slice(0, 4).map(account => (
@@ -9162,7 +9162,7 @@ const FinanceView = ({ data, onUpdateFinance }) => {
   );
 
   const renderDebtsCard = () => (
-    <div style={financeCardStyle}>
+    <div className="finance-card" style={financeCardStyle}>
       {sectionTitle('Deudas', <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', justifyContent: 'flex-end' }}>
         <button onClick={() => setShowDebtHelp(true)} style={{ ...ghostButtonStyle, minHeight: 34, padding: '8px 10px' }}>Cómo usar</button>
         <button onClick={() => setSection('debts')} style={{ ...ghostButtonStyle, minHeight: 34, padding: '8px 10px' }}>Ver todas <ChevronRight size={14} /></button>
@@ -9203,8 +9203,8 @@ const FinanceView = ({ data, onUpdateFinance }) => {
   );
 
   const renderUpcomingPayments = () => (
-    <div style={financeCardStyle}>
-      {sectionTitle('Proximos pagos', <button onClick={() => setSection('recurring')} style={{ ...ghostButtonStyle, minHeight: 34, padding: '8px 10px' }}>Ver calendario <ChevronRight size={14} /></button>)}
+    <div className="finance-card" style={financeCardStyle}>
+      {sectionTitle('Próximos pagos', <button onClick={() => setSection('recurring')} style={{ ...ghostButtonStyle, minHeight: 34, padding: '8px 10px' }}>Ver calendario <ChevronRight size={14} /></button>)}
       <div style={{ display: 'grid', gap: 10 }}>
         {upcomingPayments.map(item => {
           const badge = displayDateBadge(item.date);
@@ -9328,7 +9328,7 @@ const FinanceView = ({ data, onUpdateFinance }) => {
               { label: 'Deudas activas', value: debtItems.length },
               { label: 'Total pagado', value: `${debtPaidPct}%` }
             ].map(item => (
-              <div key={item.label} style={{ ...financeCardStyle, padding: 14 }}>
+              <div key={item.label} className="finance-card" style={{ ...financeCardStyle, padding: 14 }}>
                 <div style={{ color: COLORS.textDim, fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.08em', ...s }}>{item.label}</div>
                 <div style={{ color: COLORS.text, marginTop: 7, fontSize: 22, fontFamily: "'DM Serif Display', serif" }}>{item.value}</div>
               </div>
@@ -9524,16 +9524,16 @@ const FinanceView = ({ data, onUpdateFinance }) => {
 
       <div className="finance-layout" style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1.45fr) minmax(330px, 0.82fr)', gap: 14, alignItems: 'start' }}>
         <div className="finance-main-column" style={{ display: 'grid', gap: 14, minWidth: 0 }}>
-          <div style={financeCardStyle}>
+          <div className="finance-card" style={financeCardStyle}>
             {renderFinanceTabs()}
             {renderMainContent()}
           </div>
-          <div className="finance-action-strip" style={{ ...financeCardStyle, padding: 0, borderRadius: 14, overflow: 'visible', position: 'relative', zIndex: showMoreActions ? 20 : 1 }}>
+          <div className="finance-card finance-action-strip" style={{ ...financeCardStyle, padding: 0, borderRadius: 14, overflow: 'visible', position: 'relative', zIndex: showMoreActions ? 20 : 1 }}>
             {renderQuickActions()}
           </div>
           <div className="finance-bottom-grid" style={{ display: 'grid', gridTemplateColumns: 'minmax(260px, 0.72fr) minmax(300px, 1fr)', gap: 14 }}>
             {renderAccountsCompact()}
-            <div style={financeCardStyle}>
+            <div className="finance-card" style={financeCardStyle}>
               {sectionTitle('Transacciones recientes', <button onClick={() => setSection('movements')} style={{ ...ghostButtonStyle, minHeight: 34, padding: '8px 10px' }}>Ver todas <ChevronRight size={14} /></button>)}
               {renderMovementList(recentTransactions)}
             </div>
