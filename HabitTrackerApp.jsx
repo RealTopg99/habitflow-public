@@ -3503,36 +3503,6 @@ const injectStyles = () => {
         line-height: 1 !important;
         margin-bottom: 8px !important;
       }
-      .finance-available-card {
-        min-width: 0 !important;
-        width: 100% !important;
-        padding: 14px !important;
-        border-radius: 16px !important;
-        background: rgba(255,255,255,0.035) !important;
-        border: 1px solid rgba(255,255,255,0.08) !important;
-      }
-      .finance-available-card [style*="font-size: 34"] {
-        font-size: 28px !important;
-      }
-      .finance-kpis {
-        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-        gap: 9px !important;
-        margin-bottom: 14px !important;
-      }
-      .finance-kpis .kpi-card {
-        min-height: 104px !important;
-        padding: 13px !important;
-        border-radius: 16px !important;
-      }
-      .finance-kpis .kpi-card > div:first-child {
-        font-size: 8.5px !important;
-        line-height: 1.25 !important;
-      }
-      .finance-kpis .kpi-card > div:last-child {
-        font-size: 18px !important;
-        line-height: 1.05 !important;
-        word-break: break-word !important;
-      }
       .finance-layout,
       .finance-main-column,
       .finance-side-column {
@@ -3759,7 +3729,6 @@ const injectStyles = () => {
         text-overflow: ellipsis !important;
         white-space: nowrap !important;
       }
-      .finance-chart-card .recharts-responsive-container,
       .finance-pie-card .recharts-responsive-container {
         height: 220px !important;
       }
@@ -4644,13 +4613,6 @@ const injectStyles = () => {
       .finance-layout {
         grid-template-columns: minmax(0, 1fr) !important;
       }
-      .finance-kpis {
-        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-      }
-      .finance-chart-card .recharts-responsive-container {
-        min-width: 0 !important;
-        width: 100% !important;
-      }
     }
 
     @media (max-width: 768px) {
@@ -5391,6 +5353,422 @@ const injectStyles = () => {
       background: var(--modal-row) !important;
       border-color: var(--modal-border) !important;
     }
+    .finance-wallet-shell {
+      max-width: 1540px;
+      margin: 0 auto;
+      padding: clamp(24px, 3vw, 44px) clamp(18px, 3.5vw, 52px) calc(96px + env(safe-area-inset-bottom));
+      color: var(--hf-text);
+    }
+    .finance-wallet-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: flex-end;
+      gap: 22px;
+      margin-bottom: clamp(18px, 3vw, 34px);
+    }
+    .finance-wallet-title {
+      margin: 0;
+      font-family: 'DM Serif Display', serif;
+      font-size: clamp(34px, 4.8vw, 58px);
+      line-height: 0.95;
+      color: var(--hf-text);
+      letter-spacing: -0.04em;
+    }
+    .finance-wallet-subtitle {
+      margin-top: 8px;
+      color: var(--hf-muted);
+      font-size: 14px;
+      line-height: 1.5;
+    }
+    .finance-wallet-actions {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .finance-wallet-control {
+      min-height: 44px;
+      border: 1px solid var(--hf-card-border-strong);
+      border-radius: 14px;
+      background: var(--hf-glass-quiet);
+      color: var(--hf-text);
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 0 14px;
+      box-shadow: inset 0 1px 0 var(--hf-card-highlight);
+    }
+    .finance-wallet-control select {
+      border: 0 !important;
+      outline: 0 !important;
+      background: transparent !important;
+      color: inherit !important;
+      min-width: 118px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .finance-wallet-currency {
+      display: inline-grid;
+      grid-template-columns: 1fr 1fr;
+      min-height: 44px;
+      min-width: 122px;
+      padding: 3px;
+      border-radius: 14px;
+      border: 1px solid var(--hf-card-border-strong);
+      background: var(--hf-surface-soft);
+      gap: 3px;
+    }
+    .finance-wallet-currency button {
+      border: 0;
+      border-radius: 11px;
+      background: transparent;
+      color: var(--hf-muted);
+      font-size: 12px;
+      font-weight: 900;
+      letter-spacing: .04em;
+      cursor: pointer;
+      transition: background .18s ease, color .18s ease, transform .18s ease;
+    }
+    .finance-wallet-currency button[aria-pressed="true"] {
+      background: var(--icon-primary);
+      color: #fff;
+      transform: translateY(-1px);
+      box-shadow: 0 10px 24px rgba(var(--icon-rgb,225,29,72),.22);
+    }
+    .finance-wallet-primary {
+      min-height: 44px;
+      border: 0;
+      border-radius: 14px;
+      padding: 0 18px;
+      background: linear-gradient(135deg, var(--icon-primary), var(--icon-deep));
+      color: #fff;
+      font-weight: 900;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      box-shadow: 0 16px 32px rgba(var(--icon-rgb,225,29,72),.26);
+    }
+    .finance-wallet-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.08fr) minmax(360px, .86fr);
+      gap: clamp(28px, 4.6vw, 68px);
+      align-items: start;
+    }
+    .finance-wallet-column {
+      min-width: 0;
+    }
+    .finance-wallet-label {
+      color: var(--hf-muted);
+      font-size: 13px;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+      font-weight: 800;
+    }
+    .finance-wallet-amount {
+      margin-top: 24px;
+      font-size: clamp(42px, 6vw, 82px);
+      font-weight: 250;
+      letter-spacing: -0.075em;
+      line-height: .95;
+      color: var(--hf-text);
+      word-break: break-word;
+    }
+    .finance-wallet-amount small {
+      font-size: .34em;
+      letter-spacing: -0.02em;
+      color: var(--hf-muted);
+      margin-left: 8px;
+    }
+    .finance-wallet-equivalents {
+      display: grid;
+      gap: 8px;
+      margin-top: 26px;
+      color: var(--hf-muted);
+      font-size: clamp(16px, 1.7vw, 22px);
+      font-weight: 400;
+    }
+    .finance-wallet-divider {
+      height: 1px;
+      background: var(--hf-card-border);
+      margin: clamp(22px, 3.2vw, 38px) 0;
+    }
+    .finance-action-dock {
+      position: relative;
+      display: flex;
+      align-items: center;
+      gap: clamp(18px, 3vw, 42px);
+      flex-wrap: wrap;
+      min-height: 60px;
+    }
+    .finance-action-button {
+      border: 0;
+      background: transparent;
+      color: var(--hf-muted);
+      display: inline-grid !important;
+      place-items: center;
+      width: 48px !important;
+      min-width: 48px !important;
+      max-width: 48px !important;
+      height: 48px !important;
+      min-height: 48px !important;
+      border-radius: 999px;
+      cursor: pointer;
+      transition: color .18s ease, background .18s ease, transform .18s ease;
+      padding: 0 !important;
+    }
+    .finance-action-button:hover {
+      color: var(--hf-text);
+      background: var(--hf-hover);
+      transform: translateY(-1px);
+    }
+    .finance-action-button.is-primary {
+      width: 56px !important;
+      min-width: 56px !important;
+      max-width: 56px !important;
+      height: 56px !important;
+      min-height: 56px !important;
+      background: #f8fafc;
+      color: #080a0d;
+      box-shadow: 0 18px 42px rgba(0,0,0,.28), inset 0 1px 0 rgba(255,255,255,.8);
+    }
+    .finance-action-menu {
+      position: absolute;
+      left: 0;
+      top: calc(100% + 14px);
+      width: min(390px, calc(100vw - 42px));
+      padding: 10px;
+      border: 1px solid var(--hf-card-border-strong);
+      border-radius: 20px;
+      background: rgba(11, 14, 19, .98);
+      box-shadow: 0 28px 80px rgba(0,0,0,.52);
+      z-index: 80;
+      display: grid;
+      gap: 8px;
+    }
+    .finance-action-menu button {
+      border: 1px solid var(--hf-card-border);
+      background: rgba(255,255,255,.035);
+      color: var(--hf-text);
+      border-radius: 15px;
+      min-height: 64px;
+      padding: 12px;
+      display: grid;
+      grid-template-columns: 36px minmax(0,1fr) 18px;
+      gap: 12px;
+      align-items: center;
+      text-align: left;
+      cursor: pointer;
+    }
+    .finance-action-menu button:hover {
+      background: var(--hf-hover);
+      border-color: rgba(var(--icon-rgb,225,29,72),.32);
+    }
+    .finance-row-list {
+      display: grid;
+    }
+    .finance-ref-row {
+      display: grid;
+      grid-template-columns: 30px minmax(0, 1fr) auto;
+      gap: 18px;
+      align-items: center;
+      min-height: 78px;
+      border-bottom: 1px solid var(--hf-card-border);
+      color: var(--hf-text);
+    }
+    .finance-ref-row:last-child {
+      border-bottom: 0;
+    }
+    .finance-ref-row-title {
+      font-size: 18px;
+      font-weight: 650;
+      color: var(--hf-text);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .finance-ref-row-meta {
+      margin-top: 5px;
+      color: var(--hf-muted);
+      font-size: 13px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .finance-ref-amount {
+      font-size: 18px;
+      font-weight: 500;
+      text-align: right;
+      white-space: nowrap;
+    }
+    .finance-period-card {
+      min-width: 0;
+      padding-left: clamp(0px, 2vw, 44px);
+      border-left: 1px solid var(--hf-card-border-strong);
+    }
+    .finance-period-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 18px;
+    }
+    .finance-period-tabs,
+    .finance-mini-tabs {
+      display: flex;
+      align-items: center;
+      gap: 28px;
+      margin-top: 24px;
+      color: var(--hf-muted);
+      font-size: 14px;
+      text-transform: uppercase;
+      letter-spacing: .12em;
+    }
+    .finance-period-tabs button,
+    .finance-mini-tabs button {
+      border: 0;
+      padding: 0 0 8px;
+      color: inherit;
+      background: transparent;
+      cursor: pointer;
+      position: relative;
+      letter-spacing: inherit;
+      font: inherit;
+    }
+    .finance-period-tabs button.is-active,
+    .finance-mini-tabs button.is-active {
+      color: var(--hf-text);
+    }
+    .finance-period-tabs button.is-active::after,
+    .finance-mini-tabs button.is-active::after {
+      content: '';
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      height: 1px;
+      background: currentColor;
+    }
+    .finance-period-chart {
+      width: 100%;
+      height: 250px;
+      margin-top: 28px;
+    }
+    .finance-period-summary {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin-top: 26px;
+      text-align: center;
+    }
+    .finance-period-summary > div + div {
+      border-left: 1px solid var(--hf-card-border-strong);
+    }
+    .finance-period-amount {
+      margin-top: 30px;
+      font-size: clamp(38px, 4.8vw, 68px);
+      line-height: 1.02;
+    }
+    .finance-wallet-link {
+      width: 100%;
+      border: 0;
+      background: transparent;
+      color: var(--hf-muted);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 18px 0 0;
+      cursor: pointer;
+      font-weight: 650;
+      transition: color .18s ease, transform .18s ease;
+    }
+    .finance-wallet-link:hover {
+      color: var(--hf-text);
+      transform: translateY(-1px);
+    }
+    .finance-wallet-icon-link {
+      width: 42px;
+      height: 42px;
+      border: 1px solid var(--hf-card-border);
+      border-radius: 999px;
+      background: transparent;
+      color: var(--hf-muted);
+      display: inline-grid;
+      place-items: center;
+      cursor: pointer;
+      transition: color .18s ease, background .18s ease, border-color .18s ease, transform .18s ease;
+    }
+    .finance-wallet-icon-link:hover {
+      color: var(--hf-text);
+      background: var(--hf-hover);
+      border-color: var(--hf-card-border-strong);
+      transform: translateY(-1px);
+    }
+    .finance-upcoming-title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-top: clamp(34px, 4vw, 58px);
+    }
+    .finance-detail-panel {
+      margin-top: 34px;
+      border: 1px solid var(--hf-card-border-strong);
+      border-radius: 24px;
+      padding: 18px;
+      background: var(--hf-glass-quiet);
+      overflow: visible;
+    }
+    html[data-theme-mode="pinkLight"] .finance-action-button.is-primary {
+      background: #161116;
+      color: #fff;
+      box-shadow: 0 18px 36px rgba(80,37,51,.20);
+    }
+    html[data-theme-mode="pinkLight"] .finance-action-menu {
+      background: rgba(255, 250, 252, .98);
+      box-shadow: 0 28px 80px rgba(104,62,78,.20);
+    }
+    html[data-theme-mode="pinkLight"] .finance-action-menu button {
+      background: rgba(255,255,255,.78);
+    }
+    html[data-theme-mode="pinkLight"] .finance-wallet-primary {
+      color: #fff;
+    }
+    .finance-modal-backdrop,
+    .agenda-task-backdrop,
+    .workout-exercise-backdrop,
+    .hf-modal-backdrop {
+      box-sizing: border-box !important;
+    }
+    .finance-modal-card,
+    .agenda-task-modal,
+    .workout-exercise-modal,
+    .hf-modal-panel {
+      max-width: min(720px, calc(100vw - 32px)) !important;
+      max-height: calc(100dvh - 44px) !important;
+      overflow-y: auto !important;
+      overflow-x: hidden !important;
+      box-sizing: border-box !important;
+      overscroll-behavior: contain;
+    }
+    .finance-modal-card *,
+    .agenda-task-modal *,
+    .workout-exercise-modal *,
+    .hf-modal-panel * {
+      box-sizing: border-box !important;
+    }
+    @media (max-width: 980px) {
+      .finance-wallet-grid {
+        grid-template-columns: 1fr;
+      }
+      .finance-period-card {
+        border-left: 0;
+        border-top: 1px solid var(--hf-card-border-strong);
+        padding-left: 0;
+        padding-top: 28px;
+      }
+    }
     @media (max-width: 768px) {
       .content-area {
         padding-bottom: calc(118px + env(safe-area-inset-bottom)) !important;
@@ -5491,26 +5869,115 @@ const injectStyles = () => {
       .finance-movement-row {
         grid-template-columns: 8px minmax(0, 1fr) auto 38px !important;
       }
+      .finance-wallet-shell {
+        padding: 22px 14px calc(132px + env(safe-area-inset-bottom)) !important;
+        max-width: 100% !important;
+        overflow-x: hidden !important;
+      }
+      .finance-wallet-header {
+        display: flex !important;
+        justify-content: stretch !important;
+        gap: 16px !important;
+        margin-bottom: 22px !important;
+      }
+      .finance-wallet-actions {
+        width: 100% !important;
+        display: grid !important;
+        grid-template-columns: 1fr !important;
+        justify-content: stretch !important;
+        gap: 10px !important;
+      }
+      .finance-wallet-control,
+      .finance-wallet-currency,
+      .finance-wallet-primary {
+        width: 100% !important;
+      }
+      .finance-wallet-amount {
+        font-size: clamp(34px, 11vw, 48px) !important;
+        letter-spacing: -0.05em !important;
+        word-break: break-word !important;
+      }
+      .finance-action-dock {
+        flex-wrap: nowrap !important;
+        overflow-x: auto !important;
+        gap: 18px !important;
+        padding: 2px 2px 10px !important;
+        scrollbar-width: none;
+      }
+      .finance-action-dock::-webkit-scrollbar {
+        display: none;
+      }
+      .finance-action-button {
+        flex: 0 0 auto !important;
+      }
+      .finance-action-menu {
+        position: fixed !important;
+        left: 14px !important;
+        right: 14px !important;
+        top: auto !important;
+        bottom: calc(88px + env(safe-area-inset-bottom)) !important;
+        width: auto !important;
+        max-height: 58vh !important;
+        overflow: auto !important;
+        z-index: 12000 !important;
+      }
+      .finance-ref-row {
+        grid-template-columns: 26px minmax(0, 1fr) !important;
+        gap: 12px !important;
+        min-height: auto !important;
+        padding: 13px 0 !important;
+      }
+      .finance-ref-row-title {
+        font-size: 15px !important;
+      }
+      .finance-ref-row-meta {
+        font-size: 11px !important;
+      }
+      .finance-ref-amount {
+        grid-column: 2 !important;
+        text-align: left !important;
+        font-size: 14px !important;
+      }
+      .finance-period-summary {
+        grid-template-columns: 1fr !important;
+        text-align: left !important;
+      }
+      .finance-period-summary > div + div {
+        border-left: 0 !important;
+        border-top: 1px solid var(--hf-card-border-strong) !important;
+        padding-top: 14px !important;
+      }
+      .finance-period-tabs,
+      .finance-mini-tabs {
+        gap: 18px !important;
+        overflow-x: auto !important;
+        white-space: nowrap !important;
+      }
+      .finance-period-chart {
+        height: 220px !important;
+      }
     }
     @media (max-width: 600px) {
       .agenda-task-backdrop,
       .finance-modal-backdrop,
       .workout-exercise-backdrop {
-        align-items: flex-start !important;
+        align-items: flex-end !important;
         justify-content: center !important;
-        padding: max(12px, env(safe-area-inset-top)) 12px calc(100px + env(safe-area-inset-bottom)) !important;
-        overflow-y: auto !important;
+        padding: 10px !important;
+        overflow: hidden !important;
         overflow-x: hidden !important;
         z-index: 10000 !important;
       }
+      .finance-modal-card,
       .agenda-task-modal {
         width: 100% !important;
-        max-width: calc(100vw - 24px) !important;
-        max-height: calc(100dvh - 30px) !important;
+        max-width: 100% !important;
+        max-height: calc(100dvh - 20px) !important;
         margin: 0 auto !important;
         padding: 18px 16px !important;
         border-radius: 22px !important;
-        overflow: hidden !important;
+        overflow-y: auto !important;
+        overflow-x: hidden !important;
       }
       .agenda-task-modal,
       .agenda-task-modal * {
@@ -5576,6 +6043,24 @@ const injectStyles = () => {
         width: 30px !important;
         height: 30px !important;
         border-radius: 11px !important;
+      }
+      .workout-exercise-modal {
+        width: 100% !important;
+        max-width: 100% !important;
+        max-height: calc(100dvh - 20px) !important;
+        padding: 18px !important;
+        border-radius: 22px !important;
+      }
+      .hf-modal-backdrop {
+        align-items: flex-end !important;
+        padding: 10px !important;
+      }
+      .hf-modal-panel {
+        width: 100% !important;
+        max-width: 100% !important;
+        max-height: calc(100dvh - 20px) !important;
+        border-radius: 24px !important;
+        padding: 22px !important;
       }
     }
     .recharts-cartesian-grid line {
@@ -8481,7 +8966,7 @@ const FinanceView = ({ data, onUpdateFinance }) => {
   };
   const moneyUSD = (n) => formatCurrency(n, 'USD');
   const money = (n) => formatCurrency(n, currency);
-  const accountMoney = (n) => formatCurrency(n, currency);
+  const accountMoney = (n, targetCurrency = currency) => formatCurrency(n, targetCurrency);
   const switchDraftCurrency = (amount, fromCurrency, toCurrency) => {
     if (amount === '' || amount === null || amount === undefined) return '';
     const asUsd = fromDisplayAmount(amount, fromCurrency);
@@ -8636,8 +9121,7 @@ const FinanceView = ({ data, onUpdateFinance }) => {
 
   const insights = [
     budgetPct > 90  ? `Alerta: ya usaste ${budgetPct}% del presupuesto mensual.` : `Presupuesto sano: vas en ${budgetPct}% del mes.`,
-    available < 0  ? `Tu disponible proyectado queda negativo: ${money(available)}.` : `Disponible proyectado después de gastos, recurrentes y suscripciones: ${money(available)}.`,
-    subscriptionsExpense > 0  ? `Suscripciones activas estimadas este mes: ${money(subscriptionsExpense)}.` : 'Agrega tus suscripciones para ver cuánto consumen al mes.',
+    available < 0  ? `Tu disponible proyectado queda negativo: ${money(available)}.` : `Disponible proyectado después de gastos y pagos recurrentes: ${money(available)}.`,
     recurringExpense > 0  ? `Pagos recurrentes estimados este mes: ${money(recurringExpense)}.` : 'Agrega pagos recurrentes para anticipar obligaciones.'
   ];
 
@@ -8936,13 +9420,12 @@ const FinanceView = ({ data, onUpdateFinance }) => {
 
   const debtAccounts = accountBalances.filter(account => account.group === 'credit' || account.group === 'loan' || Number(account.current || 0) < 0);
   const debtItems = debtAccounts.map((account, index) => {
-    const pending = Math.abs(Number(account.current || 0));
-    const savedTotal = Number(account.debtTotal || 0);
-    const total = savedTotal > 0
-      ? Math.max(savedTotal, pending, 1)
-      : Math.max(pending, Math.abs(Number(account.balance || 0)) * 1.65, pending * 1.35, 1);
+    const rawPending = Math.max(0, Math.abs(Number(account.current || 0)));
+    const savedTotal = Math.max(0, Number(account.debtTotal || 0));
+    const total = savedTotal > 0 ? Math.max(savedTotal, rawPending, 1) : Math.max(rawPending, 1);
+    const pending = Math.min(total, rawPending);
     const paid = Math.max(0, total - pending);
-    const pct = Math.min(100, Math.round((paid / total) * 100));
+    const pct = total > 0 ? Math.min(100, Math.max(0, Math.round((paid / total) * 100))) : 0;
     const dueDate = new Date(monthDate);
     dueDate.setDate(Math.min(28, 5 + (index * 10)));
     const savedDueDate = account.debtDueDate ? new Date(`${account.debtDueDate}T12:00:00`) : dueDate;
@@ -9248,48 +9731,55 @@ const FinanceView = ({ data, onUpdateFinance }) => {
 
   const renderQuickActions = () => {
     const actions = [
-      { label: 'Nueva transacción', icon: Plus, run: () => openTransactionFlow() },
-      { label: 'Nuevo gasto', icon: ArrowDown, run: () => openTransactionFlow('expense') },
-      { label: 'Nuevo ingreso', icon: ArrowUp, run: () => openTransactionFlow('income') },
-      { label: 'Transferencia', icon: Repeat, run: () => openTransactionFlow('transfer') },
-      { label: 'Más acciones', icon: MoreHorizontal, run: () => setShowMoreActions(value => !value) }
+      { label: 'Nuevo / Agregar', icon: Plus, primary: true, run: () => setShowMoreActions(value => !value) },
+      { label: 'Cuentas', icon: CreditCard, run: () => { setSection('accounts'); setShowMoreActions(false); } },
+      { label: 'Transacciones', icon: FileText, run: () => { setSection('movements'); setShowMoreActions(false); } },
+      { label: 'Categorías', icon: List, run: () => { setSection('budget'); setShowMoreActions(false); } },
+      { label: 'Exportar', icon: Download, run: () => { setShowMoreActions(false); window.alert?.('Exportación próximamente: tus datos siguen guardados en HabitFlow.'); } },
+      { label: 'Filtros', icon: Settings, run: () => { setSection('movements'); setShowMoreActions(false); } }
     ];
     const extraActions = [
+      { label: 'Nueva transacción', hint: 'Ingreso, gasto o transferencia', icon: Plus, run: () => openTransactionFlow() },
       { label: 'Nueva cuenta', hint: 'Bancos, efectivo y billeteras', icon: CreditCard, run: () => { setSection('accounts'); setShowMoreActions(false); } },
       { label: 'Nueva deuda', hint: 'Fecha, cuota mínima y aviso', icon: AlertCircle, run: openDebtCreation },
-      { label: 'Nuevo presupuesto', hint: 'Límites por categoría', icon: Target, run: () => { setSection('budget'); setShowMoreActions(false); } },
-      { label: 'Nueva categoría', hint: 'Organiza tus gastos', icon: List, run: () => { setSection('budget'); setShowMoreActions(false); } },
-      { label: 'Pagos recurrentes', hint: 'Cuotas y servicios fijos', icon: Repeat, run: () => { setSection('recurring'); setShowMoreActions(false); } }
+      { label: 'Nuevo presupuesto', hint: 'Límite mensual por categoría', icon: Target, run: () => { setSection('budget'); setShowMoreActions(false); } },
+      { label: 'Nueva categoría', hint: 'Organiza tus movimientos', icon: List, run: () => { setSection('budget'); setShowMoreActions(false); } }
     ];
     return (
-      <div style={{ position: 'relative', overflow: 'visible' }}>
-        <div className="finance-quick-actions" style={{ display: 'grid', gridTemplateColumns: 'repeat(5, minmax(120px, 1fr))', gap: 8, overflowX: 'auto', padding: '10px 12px' }}>
-          {actions.map(action => {
-            const Icon = action.icon;
-            const active = showMoreActions && action.label === 'Más acciones';
-            return (
-              <button key={action.label} onClick={action.run} style={{ ...ghostButtonStyle, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 9, minHeight: 42, flex: '0 0 auto', background: active ? `${COLORS.primary}18` : 'transparent', borderColor: active ? `${COLORS.primary}66` : COLORS.border }}>
-                <Icon size={16} />
-                {action.label}
-              </button>
-            );
-          })}
-        </div>
+      <div className="finance-action-dock" aria-label="Acciones de Finanzas">
+        {actions.map(action => {
+          const Icon = action.icon;
+          const active = showMoreActions && action.primary;
+          return (
+            <button
+              key={action.label}
+              type="button"
+              onClick={action.run}
+              className={`finance-action-button ${action.primary ? 'is-primary' : ''}`}
+              aria-label={action.label}
+              aria-expanded={action.primary ? active : undefined}
+              title={action.label}
+            >
+              <Icon size={action.primary ? 23 : 19} />
+            </button>
+          );
+        })}
         {showMoreActions && (
-          <div className="finance-more-actions-panel" style={{ position: 'absolute', right: 12, top: 58, zIndex: 30, width: 'min(430px, calc(100vw - 42px))', padding: 12, borderRadius: 18, background: `linear-gradient(145deg, ${COLORS.card}, ${COLORS.bg})`, border: `1px solid ${COLORS.border}`, boxShadow: '0 24px 70px rgba(0,0,0,0.48)', display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: 10 }}>
+          <div className="finance-action-menu" role="menu" aria-label="Crear en Finanzas">
             {extraActions.map(item => {
               const Icon = item.icon;
               return (
-                <button key={item.label} onClick={item.run} style={{ border: `1px solid ${COLORS.border}`, background: 'rgba(255,255,255,0.035)', color: COLORS.text, textAlign: 'left', borderRadius: 14, padding: 12, cursor: 'pointer', display: 'grid', gridTemplateColumns: '34px minmax(0,1fr)', gap: 10, alignItems: 'center', minHeight: 74, ...s }}>
-                  <span style={{ width: 34, height: 34, borderRadius: 12, display: 'grid', placeItems: 'center', background: `${COLORS.primary}14`, color: COLORS.primary }}><Icon size={16} /></span>
+                <button key={item.label} type="button" onClick={item.run}>
+                  <span style={{ width: 36, height: 36, borderRadius: 13, display: 'grid', placeItems: 'center', background: `${COLORS.primary}14`, color: COLORS.primary }}><Icon size={16} /></span>
                   <span style={{ minWidth: 0 }}>
                     <strong style={{ display: 'block', fontSize: 13, color: COLORS.text }}>{item.label}</strong>
                     <span style={{ display: 'block', color: COLORS.textDim, fontSize: 11, marginTop: 3, lineHeight: 1.35 }}>{item.hint}</span>
                   </span>
+                  <ChevronRight size={15} style={{ color: COLORS.textDim }} />
                 </button>
               );
             })}
-            <button onClick={() => setShowMoreActions(false)} style={{ gridColumn: '1 / -1', border: 'none', background: 'transparent', color: COLORS.textDim, cursor: 'pointer', padding: '4px 0', ...s }}>Cerrar</button>
+            <button type="button" onClick={() => setShowMoreActions(false)} style={{ gridTemplateColumns: '1fr', justifyItems: 'center', minHeight: 44, color: COLORS.textDim }}>Cerrar</button>
           </div>
         )}
       </div>
@@ -10063,619 +10553,191 @@ const FinanceView = ({ data, onUpdateFinance }) => {
     );
   };
 
-  const renderFinanceDashboard = () => (
-    <>
-    <div className="finance-mobile-view finance-dashboard-pro" style={{ animation: 'fadeIn 0.28s ease-out', color: COLORS.text }}>
-      <div className="finance-pro-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 18, flexWrap: 'wrap', marginBottom: 18 }}>
-        <div>
-          <h2 style={{ margin: 0, fontSize: 34, lineHeight: 1, fontFamily: "'DM Serif Display', serif", color: COLORS.text }}>Finanzas</h2>
-          <div style={{ color: COLORS.textDim, fontSize: 13, marginTop: 7, ...s }}>Administra tu dinero y toma el control de tu futuro.</div>
-        </div>
-        <div className="finance-header-actions" style={{ display: 'flex', gap: 10, alignItems: 'center', flexWrap: 'wrap' }}>
-          <label style={{ display: 'inline-flex', alignItems: 'center', gap: 9, minHeight: 42, minWidth: 148, ...ghostButtonStyle }}>
-            <Calendar size={15} />
-            <select value={selectedMonth} onChange={e => setSelectedMonth(e.target.value)} style={{ background: 'transparent', border: 0, color: COLORS.text, outline: 0, minWidth: 102, cursor: 'pointer', ...s }}>
-              {monthPickerOptions.map(item => <option key={item.key} value={item.key}>{item.label}</option>)}
-            </select>
-          </label>
-          <div
-            className="finance-global-currency-switch"
-            title="Cambiar toda la vista de Finanzas entre USD y COP"
-            style={{
-              display: 'grid',
-              gridTemplateColumns: '1fr 1fr',
-              gap: 3,
-              padding: 3,
-              minHeight: 42,
-              minWidth: 122,
-              borderRadius: 14,
-              background: COLORS.bg,
-              border: `1px solid ${COLORS.border}`,
-              boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.035)',
-              ...s
-            }}
-          >
-            {['USD', 'COP'].map(cur => {
-              const active = currency === cur;
-              return (
-                <button
-                  key={cur}
-                  type="button"
-                  onClick={() => changeFinanceCurrency(cur)}
-                  aria-pressed={active}
-                  style={{
-                    border: 'none',
-                    borderRadius: 11,
-                    background: active ? COLORS.primary : 'transparent',
-                    color: active ? '#fff' : COLORS.textDim,
-                    cursor: 'pointer',
-                    fontSize: 12,
-                    fontWeight: 900,
-                    letterSpacing: '0.04em',
-                    transition: 'background 180ms ease, color 180ms ease, transform 180ms ease',
-                    transform: active ? 'translateY(-1px)' : 'none',
-                    minHeight: 34,
-                    padding: '0 10px',
-                    ...s
-                  }}
-                >
-                  {cur}
-                </button>
-              );
-            })}
-          </div>
-          <button onClick={() => openTransactionFlow()} style={proButtonStyle}><Plus size={16} /> Nueva transacción</button>
-        </div>
-      </div>
+  const renderFinanceDashboard = () => {
+    const periodTrend = deltaPct(balance, previousTotals.balance);
+    const periodTrendColor = periodTrend >= 0 ? '#35C46A' : COLORS.primary;
+    const periodLineColor = balance >= 0 ? '#F4F1EA' : COLORS.primary;
+    const monthTabs = Array.from({ length: 5 }, (_, index) => {
+      const d = new Date(monthDate);
+      d.setMonth(monthDate.getMonth() + index);
+      const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+      const label = d.toLocaleDateString('es-CO', { month: 'long' }).replace('.', '');
+      return { key, label: label.charAt(0).toUpperCase() + label.slice(1) };
+    });
+    const transactionRows = recentTransactions.slice(0, 5);
+    const upcomingRows = upcomingPayments.slice(0, 5);
 
-      <div className="finance-kpis" style={{ display: 'grid', gridTemplateColumns: 'repeat(5, minmax(160px, 1fr))', gap: 12, marginBottom: 14 }}>
-        {financeMetrics.map((card, index) => (
-          <div key={card.label} className="kpi-card finance-pro-kpi" style={{ ...financeCardStyle, minHeight: 118, position: 'relative', animation: `fadeInUp 0.32s ease ${index * 0.04}s both` }}>
-            <div style={{ color: COLORS.textDim, fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 8, ...s }}>{card.label}</div>
-            <div style={{ color: COLORS.text, fontSize: 24, fontFamily: "'DM Serif Display', serif", lineHeight: 1.05, wordBreak: 'break-word' }}>{card.value}</div>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8, marginTop: 8 }}>
-              <span style={{ color: COLORS.textDim, fontSize: 11, ...s }}>{card.hint}</span>
-              {card.trend !== null && (
-                <span style={{ color: card.trend >= 0 ? '#35C46A' : COLORS.primary, fontSize: 11, fontWeight: 850, ...s }}>
-                  {card.trend >= 0 ? '↑' : '↓'} {Math.abs(card.trend)}%
-                </span>
-              )}
-            </div>
-            <svg viewBox="0 0 100 38" preserveAspectRatio="none" style={{ width: '100%', height: 38, marginTop: 10, opacity: 0.95 }}>
-              <path d={buildSparkPath(card.series)} fill="none" stroke={card.color} strokeWidth="2" strokeLinecap="round" />
-            </svg>
-          </div>
-        ))}
-      </div>
-
-      <div className="finance-layout" style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1.45fr) minmax(330px, 0.82fr)', gap: 14, alignItems: 'start' }}>
-        <div className="finance-main-column" style={{ display: 'grid', gap: 14, minWidth: 0 }}>
-          <div className="finance-card" style={financeCardStyle}>
-            {renderFinanceTabs()}
-            {renderMainContent()}
-          </div>
-          <div className="finance-card finance-action-strip" style={{ ...financeCardStyle, padding: 0, borderRadius: 14, overflow: 'visible', position: 'relative', zIndex: showMoreActions ? 20 : 1 }}>
-            {renderQuickActions()}
-          </div>
-          <div className="finance-bottom-grid" style={{ display: 'grid', gridTemplateColumns: 'minmax(260px, 0.72fr) minmax(300px, 1fr)', gap: 14 }}>
-            {renderAccountsCompact()}
-            <div className="finance-card" style={financeCardStyle}>
-              {sectionTitle('Transacciones recientes', <button onClick={() => setSection('movements')} style={{ ...ghostButtonStyle, minHeight: 34, padding: '8px 10px' }}>Ver todas <ChevronRight size={14} /></button>)}
-              {renderMovementList(recentTransactions)}
-            </div>
-          </div>
-        </div>
-        <div className="finance-side-column" style={{ display: 'grid', gap: 14, minWidth: 0 }}>
-          {renderDebtsCard()}
-          {renderUpcomingPayments()}
-        </div>
-      </div>
-    </div>
-    {renderTransactionModal()}
-    {renderDebtPaymentModal()}
-    {renderDebtModal()}
-    {renderDebtHelpModal()}
-    </>
-  );
-
-  return renderFinanceDashboard();
-
-  return (
-    <div className="finance-mobile-view" style={{ animation: 'fadeIn 0.3s ease-out' }}>
-      <div className="lab-shell-card finance-hero" style={{ borderRadius: 26, padding: 28, marginBottom: 20 }}>
-        <div className="finance-hero-grid" style={{ position: 'relative', zIndex: 1, display: 'flex', justifyContent: 'space-between', gap: 20, flexWrap: 'wrap' }}>
-          <div>
-            <div className="lab-pill" style={{ display: 'inline-flex', padding: '7px 11px', fontSize: 11, marginBottom: 12 }}>FINANZAS PRO</div>
-            <h2 className="lab-hero-title" style={{ fontSize: 36, lineHeight: 1.05, marginBottom: 8 }}>Tu centro financiero personal.</h2>
-            <div style={{ color: COLORS.textDim, fontSize: 13, lineHeight: 1.7, maxWidth: 620 }}>Presupuesto por categoría, flujo de caja, cuentas, recurrentes, suscripciones e insights en una sola vista.</div>
-          </div>
-          <div className="finance-available-card" style={{ minWidth: 250 }}>
-            <div style={{ fontSize: 11, color: COLORS.textDim, marginBottom: 6, ...s }}>Disponible proyectado</div>
-            <div style={{ fontSize: 34, color: available >= 0  ? COLORS.success : COLORS.alert, fontFamily: "'DM Serif Display', serif" }}>{money(available)}</div>
-            <div style={{ color: COLORS.textDim, fontSize: 11, ...s }}>Mes: {monthDate.toLocaleDateString('es-ES', { month: 'long', year: 'numeric' })}</div>
-            <div className="finance-currency-controls" style={{ display: 'grid', gridTemplateColumns: '116px minmax(0, 1fr)', gap: 8, marginTop: 12, alignItems: 'center' }}>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 3, padding: 3, borderRadius: 999, background: COLORS.bg, border: `1px solid ${COLORS.border}` }}>
+    return (
+      <>
+        <div className="finance-wallet-shell finance-mobile-view finance-dashboard-pro" style={{ animation: 'fadeIn 0.28s ease-out' }}>
+          <div className="finance-wallet-header">
+            <div className="finance-wallet-actions">
+              <label className="finance-wallet-control">
+                <Calendar size={15} />
+                <select value={selectedMonth} onChange={e => setSelectedMonth(e.target.value)}>
+                  {monthPickerOptions.map(item => <option key={item.key} value={item.key}>{item.label}</option>)}
+                </select>
+              </label>
+              <div className="finance-wallet-currency" title="Cambiar toda la vista de Finanzas entre USD y COP">
                 {['USD', 'COP'].map(cur => (
-                  <button key={cur} onClick={() => onUpdateFinance(prev => ({ ...prev, currency: cur }))} style={{
-                    border: 'none',
-                    borderRadius: 999,
-                    padding: '7px 0',
-                    cursor: 'pointer',
-                    background: currency === cur  ? COLORS.primary : 'transparent',
-                    color: currency === cur  ? '#fff' : COLORS.textDim,
-                    fontSize: 10,
-                    fontWeight: 900,
-                    ...s
-                  }}>{cur}</button>
+                  <button key={cur} type="button" onClick={() => changeFinanceCurrency(cur)} aria-pressed={currency === cur}>
+                    {cur}
+                  </button>
                 ))}
               </div>
-              <button
-                type="button"
-                onClick={() => refreshExchangeRate(true)}
-                disabled={rateStatus === 'loading'}
-                title="Actualizar tasa USD/COP"
-                style={{ ...inputStyle, padding: '7px 9px', fontSize: 10, cursor: rateStatus === 'loading'  ? 'wait' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8, textAlign: 'left' }}
-              >
-                <span style={{ minWidth: 0 }}>
-                  <strong style={{ color: COLORS.text, display: 'block' }}>1 USD = {copRate.toLocaleString('es-CO', { maximumFractionDigits: 2 })} COP</strong>
-                  <span style={{ color: COLORS.textDim, display: 'block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                    {finance.copRateUpdatedAt
-                       ? `Actualizada ${new Date(finance.copRateUpdatedAt).toLocaleString('es-CO', { dateStyle: 'short', timeStyle: 'short' })}`
-                      : 'Tasa de respaldo'}
-                  </span>
-                </span>
-                <RefreshCw size={13} style={{ flexShrink: 0, animation: rateStatus === 'loading'  ? 'spin 0.8s linear infinite' : 'none' }} />
+              <button type="button" onClick={() => openTransactionFlow()} className="finance-wallet-primary">
+                <Plus size={16} /> Nueva transacción
               </button>
             </div>
-            <div style={{ color: rateError  ? COLORS.alert : COLORS.textDim, fontSize: 10, marginTop: 6, lineHeight: 1.4, ...s }}>
-              {rateError || `Vista global: ${currency}. Cada cuenta puede tener su propia moneda.`}
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div className="finance-kpis" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(170px, 1fr))', gap: 12, marginBottom: 20 }}>
-        {[
-          { label: 'Ingresos del mes', value: money(income), color: COLORS.success },
-          { label: 'Gastos del mes', value: money(expenses), color: COLORS.alert },
-          { label: 'Balance mensual', value: money(balance), color: balance >= 0  ? COLORS.success : COLORS.alert },
-          { label: 'Patrimonio', value: money(netWorth), color: COLORS.text },
-          { label: 'Tasa de ahorro', value: `${savingRate}%`, color: savingRate >= 10  ? COLORS.success : COLORS.primary }
-        ].map(k => (
-          <div key={k.label} className="kpi-card" style={{ background: COLORS.card, border: `1px solid ${COLORS.border}`, borderRadius: 16, padding: 18 }}>
-            <div style={{ fontSize: 10, color: COLORS.textDim, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 8 }}>{k.label}</div>
-            <div style={{ fontSize: 22, color: k.color, fontWeight: 700 }}>{k.value}</div>
-          </div>
-        ))}
-      </div>
-
-      <div className="finance-section-tabs" style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 20 }}>
-        {financeSections.map(item => {
-          const Icon = item.icon;
-          const active = section === item.id;
-          return (
-            <button key={item.id} onClick={() => setSection(item.id)} style={{
-              display: 'inline-flex', alignItems: 'center', gap: 8,
-              border: `1px solid ${active  ? COLORS.primary : COLORS.border}`,
-              background: active  ? `${COLORS.primary}18` : COLORS.card,
-              color: active  ? COLORS.primary : COLORS.textDim,
-              borderRadius: 999,
-              padding: '10px 14px',
-              cursor: 'pointer',
-              fontWeight: 800,
-              fontSize: 12,
-              ...s
-            }}>
-              <Icon size={14} /> {item.label}
-            </button>
-          );
-        })}
-      </div>
-
-      <div className="finance-layout" style={{ display: 'grid', gridTemplateColumns: ['overview', 'accounts', 'budget'].includes(section)  ? 'minmax(0, 1.45fr) minmax(330px, 0.9fr)' : '1fr', gap: 18, alignItems: 'start' }}>
-        <div className="finance-main-column" style={{ display: ['overview', 'movements', 'accounts', 'budget'].includes(section)  ? 'grid' : 'none', gap: 18 }}>
-          <div className="finance-card finance-transaction-card" style={{ ...cardStyle, display: section === 'movements'  ? 'block' : 'none' }}>
-            <div className="finance-card-header" style={{ display: 'flex', justifyContent: 'space-between', gap: 12, alignItems: 'center', marginBottom: 14 }}>
-              <h3 style={{ fontSize: 17, color: COLORS.text, margin: 0 }}>Registrar movimiento</h3>
-              <input type="month" value={selectedMonth} onClick={e => openNativeDatePicker(e.currentTarget)} onFocus={e => openNativeDatePicker(e.currentTarget)} onChange={e => setSelectedMonth(e.target.value || today.slice(0, 7))} style={{ ...inputStyle, width: 160, cursor: 'pointer' }} />
-            </div>
-            <div className="finance-form-row finance-form-row-3" style={{ display: 'grid', gridTemplateColumns: '110px 1fr 1fr', gap: 10, marginBottom: 10 }}>
-              <select value={form.type} onChange={e => setForm(f => ({ ...f, type: e.target.value, category: e.target.value === 'income'  ? 'income' : (expenseCategories[0]?.id || f.category) }))} style={inputStyle}>
-                <option value="expense">Gasto</option><option value="income">Ingreso</option>
-              </select>
-              <FinanceMoneyInput value={form.amount} onValueChange={amount => setForm(f => ({ ...f, amount }))} placeholder={`Monto ${transactionCurrency}`} style={inputStyle} />
-              <input type="date" value={form.date} onClick={e => openNativeDatePicker(e.currentTarget)} onFocus={e => openNativeDatePicker(e.currentTarget)} onChange={e => setForm(f => ({ ...f, date: e.target.value }))} style={{ ...inputStyle, cursor: 'pointer' }} />
-            </div>
-            <div className="finance-form-row finance-form-row-4" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr auto', gap: 10 }}>
-              <select value={form.category} disabled={form.type === 'income'} onChange={e => setForm(f => ({ ...f, category: e.target.value }))} style={{ ...inputStyle, opacity: form.type === 'income'  ? 0.55 : 1 }}>
-                {(form.type === 'income'  ? categories.filter(c => c.id === 'income') : expenseCategories).map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
-              </select>
-              <select value={form.accountId} onChange={e => {
-                const previousCurrency = normalizeCurrency(accountById(form.accountId).currency || currency);
-                const nextAccount = accounts.find(a => a.id === e.target.value) || accounts[0];
-                const nextCurrency = normalizeCurrency(nextAccount?.currency || currency);
-                setForm(f => ({ ...f, accountId: e.target.value, amount: switchDraftCurrency(f.amount, previousCurrency, nextCurrency) }));
-              }} style={inputStyle}>
-                {selectableAccounts.map(a => <option key={a.id} value={a.id}>{a.name}</option>)}
-              </select>
-              <input value={form.payee} onChange={e => setForm(f => ({ ...f, payee: e.target.value }))} placeholder="Comercio / origen" style={inputStyle} />
-              <button className="lab-cta" onClick={addTransaction} style={{ borderRadius: 999, padding: '10px 16px', cursor: 'pointer' }}><span>Agregar</span></button>
-            </div>
-            <input value={form.note} onChange={e => setForm(f => ({ ...f, note: e.target.value }))} placeholder="Nota opcional: supermercado, salario, factura..." style={{ ...inputStyle, width: '100%', marginTop: 10 }} />
           </div>
 
-          <div className="finance-card finance-movements-card" style={{ ...cardStyle, display: section === 'movements'  ? 'block' : 'none' }}>
-            <div className="finance-card-header finance-card-header-wrap" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 10, marginBottom: 14, flexWrap: 'wrap' }}>
-              <h3 style={{ fontSize: 17, color: COLORS.text, margin: 0 }}>Movimientos</h3>
-              <div className="finance-filter-row" style={{ display: 'flex', gap: 8 }}>
-                <select value={filterType} onChange={e => setFilterType(e.target.value)} style={{ ...inputStyle, padding: '8px 10px', fontSize: 11 }}>
-                  <option value="all">Todos</option><option value="expense">Gastos</option><option value="income">Ingresos</option>
-                </select>
-                <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Buscar..." style={{ ...inputStyle, padding: '8px 10px', width: 170, fontSize: 11 }} />
+          <div className="finance-wallet-grid">
+            <section className="finance-wallet-column" aria-label="Resumen de wallet">
+              <div className="finance-wallet-label">Wallet <span style={{ letterSpacing: 0, textTransform: 'none', opacity: 0.65 }}>ⓘ</span></div>
+              <div className="finance-wallet-amount">{money(netWorth)}<small>{currency}</small></div>
+              <div className="finance-wallet-equivalents">
+                <span>{moneyUSD(netWorth)} USD</span>
+                <span>{moneyCOP(netWorth)} COP</span>
               </div>
-            </div>
-            <div style={{ display: 'grid', gap: 8, maxHeight: 470, overflowY: 'auto', paddingRight: 2 }}>
-              {filteredTransactions.map(t => {
-                const cat = catById(t.category);
-                return (
-                  <div className="finance-transaction-item finance-movement-row" key={t.id} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '11px 12px', borderRadius: 12, background: 'rgba(239,239,239,0.035)', border: `1px solid ${COLORS.border}` }}>
-                    <span style={{ width: 8, height: 8, borderRadius: 99, background: cat.color }} />
-                    <div style={{ flex: 1 }}>
-                      <div style={{ color: COLORS.text, fontSize: 13, fontWeight: 700 }}>{t.payee || t.note || cat.name}</div>
-                      <div style={{ color: COLORS.textDim, fontSize: 11 }}>{cat.name}  ? {accountById(t.accountId).name}  ? {t.date}</div>
-                    </div>
-                    <div style={{ color: t.type === 'income'  ? '#10b981' : COLORS.alert, fontWeight: 800 }}>{t.type === 'income'  ? '+' : '-'}{money(t.amount)}</div>
-                    <button onClick={() => removeTransaction(t.id)} style={{ border: 'none', background: 'transparent', color: COLORS.textDim, cursor: 'pointer' }}><Trash2 size={14} /></button>
+
+              <div className="finance-wallet-divider" />
+              {renderQuickActions()}
+              <div className="finance-wallet-divider" />
+
+              <div className="finance-upcoming-title" style={{ marginTop: 0 }}>
+                <div>
+                  <div className="finance-wallet-label">Últimas transacciones</div>
+                  <div className="finance-mini-tabs" style={{ marginTop: 18 }}>
+                    {['Todas', 'Ingresos', 'Gastos'].map((label, index) => (
+                      <button key={label} type="button" className={index === 0 ? 'is-active' : ''}>{label}</button>
+                    ))}
                   </div>
-                );
-              })}
-              {!filteredTransactions.length && <div style={{ color: COLORS.textDim, fontSize: 13, textAlign: 'center', padding: 18 }}>No hay movimientos con ese filtro.</div>}
-            </div>
-          </div>
-
-          <div className="finance-card finance-chart-card" style={{ ...cardStyle, display: section === 'overview'  ? 'block' : 'none' }}>
-            <h3 style={{ fontSize: 17, color: COLORS.text, marginBottom: 14 }}>Flujo de caja</h3>
-            <ResponsiveContainer width="100%" height={250}>
-              <LineChart data={cashFlow}>
-                <CartesianGrid stroke="rgba(255,255,255,0.05)" vertical={false} />
-                <XAxis dataKey="name" stroke={COLORS.textDim} tick={{ fontSize: 11 }} />
-                <YAxis stroke={COLORS.textDim} tick={{ fontSize: 11 }} tickFormatter={v => currency === 'COP'  ? `${Math.round(toDisplayAmount(v) / 1000)}k` : `$${Math.round(toDisplayAmount(v))}`} />
-                <Tooltip formatter={v => money(v)} contentStyle={tooltipStyle} labelStyle={{ color: COLORS.text }} />
-                <Line type="monotone" dataKey="ingresos" stroke={COLORS.success} strokeWidth={2} dot={false} />
-                <Line type="monotone" dataKey="gastos" stroke={COLORS.alert} strokeWidth={2} dot={false} />
-                <Line type="monotone" dataKey="balance" stroke={COLORS.primary} strokeWidth={3} dot={{ r: 3 }} />
-              </LineChart>
-            </ResponsiveContainer>
-          </div>
-
-          <div className="finance-card finance-chart-card" style={{ ...cardStyle, display: section === 'accounts'  ? 'block' : 'none' }}>
-            <h3 style={{ fontSize: 17, color: COLORS.text, marginBottom: 14 }}>Balance por cuenta</h3>
-            <ResponsiveContainer width="100%" height={250}>
-              <BarChart data={accountChartData}>
-                <CartesianGrid stroke="rgba(255,255,255,0.05)" vertical={false} />
-                <XAxis dataKey="name" stroke={COLORS.textDim} tick={{ fontSize: 11 }} />
-                <YAxis stroke={COLORS.textDim} tick={{ fontSize: 11 }} tickFormatter={v => money(v)} />
-                <Tooltip formatter={v => money(v)} contentStyle={tooltipStyle} labelStyle={{ color: COLORS.text }} />
-                <Bar dataKey="balance" fill={COLORS.primary} radius={[8, 8, 0, 0]} />
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
-
-          <div className="finance-card finance-budget-card" style={{ ...cardStyle, display: section === 'budget'  ? 'block' : 'none' }}>
-            <h3 style={{ fontSize: 17, color: COLORS.text, marginBottom: 14 }}>Presupuesto por categoría</h3>
-            <div style={{ display: 'grid', gap: 10 }}>
-              {expenseCategories.map(cat => {
-                const spent = monthly.filter(t => t.type === 'expense' && t.category === cat.id).reduce((sum, t) => sum + Number(t.amount || 0), 0);
-                const limit = Number(budgets[cat.id] || 0);
-                const pct = limit  ? Math.min(100, Math.round((spent / limit) * 100)) : 0;
-                return (
-                  <div key={cat.id} style={{ padding: 12, borderRadius: 14, background: 'rgba(239,239,239,0.03)', border: `1px solid ${COLORS.border}` }}>
-                    <div className="finance-budget-category-row" style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) 110px 34px', gap: 10, alignItems: 'center', marginBottom: 9 }}>
-                      <div>
-                        <div style={{ color: COLORS.text, fontSize: 13, fontWeight: 800 }}><span style={{ color: cat.color }}>?</span> {cat.name}</div>
-                        <div style={{ color: pct > 90  ? COLORS.alert : COLORS.textDim, fontSize: 11 }}>{money(spent)} usados de {money(limit)}</div>
-                      </div>
-                      <div style={{ position: 'relative' }}>
-                        <FinanceMoneyInput value={toDisplayAmount(limit)} onValueChange={amount => updateBudget(cat.id, amount)} placeholder={`Limite ${currency}`} style={{ ...inputStyle, padding: '8px 42px 8px 9px', fontSize: 11, width: '100%' }} />
-                        <span style={{ position: 'absolute', right: 9, top: '50%', transform: 'translateY(-50%)', color: COLORS.textDim, fontSize: 9, fontWeight: 800 }}>{currency}</span>
-                      </div>
-                      <button
-                        className="finance-icon-button"
-                        onClick={() => removeBudgetCategory(cat.id)}
-                        disabled={expenseCategories.length <= 1}
-                        title="Eliminar categoría"
-                        style={{ border: `1px solid ${COLORS.border}`, borderRadius: 10, background: 'rgba(255,255,255,0.03)', color: expenseCategories.length <= 1  ? COLORS.textDim : COLORS.alert, cursor: expenseCategories.length <= 1  ? 'not-allowed' : 'pointer', opacity: expenseCategories.length <= 1  ? 0.45 : 1 }}
-                      >
-                        <Trash2 size={13} />
-                      </button>
-                    </div>
-                    <div style={{ height: 7, borderRadius: 99, background: COLORS.bg, overflow: 'hidden' }}>
-                      <div style={{ height: '100%', width: `${pct}%`, borderRadius: 99, background: pct > 90  ? COLORS.alert : `linear-gradient(90deg, ${cat.color}, ${COLORS.primary})` }} />
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-
-          <div className="finance-card finance-subscriptions-card" style={{ ...cardStyle, display: section === 'subscriptions'  ? 'block' : 'none' }}>
-            <div className="finance-card-header" style={{ display: 'flex', justifyContent: 'space-between', gap: 12, alignItems: 'flex-start', marginBottom: 18 }}>
-              <div>
-                <h3 style={{ fontSize: 18, color: COLORS.text, margin: 0 }}>Suscripciones</h3>
-                <div style={{ color: COLORS.textDim, fontSize: 12, marginTop: 5, ...s }}>Servicios mensuales con logo, monto y día de cobro.</div>
-              </div>
-              <div style={{ textAlign: 'right' }}>
-                <div style={{ color: COLORS.textDim, fontSize: 10, textTransform: 'uppercase', letterSpacing: '0.08em', ...s }}>Total mensual</div>
-                <div style={{ color: COLORS.primary, fontSize: 24, fontWeight: 900 }}>{money(subscriptionsExpense)}</div>
-              </div>
-            </div>
-
-            <div className="finance-subscription-form" style={{ display: 'grid', gridTemplateColumns: 'minmax(170px, 1.1fr) minmax(120px, 0.8fr) 76px minmax(140px, 0.8fr)', gap: 9, marginBottom: 9 }}>
-              <select value={subscriptionForm.serviceId} onChange={e => {
-                const service = SUBSCRIPTION_SERVICES.find(item => item.id === e.target.value) || SUBSCRIPTION_SERVICES[0];
-                setSubscriptionForm(f => ({ ...f, serviceId: service.id, name: service.name, category: service.category }));
-              }} style={inputStyle}>
-                {SUBSCRIPTION_SERVICES.map(service => <option key={service.id} value={service.id}>{service.name}</option>)}
-              </select>
-              <FinanceMoneyInput value={subscriptionForm.amount} onValueChange={amount => setSubscriptionForm(f => ({ ...f, amount }))} placeholder={`Monto ${subscriptionCurrency}`} style={inputStyle} />
-              <input type="number" min="1" max="31" step="1" value={subscriptionForm.day} onChange={e => setSubscriptionForm(f => ({ ...f, day: e.target.value }))} placeholder="Día" style={inputStyle} />
-              <select value={subscriptionForm.accountId} onChange={e => {
-                const previousCurrency = normalizeCurrency(accountById(subscriptionForm.accountId).currency || currency);
-                const nextAccount = accounts.find(a => a.id === e.target.value) || accounts[0];
-                const nextCurrency = normalizeCurrency(nextAccount?.currency || currency);
-                setSubscriptionForm(f => ({ ...f, accountId: e.target.value, amount: switchDraftCurrency(f.amount, previousCurrency, nextCurrency) }));
-              }} style={inputStyle}>
-                {selectableAccounts.map(account => <option key={account.id} value={account.id}>{account.name}</option>)}
-              </select>
-            </div>
-            <div className="finance-subscription-form" style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 1fr) auto', gap: 9, marginBottom: 18 }}>
-              <input value={subscriptionForm.name} onChange={e => setSubscriptionForm(f => ({ ...f, name: e.target.value }))} placeholder="Nombre personalizado opcional" style={inputStyle} />
-              <input value={subscriptionForm.logoUrl} onChange={e => setSubscriptionForm(f => ({ ...f, logoUrl: e.target.value }))} placeholder="URL de logo opcional" style={inputStyle} />
-              <button className="finance-submit-button" onClick={addSubscription} style={{ border: 'none', borderRadius: 12, background: COLORS.primary, color: '#fff', padding: '0 16px', cursor: 'pointer', fontWeight: 900, whiteSpace: 'nowrap' }}><Plus size={15} /> Agregar</button>
-            </div>
-
-            <div className="finance-subscription-body" style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) minmax(260px, 0.9fr)', gap: 16 }}>
-              <div>
-                <h4 style={{ color: COLORS.text, fontSize: 13, margin: '0 0 10px', ...s }}>Activas</h4>
-                <div className="finance-subscription-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(230px, 1fr))', gap: 10 }}>
-                  {activeSubscriptions.map(item => (
-                    <div key={item.id} style={{ display: 'grid', gridTemplateColumns: 'auto minmax(0, 1fr)', gap: 12, padding: 13, borderRadius: 16, background: 'rgba(239,239,239,0.035)', border: `1px solid ${COLORS.border}` }}>
-                      {renderSubscriptionLogo(item)}
-                      <div style={{ minWidth: 0 }}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', gap: 8, alignItems: 'start' }}>
-                          <div style={{ minWidth: 0 }}>
-                            <div style={{ color: COLORS.text, fontSize: 13, fontWeight: 900, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.name}</div>
-                            <div style={{ color: COLORS.textDim, fontSize: 10, marginTop: 2 }}>{item.category}  ? Día {item.day}</div>
-                          </div>
-                          <div style={{ color: COLORS.alert, fontWeight: 900, whiteSpace: 'nowrap' }}>{money(item.amount)}</div>
-                        </div>
-                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 38px', gap: 8, marginTop: 10 }}>
-                          <button className="finance-action-button" onClick={() => paySubscription(item)} style={{ border: 'none', borderRadius: 10, background: `${COLORS.primary}18`, color: COLORS.primary, padding: '8px 10px', cursor: 'pointer', fontSize: 11, fontWeight: 900 }}>Registrar cobro</button>
-                          <button className="finance-icon-button" onClick={() => removeSubscription(item.id)} style={{ border: 'none', borderRadius: 10, background: 'rgba(255,255,255,0.04)', color: COLORS.textDim, cursor: 'pointer' }}><Trash2 size={13} /></button>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                  {!activeSubscriptions.length && <div style={{ color: COLORS.textDim, fontSize: 13, padding: 18, border: `1px dashed ${COLORS.border}`, borderRadius: 16 }}>Aún no tienes suscripciones activas.</div>}
                 </div>
+                <button type="button" onClick={() => setSection('movements')} className="finance-wallet-icon-link" aria-label="Ver transacciones">
+                  <ArrowUp size={18} style={{ transform: 'rotate(45deg)' }} />
+                </button>
               </div>
-              <div>
-                <h4 style={{ color: COLORS.text, fontSize: 13, margin: '0 0 10px', ...s }}>Catálogo rápido</h4>
-                <div className="finance-subscription-catalog" style={{ display: 'grid', gap: 10, maxHeight: 430, overflowY: 'auto', paddingRight: 4 }}>
-                  {subscriptionCatalogGroups.map(group => (
-                    <div key={group.category} style={{ display: 'grid', gap: 7 }}>
-                      <div style={{ color: COLORS.textDim, fontSize: 9, fontWeight: 900, letterSpacing: '0.12em', textTransform: 'uppercase', ...s }}>{group.category}</div>
-                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(86px, 1fr))', gap: 7 }}>
-                        {group.services.map(service => (
-                          <button key={service.id} onClick={() => setSubscriptionForm(f => ({ ...f, serviceId: service.id, name: service.name, category: service.category }))} style={{ border: `1px solid ${subscriptionForm.serviceId === service.id  ? service.color : COLORS.border}`, background: subscriptionForm.serviceId === service.id  ? `${service.color}18` : 'rgba(239,239,239,0.03)', borderRadius: 14, padding: '9px 8px', cursor: 'pointer', color: COLORS.text, display: 'grid', justifyItems: 'center', gap: 6, ...s }}>
-                            {renderSubscriptionLogo(service, 34)}
-                            <span style={{ fontSize: 10, fontWeight: 800, lineHeight: 1.2 }}>{service.name}</span>
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
 
-            {subscriptionTotalsByCategory.length > 0 && (
-              <div style={{ marginTop: 16, display: 'grid', gap: 8 }}>
-                <h4 style={{ color: COLORS.text, fontSize: 13, margin: 0, ...s }}>Resumen por tipo</h4>
-                {subscriptionTotalsByCategory.map(item => {
-                  const pct = subscriptionsExpense  ? Math.round((item.total / subscriptionsExpense) * 100) : 0;
+              <div className="finance-row-list">
+                {transactionRows.map(item => {
+                  const positive = item.type === 'income';
+                  const category = catById(item.category);
+                  const Icon = positive ? ArrowDown : ArrowUp;
                   return (
-                    <div key={item.category} style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) auto', gap: 10, alignItems: 'center' }}>
-                      <div>
-                        <div style={{ color: COLORS.textDim, fontSize: 11, marginBottom: 5 }}>{item.category}</div>
-                        <div style={{ height: 7, background: COLORS.bg, borderRadius: 99, overflow: 'hidden' }}><div style={{ width: `${pct}%`, height: '100%', background: `linear-gradient(90deg, ${COLORS.primary}, ${COLORS.secondary})`, borderRadius: 99 }} /></div>
+                    <div key={item.id} className="finance-ref-row">
+                      <Icon size={18} style={{ color: positive ? '#35C46A' : '#FF5F78', transform: positive ? 'rotate(45deg)' : 'rotate(45deg)' }} />
+                      <div style={{ minWidth: 0 }}>
+                        <div className="finance-ref-row-title">{item.payee || category.name}</div>
+                        <div className="finance-ref-row-meta">{new Date(item.date || today).toLocaleDateString('es-CO', { day: '2-digit', month: 'short' })} · {category.name} · {accountById(item.accountId).name}</div>
                       </div>
-                      <div style={{ color: COLORS.text, fontSize: 12, fontWeight: 900 }}>{money(item.total)}</div>
+                      <div className="finance-ref-amount" style={{ color: positive ? '#35C46A' : '#FF5F78' }}>
+                        {positive ? '+' : '-'}{money(item.amount)}
+                      </div>
                     </div>
                   );
                 })}
+                {!transactionRows.length && (
+                  <div style={{ color: COLORS.textDim, fontSize: 14, padding: '20px 0', ...s }}>Aún no hay transacciones en este periodo.</div>
+                )}
               </div>
-            )}
-          </div>
-        </div>
+              <button type="button" onClick={() => setSection('movements')} className="finance-wallet-link">Ver todas las transacciones <ChevronDown size={15} /></button>
+            </section>
 
-        <div className="finance-side-column" style={{ display: ['overview', 'accounts', 'budget', 'recurring'].includes(section)  ? 'grid' : 'none', gap: 18 }}>
-          <div className="finance-card finance-insights-card" style={{ ...cardStyle, display: section === 'overview'  ? 'block' : 'none' }}>
-            <h3 style={{ fontSize: 16, color: COLORS.text, marginBottom: 12 }}>Insights</h3>
-            <div style={{ display: 'grid', gap: 8 }}>
-              {insights.map((item, idx) => (
-                <div key={idx} style={{ display: 'flex', gap: 9, padding: '10px 11px', borderRadius: 12, background: idx === 1 && available < 0  ? 'rgba(255,107,107,0.08)' : 'rgba(239,239,239,0.035)', border: `1px solid ${COLORS.border}`, color: COLORS.text, fontSize: 12, lineHeight: 1.45, ...s }}>
-                  <Sparkles size={14} color={idx === 1 && available < 0  ? COLORS.alert : COLORS.primary} style={{ marginTop: 2, flexShrink: 0 }} />
-                  <span>{item}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <div className="finance-card finance-monthly-budget-card" style={{ ...cardStyle, display: section === 'budget'  ? 'block' : 'none' }}>
-            <h3 style={{ fontSize: 16, color: COLORS.text, marginBottom: 12 }}>Presupuesto mensual</h3>
-            <div style={{ position: 'relative', marginBottom: 12 }}>
-              <FinanceMoneyInput value={toDisplayAmount(finance.monthlyBudget)} onValueChange={amount => onUpdateFinance(prev => ({ ...prev, monthlyBudget: fromDisplayAmount(amount || 0) }))} placeholder={`Presupuesto ${currency}`} style={{ ...inputStyle, width: '100%', paddingRight: 52 }} />
-              <span style={{ position: 'absolute', right: 12, top: '50%', transform: 'translateY(-50%)', color: COLORS.textDim, fontSize: 10, fontWeight: 800 }}>{currency}</span>
-            </div>
-            <div style={{ height: 8, background: COLORS.bg, borderRadius: 99, overflow: 'hidden' }}><div style={{ height: '100%', width: `${budgetPct}%`, background: `linear-gradient(90deg, ${COLORS.primary}, ${COLORS.alert})`, borderRadius: 99 }} /></div>
-            <div style={{ color: COLORS.textDim, fontSize: 11, marginTop: 8 }}>Usado: {money(expenses)}  ? Plan por categorías: {money(budgetTotal)}</div>
-          </div>
-
-          <div className="finance-card finance-accounts-card" style={{ ...cardStyle, display: section === 'accounts'  ? 'block' : 'none' }}>
-            <h3 style={{ fontSize: 16, color: COLORS.text, marginBottom: 12 }}>Cuentas</h3>
-            <div style={{ display: 'grid', gap: 12, marginBottom: 14 }}>
-              {groupedAccountBalances.map(group => (
-                <div key={group.id} style={{ display: 'grid', gap: 7 }}>
-                  <div style={{ color: COLORS.textDim, fontSize: 9, fontWeight: 900, letterSpacing: '0.14em', textTransform: 'uppercase', ...s }}>{group.label}</div>
-                  {group.accounts.map(a => (
-                    <div key={a.id} style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) auto', gap: 10, alignItems: 'center', padding: '11px 12px', borderRadius: 14, background: 'rgba(239,239,239,0.035)', border: `1px solid ${COLORS.border}` }}>
-                      <div style={{ minWidth: 0 }}>
-                        <div style={{ color: COLORS.text, fontSize: 13, fontWeight: 900, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{a.name}</div>
-                        <div style={{ color: COLORS.textDim, fontSize: 10, marginTop: 2, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{a.tag?.name || group.label}</div>
-                      </div>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                        <div style={{ textAlign: 'right', minWidth: 94 }}>
-                          <div style={{ color: a.current >= 0  ? COLORS.text : COLORS.alert, fontWeight: 900, whiteSpace: 'nowrap' }}>{accountMoney(a.current, a.currency)}</div>
-                          {normalizeCurrency(a.currency) !== currency && (
-                            <div style={{ color: COLORS.textDim, fontSize: 9, marginTop: 2, whiteSpace: 'nowrap' }}> ? {money(a.current)}</div>
-                          )}
-                        </div>
-                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2, padding: 2, borderRadius: 999, background: COLORS.bg, border: `1px solid ${COLORS.border}` }}>
-                          {['USD', 'COP'].map(cur => (
-                            <button key={cur} onClick={() => updateAccountCurrency(a.id, cur)} style={{
-                              border: 'none',
-                              borderRadius: 999,
-                              padding: '5px 7px',
-                              cursor: 'pointer',
-                              background: normalizeCurrency(a.currency) === cur  ? COLORS.primary : 'transparent',
-                              color: normalizeCurrency(a.currency) === cur  ? '#fff' : COLORS.textDim,
-                              fontSize: 9,
-                              fontWeight: 900,
-                              minHeight: 0,
-                              ...s
-                            }}>{cur}</button>
-                          ))}
-                        </div>
-                        <button
-                          onClick={() => removeAccount(a.id)}
-                          disabled={accounts.length <= 1}
-                          title={accounts.length <= 1  ? 'Debe quedar al menos una cuenta' : 'Eliminar cuenta'}
-                          style={{ width: 30, height: 30, borderRadius: 9, border: `1px solid ${COLORS.border}`, background: accounts.length <= 1  ? 'rgba(255,255,255,0.025)' : `${COLORS.alert}10`, color: accounts.length <= 1  ? COLORS.textDim : COLORS.alert, cursor: accounts.length <= 1  ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-                        >
-                          <Trash2 size={13} />
-                        </button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              ))}
-            </div>
-            <div className="finance-compact-form finance-account-form" style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) 150px 112px', gap: 8, marginBottom: 8 }}>
-              <input value={accountForm.name} onChange={e => setAccountForm(f => ({ ...f, name: e.target.value }))} placeholder="Banco o entidad" style={{ ...inputStyle, padding: '9px 10px', fontSize: 11 }} />
-              <select value={accountForm.tagId} onChange={e => setAccountForm(f => ({ ...f, tagId: e.target.value }))} style={{ ...inputStyle, padding: '9px 10px', fontSize: 11 }}>
-                {accountTagChoices.map(tag => <option key={tag.id} value={tag.id}>{tag.name}</option>)}
-                <option value="__new__">+ Nueva etiqueta</option>
-              </select>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 3, padding: 3, borderRadius: 999, background: COLORS.bg, border: `1px solid ${COLORS.border}` }}>
+            <section className="finance-period-card" aria-label="Balance del periodo">
+              <div className="finance-period-top">
+                <div className="finance-wallet-label">Balance del periodo</div>
+                <div style={{ color: periodTrendColor, fontWeight: 850, ...s }}>{periodTrend > 0 ? '+' : ''}{periodTrend}%</div>
+              </div>
+              <div className="finance-period-tabs">
                 {['USD', 'COP'].map(cur => (
-                  <button key={cur} onClick={() => updateAccountFormCurrency(cur)} style={{
-                    border: 'none',
-                    borderRadius: 999,
-                    padding: '7px 0',
-                    cursor: 'pointer',
-                    background: normalizeCurrency(accountForm.currency) === cur  ? COLORS.primary : 'transparent',
-                    color: normalizeCurrency(accountForm.currency) === cur  ? '#fff' : COLORS.textDim,
-                    fontSize: 10,
-                    fontWeight: 900,
-                    minHeight: 0,
-                    ...s
-                  }}>{cur}</button>
+                  <button key={cur} type="button" onClick={() => changeFinanceCurrency(cur)} className={currency === cur ? 'is-active' : ''}>{cur}</button>
                 ))}
               </div>
-            </div>
-            {accountForm.tagId === '__new__' && (
-              <div className="finance-compact-form finance-account-tag-form" style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) 150px', gap: 8, marginBottom: 8 }}>
-                <input value={accountForm.customTag} onChange={e => setAccountForm(f => ({ ...f, customTag: e.target.value }))} placeholder="Nombre etiqueta ej: Cuenta de ahorros" style={{ ...inputStyle, padding: '9px 10px', fontSize: 11 }} />
-                <select value={accountForm.customGroup} onChange={e => setAccountForm(f => ({ ...f, customGroup: e.target.value }))} style={{ ...inputStyle, padding: '9px 10px', fontSize: 11 }}>
-                  {accountGroupChoices.map(group => <option key={group.id} value={group.id}>{group.label}</option>)}
-                </select>
-              </div>
-            )}
-            <div className="finance-compact-form finance-account-balance-form" style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) auto', gap: 8 }}>
-              <div style={{ position: 'relative' }}>
-                <FinanceMoneyInput value={accountForm.balance} onValueChange={balance => setAccountForm(f => ({ ...f, balance }))} placeholder={`Saldo inicial ${accountForm.currency}`} style={{ ...strongInputStyle, padding: '9px 46px 9px 10px', fontSize: 11, width: '100%' }} />
-                <span style={{ position: 'absolute', right: 9, top: '50%', transform: 'translateY(-50%)', color: COLORS.textDim, fontSize: 9, fontWeight: 800 }}>{accountForm.currency}</span>
-              </div>
-              <button className="finance-submit-button" onClick={addAccount} style={{ border: 'none', borderRadius: 10, background: COLORS.primary, color: '#fff', padding: '0 12px', cursor: 'pointer', fontWeight: 800, whiteSpace: 'nowrap' }}><Plus size={15} /> Agregar cuenta</button>
-            </div>
-            <div style={{ color: COLORS.textDim, fontSize: 10, marginTop: 8, lineHeight: 1.45 }}>
-              Consejo: si una tarjeta o crédito debe restar patrimonio, registra su saldo inicial como número negativo.
-            </div>
-          </div>
+              <div className="finance-wallet-amount finance-period-amount">{money(balance)}<small>{currency}</small></div>
+              <div className="finance-wallet-divider" />
 
-          <div className="finance-card finance-categories-card" style={{ ...cardStyle, display: section === 'budget'  ? 'block' : 'none' }}>
-            <h3 style={{ fontSize: 16, color: COLORS.text, marginBottom: 12 }}>Categorías</h3>
-            <div className="finance-inline-form finance-category-form" style={{ display: 'flex', gap: 8, marginBottom: 12 }}>
-              <input value={catName} onChange={e => setCatName(e.target.value)} placeholder="Nueva categoría" style={{ ...inputStyle, flex: 1, padding: '9px 11px' }} />
-              <button className="finance-icon-button" onClick={addCategory} style={{ border: 'none', borderRadius: 10, background: COLORS.primary, color: '#fff', padding: '0 12px', cursor: 'pointer' }}><Plus size={15} /></button>
-            </div>
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 7 }}>{categories.map(c => <span key={c.id} className="lab-pill" style={{ padding: '6px 9px', fontSize: 11 }}><span style={{ color: c.color }}>?</span> {c.name}</span>)}</div>
-          </div>
-
-          <div className="finance-card finance-recurring-card" style={{ ...cardStyle, display: section === 'recurring'  ? 'block' : 'none' }}>
-            <div className="finance-card-header" style={{ display: 'flex', justifyContent: 'space-between', gap: 12, alignItems: 'flex-start', marginBottom: 16 }}>
-              <div>
-                <h3 style={{ fontSize: 18, color: COLORS.text, margin: 0 }}>Pagos recurrentes</h3>
-                <div style={{ color: COLORS.textDim, fontSize: 12, marginTop: 5, ...s }}>Obligaciones fijas sin saturar la pantalla.</div>
+              <div className="finance-period-chart">
+                <ResponsiveContainer width="100%" height="100%">
+                  <AreaChart data={cashFlow} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
+                    <defs>
+                      <linearGradient id="financeWalletArea" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stopColor="#35C46A" stopOpacity="0.28" />
+                        <stop offset="100%" stopColor="#35C46A" stopOpacity="0.02" />
+                      </linearGradient>
+                    </defs>
+                    <CartesianGrid strokeDasharray="3 7" vertical={false} stroke={COLORS.border} />
+                    <XAxis dataKey="name" stroke={COLORS.textDim} tick={{ fontSize: 12 }} axisLine={false} tickLine={false} />
+                    <YAxis stroke={COLORS.textDim} tick={{ fontSize: 12 }} axisLine={false} tickLine={false} tickFormatter={(value) => money(Number(value || 0)).replace(/\s?(USD|COP)/g, '')} />
+                    <Tooltip contentStyle={tooltipStyle} formatter={(value) => money(Number(value || 0))} />
+                    <Area type="monotone" dataKey="balance" stroke={periodLineColor} fill="url(#financeWalletArea)" strokeWidth={2} dot={{ r: 3, fill: periodLineColor, strokeWidth: 0 }} activeDot={{ r: 5 }} animationDuration={700} />
+                  </AreaChart>
+                </ResponsiveContainer>
               </div>
-              <div style={{ textAlign: 'right' }}>
-                <div style={{ color: COLORS.textDim, fontSize: 10, textTransform: 'uppercase', letterSpacing: '0.08em', ...s }}>Estimado</div>
-                <div style={{ color: COLORS.alert, fontSize: 22, fontWeight: 900 }}>{money(recurringExpense)}</div>
-              </div>
-            </div>
 
-            <div className="finance-compact-form" style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) 110px 74px 130px auto', gap: 8, marginBottom: 16 }}>
-              <input value={recurringForm.name} onChange={e => setRecurringForm(f => ({ ...f, name: e.target.value }))} placeholder="Nombre del pago" style={{ ...inputStyle, padding: '9px 10px', fontSize: 12 }} />
-              <FinanceMoneyInput value={recurringForm.amount} onValueChange={amount => setRecurringForm(f => ({ ...f, amount }))} placeholder={currency} style={{ ...inputStyle, padding: '9px 10px', fontSize: 12 }} />
-              <input type="number" min="1" max="31" step="1" value={recurringForm.day} onChange={e => setRecurringForm(f => ({ ...f, day: e.target.value }))} placeholder="Día" style={{ ...inputStyle, padding: '9px 10px', fontSize: 12 }} />
-              <select value={recurringForm.category} onChange={e => setRecurringForm(f => ({ ...f, category: e.target.value }))} style={{ ...inputStyle, padding: '9px 10px', fontSize: 12 }}>
-                {expenseCategories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
-              </select>
-              <button className="finance-submit-button" onClick={addRecurring} style={{ border: 'none', borderRadius: 12, background: COLORS.primary, color: '#fff', padding: '0 14px', cursor: 'pointer', fontWeight: 900, whiteSpace: 'nowrap' }}><Plus size={15} /> Agregar</button>
-            </div>
-
-            <div className="finance-recurring-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(230px, 1fr))', gap: 10 }}>
-              {activeRecurring.map(r => (
-                <div key={r.id} style={{ padding: 13, borderRadius: 16, background: 'rgba(239,239,239,0.035)', border: `1px solid ${COLORS.border}` }}>
-                  <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) auto', gap: 10, alignItems: 'start' }}>
-                    <div style={{ minWidth: 0 }}>
-                      <div style={{ color: COLORS.text, fontSize: 13, fontWeight: 900, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{r.name}</div>
-                      <div style={{ color: COLORS.textDim, fontSize: 10, marginTop: 3 }}>Día {r.day}  ? {catById(r.category).name}</div>
-                    </div>
-                    <div style={{ color: r.type === 'income'  ? COLORS.success : COLORS.alert, fontWeight: 900, whiteSpace: 'nowrap' }}>{r.type === 'income'  ? '+' : '-'}{money(r.amount)}</div>
-                  </div>
-                  <div className="finance-recurring-actions" style={{ display: 'grid', gridTemplateColumns: '1fr 38px', gap: 8, marginTop: 10 }}>
-                    <button className="finance-action-button" onClick={() => payRecurring(r)} style={{ border: 'none', borderRadius: 10, background: `${COLORS.primary}18`, color: COLORS.primary, padding: '8px 10px', cursor: 'pointer', fontSize: 11, fontWeight: 900 }}>Registrar pago</button>
-                    <button className="finance-icon-button" onClick={() => removeRecurring(r.id)} style={{ border: 'none', borderRadius: 10, background: 'rgba(255,255,255,0.04)', color: COLORS.textDim, cursor: 'pointer' }}><Trash2 size={13} /></button>
-                  </div>
+              <div className="finance-period-summary">
+                <div>
+                  <div className="finance-wallet-label">Ingresos</div>
+                  <div style={{ color: '#35C46A', fontSize: 22, marginTop: 8, ...s }}>{money(income)}</div>
                 </div>
-              ))}
-              {!activeRecurring.length && <div style={{ color: COLORS.textDim, fontSize: 13, padding: 18, border: `1px dashed ${COLORS.border}`, borderRadius: 16 }}>Aún no tienes pagos recurrentes activos.</div>}
-            </div>
+                <div>
+                  <div className="finance-wallet-label">Gastos</div>
+                  <div style={{ color: '#FF5F78', fontSize: 22, marginTop: 8, ...s }}>-{money(expenses)}</div>
+                </div>
+              </div>
+
+              <div className="finance-wallet-divider" />
+              <div className="finance-upcoming-title">
+                <div className="finance-wallet-label">Próximas cuentas</div>
+                <button type="button" onClick={() => setSection('recurring')} className="finance-wallet-icon-link" aria-label="Ver próximas cuentas">
+                  <ChevronDown size={17} />
+                </button>
+              </div>
+              <div className="finance-mini-tabs">
+                {monthTabs.map(item => (
+                  <button key={item.key} type="button" onClick={() => setSelectedMonth(item.key)} className={selectedMonth === item.key ? 'is-active' : ''}>{item.label}</button>
+                ))}
+              </div>
+              <div className="finance-row-list" style={{ marginTop: 16 }}>
+                {upcomingRows.map(item => {
+                  const badge = displayDateBadge(item.date);
+                  const positive = item.type === 'income';
+                  return (
+                    <div key={item.id} className="finance-ref-row">
+                      <span style={{ color: positive ? '#35C46A' : '#FF5F78', fontSize: 18 }}>{positive ? '↙' : '↗'}</span>
+                      <div style={{ minWidth: 0 }}>
+                        <div className="finance-ref-row-title">{item.name}</div>
+                        <div className="finance-ref-row-meta">{badge.day} {badge.month.toLowerCase()} · {item.subtitle}</div>
+                      </div>
+                      <div className="finance-ref-amount" style={{ color: positive ? '#35C46A' : '#FF5F78' }}>
+                        {positive ? '+' : '-'}{money(item.amount)}
+                      </div>
+                    </div>
+                  );
+                })}
+                {!upcomingRows.length && (
+                  <div style={{ color: COLORS.textDim, fontSize: 14, padding: '18px 0', ...s }}>No hay próximas cuentas configuradas.</div>
+                )}
+              </div>
+              <button type="button" onClick={() => setSection('recurring')} className="finance-wallet-link">Ver todas las próximas cuentas <ChevronDown size={15} /></button>
+            </section>
           </div>
 
-          <div className="finance-card finance-pie-card" style={{ ...cardStyle, display: section === 'overview'  ? 'block' : 'none' }}>
-            <h3 style={{ fontSize: 16, color: COLORS.text, marginBottom: 12 }}>Gastos por categoría</h3>
-            <ResponsiveContainer width="100%" height={210}>
-              <PieChart>{byCategory.length  ? <Pie data={byCategory} dataKey="value" nameKey="name" outerRadius={78}>{byCategory.map((c, i) => <Cell key={i} fill={c.color} />)}</Pie> : null}<Tooltip formatter={v => money(v)} contentStyle={tooltipStyle} labelStyle={{ color: COLORS.text }} /></PieChart>
-            </ResponsiveContainer>
-            <div style={{ color: COLORS.textDim, fontSize: 11, textAlign: 'center' }}>{byCategory.length  ? 'Distribución de gastos del mes.' : 'Aún no hay gastos para graficar.'}</div>
-          </div>
+          {section !== 'overview' && (
+            <div className="finance-detail-panel">
+              {renderFinanceTabs()}
+              {renderMainContent()}
+            </div>
+          )}
         </div>
-      </div>
-    </div>
-  );
+        {renderTransactionModal()}
+        {renderDebtPaymentModal()}
+        {renderDebtModal()}
+        {renderDebtHelpModal()}
+      </>
+    );
+  };
+
+  return renderFinanceDashboard();
 };
 
 const ReadingView = ({ data, onUpdateReading }) => {
