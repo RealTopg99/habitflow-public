@@ -355,43 +355,34 @@ const dueDebtNotificationsForUser = (row, now) => {
   const localNow = getZonedNow(now, timeZone);
   const finance = row.data?.financeData || {};
   const copRate = Math.max(1, Number(finance.copRate || 4000));
-  const tags = finance.accountTags || [];
   const transactions = finance.transactions || [];
   const items = [];
 
-  (finance.accounts || []).forEach((account) => {
-    if (!account?.debtDueDate || account.debtReminderEnabled === false) return;
-    const tagGroup = tags.find((tag) => tag.id === account.tagId)?.group || account.type;
-    const isDebt = tagGroup === 'loan' || account.type === 'loan' || String(account.id || '').startsWith('debt_') || Number(account.balance || 0) < 0;
-    if (!isDebt) return;
-
-    const dueDate = String(account.debtDueDate || '');
-    const reminderDays = Math.max(0, Number(account.debtReminderDaysBefore || 0));
+  (finance.debts || []).forEach((debt) => {
+    if (!debt?.dueDate || debt.reminderEnabled === false) return;
+    const dueDate = String(debt.dueDate || '');
+    const reminderDays = Math.max(0, Number(debt.reminderDaysBefore || 0));
     const reminderStart = addDaysToDateString(dueDate, -reminderDays);
     if (localNow.date < reminderStart || localNow.date > dueDate) return;
 
-    const accountCurrency = normalizeCurrency(account.currency || finance.currency || 'USD');
-    const movement = transactions
-      .filter((transaction) => (transaction.accountId || '') === account.id)
-      .reduce((sum, transaction) => {
-        const amount = Math.abs(Number(transaction.amount || 0));
-        const transactionCurrency = normalizeCurrency(transaction.currency || accountCurrency);
-        const converted = convertFinanceAmount(amount, transactionCurrency, accountCurrency, copRate);
-        return sum + (transaction.type === 'income' ? converted : -converted);
-      }, 0);
-    const pending = Math.max(0, Math.abs(Number(account.balance || 0) + movement));
+    const debtCurrency = normalizeCurrency(debt.currency || finance.currency || 'USD');
+    const paid = transactions
+      .filter((transaction) => transaction.type === 'debt_payment' && (transaction.debtId || transaction.debtAccountId) === debt.id)
+      .reduce((sum, transaction) => sum + Math.abs(Number(transaction.amount || 0)), 0);
+    const pending = Math.max(0, Number(debt.total || 0) - paid);
     if (pending <= 0) return;
 
-    const minimumPayment = Math.max(0, Number(account.debtMinimumPayment || pending * 0.08));
+    const minimumPayment = Math.max(0, Number(debt.minimumPayment || pending * 0.08));
+    const displayMinimum = convertFinanceAmount(minimumPayment, 'USD', debtCurrency, copRate);
     items.push({
       type: 'finance-debt',
       date: localNow.date,
-      deliveryKey: `${row.user_id}:finance-debt:${account.id}:${localNow.date}:${dueDate}`,
+      deliveryKey: `${row.user_id}:finance-debt:${debt.id}:${localNow.date}:${dueDate}`,
       payload: {
         title: 'HabitFlow - Pago de deuda',
-        body: `${account.name || 'Deuda'}\nCuota minima: ${formatFinanceAmount(minimumPayment, accountCurrency, copRate)}\nPago oportuno: ${dueDate}`,
+        body: `${debt.name || 'Deuda'}\nCuota minima: ${formatFinanceAmount(displayMinimum, debtCurrency, copRate)}\nPago oportuno: ${dueDate}`,
         requireInteraction: true,
-        data: { view: 'finance', section: 'debts', debtId: account.id, date: localNow.date }
+        data: { view: 'finance', section: 'debts', debtId: debt.id, date: localNow.date }
       }
     });
   });
@@ -457,6 +448,7 @@ export default async () => {
   let sent = 0;
   let dueCount = 0;
   for (const user of users || []) {
+    if (user.data?.user?.notificationsEnabled === false) continue;
     const userSubscriptions = subscriptionsByUser.get(user.user_id) || [];
     if (!userSubscriptions.length) continue;
     const dueItems = [

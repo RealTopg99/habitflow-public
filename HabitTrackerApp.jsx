@@ -578,6 +578,7 @@ const getFinanceData = () => ({
     { id: 'savings', name: 'Ahorros', type: 'savings', tagId: 'savings', currency: 'USD', balance: 650 },
     { id: 'credit_card', name: 'Tarjeta de crédito', type: 'credit', tagId: 'credit_card', currency: 'USD', balance: -320 }
   ],
+  debts: [],
   recurring: [
     { id: 'rec1', name: 'Renta', type: 'expense', amount: 520, category: 'home', day: 5, active: true },
     { id: 'rec2', name: 'Internet', type: 'expense', amount: 45, category: 'home', day: 12, active: true },
@@ -950,7 +951,7 @@ const getDefaultData = (reset = false) => {
   const records = reset  ? [] : genSampleRecords(habits);
   const xp = reset  ? 0 : records.filter(r => r.completed).length * 10;
   return {
-    user: { name: 'Usuario', motto: 'Cada día es una nueva oportunidad', accentColor: 'violet', themeMode: 'midnight', iconColor: 'fire', createdAt: toYYYYMMDD(new Date()), xp, level: getLevel(xp), levelUpShown: getLevel(xp), pomodoro: { focus: 25, shortBreak: 5, longBreak: 15 } },
+    user: { name: 'Usuario', motto: 'Cada día es una nueva oportunidad', accentColor: 'violet', themeMode: 'midnight', iconColor: 'fire', notificationsEnabled: true, createdAt: toYYYYMMDD(new Date()), xp, level: getLevel(xp), levelUpShown: getLevel(xp), pomodoro: { focus: 25, shortBreak: 5, longBreak: 15 } },
     habits,
     records,
     dailyNotes: reset  ? {} : { [toYYYYMMDD(new Date())]: { note: 'Buen día en general, cumplí todos mis hábitos', mood: 4 } },
@@ -1029,6 +1030,7 @@ const normalizeLoadedData = (parsed) => {
   if (!parsed.user.levelUpShown) parsed.user.levelUpShown = 1;
   if (!parsed.user.themeMode) parsed.user.themeMode = 'midnight';
   if (!parsed.user.iconColor) parsed.user.iconColor = 'fire';
+  if (parsed.user.notificationsEnabled === undefined) parsed.user.notificationsEnabled = true;
   if (parsed.user.visualVersion !== 'labNeon2026') {
     parsed.user.themeMode = 'labNeon';
     parsed.user.accentColor = 'labCrimson';
@@ -1086,6 +1088,56 @@ const normalizeLoadedData = (parsed) => {
     tagId: account.tagId || (account.type === 'credit'  ? 'credit_card' : account.type === 'bank'  ? 'checking' : account.type || 'custom'),
     currency: account.currency === 'COP'  ? 'COP' : 'USD'
   }));
+  const legacyDebtAccounts = parsed.financeData.accounts.filter(account => (
+    String(account.id || '').startsWith('debt_')
+    || account.type === 'loan'
+    || account.tagId === 'loan'
+  ));
+  const existingDebts = Array.isArray(parsed.financeData.debts) ? parsed.financeData.debts : [];
+  const migratedDebts = legacyDebtAccounts.map(account => ({
+    id: account.id,
+    name: account.name || 'Deuda',
+    currency: account.currency === 'COP' ? 'COP' : 'USD',
+    total: Math.max(0, Number(account.debtTotal || Math.abs(Number(account.balance || 0)))),
+    dueDate: account.debtDueDate || toYYYYMMDD(new Date()),
+    minimumPayment: Math.max(0, Number(account.debtMinimumPayment || 0)),
+    reminderEnabled: account.debtReminderEnabled !== false,
+    reminderDaysBefore: Math.max(0, Number(account.debtReminderDaysBefore || 0)),
+    createdAt: account.debtCreatedAt || new Date().toISOString()
+  }));
+  parsed.financeData.debts = [...existingDebts, ...migratedDebts].filter((debt, index, list) => (
+    debt?.id && list.findIndex(item => item?.id === debt.id) === index
+  ));
+  parsed.financeData.accounts = parsed.financeData.accounts.filter(account => !legacyDebtAccounts.some(debt => debt.id === account.id));
+  parsed.financeData.transactions = parsed.financeData.transactions.map(transaction => {
+    const isLegacyDebtPayment = transaction.type === 'income' && (
+      String(transaction.id || '').startsWith('debt_pay_')
+      || transaction.note === 'Pago registrado desde deudas'
+    );
+    if (isLegacyDebtPayment) {
+      return {
+        ...transaction,
+        type: 'debt_payment',
+        category: 'debt_payment',
+        debtId: transaction.debtId || transaction.debtAccountId || transaction.accountId,
+        debtAccountId: transaction.debtId || transaction.debtAccountId || transaction.accountId,
+        accountId: transaction.sourceAccountId || null
+      };
+    }
+    if (transaction.type === 'debt_payment') {
+      return {
+        ...transaction,
+        category: 'debt_payment',
+        debtId: transaction.debtId || transaction.debtAccountId,
+        debtAccountId: transaction.debtId || transaction.debtAccountId
+      };
+    }
+    const isLegacyTransferIncome = transaction.type === 'income' && (
+      String(transaction.id || '').endsWith('_in')
+      || String(transaction.note || '').startsWith('Transferencia desde ')
+    );
+    return isLegacyTransferIncome ? { ...transaction, category: 'transfer' } : transaction;
+  });
   if (!parsed.financeData.recurring) parsed.financeData.recurring = [];
   if (!parsed.financeData.subscriptions) parsed.financeData.subscriptions = [];
   if (!parsed.financeData.goals) parsed.financeData.goals = [];
@@ -1104,6 +1156,7 @@ const normalizeLoadedData = (parsed) => {
   if (!parsed.agendaNotes) parsed.agendaNotes = {};
   if (!parsed.agendaTodos) parsed.agendaTodos = {};
   if (!parsed.agendaTodoLabels) parsed.agendaTodoLabels = [];
+  setGlobalNotificationsEnabled(parsed.user.notificationsEnabled !== false);
   return parsed;
 };
 
@@ -1129,6 +1182,7 @@ const loadData = () => {
 
 const CLOUD_TABLE = 'habitflow_user_data';
 const NOTIFICATION_SENT_STORAGE = 'habitflowNotificationSent';
+const GLOBAL_NOTIFICATIONS_STORAGE = 'habitflowNotificationsEnabled';
 let cloudSaveTimer = null;
 let lastCloudSave = Promise.resolve();
 
@@ -1220,7 +1274,23 @@ const getNotificationPermissionState = () => {
   return Notification.permission || 'default';
 };
 
+const areGlobalNotificationsEnabled = () => {
+  try {
+    const stored = localStorage.getItem(GLOBAL_NOTIFICATIONS_STORAGE);
+    if (stored !== null) return stored !== 'false';
+    const data = JSON.parse(localStorage.getItem('habitTrackerData') || '{}');
+    return data?.user?.notificationsEnabled !== false;
+  } catch {
+    return true;
+  }
+};
+
+const setGlobalNotificationsEnabled = (enabled) => {
+  try { localStorage.setItem(GLOBAL_NOTIFICATIONS_STORAGE, enabled ? 'true' : 'false'); } catch {}
+};
+
 const getNotificationStatusLabel = (permission = getNotificationPermissionState()) => {
+  if (!areGlobalNotificationsEnabled()) return 'Desactivadas';
   if (permission === 'granted') return 'Activas';
   if (permission === 'denied') return 'Bloqueadas';
   if (permission === 'unsupported') return 'No disponibles';
@@ -1250,7 +1320,7 @@ const savePushSubscription = async (subscription) => {
         endpoint: subscription.endpoint,
         subscription: subscription.toJSON(),
         user_agent: navigator.userAgent || '',
-        enabled: true,
+        enabled: areGlobalNotificationsEnabled(),
         last_seen_at: new Date().toISOString()
       }, { onConflict: 'endpoint' });
     if (error) return { ok: false, reason: error.message };
@@ -1260,7 +1330,25 @@ const savePushSubscription = async (subscription) => {
   }
 };
 
+const updatePushSubscriptionsEnabled = async (enabled) => {
+  const client = getCloudClient();
+  const userId = getClerkUserId();
+  if (!client || !userId) return { ok: false, reason: 'La nube no está disponible.' };
+  try {
+    const { error } = await client
+      .from('habitflow_push_subscriptions')
+      .update({ enabled: !!enabled, last_seen_at: new Date().toISOString() })
+      .eq('user_id', userId);
+    return error ? { ok: false, reason: error.message } : { ok: true };
+  } catch (error) {
+    return { ok: false, reason: error?.message || 'No se pudo actualizar la preferencia global.' };
+  }
+};
+
 const requestHabitFlowNotifications = async () => {
+  if (!areGlobalNotificationsEnabled()) {
+    return { ok: false, permission: getNotificationPermissionState(), reason: 'Las notificaciones globales están desactivadas en HabitFlow.' };
+  }
   if (typeof Notification === 'undefined') {
     return { ok: false, permission: 'unsupported', reason: 'Este navegador no soporta notificaciones web.' };
   }
@@ -1316,6 +1404,7 @@ const requestHabitFlowNotifications = async () => {
 };
 
 const showHabitFlowNotification = async (title, options = {}) => {
+  if (!areGlobalNotificationsEnabled()) return false;
   if (typeof Notification === 'undefined' || Notification.permission !== 'granted') return false;
   const payload = {
     badge: './icon-192-20260603.png',
@@ -8945,6 +9034,7 @@ const FinanceView = ({ data, onUpdateFinance }) => {
   const expenseCategories = categories.filter(c => c.id !== 'income');
   const transactions = finance.transactions || [];
   const accounts = finance.accounts || [];
+  const debts = finance.debts || [];
   const accountTags = finance.accountTags || getFinanceData().accountTags;
   const recurring = finance.recurring || [];
   const subscriptions = finance.subscriptions || [];
@@ -8967,13 +9057,14 @@ const FinanceView = ({ data, onUpdateFinance }) => {
   const [debtForm, setDebtForm] = useState({ name: '', total: '', dueDate: today, minimumPayment: '', reminderEnabled: true, reminderDaysBefore: 3, currency: 'COP' });
   const [selectedDebtId, setSelectedDebtId] = useState(null);
   const [debtPaymentAmount, setDebtPaymentAmount] = useState('');
+  const [debtPaymentAccountId, setDebtPaymentAccountId] = useState('');
   const [rateStatus, setRateStatus] = useState('idle');
   const [rateError, setRateError] = useState('');
 
   const monthDate = new Date(`${selectedMonth}-01T12:00:00`);
   const monthly = transactions.filter(t => (t.date || '').startsWith(selectedMonth));
-  const income = monthly.filter(t => t.type === 'income').reduce((s, t) => s + Number(t.amount || 0), 0);
-  const expenses = monthly.filter(t => t.type === 'expense').reduce((s, t) => s + Number(t.amount || 0), 0);
+  const income = monthly.filter(t => t.type === 'income' && t.category !== 'transfer').reduce((s, t) => s + Number(t.amount || 0), 0);
+  const expenses = monthly.filter(t => t.type === 'expense' && t.category !== 'transfer').reduce((s, t) => s + Number(t.amount || 0), 0);
   const balance = income - expenses;
   const budget = Number(finance.monthlyBudget || 0);
   const budgetTotal = expenseCategories.reduce((sum, c) => sum + Number(budgets[c.id] || 0), 0) || budget;
@@ -9098,7 +9189,16 @@ const FinanceView = ({ data, onUpdateFinance }) => {
   }).slice(0, 18);
 
   const accountBalances = accounts.map(a => {
-    const movement = transactions.filter(t => (t.accountId || accounts[0]?.id) === a.id).reduce((sum, t) => sum + (t.type === 'income'  ? Number(t.amount || 0) : -Number(t.amount || 0)), 0);
+    const movement = transactions.reduce((sum, transaction) => {
+      const amount = Number(transaction.amount || 0);
+      if (transaction.type === 'debt_payment') {
+        if (transaction.accountId && transaction.accountId === a.id) return sum - amount;
+        return sum;
+      }
+      const accountId = transaction.accountId || accounts[0]?.id;
+      if (accountId !== a.id) return sum;
+      return sum + (transaction.type === 'income'  ? amount : -amount);
+    }, 0);
     const tag = accountTagById(a.tagId || a.type, a.type);
     return { ...a, currency: normalizeCurrency(a.currency), tag, group: tag.group || a.type || 'custom', current: Number(a.balance || 0) + movement };
   });
@@ -9136,8 +9236,8 @@ const FinanceView = ({ data, onUpdateFinance }) => {
   });
   const cashFlow = monthKeys.map(key => {
     const items = transactions.filter(t => (t.date || '').startsWith(key));
-    const inc = items.filter(t => t.type === 'income').reduce((sum, t) => sum + Number(t.amount || 0), 0);
-    const exp = items.filter(t => t.type === 'expense').reduce((sum, t) => sum + Number(t.amount || 0), 0);
+    const inc = items.filter(t => t.type === 'income' && t.category !== 'transfer').reduce((sum, t) => sum + Number(t.amount || 0), 0);
+    const exp = items.filter(t => t.type === 'expense' && t.category !== 'transfer').reduce((sum, t) => sum + Number(t.amount || 0), 0);
     const d = new Date(`${key}-01T12:00:00`);
     return { name: d.toLocaleDateString('es-ES', { month: 'short' }), ingresos: inc, gastos: exp, balance: inc - exp };
   });
@@ -9196,7 +9296,7 @@ const FinanceView = ({ data, onUpdateFinance }) => {
         ...prev,
         transactions: [
           { id: `fin_${stamp}_out`, type: 'expense', amount, currency: transactionCurrency, category: 'transfer', accountId: fromAccountId, payee: form.payee || 'Transferencia enviada', note: form.note || `Transferencia a ${accountById(toAccountId).name}`, date: form.date || today },
-          { id: `fin_${stamp}_in`, type: 'income', amount, currency: transactionCurrency, category: 'income', accountId: toAccountId, payee: form.payee || 'Transferencia recibida', note: form.note || `Transferencia desde ${accountById(fromAccountId).name}`, date: form.date || today },
+          { id: `fin_${stamp}_in`, type: 'income', amount, currency: transactionCurrency, category: 'transfer', accountId: toAccountId, payee: form.payee || 'Transferencia recibida', note: form.note || `Transferencia desde ${accountById(fromAccountId).name}`, date: form.date || today },
           ...(prev.transactions || [])
         ]
       }));
@@ -9216,11 +9316,13 @@ const FinanceView = ({ data, onUpdateFinance }) => {
   const openDebtPayment = (debt) => {
     setSelectedDebtId(debt?.id || null);
     setDebtPaymentAmount('');
+    setDebtPaymentAccountId(selectableAccounts[0]?.id || '');
   };
 
   const closeDebtPayment = () => {
     setSelectedDebtId(null);
     setDebtPaymentAmount('');
+    setDebtPaymentAccountId('');
   };
 
   const removeTransaction = (id) => {
@@ -9441,8 +9543,8 @@ const FinanceView = ({ data, onUpdateFinance }) => {
   const previousMonthKey = `${previousMonthDate.getFullYear()}-${String(previousMonthDate.getMonth() + 1).padStart(2, '0')}`;
   const getMonthTotals = (key) => {
     const items = transactions.filter(t => (t.date || '').startsWith(key));
-    const inc = items.filter(t => t.type === 'income').reduce((sum, t) => sum + Number(t.amount || 0), 0);
-    const exp = items.filter(t => t.type === 'expense').reduce((sum, t) => sum + Number(t.amount || 0), 0);
+    const inc = items.filter(t => t.type === 'income' && t.category !== 'transfer').reduce((sum, t) => sum + Number(t.amount || 0), 0);
+    const exp = items.filter(t => t.type === 'expense' && t.category !== 'transfer').reduce((sum, t) => sum + Number(t.amount || 0), 0);
     return { income: inc, expenses: exp, balance: inc - exp };
   };
   const previousTotals = getMonthTotals(previousMonthKey);
@@ -9456,19 +9558,33 @@ const FinanceView = ({ data, onUpdateFinance }) => {
   const incomeTrend = deltaPct(income, previousTotals.income);
   const expenseTrend = deltaPct(expenses, previousTotals.expenses);
 
-  const debtAccounts = accountBalances.filter(account => account.group === 'credit' || account.group === 'loan' || Number(account.current || 0) < 0);
-  const debtItems = debtAccounts.map((account, index) => {
-    const rawPending = Math.max(0, Math.abs(Number(account.current || 0)));
-    const savedTotal = Math.max(0, Number(account.debtTotal || 0));
-    const total = savedTotal > 0 ? Math.max(savedTotal, rawPending, 1) : Math.max(rawPending, 1);
-    const pending = Math.min(total, rawPending);
-    const paid = Math.max(0, total - pending);
+  const debtItems = debts.map((debt, index) => {
+    const total = Math.max(0, Number(debt.total || 0));
+    const paid = Math.min(total, transactions
+      .filter(transaction => (
+        transaction.type === 'debt_payment'
+        && (transaction.debtId || transaction.debtAccountId) === debt.id
+      ))
+      .reduce((sum, transaction) => sum + Math.max(0, Number(transaction.amount || 0)), 0));
+    const pending = Math.max(0, total - paid);
     const pct = total > 0 ? Math.min(100, Math.max(0, Math.round((paid / total) * 100))) : 0;
     const dueDate = new Date(monthDate);
     dueDate.setDate(Math.min(28, 5 + (index * 10)));
-    const savedDueDate = account.debtDueDate ? new Date(`${account.debtDueDate}T12:00:00`) : dueDate;
-    const minimumPayment = Number(account.debtMinimumPayment || Math.max(0, pending * 0.08));
-    return { ...account, pending, total, paid, pct, dueDate: savedDueDate, dueDateKey: account.debtDueDate || toYYYYMMDD(savedDueDate), minimumPayment };
+    const savedDueDate = debt.dueDate ? new Date(`${debt.dueDate}T12:00:00`) : dueDate;
+    const minimumPayment = Number(debt.minimumPayment || Math.max(0, pending * 0.08));
+    return {
+      ...debt,
+      pending,
+      total,
+      paid,
+      pct,
+      dueDate: savedDueDate,
+      dueDateKey: debt.dueDate || toYYYYMMDD(savedDueDate),
+      minimumPayment,
+      debtReminderEnabled: debt.reminderEnabled !== false,
+      debtReminderDaysBefore: Math.max(0, Number(debt.reminderDaysBefore || 0)),
+      debtDueDate: debt.dueDate || toYYYYMMDD(savedDueDate)
+    };
   });
   const totalDebt = debtItems.reduce((sum, item) => sum + Number(item.pending || 0), 0);
   const totalDebtBase = debtItems.reduce((sum, item) => sum + Number(item.total || 0), 0);
@@ -9479,16 +9595,19 @@ const FinanceView = ({ data, onUpdateFinance }) => {
     if (!selectedDebt) return;
     const amount = fromDisplayAmount(debtPaymentAmount, selectedDebt.currency || currency);
     if (!amount || amount <= 0) return;
+    const paymentAmount = Math.min(amount, selectedDebt.pending);
     onUpdateFinance(prev => ({
       ...prev,
       transactions: [
         {
           id: `debt_pay_${Date.now()}`,
-          type: 'income',
-          amount: Math.min(amount, selectedDebt.pending),
+          type: 'debt_payment',
+          amount: paymentAmount,
           currency: normalizeCurrency(selectedDebt.currency || currency),
-          category: 'income',
-          accountId: selectedDebt.id,
+          category: 'debt_payment',
+          accountId: debtPaymentAccountId || null,
+          debtId: selectedDebt.id,
+          debtAccountId: selectedDebt.id,
           payee: `Pago ${selectedDebt.name}`,
           note: 'Pago registrado desde deudas',
           date: today
@@ -9523,21 +9642,18 @@ const FinanceView = ({ data, onUpdateFinance }) => {
     const dueDate = debtForm.dueDate || today;
     onUpdateFinance(prev => ({
       ...prev,
-      accounts: [
-        ...(prev.accounts || []),
+      debts: [
+        ...(prev.debts || []),
         {
           id: `debt_${createdAt}`,
           name,
-          type: 'loan',
-          tagId: 'loan',
           currency: normalizeCurrency(debtForm.currency),
-          balance: -Math.abs(total),
-          debtTotal: Math.abs(total),
-          debtDueDate: dueDate,
-          debtMinimumPayment: Math.max(0, minimumPayment),
-          debtReminderEnabled: !!debtForm.reminderEnabled,
-          debtReminderDaysBefore: Math.max(0, Number(debtForm.reminderDaysBefore || 0)),
-          debtCreatedAt: new Date().toISOString()
+          total: Math.abs(total),
+          dueDate,
+          minimumPayment: Math.max(0, minimumPayment),
+          reminderEnabled: !!debtForm.reminderEnabled,
+          reminderDaysBefore: Math.max(0, Number(debtForm.reminderDaysBefore || 0)),
+          createdAt: new Date().toISOString()
         }
       ]
     }));
@@ -9546,7 +9662,14 @@ const FinanceView = ({ data, onUpdateFinance }) => {
   };
 
   const removeDebt = (id) => {
-    removeAccount(id);
+    onUpdateFinance(prev => ({
+      ...prev,
+      debts: (prev.debts || []).filter(debt => debt.id !== id),
+      transactions: (prev.transactions || []).filter(transaction => (
+        transaction.type !== 'debt_payment'
+        || (transaction.debtId || transaction.debtAccountId) !== id
+      ))
+    }));
     setSection('debts');
   };
 
@@ -10019,7 +10142,7 @@ const FinanceView = ({ data, onUpdateFinance }) => {
     const modalInputStyle = { ...inputStyle, width: '100%', minHeight: 44 };
     const paymentCurrency = normalizeCurrency(selectedDebt.currency || currency);
     const typedAmount = fromDisplayAmount(debtPaymentAmount, paymentCurrency);
-    const canPay = typedAmount > 0;
+    const canPay = typedAmount > 0 && typedAmount <= selectedDebt.pending;
     return (
       <div className="finance-modal-backdrop" onMouseDown={(event) => { if (event.target === event.currentTarget) closeDebtPayment(); }} style={{
         position: 'fixed',
@@ -10067,6 +10190,20 @@ const FinanceView = ({ data, onUpdateFinance }) => {
             Monto del pago
             <FinanceMoneyInput value={debtPaymentAmount} onValueChange={setDebtPaymentAmount} style={modalInputStyle} placeholder={`$ 0 (${paymentCurrency})`} />
           </label>
+          <label style={{ display: 'grid', gap: 6, color: COLORS.textDim, fontSize: 11, marginTop: 12, ...s }}>
+            Pagar desde
+            <select value={debtPaymentAccountId} onChange={event => setDebtPaymentAccountId(event.target.value)} style={modalInputStyle}>
+              <option value="">Sin descontar de una cuenta</option>
+              {selectableAccounts.map(account => (
+                <option key={account.id} value={account.id}>{account.name}</option>
+              ))}
+            </select>
+          </label>
+          {typedAmount > selectedDebt.pending && (
+            <div style={{ color: COLORS.alert, fontSize: 11, marginTop: 8, ...s }}>
+              El pago no puede superar el saldo pendiente.
+            </div>
+          )}
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1.1fr', gap: 10, marginTop: 18 }}>
             <button onClick={closeDebtPayment} style={ghostButtonStyle}>Cancelar</button>
             <button onClick={registerDebtPayment} disabled={!canPay} style={{ ...proButtonStyle, opacity: canPay ? 1 : 0.55 }}>Guardar pago</button>
@@ -10227,7 +10364,9 @@ const FinanceView = ({ data, onUpdateFinance }) => {
         const category = catById(t.category);
         const account = accountById(t.accountId);
         const isIncome = t.type === 'income';
+        const isDebtPayment = t.type === 'debt_payment';
         const isTransfer = t.category === 'transfer';
+        const debtAccount = isDebtPayment ? accountById(t.debtAccountId) : null;
         return (
           <div key={t.id} className="finance-transaction-item finance-transaction-row" style={{ display: 'grid', gridTemplateColumns: 'minmax(0,1fr) auto auto', gap: 12, alignItems: 'center', padding: '12px 0', borderBottom: `1px solid ${COLORS.border}` }}>
             <div style={{ minWidth: 0, display: 'flex', alignItems: 'center', gap: 12 }}>
@@ -10235,8 +10374,12 @@ const FinanceView = ({ data, onUpdateFinance }) => {
                 {isIncome ? <ArrowUp size={16} /> : <ArrowDown size={16} />}
               </span>
               <div style={{ minWidth: 0 }}>
-                <div style={{ color: COLORS.text, fontWeight: 850, fontSize: 13, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', ...s }}>{t.payee || category.name}</div>
-                <div style={{ color: COLORS.textDim, fontSize: 11, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', ...s }}>{isTransfer ? 'Transferencia' : (isIncome ? 'Ingreso' : 'Gasto')} - {category.name} - {account.name}</div>
+                <div style={{ color: COLORS.text, fontWeight: 850, fontSize: 13, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', ...s }}>{t.payee || (isDebtPayment ? 'Pago de deuda' : category.name)}</div>
+                <div style={{ color: COLORS.textDim, fontSize: 11, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', ...s }}>
+                  {isDebtPayment
+                    ? `Pago de deuda - ${debtAccount?.name || 'Deuda'}${t.accountId ? ` - ${account.name}` : ''}`
+                    : `${isTransfer ? 'Transferencia' : (isIncome ? 'Ingreso' : 'Gasto')} - ${category.name} - ${account.name}`}
+                </div>
               </div>
             </div>
             <div style={{ color: isIncome ? '#35C46A' : COLORS.primary, fontWeight: 900, textAlign: 'right', ...s }}>{isIncome ? '+' : '-'}{money(t.amount)}</div>
@@ -10349,6 +10492,7 @@ const FinanceView = ({ data, onUpdateFinance }) => {
                   <option value="income">Ingresos</option>
                   <option value="expense">Gastos</option>
                   <option value="transfer">Transferencias</option>
+                  <option value="debt_payment">Pagos de deuda</option>
                 </select>
             <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Buscar movimiento..." style={inputStyle} />
           </div>
@@ -11573,6 +11717,8 @@ const SettingsView = ({ data, onUpdateUser, onResetData, cloudSync, onGenerateRa
   const [clerkMsg, setClerkMsg] = useState('');
   const [notificationPermission, setNotificationPermission] = useState(getNotificationPermissionState());
   const [notificationMsg, setNotificationMsg] = useState('');
+  const [notificationToggleBusy, setNotificationToggleBusy] = useState(false);
+  const globalNotificationsEnabled = user.notificationsEnabled !== false;
 
   const totalCompletions = records.filter(r => r.completed).length;
   const daysRegistered = new Set(records.map(r => r.date)).size;
@@ -11623,6 +11769,10 @@ const SettingsView = ({ data, onUpdateUser, onResetData, cloudSync, onGenerateRa
   };
 
   const handleEnableNotifications = async () => {
+    if (!globalNotificationsEnabled) {
+      setNotificationMsg('Activa primero el interruptor de notificaciones globales.');
+      return;
+    }
     setNotificationMsg('Preparando notificaciones...');
     const result = await requestHabitFlowNotifications();
     setNotificationPermission(result.permission);
@@ -11636,6 +11786,10 @@ const SettingsView = ({ data, onUpdateUser, onResetData, cloudSync, onGenerateRa
   };
 
   const handleTestNotification = async () => {
+    if (!globalNotificationsEnabled) {
+      setNotificationMsg('Las notificaciones globales están desactivadas.');
+      return;
+    }
     if (getNotificationPermissionState() !== 'granted') {
       await handleEnableNotifications();
       return;
@@ -11646,6 +11800,32 @@ const SettingsView = ({ data, onUpdateUser, onResetData, cloudSync, onGenerateRa
     });
     setNotificationPermission(getNotificationPermissionState());
     setNotificationMsg(ok  ? 'Notificación de prueba enviada.' : 'No se pudo enviar la prueba. Revisa permisos del navegador.');
+  };
+
+  const handleToggleGlobalNotifications = async () => {
+    if (notificationToggleBusy) return;
+    const nextEnabled = !globalNotificationsEnabled;
+    setNotificationToggleBusy(true);
+    setGlobalNotificationsEnabled(nextEnabled);
+    onUpdateUser({ notificationsEnabled: nextEnabled });
+    setNotificationMsg(nextEnabled ? 'Activando notificaciones en tu cuenta...' : 'Desactivando notificaciones en todos tus dispositivos...');
+
+    if (nextEnabled) {
+      const subscriptionsResult = await updatePushSubscriptionsEnabled(true);
+      const permissionResult = await requestHabitFlowNotifications();
+      setNotificationPermission(permissionResult.permission);
+      setNotificationMsg(permissionResult.ok
+        ? 'Notificaciones globales activas.'
+        : subscriptionsResult.ok
+          ? permissionResult.reason
+          : `${permissionResult.reason} ${subscriptionsResult.reason || ''}`.trim());
+    } else {
+      const result = await updatePushSubscriptionsEnabled(false);
+      setNotificationMsg(result.ok
+        ? 'Notificaciones globales desactivadas en tu cuenta.'
+        : 'Se desactivaron en este dispositivo. La preferencia se sincronizará con tu cuenta.');
+    }
+    setNotificationToggleBusy(false);
   };
 
   const handleExport = () => {
@@ -11774,6 +11954,44 @@ const SettingsView = ({ data, onUpdateUser, onResetData, cloudSync, onGenerateRa
             Recibe alarmas de agenda, recordatorios de hábitos pendientes y mensajes de disciplina en todos los dispositivos de tu cuenta.
             En Mac revisa también Ajustes del sistema {'>'} Notificaciones {'>'} tu navegador y activa sonidos/banners.
           </div>
+          <div style={{
+            display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 14,
+            padding: '13px 14px', marginBottom: 14, borderRadius: 13,
+            border: `1px solid ${globalNotificationsEnabled ? `${COLORS.primary}66` : COLORS.border}`,
+            background: globalNotificationsEnabled ? `${COLORS.primary}0D` : COLORS.bg
+          }}>
+            <div style={{ minWidth: 0 }}>
+              <div style={{ color: COLORS.text, fontSize: 13, fontWeight: 850, ...s }}>Notificaciones globales</div>
+              <div style={{ color: COLORS.textDim, fontSize: 11, marginTop: 3, lineHeight: 1.4, ...s }}>
+                {globalNotificationsEnabled ? 'HabitFlow puede enviar avisos desde todas sus secciones.' : 'Agenda, hábitos, salud, finanzas y Pomodoro no enviarán avisos.'}
+              </div>
+            </div>
+            <button
+              type="button"
+              role="switch"
+              aria-checked={globalNotificationsEnabled}
+              aria-label="Activar o desactivar todas las notificaciones"
+              disabled={notificationToggleBusy}
+              onClick={handleToggleGlobalNotifications}
+              style={{
+                width: 52, height: 30, flex: '0 0 auto', borderRadius: 999, padding: 3,
+                border: `1px solid ${globalNotificationsEnabled ? COLORS.primary : COLORS.border}`,
+                background: globalNotificationsEnabled ? COLORS.primary : COLORS.bg,
+                cursor: notificationToggleBusy ? 'wait' : 'pointer',
+                opacity: notificationToggleBusy ? 0.65 : 1,
+                display: 'flex', alignItems: 'center',
+                justifyContent: globalNotificationsEnabled ? 'flex-end' : 'flex-start',
+                transition: 'background 160ms ease, border-color 160ms ease'
+              }}
+            >
+              <span style={{
+                width: 22, height: 22, borderRadius: '50%',
+                background: globalNotificationsEnabled ? '#fff' : COLORS.textDim,
+                boxShadow: '0 2px 7px rgba(0,0,0,0.25)',
+                transition: 'transform 160ms ease'
+              }} />
+            </button>
+          </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
             <span style={{
               display: 'inline-flex', alignItems: 'center', gap: 6, padding: '8px 12px', borderRadius: 999,
@@ -11784,16 +12002,16 @@ const SettingsView = ({ data, onUpdateUser, onResetData, cloudSync, onGenerateRa
             }}>
               🔔 {getNotificationStatusLabel(notificationPermission)}
             </span>
-            <button onClick={handleEnableNotifications} style={{
+            <button onClick={handleEnableNotifications} disabled={!globalNotificationsEnabled} style={{
               padding: '10px 14px', borderRadius: 10, border: 'none',
               background: notificationPermission === 'granted'  ? COLORS.bg : COLORS.primary,
               color: notificationPermission === 'granted'  ? COLORS.text : '#fff', cursor: 'pointer',
-              fontSize: 12, fontWeight: 800, ...s
+              fontSize: 12, fontWeight: 800, opacity: globalNotificationsEnabled ? 1 : 0.45, ...s
             }}>{notificationPermission === 'granted'  ? 'Revisar permiso' : 'Activar notificaciones'}</button>
-            <button onClick={handleTestNotification} style={{
+            <button onClick={handleTestNotification} disabled={!globalNotificationsEnabled} style={{
               padding: '10px 14px', borderRadius: 10, border: `1px solid ${COLORS.border}`,
               background: COLORS.bg, color: COLORS.text, cursor: 'pointer',
-              fontSize: 12, fontWeight: 800, ...s
+              fontSize: 12, fontWeight: 800, opacity: globalNotificationsEnabled ? 1 : 0.45, ...s
             }}>Enviar prueba</button>
           </div>
           {notificationMsg && <div style={{ marginTop: 10, color: notificationPermission === 'denied'  ? COLORS.alert : COLORS.textDim, fontSize: 11, lineHeight: 1.45 }}>{notificationMsg}</div>}
@@ -15850,15 +16068,17 @@ const HabitFlowApp = () => {
 
   useEffect(() => {
     if (cloudSync.status !== 'active') return;
+    if (data?.user?.notificationsEnabled === false) return;
     if (pushAutoSyncRef.current) return;
     if (getNotificationPermissionState() !== 'granted') return;
     pushAutoSyncRef.current = true;
     requestHabitFlowNotifications().catch(() => {
       pushAutoSyncRef.current = false;
     });
-  }, [cloudSync.status]);
+  }, [cloudSync.status, data?.user?.notificationsEnabled]);
 
   useEffect(() => {
+    if (data?.user?.notificationsEnabled === false) return;
     if (!data?.agenda) return;
     if (typeof Notification === 'undefined') return;
     if (Notification.permission !== 'granted') return;
@@ -15951,9 +16171,10 @@ const HabitFlowApp = () => {
       window.removeEventListener('focus', onWake);
       document.removeEventListener('visibilitychange', onWake);
     };
-  }, [data?.agenda]);
+  }, [data?.agenda, data?.user?.notificationsEnabled]);
 
   useEffect(() => {
+    if (data?.user?.notificationsEnabled === false) return;
     if (!data?.habits?.length) return;
     if (typeof Notification === 'undefined' || Notification.permission !== 'granted') return;
 
@@ -16005,9 +16226,10 @@ const HabitFlowApp = () => {
       window.removeEventListener('focus', onWake);
       document.removeEventListener('visibilitychange', onWake);
     };
-  }, [data?.habits, data?.records]);
+  }, [data?.habits, data?.records, data?.user?.notificationsEnabled]);
 
   useEffect(() => {
+    if (data?.user?.notificationsEnabled === false) return;
     if (!data?.healthData) return;
     if (typeof Notification === 'undefined') return;
     if (Notification.permission !== 'granted') return;
@@ -16053,10 +16275,11 @@ const HabitFlowApp = () => {
       window.removeEventListener('focus', onWake);
       document.removeEventListener('visibilitychange', onWake);
     };
-  }, [data?.healthData]);
+  }, [data?.healthData, data?.user?.notificationsEnabled]);
 
   useEffect(() => {
-    if (!data?.financeData?.accounts?.length) return;
+    if (data?.user?.notificationsEnabled === false) return;
+    if (!data?.financeData?.debts?.length) return;
     if (typeof Notification === 'undefined') return;
     if (Notification.permission !== 'granted') return;
 
@@ -16081,27 +16304,29 @@ const HabitFlowApp = () => {
         });
       };
 
-      (finance.accounts || []).forEach(account => {
-        if (!account.debtDueDate || account.debtReminderEnabled === false) return;
-        const tagGroup = (finance.accountTags || []).find(tag => tag.id === account.tagId)?.group || account.type;
-        if (tagGroup !== 'loan' && !String(account.id || '').startsWith('debt_') && Number(account.balance || 0) >= 0) return;
-
-        const due = new Date(`${account.debtDueDate}T12:00:00`);
+      (finance.debts || []).forEach(debt => {
+        if (!debt.dueDate || debt.reminderEnabled === false) return;
+        const due = new Date(`${debt.dueDate}T12:00:00`);
         if (Number.isNaN(due.getTime())) return;
-        const reminderDays = Math.max(0, Number(account.debtReminderDaysBefore || 0));
+        const reminderDays = Math.max(0, Number(debt.reminderDaysBefore || 0));
         const start = new Date(due.getTime() - reminderDays * 86400000);
         const todayNoon = new Date(`${todayKey}T12:00:00`);
         if (todayNoon < start || todayNoon > due) return;
 
-        const key = `finance-debt:${account.id}:${todayKey}:${account.debtDueDate}`;
+        const key = `finance-debt:${debt.id}:${todayKey}:${debt.dueDate}`;
         if (sentMap[key]) return;
-        const minimumPayment = Math.max(0, Number(account.debtMinimumPayment || Math.abs(Number(account.balance || 0)) * 0.08));
+        const paid = (finance.transactions || [])
+          .filter(transaction => transaction.type === 'debt_payment' && (transaction.debtId || transaction.debtAccountId) === debt.id)
+          .reduce((sum, transaction) => sum + Math.max(0, Number(transaction.amount || 0)), 0);
+        const pending = Math.max(0, Number(debt.total || 0) - paid);
+        if (pending <= 0) return;
+        const minimumPayment = Math.max(0, Number(debt.minimumPayment || pending * 0.08));
         sentMap[key] = now.getTime();
         changed = true;
         showHabitFlowNotification('HabitFlow - Pago de deuda', {
-          body: `${account.name}\nCuota mínima: ${formatDebtAmount(minimumPayment, account.currency)}\nPago oportuno: ${account.debtDueDate}`,
+          body: `${debt.name}\nCuota mínima: ${formatDebtAmount(minimumPayment, debt.currency)}\nPago oportuno: ${debt.dueDate}`,
           tag: key,
-          data: { view: 'finance', section: 'debts', debtId: account.id },
+          data: { view: 'finance', section: 'debts', debtId: debt.id },
           renotify: true,
           requireInteraction: true
         });
@@ -16120,7 +16345,7 @@ const HabitFlowApp = () => {
       window.removeEventListener('focus', onWake);
       document.removeEventListener('visibilitychange', onWake);
     };
-  }, [data?.financeData]);
+  }, [data?.financeData, data?.user?.notificationsEnabled]);
 
   const persist = useCallback((newData) => {
     setData(newData);
