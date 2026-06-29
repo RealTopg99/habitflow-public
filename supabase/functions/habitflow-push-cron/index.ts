@@ -661,15 +661,19 @@ const dueDebtNotificationsForUser = (row: any, now: Date) => {
     const pending = Math.max(0, Number(debt.total || 0) - paid);
     if (pending <= 0) return;
 
-    const minimumPayment = Math.max(0, Number(debt.minimumPayment || pending * 0.08));
+    const minimumPayment = Math.max(0, Number(debt.minimumPayment || 0));
     const displayMinimum = convertFinanceAmount(minimumPayment, "USD", debtCurrency, copRate);
+    const notificationLines = [debt.name || "Deuda"];
+    if (debt.installmentCount) notificationLines.push(`Plan: ${debt.installmentCount} cuotas`);
+    if (minimumPayment > 0) notificationLines.push(`Cuota mínima: ${formatFinanceAmount(displayMinimum, debtCurrency, copRate)}`);
+    notificationLines.push(`Pago oportuno: ${dueDate}`);
     items.push({
       type: "finance-debt",
       date: localNow.date,
       deliveryKey: `${row.user_id}:finance-debt:${debt.id}:${localNow.date}:${dueDate}`,
       payload: {
         title: "HabitFlow - Pago de deuda",
-        body: `${debt.name || "Deuda"}\nCuota minima: ${formatFinanceAmount(displayMinimum, debtCurrency, copRate)}\nPago oportuno: ${dueDate}`,
+        body: notificationLines.join("\n"),
         requireInteraction: true,
         data: { view: "finance", section: "debts", debtId: debt.id, date: localNow.date }
       }

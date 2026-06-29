@@ -1105,9 +1105,20 @@ const normalizeLoadedData = (parsed) => {
     reminderDaysBefore: Math.max(0, Number(account.debtReminderDaysBefore || 0)),
     createdAt: account.debtCreatedAt || new Date().toISOString()
   }));
-  parsed.financeData.debts = [...existingDebts, ...migratedDebts].filter((debt, index, list) => (
-    debt?.id && list.findIndex(item => item?.id === debt.id) === index
-  ));
+  parsed.financeData.debts = [...existingDebts, ...migratedDebts]
+    .filter((debt, index, list) => (
+      debt?.id && list.findIndex(item => item?.id === debt.id) === index
+    ))
+    .map(debt => {
+      const rawInstallmentCount = Number(debt.installmentCount);
+      const installmentCount = Number.isInteger(rawInstallmentCount) && rawInstallmentCount > 0
+        ? Math.min(360, rawInstallmentCount)
+        : null;
+      return {
+        ...debt,
+        installmentCount
+      };
+    });
   parsed.financeData.accounts = parsed.financeData.accounts.filter(account => !legacyDebtAccounts.some(debt => debt.id === account.id));
   parsed.financeData.transactions = parsed.financeData.transactions.map(transaction => {
     const isLegacyDebtPayment = transaction.type === 'income' && (
@@ -9086,7 +9097,7 @@ const FinanceView = ({ data, onUpdateFinance }) => {
   const [showMoreActions, setShowMoreActions] = useState(false);
   const [showDebtModal, setShowDebtModal] = useState(false);
   const [showDebtHelp, setShowDebtHelp] = useState(false);
-  const [debtForm, setDebtForm] = useState({ name: '', total: '', dueDate: today, minimumPayment: '', reminderEnabled: true, reminderDaysBefore: 3, currency: 'COP' });
+  const [debtForm, setDebtForm] = useState({ name: '', total: '', installmentCount: '', dueDate: today, minimumPayment: '', reminderEnabled: true, reminderDaysBefore: 3, currency: 'COP' });
   const [selectedDebtId, setSelectedDebtId] = useState(null);
   const [debtPaymentAmount, setDebtPaymentAmount] = useState('');
   const [debtPaymentAccountId, setDebtPaymentAccountId] = useState('');
@@ -9603,7 +9614,11 @@ const FinanceView = ({ data, onUpdateFinance }) => {
     const dueDate = new Date(monthDate);
     dueDate.setDate(Math.min(28, 5 + (index * 10)));
     const savedDueDate = debt.dueDate ? new Date(`${debt.dueDate}T12:00:00`) : dueDate;
-    const minimumPayment = Number(debt.minimumPayment || Math.max(0, pending * 0.08));
+    const rawInstallmentCount = Number(debt.installmentCount);
+    const installmentCount = Number.isInteger(rawInstallmentCount) && rawInstallmentCount > 0
+      ? Math.min(360, rawInstallmentCount)
+      : null;
+    const minimumPayment = Math.max(0, Number(debt.minimumPayment || 0));
     return {
       ...debt,
       pending,
@@ -9613,6 +9628,7 @@ const FinanceView = ({ data, onUpdateFinance }) => {
       dueDate: savedDueDate,
       dueDateKey: debt.dueDate || toYYYYMMDD(savedDueDate),
       minimumPayment,
+      installmentCount,
       debtReminderEnabled: debt.reminderEnabled !== false,
       debtReminderDaysBefore: Math.max(0, Number(debt.reminderDaysBefore || 0)),
       debtDueDate: debt.dueDate || toYYYYMMDD(savedDueDate)
@@ -9655,6 +9671,7 @@ const FinanceView = ({ data, onUpdateFinance }) => {
     setDebtForm({
       name: '',
       total: '',
+      installmentCount: '',
       dueDate: today,
       minimumPayment: '',
       reminderEnabled: true,
@@ -9668,8 +9685,9 @@ const FinanceView = ({ data, onUpdateFinance }) => {
   const addDebt = () => {
     const name = debtForm.name.trim();
     const total = fromDisplayAmount(debtForm.total, debtForm.currency);
-    if (!name || !total || total <= 0) return;
-    const minimumPayment = fromDisplayAmount(debtForm.minimumPayment || Math.max(1, Number(debtForm.total || 0) * 0.08), debtForm.currency);
+    const installmentCount = Math.round(Number(debtForm.installmentCount || 0));
+    if (!name || !total || total <= 0 || installmentCount < 1 || installmentCount > 360) return;
+    const minimumPayment = fromDisplayAmount(debtForm.minimumPayment, debtForm.currency);
     const createdAt = Date.now();
     const dueDate = debtForm.dueDate || today;
     onUpdateFinance(prev => ({
@@ -9681,6 +9699,7 @@ const FinanceView = ({ data, onUpdateFinance }) => {
           name,
           currency: normalizeCurrency(debtForm.currency),
           total: Math.abs(total),
+          installmentCount,
           dueDate,
           minimumPayment: Math.max(0, minimumPayment),
           reminderEnabled: !!debtForm.reminderEnabled,
@@ -9739,7 +9758,7 @@ const FinanceView = ({ data, onUpdateFinance }) => {
       id: `debt_${item.id}`,
       name: item.name,
       subtitle: 'Pago de deuda',
-      amount: Math.max(0, item.minimumPayment || item.pending * 0.08),
+      amount: Math.max(0, item.minimumPayment || 0),
       type: 'expense',
       date: item.dueDate
     }))
@@ -9940,7 +9959,7 @@ const FinanceView = ({ data, onUpdateFinance }) => {
     const extraActions = [
       { label: 'Nueva transacción', hint: 'Ingreso, gasto o transferencia', icon: Plus, run: () => openTransactionFlow() },
       { label: 'Nueva cuenta', hint: 'Bancos, efectivo y billeteras', icon: CreditCard, run: () => { setSection('accounts'); setShowMoreActions(false); } },
-      { label: 'Nueva deuda', hint: 'Fecha, cuota mínima y aviso', icon: AlertCircle, run: openDebtCreation },
+      { label: 'Nueva deuda', hint: 'Cuotas, fecha de pago y aviso', icon: AlertCircle, run: openDebtCreation },
       { label: 'Nuevo presupuesto', hint: 'Límite mensual por categoría', icon: Target, run: () => { setSection('budget'); setShowMoreActions(false); } },
       { label: 'Nueva categoría', hint: 'Organiza tus movimientos', icon: List, run: () => { setSection('budget'); setShowMoreActions(false); } }
     ];
@@ -10204,7 +10223,9 @@ const FinanceView = ({ data, onUpdateFinance }) => {
           <div style={{ display: 'flex', justifyContent: 'space-between', gap: 14, alignItems: 'start', marginBottom: 18 }}>
             <div>
               <h3 style={{ margin: 0, fontSize: 24, fontFamily: "'DM Serif Display', serif", color: COLORS.text }}>Registrar pago</h3>
-              <p style={{ margin: '6px 0 0', color: COLORS.textDim, fontSize: 13, ...s }}>{selectedDebt.name}</p>
+              <p style={{ margin: '6px 0 0', color: COLORS.textDim, fontSize: 13, ...s }}>
+                {selectedDebt.name}{selectedDebt.installmentCount ? ` · Plan de ${selectedDebt.installmentCount} cuotas` : ''}
+              </p>
             </div>
             <button onClick={closeDebtPayment} aria-label="Cerrar" style={{ width: 38, height: 38, borderRadius: 12, border: `1px solid ${COLORS.border}`, background: COLORS.bg, color: COLORS.text, cursor: 'pointer' }}><X size={18} /></button>
           </div>
@@ -10254,7 +10275,12 @@ const FinanceView = ({ data, onUpdateFinance }) => {
   const renderDebtModal = () => {
     if (!showDebtModal) return null;
     const debtCurrency = normalizeCurrency(debtForm.currency);
-    const canSaveDebt = debtForm.name.trim() && Number(debtForm.total || 0) > 0 && debtForm.dueDate;
+    const installmentCount = Number(debtForm.installmentCount || 0);
+    const hasValidInstallmentCount = Number.isInteger(installmentCount) && installmentCount >= 1 && installmentCount <= 360;
+    const canSaveDebt = debtForm.name.trim()
+      && fromDisplayAmount(debtForm.total, debtCurrency) > 0
+      && hasValidInstallmentCount
+      && debtForm.dueDate;
     const modalInputStyle = { ...inputStyle, width: '100%', minHeight: 44 };
     return (
       <div className="finance-modal-backdrop" onMouseDown={(event) => { if (event.target === event.currentTarget) setShowDebtModal(false); }} style={{
@@ -10281,7 +10307,7 @@ const FinanceView = ({ data, onUpdateFinance }) => {
           <div style={{ display: 'flex', justifyContent: 'space-between', gap: 14, alignItems: 'start', marginBottom: 18 }}>
             <div>
               <h3 style={{ margin: 0, fontSize: 25, fontFamily: "'DM Serif Display', serif", color: COLORS.text }}>Nueva deuda</h3>
-              <p style={{ margin: '6px 0 0', color: COLORS.textDim, fontSize: 13, ...s }}>Registra una deuda con fecha de pago oportuno, cuota mínima y aviso.</p>
+              <p style={{ margin: '6px 0 0', color: COLORS.textDim, fontSize: 13, ...s }}>Registra el saldo, el número de cuotas y tus condiciones reales de pago.</p>
             </div>
             <button onClick={() => setShowDebtModal(false)} aria-label="Cerrar" style={{ width: 38, height: 38, borderRadius: 12, border: `1px solid ${COLORS.border}`, background: COLORS.bg, color: COLORS.text, cursor: 'pointer' }}><X size={18} /></button>
           </div>
@@ -10306,6 +10332,29 @@ const FinanceView = ({ data, onUpdateFinance }) => {
               </label>
             </div>
 
+            <label style={{ display: 'grid', gap: 6, color: COLORS.textDim, fontSize: 11, ...s }}>
+              Número total de cuotas
+              <input
+                type="number"
+                inputMode="numeric"
+                min="1"
+                max="360"
+                step="1"
+                value={debtForm.installmentCount}
+                onChange={event => {
+                  const nextValue = event.target.value;
+                  if (nextValue === '' || /^\d{1,3}$/.test(nextValue)) {
+                    setDebtForm(form => ({ ...form, installmentCount: nextValue }));
+                  }
+                }}
+                placeholder="Ej: 12"
+                style={modalInputStyle}
+              />
+              <span style={{ color: COLORS.textDim, fontSize: 10, lineHeight: 1.4, ...s }}>
+                Escríbelo manualmente. Usa 1 si la deuda se paga en una sola cuota.
+              </span>
+            </label>
+
             <div className="finance-modal-two" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
               <label style={{ display: 'grid', gap: 6, color: COLORS.textDim, fontSize: 11, ...s }}>
                 Fecha de pago oportuno
@@ -10313,7 +10362,7 @@ const FinanceView = ({ data, onUpdateFinance }) => {
               </label>
               <label style={{ display: 'grid', gap: 6, color: COLORS.textDim, fontSize: 11, ...s }}>
                 Cuota mínima a pagar
-                <FinanceMoneyInput value={debtForm.minimumPayment} onValueChange={value => setDebtForm(f => ({ ...f, minimumPayment: value }))} placeholder={`Opcional (${debtCurrency})`} style={modalInputStyle} />
+                <FinanceMoneyInput value={debtForm.minimumPayment} onValueChange={value => setDebtForm(f => ({ ...f, minimumPayment: value }))} placeholder={`Manual, opcional (${debtCurrency})`} style={modalInputStyle} />
               </label>
             </div>
 
@@ -10350,7 +10399,7 @@ const FinanceView = ({ data, onUpdateFinance }) => {
   const renderDebtHelpModal = () => {
     if (!showDebtHelp) return null;
     const steps = [
-      'Crea cada deuda desde Nueva deuda. Escribe el saldo pendiente real, la fecha de pago oportuno y tu cuota mínima.',
+      'Crea cada deuda desde Nueva deuda. Escribe el saldo real, el número total de cuotas, la fecha de pago y la cuota mínima si aplica.',
       'Cuando hagas un abono, entra a Deudas y usa Registrar pago. HabitFlow baja el saldo pendiente automáticamente.',
       'Mantén activado el aviso para recordar el pago antes de la fecha. En cada dispositivo debes tener notificaciones activas.',
       'No crees deudas desde Cuentas. Esa pantalla queda para bancos, efectivo, billeteras y ahorros.'
@@ -10477,12 +10526,15 @@ const FinanceView = ({ data, onUpdateFinance }) => {
             </div>
             {progressBar(item.pct, COLORS.primary)}
             <div style={{ display: 'flex', justifyContent: 'space-between', gap: 8, alignItems: 'center', marginTop: 6 }}>
-              <span style={{ color: COLORS.textDim, fontSize: 11, ...s }}>Cuota min. {accountMoney(item.minimumPayment, item.currency)}</span>
+              <span style={{ color: COLORS.textDim, fontSize: 11, ...s }}>
+                {item.installmentCount ? `${item.installmentCount} cuotas` : 'Cuotas sin definir'}
+                {item.minimumPayment > 0 ? ` · Mín. ${accountMoney(item.minimumPayment, item.currency)}` : ''}
+              </span>
               <span style={{ color: COLORS.primary, fontSize: 11, ...s }}>{item.pct}%</span>
             </div>
           </div>
         ))}
-        {!debtItems.length && <div style={{ color: COLORS.textDim, fontSize: 13, lineHeight: 1.6, ...s }}>Crea tu primera deuda desde el botón Nueva deuda. Así verás fecha, cuota mínima y progreso.</div>}
+        {!debtItems.length && <div style={{ color: COLORS.textDim, fontSize: 13, lineHeight: 1.6, ...s }}>Crea tu primera deuda desde el botón Nueva deuda. Así verás cuotas, fecha de pago, saldo y progreso.</div>}
       </div>
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginTop: 14 }}>
         <button onClick={openDebtCreation} style={{ ...proButtonStyle, minHeight: 40 }}><Plus size={14} /> Nueva deuda</button>
@@ -10641,9 +10693,10 @@ const FinanceView = ({ data, onUpdateFinance }) => {
                   </div>
                 </div>
                 <div style={{ marginTop: 12 }}>{progressBar(item.pct, COLORS.primary)}</div>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: 8, marginTop: 12 }}>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))', gap: 8, marginTop: 12 }}>
                   {[
-                    { label: 'Cuota mínima', value: accountMoney(item.minimumPayment, item.currency) },
+                    { label: 'Plan de pago', value: item.installmentCount ? `${item.installmentCount} cuotas` : 'Sin definir' },
+                    { label: 'Cuota mínima', value: item.minimumPayment > 0 ? accountMoney(item.minimumPayment, item.currency) : 'Manual' },
                     { label: 'Pago oportuno', value: item.dueDateKey || toYYYYMMDD(item.dueDate) },
                     { label: hasReminder ? 'Aviso' : 'Aviso', value: hasReminder ? `${Number(item.debtReminderDaysBefore || 0)} días antes` : 'Desactivado' }
                   ].map(meta => (
@@ -10662,7 +10715,7 @@ const FinanceView = ({ data, onUpdateFinance }) => {
             );})}
             {!debtItems.length && (
               <div style={{ color: COLORS.textDim, fontSize: 13, padding: 20, textAlign: 'center', border: `1px dashed ${COLORS.border}`, borderRadius: 16, ...s }}>
-                No tienes deudas registradas. Usa Nueva deuda para agregar saldo, cuota mínima, fecha de pago oportuno y recordatorio.
+                No tienes deudas registradas. Usa Nueva deuda para agregar saldo, número de cuotas, fecha de pago y recordatorio.
               </div>
             )}
           </div>
@@ -16358,11 +16411,15 @@ const HabitFlowApp = () => {
           .reduce((sum, transaction) => sum + Math.max(0, Number(transaction.amount || 0)), 0);
         const pending = Math.max(0, Number(debt.total || 0) - paid);
         if (pending <= 0) return;
-        const minimumPayment = Math.max(0, Number(debt.minimumPayment || pending * 0.08));
+        const minimumPayment = Math.max(0, Number(debt.minimumPayment || 0));
+        const notificationLines = [debt.name];
+        if (debt.installmentCount) notificationLines.push(`Plan: ${debt.installmentCount} cuotas`);
+        if (minimumPayment > 0) notificationLines.push(`Cuota mínima: ${formatDebtAmount(minimumPayment, debt.currency)}`);
+        notificationLines.push(`Pago oportuno: ${debt.dueDate}`);
         sentMap[key] = now.getTime();
         changed = true;
         showHabitFlowNotification('HabitFlow - Pago de deuda', {
-          body: `${debt.name}\nCuota mínima: ${formatDebtAmount(minimumPayment, debt.currency)}\nPago oportuno: ${debt.dueDate}`,
+          body: notificationLines.join('\n'),
           tag: key,
           data: { view: 'finance', section: 'debts', debtId: debt.id },
           renotify: true,
