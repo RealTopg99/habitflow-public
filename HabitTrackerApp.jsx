@@ -3503,6 +3503,36 @@ const injectStyles = () => {
         line-height: 1 !important;
         margin-bottom: 8px !important;
       }
+      .finance-available-card {
+        min-width: 0 !important;
+        width: 100% !important;
+        padding: 14px !important;
+        border-radius: 16px !important;
+        background: rgba(255,255,255,0.035) !important;
+        border: 1px solid rgba(255,255,255,0.08) !important;
+      }
+      .finance-available-card [style*="font-size: 34"] {
+        font-size: 28px !important;
+      }
+      .finance-kpis {
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+        gap: 9px !important;
+        margin-bottom: 14px !important;
+      }
+      .finance-kpis .kpi-card {
+        min-height: 104px !important;
+        padding: 13px !important;
+        border-radius: 16px !important;
+      }
+      .finance-kpis .kpi-card > div:first-child {
+        font-size: 8.5px !important;
+        line-height: 1.25 !important;
+      }
+      .finance-kpis .kpi-card > div:last-child {
+        font-size: 18px !important;
+        line-height: 1.05 !important;
+        word-break: break-word !important;
+      }
       .finance-layout,
       .finance-main-column,
       .finance-side-column {
@@ -3729,6 +3759,7 @@ const injectStyles = () => {
         text-overflow: ellipsis !important;
         white-space: nowrap !important;
       }
+      .finance-chart-card .recharts-responsive-container,
       .finance-pie-card .recharts-responsive-container {
         height: 220px !important;
       }
@@ -4612,6 +4643,13 @@ const injectStyles = () => {
       }
       .finance-layout {
         grid-template-columns: minmax(0, 1fr) !important;
+      }
+      .finance-kpis {
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+      }
+      .finance-chart-card .recharts-responsive-container {
+        min-width: 0 !important;
+        width: 100% !important;
       }
     }
 
@@ -10553,189 +10591,117 @@ const FinanceView = ({ data, onUpdateFinance }) => {
     );
   };
 
-  const renderFinanceDashboard = () => {
-    const periodTrend = deltaPct(balance, previousTotals.balance);
-    const periodTrendColor = periodTrend >= 0 ? '#35C46A' : COLORS.primary;
-    const periodLineColor = balance >= 0 ? '#F4F1EA' : COLORS.primary;
-    const monthTabs = Array.from({ length: 5 }, (_, index) => {
-      const d = new Date(monthDate);
-      d.setMonth(monthDate.getMonth() + index);
-      const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
-      const label = d.toLocaleDateString('es-CO', { month: 'long' }).replace('.', '');
-      return { key, label: label.charAt(0).toUpperCase() + label.slice(1) };
-    });
-    const transactionRows = recentTransactions.slice(0, 5);
-    const upcomingRows = upcomingPayments.slice(0, 5);
-
-    return (
-      <>
-        <div className="finance-wallet-shell finance-mobile-view finance-dashboard-pro" style={{ animation: 'fadeIn 0.28s ease-out' }}>
-          <div className="finance-wallet-header">
-            <div className="finance-wallet-actions">
-              <label className="finance-wallet-control">
-                <Calendar size={15} />
-                <select value={selectedMonth} onChange={e => setSelectedMonth(e.target.value)}>
-                  {monthPickerOptions.map(item => <option key={item.key} value={item.key}>{item.label}</option>)}
-                </select>
-              </label>
-              <div className="finance-wallet-currency" title="Cambiar toda la vista de Finanzas entre USD y COP">
-                {['USD', 'COP'].map(cur => (
-                  <button key={cur} type="button" onClick={() => changeFinanceCurrency(cur)} aria-pressed={currency === cur}>
+  const renderFinanceDashboard = () => (
+    <>
+      <div className="finance-mobile-view finance-dashboard-pro" style={{ animation: 'fadeIn 0.28s ease-out', color: COLORS.text }}>
+        <div className="finance-pro-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 18, flexWrap: 'wrap', marginBottom: 18 }}>
+          <div>
+            <h2 style={{ margin: 0, fontSize: 34, lineHeight: 1, fontFamily: "'DM Serif Display', serif", color: COLORS.text }}>Finanzas</h2>
+            <div style={{ color: COLORS.textDim, fontSize: 13, marginTop: 7, ...s }}>Administra tu dinero y toma el control de tu futuro.</div>
+          </div>
+          <div className="finance-header-actions" style={{ display: 'flex', gap: 10, alignItems: 'center', flexWrap: 'wrap' }}>
+            <label style={{ display: 'inline-flex', alignItems: 'center', gap: 9, minHeight: 42, minWidth: 148, ...ghostButtonStyle }}>
+              <Calendar size={15} />
+              <select value={selectedMonth} onChange={e => setSelectedMonth(e.target.value)} style={{ background: 'transparent', border: 0, color: COLORS.text, outline: 0, minWidth: 102, cursor: 'pointer', ...s }}>
+                {monthPickerOptions.map(item => <option key={item.key} value={item.key}>{item.label}</option>)}
+              </select>
+            </label>
+            <div
+              className="finance-global-currency-switch"
+              title="Cambiar toda la vista de Finanzas entre USD y COP"
+              style={{
+                display: 'grid',
+                gridTemplateColumns: '1fr 1fr',
+                gap: 3,
+                padding: 3,
+                minHeight: 42,
+                minWidth: 122,
+                borderRadius: 14,
+                background: COLORS.bg,
+                border: `1px solid ${COLORS.border}`,
+                boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.035)',
+                ...s
+              }}
+            >
+              {['USD', 'COP'].map(cur => {
+                const active = currency === cur;
+                return (
+                  <button
+                    key={cur}
+                    type="button"
+                    onClick={() => changeFinanceCurrency(cur)}
+                    aria-pressed={active}
+                    style={{
+                      border: 'none',
+                      borderRadius: 11,
+                      background: active ? COLORS.primary : 'transparent',
+                      color: active ? '#fff' : COLORS.textDim,
+                      cursor: 'pointer',
+                      fontSize: 12,
+                      fontWeight: 900,
+                      letterSpacing: '0.04em',
+                      transition: 'background 180ms ease, color 180ms ease, transform 180ms ease',
+                      transform: active ? 'translateY(-1px)' : 'none',
+                      minHeight: 34,
+                      padding: '0 10px',
+                      ...s
+                    }}
+                  >
                     {cur}
                   </button>
-                ))}
-              </div>
-              <button type="button" onClick={() => openTransactionFlow()} className="finance-wallet-primary">
-                <Plus size={16} /> Nueva transacción
-              </button>
+                );
+              })}
             </div>
+            <button onClick={() => openTransactionFlow()} style={proButtonStyle}><Plus size={16} /> Nueva transacción</button>
           </div>
+        </div>
 
-          <div className="finance-wallet-grid">
-            <section className="finance-wallet-column" aria-label="Resumen de wallet">
-              <div className="finance-wallet-label">Wallet <span style={{ letterSpacing: 0, textTransform: 'none', opacity: 0.65 }}>ⓘ</span></div>
-              <div className="finance-wallet-amount">{money(netWorth)}<small>{currency}</small></div>
-              <div className="finance-wallet-equivalents">
-                <span>{moneyUSD(netWorth)} USD</span>
-                <span>{moneyCOP(netWorth)} COP</span>
-              </div>
-
-              <div className="finance-wallet-divider" />
-              {renderQuickActions()}
-              <div className="finance-wallet-divider" />
-
-              <div className="finance-upcoming-title" style={{ marginTop: 0 }}>
-                <div>
-                  <div className="finance-wallet-label">Últimas transacciones</div>
-                  <div className="finance-mini-tabs" style={{ marginTop: 18 }}>
-                    {['Todas', 'Ingresos', 'Gastos'].map((label, index) => (
-                      <button key={label} type="button" className={index === 0 ? 'is-active' : ''}>{label}</button>
-                    ))}
-                  </div>
-                </div>
-                <button type="button" onClick={() => setSection('movements')} className="finance-wallet-icon-link" aria-label="Ver transacciones">
-                  <ArrowUp size={18} style={{ transform: 'rotate(45deg)' }} />
-                </button>
-              </div>
-
-              <div className="finance-row-list">
-                {transactionRows.map(item => {
-                  const positive = item.type === 'income';
-                  const category = catById(item.category);
-                  const Icon = positive ? ArrowDown : ArrowUp;
-                  return (
-                    <div key={item.id} className="finance-ref-row">
-                      <Icon size={18} style={{ color: positive ? '#35C46A' : '#FF5F78', transform: positive ? 'rotate(45deg)' : 'rotate(45deg)' }} />
-                      <div style={{ minWidth: 0 }}>
-                        <div className="finance-ref-row-title">{item.payee || category.name}</div>
-                        <div className="finance-ref-row-meta">{new Date(item.date || today).toLocaleDateString('es-CO', { day: '2-digit', month: 'short' })} · {category.name} · {accountById(item.accountId).name}</div>
-                      </div>
-                      <div className="finance-ref-amount" style={{ color: positive ? '#35C46A' : '#FF5F78' }}>
-                        {positive ? '+' : '-'}{money(item.amount)}
-                      </div>
-                    </div>
-                  );
-                })}
-                {!transactionRows.length && (
-                  <div style={{ color: COLORS.textDim, fontSize: 14, padding: '20px 0', ...s }}>Aún no hay transacciones en este periodo.</div>
+        <div className="finance-kpis" style={{ display: 'grid', gridTemplateColumns: 'repeat(5, minmax(160px, 1fr))', gap: 12, marginBottom: 14 }}>
+          {financeMetrics.map((card, index) => (
+            <div key={card.label} className="kpi-card finance-pro-kpi" style={{ ...financeCardStyle, minHeight: 118, position: 'relative', animation: `fadeInUp 0.32s ease ${index * 0.04}s both` }}>
+              <div style={{ color: COLORS.textDim, fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 8, ...s }}>{card.label}</div>
+              <div style={{ color: COLORS.text, fontSize: 24, fontFamily: "'DM Serif Display', serif", lineHeight: 1.05, wordBreak: 'break-word' }}>{card.value}</div>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8, marginTop: 8 }}>
+                <span style={{ color: COLORS.textDim, fontSize: 11, ...s }}>{card.hint}</span>
+                {card.trend !== null && (
+                  <span style={{ color: card.trend >= 0 ? '#35C46A' : COLORS.primary, fontSize: 11, fontWeight: 850, ...s }}>
+                    {card.trend >= 0 ? '↑' : '↓'} {Math.abs(card.trend)}%
+                  </span>
                 )}
               </div>
-              <button type="button" onClick={() => setSection('movements')} className="finance-wallet-link">Ver todas las transacciones <ChevronDown size={15} /></button>
-            </section>
+              <svg viewBox="0 0 100 38" preserveAspectRatio="none" style={{ width: '100%', height: 38, marginTop: 10, opacity: 0.95 }}>
+                <path d={buildSparkPath(card.series)} fill="none" stroke={card.color} strokeWidth="2" strokeLinecap="round" />
+              </svg>
+            </div>
+          ))}
+        </div>
 
-            <section className="finance-period-card" aria-label="Balance del periodo">
-              <div className="finance-period-top">
-                <div className="finance-wallet-label">Balance del periodo</div>
-                <div style={{ color: periodTrendColor, fontWeight: 850, ...s }}>{periodTrend > 0 ? '+' : ''}{periodTrend}%</div>
-              </div>
-              <div className="finance-period-tabs">
-                {['USD', 'COP'].map(cur => (
-                  <button key={cur} type="button" onClick={() => changeFinanceCurrency(cur)} className={currency === cur ? 'is-active' : ''}>{cur}</button>
-                ))}
-              </div>
-              <div className="finance-wallet-amount finance-period-amount">{money(balance)}<small>{currency}</small></div>
-              <div className="finance-wallet-divider" />
-
-              <div className="finance-period-chart">
-                <ResponsiveContainer width="100%" height="100%">
-                  <AreaChart data={cashFlow} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
-                    <defs>
-                      <linearGradient id="financeWalletArea" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="0%" stopColor="#35C46A" stopOpacity="0.28" />
-                        <stop offset="100%" stopColor="#35C46A" stopOpacity="0.02" />
-                      </linearGradient>
-                    </defs>
-                    <CartesianGrid strokeDasharray="3 7" vertical={false} stroke={COLORS.border} />
-                    <XAxis dataKey="name" stroke={COLORS.textDim} tick={{ fontSize: 12 }} axisLine={false} tickLine={false} />
-                    <YAxis stroke={COLORS.textDim} tick={{ fontSize: 12 }} axisLine={false} tickLine={false} tickFormatter={(value) => money(Number(value || 0)).replace(/\s?(USD|COP)/g, '')} />
-                    <Tooltip contentStyle={tooltipStyle} formatter={(value) => money(Number(value || 0))} />
-                    <Area type="monotone" dataKey="balance" stroke={periodLineColor} fill="url(#financeWalletArea)" strokeWidth={2} dot={{ r: 3, fill: periodLineColor, strokeWidth: 0 }} activeDot={{ r: 5 }} animationDuration={700} />
-                  </AreaChart>
-                </ResponsiveContainer>
-              </div>
-
-              <div className="finance-period-summary">
-                <div>
-                  <div className="finance-wallet-label">Ingresos</div>
-                  <div style={{ color: '#35C46A', fontSize: 22, marginTop: 8, ...s }}>{money(income)}</div>
-                </div>
-                <div>
-                  <div className="finance-wallet-label">Gastos</div>
-                  <div style={{ color: '#FF5F78', fontSize: 22, marginTop: 8, ...s }}>-{money(expenses)}</div>
-                </div>
-              </div>
-
-              <div className="finance-wallet-divider" />
-              <div className="finance-upcoming-title">
-                <div className="finance-wallet-label">Próximas cuentas</div>
-                <button type="button" onClick={() => setSection('recurring')} className="finance-wallet-icon-link" aria-label="Ver próximas cuentas">
-                  <ChevronDown size={17} />
-                </button>
-              </div>
-              <div className="finance-mini-tabs">
-                {monthTabs.map(item => (
-                  <button key={item.key} type="button" onClick={() => setSelectedMonth(item.key)} className={selectedMonth === item.key ? 'is-active' : ''}>{item.label}</button>
-                ))}
-              </div>
-              <div className="finance-row-list" style={{ marginTop: 16 }}>
-                {upcomingRows.map(item => {
-                  const badge = displayDateBadge(item.date);
-                  const positive = item.type === 'income';
-                  return (
-                    <div key={item.id} className="finance-ref-row">
-                      <span style={{ color: positive ? '#35C46A' : '#FF5F78', fontSize: 18 }}>{positive ? '↙' : '↗'}</span>
-                      <div style={{ minWidth: 0 }}>
-                        <div className="finance-ref-row-title">{item.name}</div>
-                        <div className="finance-ref-row-meta">{badge.day} {badge.month.toLowerCase()} · {item.subtitle}</div>
-                      </div>
-                      <div className="finance-ref-amount" style={{ color: positive ? '#35C46A' : '#FF5F78' }}>
-                        {positive ? '+' : '-'}{money(item.amount)}
-                      </div>
-                    </div>
-                  );
-                })}
-                {!upcomingRows.length && (
-                  <div style={{ color: COLORS.textDim, fontSize: 14, padding: '18px 0', ...s }}>No hay próximas cuentas configuradas.</div>
-                )}
-              </div>
-              <button type="button" onClick={() => setSection('recurring')} className="finance-wallet-link">Ver todas las próximas cuentas <ChevronDown size={15} /></button>
-            </section>
-          </div>
-
-          {section !== 'overview' && (
-            <div className="finance-detail-panel">
+        <div className="finance-layout" style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1.45fr) minmax(330px, 0.82fr)', gap: 14, alignItems: 'start' }}>
+          <div className="finance-main-column" style={{ display: 'grid', gap: 14, minWidth: 0 }}>
+            <div className="finance-card" style={financeCardStyle}>
               {renderFinanceTabs()}
               {renderMainContent()}
             </div>
-          )}
+            <div className="finance-bottom-grid" style={{ display: 'grid', gridTemplateColumns: 'minmax(260px, 0.72fr) minmax(300px, 1fr)', gap: 14 }}>
+              {renderAccountsCompact()}
+              <div className="finance-card" style={financeCardStyle}>
+                {sectionTitle('Transacciones recientes', <button onClick={() => setSection('movements')} style={{ ...ghostButtonStyle, minHeight: 34, padding: '8px 10px' }}>Ver todas <ChevronRight size={14} /></button>)}
+                {renderMovementList(recentTransactions)}
+              </div>
+            </div>
+          </div>
+          <div className="finance-side-column" style={{ display: 'grid', gap: 14, minWidth: 0 }}>
+            {renderDebtsCard()}
+            {renderUpcomingPayments()}
+          </div>
         </div>
-        {renderTransactionModal()}
-        {renderDebtPaymentModal()}
-        {renderDebtModal()}
-        {renderDebtHelpModal()}
-      </>
-    );
-  };
+      </div>
+      {renderTransactionModal()}
+      {renderDebtPaymentModal()}
+      {renderDebtModal()}
+      {renderDebtHelpModal()}
+    </>
+  );
 
   return renderFinanceDashboard();
 };
