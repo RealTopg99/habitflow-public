@@ -5885,6 +5885,34 @@ const injectStyles = () => {
     .hf-modal-panel * {
       box-sizing: border-box !important;
     }
+    .finance-category-scroll {
+      max-height: 322px;
+      overflow-y: auto;
+      overflow-x: hidden;
+      padding-right: 8px;
+      scrollbar-gutter: stable;
+      overscroll-behavior: contain;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(var(--icon-rgb, 225, 29, 72), 0.55) transparent;
+    }
+    .finance-category-scroll::-webkit-scrollbar {
+      width: 6px;
+    }
+    .finance-category-scroll::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    .finance-category-scroll::-webkit-scrollbar-thumb {
+      background: rgba(var(--icon-rgb, 225, 29, 72), 0.48);
+      border-radius: 999px;
+    }
+    .finance-category-scroll::-webkit-scrollbar-thumb:hover {
+      background: rgba(var(--icon-rgb, 225, 29, 72), 0.72);
+    }
+    .finance-category-scroll:focus-visible {
+      outline: 2px solid rgba(var(--icon-rgb, 225, 29, 72), 0.45);
+      outline-offset: 4px;
+      border-radius: 10px;
+    }
     @media (max-width: 980px) {
       .finance-wallet-grid {
         grid-template-columns: 1fr;
@@ -5912,6 +5940,10 @@ const injectStyles = () => {
       .workout-mobile-view,
       .settings-mobile-view {
         padding-bottom: calc(128px + env(safe-area-inset-bottom)) !important;
+      }
+      .finance-category-scroll {
+        max-height: 252px;
+        padding-right: 6px;
       }
       .mobile-bottom-nav {
         left: max(10px, env(safe-area-inset-left)) !important;
@@ -9873,7 +9905,13 @@ const FinanceView = ({ data, onUpdateFinance }) => {
           <h4 style={{ margin: 0, color: COLORS.text, fontSize: 15, ...s }}>Gastos por categoría</h4>
           <span style={{ color: COLORS.textDim, fontSize: 12, ...s }}>Este mes</span>
         </div>
-        <div style={{ display: 'grid', gap: 11 }}>
+        <div
+          className="finance-category-scroll"
+          tabIndex={0}
+          role="region"
+          aria-label="Gastos por categoría, lista desplazable"
+          style={{ display: 'grid', gap: 11 }}
+        >
           {(categorySpendData.length ? categorySpendData : expenseCategories.slice(0, 5).map(cat => ({ ...cat, value: 0, share: 0 }))).map(item => (
             <div key={item.id}>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr auto auto', gap: 10, alignItems: 'center', marginBottom: 7, color: COLORS.textDim, fontSize: 12, ...s }}>
