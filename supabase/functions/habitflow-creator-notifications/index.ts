@@ -126,9 +126,7 @@ const listUsersFromClerk = async () => {
   return Array.isArray(users) ? users : users?.data || [];
 };
 
-const listUsersFromCloudData = async () => {
-  const rows = await supabaseFetch("habitflow_user_data?select=user_id,data,created_at&order=created_at.desc");
-  return (rows || []).map((row: any) => ({
+const cloudRowsToUsers = (rows: any[]) => (rows || []).map((row: any) => ({
     id: row.user_id,
     first_name: row.data?.user?.clerkName || row.data?.user?.name || "Usuario",
     last_name: "",
@@ -136,15 +134,43 @@ const listUsersFromCloudData = async () => {
     primary_email_address_id: "cloud-email",
     email_addresses: [{ id: "cloud-email", email_address: row.data?.user?.clerkEmail || "" }]
   }));
-};
 
-const listClients = async () => {
+const listClients = async (creator: { userId: string; email: string }) => {
   const [clerkUsers, subscriptions, cloudRows] = await Promise.all([
     listUsersFromClerk(),
     supabaseFetch("habitflow_push_subscriptions?select=user_id,enabled"),
     supabaseFetch("habitflow_user_data?select=user_id,data")
   ]);
-  const sourceUsers = clerkUsers.length ? clerkUsers : await listUsersFromCloudData();
+  const mergedUsers = new Map<string, any>();
+  (subscriptions || []).forEach((subscription: any) => {
+    if (!subscription?.user_id) return;
+    mergedUsers.set(subscription.user_id, {
+      id: subscription.user_id,
+      first_name: "Usuario",
+      last_name: "",
+      image_url: "",
+      email_addresses: []
+    });
+  });
+  cloudRowsToUsers(cloudRows || []).forEach((user: any) => {
+    if (!user?.id) return;
+    mergedUsers.set(user.id, { ...(mergedUsers.get(user.id) || {}), ...user });
+  });
+  (clerkUsers || []).forEach((user: any) => {
+    if (!user?.id) return;
+    mergedUsers.set(user.id, { ...(mergedUsers.get(user.id) || {}), ...user });
+  });
+  if (!mergedUsers.has(creator.userId)) {
+    mergedUsers.set(creator.userId, {
+      id: creator.userId,
+      first_name: "Daniel Zuluaga",
+      last_name: "",
+      image_url: "",
+      primary_email_address_id: "creator-email",
+      email_addresses: [{ id: "creator-email", email_address: creator.email }]
+    });
+  }
+
   const deviceCounts = new Map<string, number>();
   (subscriptions || []).forEach((subscription: any) => {
     if (subscription.enabled === false) return;
@@ -155,7 +181,7 @@ const listClients = async () => {
     notificationPreferences.set(row.user_id, row.data?.user?.notificationsEnabled !== false);
   });
 
-  return sourceUsers.map((user: any) => {
+  const users = [...mergedUsers.values()].map((user: any) => {
     const email = getPrimaryEmail(user);
     const name = [user.first_name, user.last_name].filter(Boolean).join(" ")
       || user.username
@@ -171,6 +197,19 @@ const listClients = async () => {
       isCreator: email === CREATOR_EMAIL || (CREATOR_USER_ID && user.id === CREATOR_USER_ID)
     };
   });
+  users.sort((left, right) => {
+    const deviceDifference = Number(right.devices || 0) - Number(left.devices || 0);
+    if (deviceDifference !== 0) return deviceDifference;
+    return String(left.name || "").localeCompare(String(right.name || ""), "es");
+  });
+  return {
+    users,
+    sources: {
+      clerk: clerkUsers.length,
+      cloud: cloudRows?.length || 0,
+      subscriptions: new Set((subscriptions || []).map((item: any) => item.user_id)).size
+    }
+  };
 };
 
 const deleteExpiredSubscription = async (endpoint: string) => {
@@ -252,11 +291,15 @@ Deno.serve(async request => {
   try {
     const input = await request.json().catch(() => ({}));
     if (input?.action === "list_users") {
-      const users = await listClients();
+      const clientList = await listClients(creator);
       return jsonResponse({
         ok: true,
         creator: { id: creator.userId, email: creator.email },
-        users
+        users: clientList.users,
+        sources: clientList.sources,
+        message: clientList.users.length === 0
+          ? "Todavía no hay usuarios registrados en Clerk, la nube o las suscripciones push."
+          : ""
       }, 200, creator.origin);
     }
     if (input?.action === "send_notification") {

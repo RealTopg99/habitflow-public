@@ -1270,6 +1270,9 @@ const callCreatorNotificationsApi = async (payload) => {
   });
   const result = await response.json().catch(() => ({}));
   if (!response.ok || result?.ok === false) {
+    if (response.status === 404) {
+      throw new Error('El servicio seguro de clientes todavía no está publicado en Supabase.');
+    }
     throw new Error(result?.error || 'No se pudo completar la operación de creador.');
   }
   return result;
@@ -12325,14 +12328,20 @@ const CreatorView = () => {
   const [loading, setLoading] = useState(true);
   const [sending, setSending] = useState(false);
   const [error, setError] = useState('');
+  const [listMessage, setListMessage] = useState('');
   const [result, setResult] = useState(null);
 
   const loadUsers = useCallback(async () => {
     setLoading(true);
     setError('');
+    setListMessage('');
     try {
       const response = await callCreatorNotificationsApi({ action: 'list_users' });
-      setUsers(Array.isArray(response?.users) ? response.users : []);
+      const nextUsers = Array.isArray(response?.users) ? response.users : [];
+      setUsers(nextUsers);
+      if (nextUsers.length === 0) {
+        setListMessage(response?.message || 'Todavía no hay usuarios registrados. La lista aparecerá cuando inicien sesión o activen notificaciones.');
+      }
     } catch (loadError) {
       setError(loadError?.message || 'No se pudo cargar la lista de clientes.');
     } finally {
@@ -12442,7 +12451,11 @@ const CreatorView = () => {
 
           <div className="creator-client-list">
             {loading && <div className="creator-empty">Cargando clientes...</div>}
-            {!loading && filteredUsers.length === 0 && <div className="creator-empty">No hay clientes que coincidan con la búsqueda.</div>}
+            {!loading && filteredUsers.length === 0 && (
+              <div className="creator-empty">
+                {query.trim() ? 'No hay clientes que coincidan con la búsqueda.' : listMessage}
+              </div>
+            )}
             {!loading && filteredUsers.map(user => {
               const available = Number(user.devices || 0) > 0 && user.notificationsEnabled !== false;
               const selected = selectedUserIds.includes(user.id);
