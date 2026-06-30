@@ -15,7 +15,7 @@ const {
   PersonStanding, Apple, Coffee, Smile, Image: ImageIcon, Moon, Sun,
   Rocket, Laptop, FileText, SquareCheck, AlarmClock, Lightbulb, Music,
   Palette, Camera, Leaf, Zap, Trophy, Medal, Star, Gift, Bookmark,
-  Flower2, ChevronDown, RefreshCw
+  Flower2, ChevronDown, RefreshCw, Users, Send, Shield
 } = lucideReact;
 
 const supabase = window.supabaseClient;
@@ -1194,6 +1194,7 @@ const loadData = () => {
 const CLOUD_TABLE = 'habitflow_user_data';
 const NOTIFICATION_SENT_STORAGE = 'habitflowNotificationSent';
 const GLOBAL_NOTIFICATIONS_STORAGE = 'habitflowNotificationsEnabled';
+const CREATOR_EMAIL = 'ventasdeeproots09@gmail.com';
 let cloudSaveTimer = null;
 let lastCloudSave = Promise.resolve();
 
@@ -1204,6 +1205,75 @@ const emitCloudSyncStatus = (detail) => {
 };
 
 const getClerkUserId = () => window.Clerk?.user?.id || null;
+
+const getClerkIdentity = () => {
+  const clerkUser = window.Clerk?.user;
+  const primaryEmail = clerkUser?.primaryEmailAddress?.emailAddress
+    || clerkUser?.emailAddresses?.find(item => item.id === clerkUser?.primaryEmailAddressId)?.emailAddress
+    || clerkUser?.emailAddresses?.[0]?.emailAddress
+    || '';
+  return {
+    id: clerkUser?.id || null,
+    email: String(primaryEmail || '').trim().toLowerCase(),
+    name: clerkUser?.fullName
+      || [clerkUser?.firstName, clerkUser?.lastName].filter(Boolean).join(' ')
+      || clerkUser?.username
+      || 'Usuario',
+    imageUrl: clerkUser?.imageUrl || ''
+  };
+};
+
+const isLocalCreatorPreview = () => {
+  if (!['localhost', '127.0.0.1'].includes(window.location.hostname)) return false;
+  const params = new URLSearchParams(window.location.search);
+  return params.get('dev-preview') === '1' && params.get('creator-preview') === '1';
+};
+
+const hasCreatorAccess = () => getClerkIdentity().email === CREATOR_EMAIL || isLocalCreatorPreview();
+
+const callCreatorNotificationsApi = async (payload) => {
+  if (isLocalCreatorPreview()) {
+    if (payload?.action === 'list_users') {
+      return {
+        ok: true,
+        creator: { id: 'creator-preview', email: CREATOR_EMAIL, name: 'Daniel Zuluaga' },
+        users: [
+          { id: 'creator-preview', name: 'Daniel Zuluaga', email: CREATOR_EMAIL, imageUrl: '', devices: 2, notificationsEnabled: true, isCreator: true },
+          { id: 'user-preview-1', name: 'Cliente de prueba', email: 'cliente@habitflow.app', imageUrl: '', devices: 1, notificationsEnabled: true, isCreator: false },
+          { id: 'user-preview-2', name: 'Usuario sin avisos', email: 'sinavisos@habitflow.app', imageUrl: '', devices: 0, notificationsEnabled: false, isCreator: false }
+        ]
+      };
+    }
+    return {
+      ok: true,
+      preview: true,
+      recipients: payload?.audience === 'all' ? 2 : (payload?.userIds || []).length,
+      sent: payload?.audience === 'all' ? 3 : (payload?.userIds || []).length,
+      failed: 0
+    };
+  }
+
+  const token = await window.Clerk?.session?.getToken();
+  if (!token) throw new Error('Tu sesión de creador no está disponible. Vuelve a iniciar sesión.');
+  if (!window.HABITFLOW_SUPABASE_URL || !window.HABITFLOW_SUPABASE_PUBLISHABLE_KEY) {
+    throw new Error('La conexión segura con Supabase no está configurada.');
+  }
+
+  const response = await fetch(`${window.HABITFLOW_SUPABASE_URL}/functions/v1/habitflow-creator-notifications`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      apikey: window.HABITFLOW_SUPABASE_PUBLISHABLE_KEY,
+      Authorization: `Bearer ${token}`
+    },
+    body: JSON.stringify(payload || {})
+  });
+  const result = await response.json().catch(() => ({}));
+  if (!response.ok || result?.ok === false) {
+    throw new Error(result?.error || 'No se pudo completar la operación de creador.');
+  }
+  return result;
+};
 
 const getCloudClient = () => {
   if (!window.createSupabaseClient || !window.HABITFLOW_SUPABASE_URL || !window.HABITFLOW_SUPABASE_PUBLISHABLE_KEY) return null;
@@ -1236,11 +1306,21 @@ const loadCloudData = async () => {
 
 const saveCloudDataNow = async (data) => {
   const userId = getClerkUserId();
+  const identity = getClerkIdentity();
   const client = getCloudClient();
   if (!userId || !client || !data) return { ok: false, reason: 'Nube no disponible.' };
   const payload = {
     user_id: userId,
-    data: { ...data, user: { ...data.user, clerkUserId: userId } },
+    data: {
+      ...data,
+      user: {
+        ...data.user,
+        clerkUserId: userId,
+        clerkEmail: identity.email || data.user?.clerkEmail || '',
+        clerkName: identity.name || data.user?.clerkName || data.user?.name || 'Usuario',
+        clerkImageUrl: identity.imageUrl || data.user?.clerkImageUrl || ''
+      }
+    },
     updated_at: new Date().toISOString()
   };
   try {
@@ -6462,6 +6542,449 @@ const injectStyles = () => {
       }
       .mobile-more-popover {
         border-radius: 22px !important;
+      }
+    }
+    .creator-view {
+      width: min(1180px, 100%);
+      margin: 0 auto;
+      padding: 36px 32px 72px;
+      color: var(--app-text);
+    }
+    .creator-heading {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 24px;
+      margin-bottom: 24px;
+    }
+    .creator-heading h1 {
+      margin: 8px 0 6px;
+      color: var(--app-text);
+      font: 400 clamp(34px, 4vw, 52px)/1.05 "DM Serif Display", serif;
+    }
+    .creator-heading p,
+    .creator-card-header p {
+      margin: 0;
+      color: var(--app-text-dim);
+      font: 400 13px/1.55 "Inter", sans-serif;
+    }
+    .creator-kicker,
+    .creator-secure-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      color: var(--primary);
+      font: 700 11px/1 "Inter", sans-serif;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+    .creator-secure-badge {
+      padding: 10px 13px;
+      border: 1px solid color-mix(in srgb, var(--primary) 28%, var(--app-border));
+      border-radius: 999px;
+      background: color-mix(in srgb, var(--primary) 8%, var(--app-card));
+      letter-spacing: 0;
+      text-transform: none;
+      white-space: nowrap;
+    }
+    .creator-metrics {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      border-block: 1px solid var(--app-border);
+      margin-bottom: 24px;
+    }
+    .creator-metrics > div {
+      display: grid;
+      gap: 8px;
+      padding: 20px 22px;
+      border-right: 1px solid var(--app-border);
+    }
+    .creator-metrics > div:last-child {
+      border-right: 0;
+    }
+    .creator-metrics span {
+      color: var(--app-text-dim);
+      font: 600 11px/1.2 "Inter", sans-serif;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+    }
+    .creator-metrics strong {
+      color: var(--app-text);
+      font: 400 30px/1 "DM Serif Display", serif;
+    }
+    .creator-layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1.08fr) minmax(360px, .92fr);
+      gap: 18px;
+      align-items: start;
+    }
+    .creator-card {
+      min-width: 0;
+      padding: 20px;
+      border: 1px solid var(--app-border);
+      border-radius: 20px;
+      background: var(--app-card);
+      box-shadow: var(--hf-shadow-soft);
+    }
+    .creator-card-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+    .creator-card-header h2 {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      margin: 0 0 5px;
+      color: var(--app-text);
+      font: 400 20px/1.2 "DM Serif Display", serif;
+    }
+    .creator-icon-button {
+      display: grid;
+      place-items: center;
+      width: 38px;
+      height: 38px;
+      padding: 0;
+      border: 1px solid var(--app-border);
+      border-radius: 11px;
+      background: var(--app-surface);
+      color: var(--app-text);
+      cursor: pointer;
+    }
+    .creator-icon-button:disabled {
+      opacity: .55;
+      cursor: wait;
+    }
+    .creator-spinning {
+      animation: spin .8s linear infinite;
+    }
+    .creator-search {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      height: 44px;
+      padding: 0 13px;
+      border: 1px solid var(--app-border);
+      border-radius: 12px;
+      background: var(--app-bg);
+      color: var(--app-text-dim);
+    }
+    .creator-search input {
+      min-width: 0;
+      flex: 1;
+      border: 0 !important;
+      outline: 0 !important;
+      background: transparent !important;
+      color: var(--app-text) !important;
+      box-shadow: none !important;
+      font: 400 13px "Inter", sans-serif;
+    }
+    .creator-list-toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 13px 2px 9px;
+      color: var(--app-text-dim);
+      font: 500 11px "Inter", sans-serif;
+    }
+    .creator-list-toolbar button {
+      border: 0;
+      background: transparent;
+      color: var(--primary);
+      cursor: pointer;
+      font: 700 11px "Inter", sans-serif;
+    }
+    .creator-client-list {
+      display: grid;
+      max-height: 500px;
+      overflow: auto;
+      overscroll-behavior: contain;
+      border-top: 1px solid var(--app-border);
+      scrollbar-width: thin;
+      scrollbar-color: var(--primary) transparent;
+    }
+    .creator-client-row {
+      display: grid;
+      grid-template-columns: 22px 40px minmax(0, 1fr) auto;
+      align-items: center;
+      gap: 11px;
+      width: 100%;
+      min-height: 68px;
+      padding: 10px 8px;
+      border: 0;
+      border-bottom: 1px solid var(--app-border);
+      background: transparent;
+      color: var(--app-text);
+      text-align: left;
+      cursor: pointer;
+      transition: background 160ms ease;
+    }
+    .creator-client-row:hover,
+    .creator-client-row.is-selected {
+      background: color-mix(in srgb, var(--primary) 8%, transparent);
+    }
+    .creator-client-row.is-unavailable {
+      opacity: .55;
+      cursor: not-allowed;
+    }
+    .creator-checkbox {
+      display: grid;
+      place-items: center;
+      width: 19px;
+      height: 19px;
+      border: 1px solid var(--app-border);
+      border-radius: 6px;
+      color: #111;
+    }
+    .creator-checkbox.is-selected {
+      border-color: var(--primary);
+      background: var(--primary);
+    }
+    .creator-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 1px solid var(--app-border);
+    }
+    .creator-avatar-fallback {
+      display: grid;
+      place-items: center;
+      background: color-mix(in srgb, var(--primary) 15%, var(--app-surface));
+      color: var(--primary);
+      font: 800 12px "Inter", sans-serif;
+    }
+    .creator-client-copy {
+      display: grid;
+      min-width: 0;
+      gap: 3px;
+    }
+    .creator-client-copy strong,
+    .creator-client-copy small {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .creator-client-copy strong {
+      color: var(--app-text);
+      font: 700 13px "Inter", sans-serif;
+    }
+    .creator-client-copy small {
+      color: var(--app-text-dim);
+      font: 400 11px "Inter", sans-serif;
+    }
+    .creator-device-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 6px 8px;
+      border: 1px solid var(--app-border);
+      border-radius: 999px;
+      color: var(--app-text-dim);
+      font: 700 10px "Inter", sans-serif;
+      white-space: nowrap;
+    }
+    .creator-device-badge.is-active {
+      color: var(--hf-success, #10b981);
+      border-color: color-mix(in srgb, var(--hf-success, #10b981) 25%, var(--app-border));
+      background: color-mix(in srgb, var(--hf-success, #10b981) 7%, transparent);
+    }
+    .creator-empty {
+      padding: 34px 16px;
+      color: var(--app-text-dim);
+      text-align: center;
+      font: 400 12px/1.5 "Inter", sans-serif;
+    }
+    .creator-audience-switch {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4px;
+      padding: 4px;
+      margin-bottom: 16px;
+      border: 1px solid var(--app-border);
+      border-radius: 12px;
+      background: var(--app-bg);
+    }
+    .creator-audience-switch button {
+      min-height: 38px;
+      border: 0;
+      border-radius: 9px;
+      background: transparent;
+      color: var(--app-text-dim);
+      cursor: pointer;
+      font: 700 12px "Inter", sans-serif;
+    }
+    .creator-audience-switch button.is-active {
+      background: var(--primary);
+      color: #111;
+    }
+    .creator-field {
+      position: relative;
+      display: grid;
+      gap: 7px;
+      margin-bottom: 14px;
+    }
+    .creator-field > span {
+      color: var(--app-text-dim);
+      font: 700 10px "Inter", sans-serif;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+    }
+    .creator-field input,
+    .creator-field textarea,
+    .creator-field select {
+      width: 100%;
+      min-height: 44px;
+      padding: 11px 13px;
+      border: 1px solid var(--app-border);
+      border-radius: 12px;
+      outline: 0;
+      background: var(--app-bg);
+      color: var(--app-text);
+      font: 400 13px/1.45 "Inter", sans-serif;
+      resize: vertical;
+    }
+    .creator-field input:focus,
+    .creator-field textarea:focus,
+    .creator-field select:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary) 12%, transparent);
+    }
+    .creator-field > small {
+      position: absolute;
+      right: 10px;
+      bottom: 7px;
+      padding: 2px 4px;
+      border-radius: 5px;
+      background: var(--app-bg);
+      color: var(--app-text-dim);
+      font: 500 9px "Inter", sans-serif;
+    }
+    .creator-toggle-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 12px;
+      margin: 4px 0 14px;
+      border: 1px solid var(--app-border);
+      border-radius: 12px;
+      background: var(--app-surface);
+      cursor: pointer;
+    }
+    .creator-toggle-row input {
+      width: 17px;
+      height: 17px;
+      margin: 1px 0 0;
+      accent-color: var(--primary);
+    }
+    .creator-toggle-row span {
+      display: grid;
+      gap: 3px;
+    }
+    .creator-toggle-row strong {
+      color: var(--app-text);
+      font: 700 12px "Inter", sans-serif;
+    }
+    .creator-toggle-row small {
+      color: var(--app-text-dim);
+      font: 400 10px/1.4 "Inter", sans-serif;
+    }
+    .creator-recipient-summary,
+    .creator-feedback {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 11px 12px;
+      margin-bottom: 12px;
+      border: 1px solid var(--app-border);
+      border-radius: 12px;
+      background: var(--app-surface);
+      color: var(--app-text-dim);
+      font: 600 11px/1.4 "Inter", sans-serif;
+    }
+    .creator-feedback.is-error {
+      border-color: color-mix(in srgb, var(--hf-danger, #ff6b6b) 30%, var(--app-border));
+      color: var(--hf-danger, #ff6b6b);
+    }
+    .creator-feedback.is-success {
+      border-color: color-mix(in srgb, var(--hf-success, #10b981) 30%, var(--app-border));
+      color: var(--hf-success, #10b981);
+    }
+    .creator-send-button {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      width: 100%;
+      min-height: 48px;
+      border: 0;
+      border-radius: 13px;
+      background: var(--primary);
+      color: #111;
+      cursor: pointer;
+      font: 800 13px "Inter", sans-serif;
+      transition: transform 160ms ease, opacity 160ms ease;
+    }
+    .creator-send-button:not(:disabled):hover {
+      transform: translateY(-1px);
+    }
+    .creator-send-button:disabled {
+      opacity: .4;
+      cursor: not-allowed;
+    }
+    @media (max-width: 900px) {
+      .creator-view {
+        padding: 28px 20px 100px;
+      }
+      .creator-layout {
+        grid-template-columns: 1fr;
+      }
+      .creator-compose-card {
+        order: -1;
+      }
+    }
+    @media (max-width: 600px) {
+      .creator-view {
+        padding: 22px 14px 110px;
+      }
+      .creator-heading {
+        display: grid;
+      }
+      .creator-secure-badge {
+        width: fit-content;
+        white-space: normal;
+      }
+      .creator-metrics {
+        grid-template-columns: 1fr 1fr;
+      }
+      .creator-metrics > div {
+        padding: 15px 12px;
+      }
+      .creator-metrics > div:nth-child(2) {
+        border-right: 0;
+      }
+      .creator-metrics > div:last-child {
+        grid-column: 1 / -1;
+        border-top: 1px solid var(--app-border);
+      }
+      .creator-card {
+        padding: 15px;
+        border-radius: 18px;
+      }
+      .creator-client-row {
+        grid-template-columns: 20px 36px minmax(0, 1fr);
+      }
+      .creator-avatar {
+        width: 36px;
+        height: 36px;
+      }
+      .creator-device-badge {
+        grid-column: 3;
+        justify-self: start;
+        padding: 4px 7px;
       }
     }
   `;
@@ -11790,6 +12313,242 @@ const StatisticsView = ({ data }) => {
   );
 };
 
+const CreatorView = () => {
+  const [users, setUsers] = useState([]);
+  const [selectedUserIds, setSelectedUserIds] = useState([]);
+  const [audience, setAudience] = useState('selected');
+  const [query, setQuery] = useState('');
+  const [title, setTitle] = useState('HabitFlow');
+  const [body, setBody] = useState('');
+  const [targetView, setTargetView] = useState('dashboard');
+  const [requireInteraction, setRequireInteraction] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [sending, setSending] = useState(false);
+  const [error, setError] = useState('');
+  const [result, setResult] = useState(null);
+
+  const loadUsers = useCallback(async () => {
+    setLoading(true);
+    setError('');
+    try {
+      const response = await callCreatorNotificationsApi({ action: 'list_users' });
+      setUsers(Array.isArray(response?.users) ? response.users : []);
+    } catch (loadError) {
+      setError(loadError?.message || 'No se pudo cargar la lista de clientes.');
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    loadUsers();
+  }, [loadUsers]);
+
+  const filteredUsers = useMemo(() => {
+    const normalizedQuery = query.trim().toLowerCase();
+    if (!normalizedQuery) return users;
+    return users.filter(user => `${user.name || ''} ${user.email || ''}`.toLowerCase().includes(normalizedQuery));
+  }, [query, users]);
+
+  const reachableUsers = users.filter(user => Number(user.devices || 0) > 0 && user.notificationsEnabled !== false);
+  const reachableDevices = reachableUsers.reduce((sum, user) => sum + Number(user.devices || 0), 0);
+  const selectedReachableUsers = users.filter(user => selectedUserIds.includes(user.id) && Number(user.devices || 0) > 0 && user.notificationsEnabled !== false);
+  const selectedDevices = selectedReachableUsers.reduce((sum, user) => sum + Number(user.devices || 0), 0);
+  const canSend = title.trim() && body.trim() && (audience === 'all' ? reachableDevices > 0 : selectedDevices > 0);
+
+  const toggleUser = (userId) => {
+    setSelectedUserIds(current => current.includes(userId)
+      ? current.filter(id => id !== userId)
+      : [...current, userId]);
+  };
+
+  const selectVisibleUsers = () => {
+    const visibleIds = filteredUsers
+      .filter(user => Number(user.devices || 0) > 0 && user.notificationsEnabled !== false)
+      .map(user => user.id);
+    const allVisibleSelected = visibleIds.length > 0 && visibleIds.every(id => selectedUserIds.includes(id));
+    setSelectedUserIds(current => allVisibleSelected
+      ? current.filter(id => !visibleIds.includes(id))
+      : [...new Set([...current, ...visibleIds])]);
+  };
+
+  const sendNotification = async () => {
+    if (!canSend || sending) return;
+    const recipientsLabel = audience === 'all'
+      ? `${reachableUsers.length} clientes y ${reachableDevices} dispositivos`
+      : `${selectedReachableUsers.length} clientes y ${selectedDevices} dispositivos`;
+    if (!window.confirm(`Se enviará esta notificación a ${recipientsLabel}. ¿Continuar?`)) return;
+
+    setSending(true);
+    setError('');
+    setResult(null);
+    try {
+      const response = await callCreatorNotificationsApi({
+        action: 'send_notification',
+        audience,
+        userIds: audience === 'selected' ? selectedReachableUsers.map(user => user.id) : [],
+        title: title.trim(),
+        body: body.trim(),
+        targetView,
+        requireInteraction
+      });
+      setResult(response);
+      setBody('');
+    } catch (sendError) {
+      setError(sendError?.message || 'No se pudo enviar la notificación.');
+    } finally {
+      setSending(false);
+    }
+  };
+
+  return (
+    <div className="creator-view">
+      <div className="creator-heading">
+        <div>
+          <div className="creator-kicker"><Shield size={14} /> Acceso exclusivo</div>
+          <h1>Centro del creador</h1>
+          <p>Envía comunicaciones personalizadas a un cliente concreto o a toda la comunidad de HabitFlow.</p>
+        </div>
+        <div className="creator-secure-badge"><Shield size={16} /> Identidad protegida con Clerk</div>
+      </div>
+
+      <div className="creator-metrics">
+        <div><span>Clientes</span><strong>{users.length}</strong></div>
+        <div><span>Con avisos activos</span><strong>{reachableUsers.length}</strong></div>
+        <div><span>Dispositivos disponibles</span><strong>{reachableDevices}</strong></div>
+      </div>
+
+      <div className="creator-layout">
+        <section className="creator-card creator-clients-card">
+          <div className="creator-card-header">
+            <div>
+              <h2><Users size={18} /> Clientes</h2>
+              <p>Solo pueden recibir el aviso los dispositivos que hayan activado notificaciones.</p>
+            </div>
+            <button type="button" className="creator-icon-button" onClick={loadUsers} disabled={loading} aria-label="Actualizar clientes" title="Actualizar clientes">
+              <RefreshCw size={16} className={loading ? 'creator-spinning' : ''} />
+            </button>
+          </div>
+
+          <div className="creator-search">
+            <Search size={16} />
+            <input value={query} onChange={event => setQuery(event.target.value)} placeholder="Buscar por nombre o correo" />
+          </div>
+
+          <div className="creator-list-toolbar">
+            <span>{filteredUsers.length} resultados</span>
+            <button type="button" onClick={selectVisibleUsers}>Seleccionar disponibles</button>
+          </div>
+
+          <div className="creator-client-list">
+            {loading && <div className="creator-empty">Cargando clientes...</div>}
+            {!loading && filteredUsers.length === 0 && <div className="creator-empty">No hay clientes que coincidan con la búsqueda.</div>}
+            {!loading && filteredUsers.map(user => {
+              const available = Number(user.devices || 0) > 0 && user.notificationsEnabled !== false;
+              const selected = selectedUserIds.includes(user.id);
+              const initials = String(user.name || user.email || 'U').split(/\s+/).slice(0, 2).map(part => part[0]).join('').toUpperCase();
+              return (
+                <button
+                  type="button"
+                  key={user.id}
+                  className={`creator-client-row ${selected ? 'is-selected' : ''} ${available ? '' : 'is-unavailable'}`}
+                  onClick={() => available && toggleUser(user.id)}
+                  disabled={!available}
+                >
+                  <span className={`creator-checkbox ${selected ? 'is-selected' : ''}`}>{selected ? <Check size={13} /> : null}</span>
+                  {user.imageUrl
+                    ? <img src={user.imageUrl} alt="" className="creator-avatar" />
+                    : <span className="creator-avatar creator-avatar-fallback">{initials}</span>}
+                  <span className="creator-client-copy">
+                    <strong>{user.name || 'Usuario'}</strong>
+                    <small>{user.email || 'Sin correo visible'}</small>
+                  </span>
+                  <span className={`creator-device-badge ${available ? 'is-active' : ''}`}>
+                    <Bell size={12} />
+                    {available ? `${user.devices} disp.` : 'Sin avisos'}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+        </section>
+
+        <section className="creator-card creator-compose-card">
+          <div className="creator-card-header">
+            <div>
+              <h2><Send size={18} /> Nueva notificación</h2>
+              <p>El mensaje llegará a todos los dispositivos activos del destinatario.</p>
+            </div>
+          </div>
+
+          <div className="creator-audience-switch" role="tablist" aria-label="Destinatarios">
+            <button type="button" className={audience === 'selected' ? 'is-active' : ''} onClick={() => setAudience('selected')}>
+              Selección
+            </button>
+            <button type="button" className={audience === 'all' ? 'is-active' : ''} onClick={() => setAudience('all')}>
+              Todos
+            </button>
+          </div>
+
+          <label className="creator-field">
+            <span>Título</span>
+            <input value={title} onChange={event => setTitle(event.target.value)} maxLength={80} placeholder="Ej: Nuevo reto disponible" />
+            <small>{title.length}/80</small>
+          </label>
+
+          <label className="creator-field">
+            <span>Mensaje</span>
+            <textarea value={body} onChange={event => setBody(event.target.value)} maxLength={300} rows={6} placeholder="Escribe una notificación breve y clara..." />
+            <small>{body.length}/300</small>
+          </label>
+
+          <label className="creator-field">
+            <span>Abrir la aplicación en</span>
+            <select value={targetView} onChange={event => setTargetView(event.target.value)}>
+              <option value="dashboard">Panel</option>
+              <option value="habits">Hábitos</option>
+              <option value="agenda">Agenda</option>
+              <option value="finance">Finanzas</option>
+              <option value="health">Salud</option>
+              <option value="settings">Configuración</option>
+            </select>
+          </label>
+
+          <label className="creator-toggle-row">
+            <input type="checkbox" checked={requireInteraction} onChange={event => setRequireInteraction(event.target.checked)} />
+            <span>
+              <strong>Mantener visible</strong>
+              <small>La notificación permanecerá hasta que el usuario la cierre.</small>
+            </span>
+          </label>
+
+          <div className="creator-recipient-summary">
+            <Bell size={17} />
+            <span>
+              {audience === 'all'
+                ? `${reachableUsers.length} clientes · ${reachableDevices} dispositivos`
+                : `${selectedReachableUsers.length} seleccionados · ${selectedDevices} dispositivos`}
+            </span>
+          </div>
+
+          {error && <div className="creator-feedback is-error">{error}</div>}
+          {result?.ok && (
+            <div className="creator-feedback is-success">
+              Envío completado: {result.sent || 0} entregas, {result.failed || 0} fallidas.
+              {result.preview ? ' Vista local de prueba.' : ''}
+            </div>
+          )}
+
+          <button type="button" className="creator-send-button" disabled={!canSend || sending} onClick={sendNotification}>
+            <Send size={17} />
+            {sending ? 'Enviando...' : 'Enviar notificación'}
+          </button>
+        </section>
+      </div>
+    </div>
+  );
+};
+
 const SettingsView = ({ data, onUpdateUser, onResetData, cloudSync, onGenerateRandomData }) => {
   const { user, habits, records } = data;
   const s = { fontFamily: "'Inter', sans-serif" };
@@ -16095,6 +16854,7 @@ const HabitFlowApp = () => {
   const [data, setData] = useState(null);
   const [view, setView] = useState(() => {
     const saved = localStorage.getItem('habitflow_active_view');
+    if (saved === 'creator' && !hasCreatorAccess()) return 'dashboard';
     return saved && !['reading', 'stats'].includes(saved)  ? saved : 'dashboard';
   });
   const [confetti, setConfetti] = useState(null);
@@ -16453,7 +17213,8 @@ const HabitFlowApp = () => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
 
   const navigateTo = useCallback((nextView) => {
-    const safeView = ['reading', 'stats'].includes(nextView)  ? 'dashboard' : nextView;
+    const blockedCreatorView = nextView === 'creator' && !hasCreatorAccess();
+    const safeView = ['reading', 'stats'].includes(nextView) || blockedCreatorView ? 'dashboard' : nextView;
     setView(safeView);
     localStorage.setItem('habitflow_active_view', safeView);
     requestAnimationFrame(() => {
@@ -17083,6 +17844,7 @@ const HabitFlowApp = () => {
     );
   }
 
+  const creatorAccess = hasCreatorAccess();
   const navItems = [
     { id: 'dashboard', label: 'Panel', icon: <Activity size={20} /> },
     { id: 'habits', label: 'Hábitos', icon: <Target size={20} /> },
@@ -17092,6 +17854,7 @@ const HabitFlowApp = () => {
     { id: 'dreams', label: 'Metas', icon: <Sparkles size={20} /> },
     { id: 'finance', label: 'Finanzas', icon: <CreditCard size={20} /> },
     { id: 'health', label: 'Salud', icon: <Heart size={20} /> },
+    ...(creatorAccess ? [{ id: 'creator', label: 'Creador', icon: <Shield size={20} /> }] : []),
     { id: 'settings', label:  'Configuración', icon: <Settings size={20} /> }
   ];
 
@@ -17105,6 +17868,7 @@ const HabitFlowApp = () => {
       case 'dreams': return <DreamGoalsView data={data} onUpdateDreamGoals={onUpdateDreamGoals} />;
       case 'finance': return <FinanceView data={data} onUpdateFinance={onUpdateFinance} />;
       case 'health': return <HealthView data={data} onUpdateHealth={onUpdateHealth} />;
+      case 'creator': return creatorAccess ? <CreatorView /> : <DashboardView data={data} onCompleteHabit={onCompleteHabit} workoutData={data.workoutData} onNavigate={navigateTo} onUpdateUser={onUpdateUser} />;
       case 'settings': return <SettingsView data={data} onUpdateUser={onUpdateUser} onResetData={onResetData} cloudSync={cloudSync} onGenerateRandomData={onGenerateRandomData} />;
       default: return <DashboardView data={data} onCompleteHabit={onCompleteHabit} workoutData={data.workoutData} onNavigate={navigateTo} onUpdateUser={onUpdateUser} />;
     }
