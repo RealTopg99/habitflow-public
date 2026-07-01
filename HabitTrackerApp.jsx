@@ -20,6 +20,7 @@ const {
 
 const supabase = window.supabaseClient;
 
+// SECTION: Global design tokens, themes and static domain catalogs.
 const BASE_COLORS = {
   bg: '#0a0a0f',
   surface: '#12121a',
@@ -942,6 +943,7 @@ const genSampleRecords = (habits) => {
   return records;
 };
 
+// SECTION: Root data model, migrations and backward-compatible normalization.
 const getDefaultData = (reset = false) => {
   const habits = reset  ? [] : genSampleHabits().map(h => ({
     ...h,
@@ -1171,6 +1173,7 @@ const normalizeLoadedData = (parsed) => {
   return parsed;
 };
 
+// SECTION: Local/cloud persistence, authentication identity and push subscriptions.
 const saveLocalData = (data) => {
   localStorage.setItem('habitTrackerData', JSON.stringify(data));
 };
@@ -1584,6 +1587,7 @@ const loadClerk = async (publishableKey) => {
   return window.Clerk;
 };
 
+// SECTION: Global responsive and theme CSS injected once by App.
 const injectStyles = () => {
   if (document.getElementById('habitflow-dynamic-styles')) return;
   const style = document.createElement('style');
@@ -6994,6 +6998,7 @@ const injectStyles = () => {
   document.head.appendChild(style);
 };
 
+// SECTION: Shared visual primitives, feedback, authentication and analytics helpers.
 const Confetti = ({ x, y }) => {
   const colors = ['#e11d48', '#efefef', '#00ff9d', '#ff6b6b', '#ffd93d', '#e11d48'];
   const particles = Array.from({ length: 20 }, (_, i) => {
@@ -7737,6 +7742,7 @@ const HabitHeatMap30 = ({ habitId, records }) => {
 
 const DAY_LABELS = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
 
+// SECTION: Habits form, confirmation flows and habit-specific UI.
 const HabitForm = ({ initial, onSave, onCancel, categories = CATEGORIES, onCreateCategory }) => {
   const initialCategory = initial?.category || 'salud';
   const initialReminder = initial?.reminder || {};
@@ -8172,6 +8178,7 @@ const StatsTooltip = ({ active, payload, label }) => {
   );
 };
 
+// SECTION: Panel / dashboard.
 const DashboardView = ({ data, onCompleteHabit, workoutData, onNavigate, onUpdateUser }) => {
   const { habits, records } = data;
   const s = { fontFamily: "'Inter', sans-serif" };
@@ -8557,6 +8564,7 @@ const ChallengesView = ({ data, onCompleteChallenge, onJoinChallenge, records })
   );
 };
 
+// SECTION: Habits.
 const HabitsView = ({ data, onAddHabit, onUpdateHabit, onDeleteHabit, onToggleHabit, onCompleteHabit, onUpdateRecord, onCreateHabitCategory, records }) => {
   const { habits } = data;
   const habitCategories = useMemo(
@@ -9114,6 +9122,7 @@ const HabitsView = ({ data, onAddHabit, onUpdateHabit, onDeleteHabit, onToggleHa
   );
 };
 
+// SECTION: Health and medication tracking.
 const HealthView = ({ data, onUpdateHealth }) => {
   const health = normalizeHealthData(data.healthData || getHealthData());
   const today = toYYYYMMDD(new Date());
@@ -9509,6 +9518,7 @@ const HealthView = ({ data, onUpdateHealth }) => {
   );
 };
 
+// SECTION: Finance utilities, currency conversion and finance view.
 const FINANCE_RATE_CACHE_KEY = 'habitflow_usd_cop_rate_v1';
 const FINANCE_RATE_CACHE_TTL = 30 * 60 * 1000;
 
@@ -12316,6 +12326,7 @@ const StatisticsView = ({ data }) => {
   );
 };
 
+// SECTION: Creator-only client notifications console.
 const CreatorView = () => {
   const [users, setUsers] = useState([]);
   const [selectedUserIds, setSelectedUserIds] = useState([]);
@@ -12562,6 +12573,7 @@ const CreatorView = () => {
   );
 };
 
+// SECTION: Settings, profile, themes, notifications and import/export.
 const SettingsView = ({ data, onUpdateUser, onResetData, cloudSync, onGenerateRandomData }) => {
   const { user, habits, records } = data;
   const s = { fontFamily: "'Inter', sans-serif" };
@@ -13397,6 +13409,7 @@ class ErrorBoundary extends React.Component {
   }
 }
 
+// SECTION: Pomodoro and focus sessions.
 const PomodoroView = ({ data, onUpdateUser, onUpdatePomodoro }) => {
   const today = toYYYYMMDD(new Date());
   const settings = data.user?.pomodoro || { focus: 25, shortBreak: 5, longBreak: 15, ambientSound: 'none', ambientVolume: 0.3 };
@@ -14250,6 +14263,7 @@ const PomodoroView = ({ data, onUpdateUser, onUpdatePomodoro }) => {
   );
 };
 
+// SECTION: Workout routines, gym mode, calendar and progress.
 const WorkoutView = ({ data, onUpdateData, onCompleteHabit, awardXp }) => {
   const { workoutData } = data;
   const [tab, setTab] = useState('train');
@@ -15190,6 +15204,7 @@ const WorkoutProgTab = ({ workoutData }) => {
   );
 };
 
+// SECTION: Agenda data helpers, recurrence rules, calendar and task editor.
 const AGENDA_CATEGORIES = ['Personal', 'Trabajo', 'Salud', 'Finanzas', 'Estudios', 'Hogar', 'Social', 'Trading', 'Otro'];
 const AGENDA_CATEGORY_COLORS = ['#ff7d95', '#7dd3fc', '#34d399', '#fbbf24', '#a78bfa', '#fb7185', '#f472b6', '#22d3ee', '#94a3b8'];
 const slugifyAgendaCategory = (name) => String(name || '')
@@ -16863,6 +16878,7 @@ const AgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAgendaTo
   );
 };
 
+// SECTION: Application shell, root state, navigation, notifications and update handlers.
 const HabitFlowApp = () => {
   const [data, setData] = useState(null);
   const [view, setView] = useState(() => {
