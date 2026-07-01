@@ -1,10 +1,10 @@
-const fs = require('fs');
+﻿const fs = require('fs');
 const path = require('path');
 const parser = require('@babel/parser');
 
 const ROOT = path.resolve(__dirname, '..');
 const FILES = ['HabitTrackerApp.jsx'];
-const BAD_TEXT = /[ÃÂ�]|\uFFFD|â(?:€|€¦|„|ˆ)|\bt\?\.\b|\bs \? te\b|\bqued \? suscrito\b|[A-Za-zÁÉÍÓÚÜÑáéíóúüñ0-9)]\s+\?\s+[A-Za-zÁÉÍÓÚÜÑáéíóúüñ0-9(]/;
+const BAD_TEXT = /(?:Ã.|Â.|â€|�|\uFFFD)|\bt\?\.\b|\bs \? te\b|\bqued \? suscrito\b|[A-Za-zÀ-ÿ0-9)]\s+\?\s+[A-Za-zÀ-ÿ0-9(]/u;
 const ALLOWED_REPAIR_SAMPLES = new Set([
   't?.',
   ' t? ',
@@ -15,10 +15,12 @@ const ALLOWED_REPAIR_SAMPLES = new Set([
 ]);
 
 const issues = [];
+const repairRanges = new Map();
 
 function inspectText(file, loc, value) {
   if (typeof value !== 'string') return;
-  if (loc?.start?.line >= 990 && loc?.start?.line <= 1005) return;
+  const repairRange = repairRanges.get(file);
+  if (repairRange && loc?.start?.line >= repairRange.start && loc?.start?.line <= repairRange.end) return;
   const text = value.replace(/\s+/g, ' ').trim();
   if (!text || text === '\uFFFD' || text.startsWith('http') || ALLOWED_REPAIR_SAMPLES.has(value)) return;
   if (BAD_TEXT.test(text)) {
@@ -42,6 +44,12 @@ function walk(node, file) {
 for (const file of FILES) {
   const fullPath = path.join(ROOT, file);
   const code = fs.readFileSync(fullPath, 'utf8');
+  const lines = code.split(/\r?\n/);
+  const repairStart = lines.findIndex(line => line.includes('const TEXT_ENCODING_REPAIRS'));
+  const repairEnd = lines.findIndex((line, index) => index > repairStart && line.includes('const repairMojibakeText'));
+  if (repairStart >= 0 && repairEnd > repairStart) {
+    repairRanges.set(file, { start: repairStart + 1, end: repairEnd });
+  }
   const ast = parser.parse(code, { sourceType: 'script', plugins: ['jsx'] });
   walk(ast, file);
 }

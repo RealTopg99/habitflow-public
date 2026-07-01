@@ -13,7 +13,7 @@ const {
   List, Search, ArrowUp, ArrowDown, Hash, GripVertical, CreditCard,
   Heart, Pill, Bell, Droplet, Pencil, MoreHorizontal, Brain,
   PersonStanding, Apple, Coffee, Smile, Image: ImageIcon, Moon, Sun,
-  Rocket, Laptop, FileText, SquareCheck, AlarmClock, Lightbulb, Music,
+  Rocket, Laptop, FileText, AlarmClock, Lightbulb, Music,
   Palette, Camera, Leaf, Zap, Trophy, Medal, Star, Gift, Bookmark,
   Flower2, ChevronDown, RefreshCw, Users, Send, Shield
 } = lucideReact;
@@ -166,7 +166,7 @@ const HABIT_ICONS = [
   { id: 'rocket', label: 'Productividad', icon: Rocket },
   { id: 'laptop', label: 'Trabajo digital', icon: Laptop },
   { id: 'file-text', label: 'Escritura', icon: FileText },
-  { id: 'check-square', label: 'Tarea', icon: SquareCheck },
+  { id: 'check-square', label: 'Tarea', icon: Check },
   { id: 'calendar', label: 'Calendario', icon: Calendar },
   { id: 'alarm', label: 'Alarma', icon: AlarmClock },
   { id: 'lightbulb', label: 'Idea', icon: Lightbulb },
@@ -7178,6 +7178,830 @@ const injectStyles = () => {
         border-radius: 22px !important;
       }
     }
+    .control-center {
+      width: min(1600px, 100%);
+      margin: 0 auto;
+      color: var(--hf-text);
+      font-family: 'Inter', sans-serif;
+    }
+    .cc-flow {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 0;
+      margin-bottom: 16px;
+      border-block: 1px solid var(--hf-card-border);
+      overflow: hidden;
+    }
+    .cc-flow-step {
+      position: relative;
+      display: grid;
+      grid-template-columns: 32px minmax(0, 1fr);
+      gap: 10px;
+      align-items: start;
+      min-width: 0;
+      padding: 14px 18px;
+    }
+    .cc-flow-step:not(:last-child)::after {
+      content: '';
+      position: absolute;
+      top: 14px;
+      right: 0;
+      bottom: 14px;
+      width: 1px;
+      background: var(--hf-card-border);
+    }
+    .cc-flow-number {
+      width: 28px;
+      height: 28px;
+      border: 1px solid color-mix(in srgb, var(--app-primary) 62%, transparent);
+      border-radius: 999px;
+      display: grid;
+      place-items: center;
+      color: var(--app-primary);
+      font-size: 11px;
+      font-weight: 800;
+      background: color-mix(in srgb, var(--app-primary) 7%, transparent);
+    }
+    .cc-flow-step strong {
+      display: block;
+      color: var(--hf-text);
+      font-size: 12px;
+      line-height: 1.25;
+      margin: 1px 0 4px;
+    }
+    .cc-flow-step span {
+      display: block;
+      color: var(--hf-muted);
+      font-size: 10px;
+      line-height: 1.4;
+    }
+    .cc-shell {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 286px;
+      gap: 18px;
+      align-items: start;
+    }
+    .cc-main {
+      min-width: 0;
+      padding: clamp(18px, 2vw, 28px);
+      border: 1px solid var(--hf-card-border);
+      border-radius: 22px;
+      background: color-mix(in srgb, var(--hf-surface-soft) 82%, transparent);
+      box-shadow: var(--hf-shadow-soft);
+    }
+    .cc-header {
+      display: flex;
+      justify-content: space-between;
+      gap: 18px;
+      align-items: flex-start;
+      margin-bottom: 18px;
+    }
+    .cc-eyebrow {
+      color: var(--hf-muted);
+      font-size: 11px;
+      letter-spacing: .03em;
+      margin-bottom: 7px;
+    }
+    .cc-header h1 {
+      margin: 0;
+      color: var(--hf-text);
+      font-family: 'DM Serif Display', serif;
+      font-size: clamp(27px, 3vw, 38px);
+      font-weight: 400;
+      line-height: 1.08;
+    }
+    .cc-header p {
+      margin: 7px 0 0;
+      color: var(--hf-muted);
+      font-size: 12px;
+      line-height: 1.5;
+    }
+    .cc-day-summary {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      min-height: 38px;
+      padding: 0 12px;
+      border: 1px solid var(--hf-card-border);
+      border-radius: 11px;
+      background: var(--hf-input-bg);
+      color: var(--hf-text);
+      font-size: 11px;
+      white-space: nowrap;
+    }
+    .cc-capture-row {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 14px;
+      align-items: stretch;
+      margin-bottom: 16px;
+    }
+    .cc-capture {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 0;
+      min-height: 50px;
+      padding: 7px 8px 7px 14px;
+      border: 1px solid var(--hf-card-border);
+      border-radius: 14px;
+      background: var(--hf-input-bg);
+      box-shadow: inset 0 1px 0 var(--hf-card-highlight);
+    }
+    .cc-capture:focus-within {
+      border-color: color-mix(in srgb, var(--app-primary) 68%, transparent);
+      box-shadow: var(--hf-focus-ring);
+    }
+    .cc-capture input {
+      width: 100%;
+      min-width: 0;
+      border: 0;
+      outline: 0;
+      background: transparent;
+      color: var(--hf-text);
+      font: inherit;
+      font-size: 12px;
+    }
+    .cc-capture input::placeholder {
+      color: var(--hf-subtle);
+    }
+    .cc-capture button {
+      width: 36px;
+      height: 36px;
+      border: 0;
+      border-radius: 11px;
+      display: grid;
+      place-items: center;
+      color: white;
+      background: var(--app-primary);
+      cursor: pointer;
+      flex: 0 0 auto;
+    }
+    .cc-capture-feedback {
+      min-height: 14px;
+      margin: -7px 0 12px 2px;
+      color: var(--hf-muted);
+      font-size: 10px;
+    }
+    .cc-quick-actions {
+      display: grid;
+      grid-template-columns: repeat(4, 78px);
+      gap: 8px;
+    }
+    .cc-quick-action {
+      border: 1px solid var(--hf-card-border);
+      border-radius: 13px;
+      background: var(--hf-surface);
+      color: var(--hf-text);
+      min-height: 50px;
+      padding: 7px 6px;
+      display: grid;
+      grid-template-columns: 22px 1fr;
+      gap: 5px;
+      align-items: center;
+      text-align: left;
+      cursor: pointer;
+      font-size: 9px;
+      line-height: 1.2;
+    }
+    .cc-quick-action svg {
+      color: var(--app-primary);
+    }
+    .cc-grid {
+      display: grid;
+      grid-template-columns: repeat(12, minmax(0, 1fr));
+      gap: 12px;
+    }
+    .cc-card {
+      min-width: 0;
+      padding: 16px;
+      border: 1px solid var(--hf-card-border);
+      border-radius: 16px;
+      background: var(--hf-glass-quiet);
+      box-shadow: inset 0 1px 0 var(--hf-card-highlight);
+      overflow: hidden;
+    }
+    .cc-card-plan,
+    .cc-card-habits {
+      grid-column: span 6;
+    }
+    .cc-card-pomodoro {
+      grid-column: span 5;
+    }
+    .cc-card-finance {
+      grid-column: span 7;
+    }
+    .cc-card-agenda {
+      grid-column: span 5;
+    }
+    .cc-card-goal {
+      grid-column: span 7;
+    }
+    .cc-card-recommendations {
+      grid-column: 1 / -1;
+    }
+    .cc-card-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+    .cc-card-head h2 {
+      margin: 0;
+      color: var(--hf-text);
+      font-size: 13px;
+      line-height: 1.3;
+    }
+    .cc-card-head p {
+      margin: 3px 0 0;
+      color: var(--hf-muted);
+      font-size: 9px;
+    }
+    .cc-link-button {
+      border: 0;
+      background: transparent;
+      color: var(--hf-muted);
+      font-size: 9px;
+      cursor: pointer;
+      padding: 2px;
+      white-space: nowrap;
+    }
+    .cc-link-button:hover {
+      color: var(--app-primary);
+    }
+    .cc-progress-line {
+      height: 4px;
+      border-radius: 99px;
+      background: var(--hf-track);
+      overflow: hidden;
+    }
+    .cc-progress-line > span {
+      display: block;
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, var(--app-primary), var(--app-secondary));
+      transition: width 320ms ease;
+    }
+    .cc-task-list,
+    .cc-habit-list,
+    .cc-agenda-list,
+    .cc-recommendation-list {
+      display: grid;
+      gap: 5px;
+    }
+    .cc-task-row,
+    .cc-habit-row,
+    .cc-agenda-row {
+      min-width: 0;
+      display: grid;
+      align-items: center;
+      gap: 8px;
+      min-height: 34px;
+      padding: 6px 0;
+      border-bottom: 1px solid var(--hf-card-border);
+    }
+    .cc-task-row {
+      grid-template-columns: 24px minmax(0, 1fr) auto auto;
+    }
+    .cc-habit-row {
+      grid-template-columns: 28px minmax(0, 1fr) auto 24px;
+    }
+    .cc-agenda-row {
+      grid-template-columns: 44px 7px minmax(0, 1fr);
+    }
+    .cc-task-row:last-child,
+    .cc-habit-row:last-child,
+    .cc-agenda-row:last-child {
+      border-bottom: 0;
+    }
+    .cc-check {
+      width: 20px;
+      height: 20px;
+      border: 1px solid var(--hf-card-border-strong);
+      border-radius: 7px;
+      display: grid;
+      place-items: center;
+      background: var(--hf-input-bg);
+      color: white;
+      cursor: pointer;
+    }
+    .cc-check[data-complete="true"] {
+      background: var(--app-primary);
+      border-color: var(--app-primary);
+    }
+    .cc-row-title {
+      min-width: 0;
+      color: var(--hf-text);
+      font-size: 10px;
+      font-weight: 700;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .cc-row-meta {
+      margin-top: 2px;
+      color: var(--hf-muted);
+      font-size: 8px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .cc-priority {
+      padding: 3px 6px;
+      border-radius: 999px;
+      color: var(--hf-text);
+      background: color-mix(in srgb, var(--app-primary) 11%, transparent);
+      font-size: 8px;
+      font-weight: 800;
+    }
+    .cc-time {
+      color: var(--hf-muted);
+      font-size: 9px;
+      font-variant-numeric: tabular-nums;
+    }
+    .cc-habit-icon {
+      width: 27px;
+      height: 27px;
+      border-radius: 9px;
+      display: grid;
+      place-items: center;
+      background: color-mix(in srgb, var(--habit-color, var(--app-primary)) 11%, transparent);
+      color: var(--habit-color, var(--app-primary));
+    }
+    .cc-empty {
+      min-height: 70px;
+      display: grid;
+      place-items: center;
+      text-align: center;
+      color: var(--hf-muted);
+      font-size: 10px;
+      line-height: 1.5;
+    }
+    .cc-pomodoro-body {
+      display: grid;
+      grid-template-columns: minmax(120px, .8fr) 1fr;
+      gap: 16px;
+      align-items: center;
+      min-height: 152px;
+    }
+    .cc-pomodoro-ring {
+      width: 124px;
+      height: 124px;
+      margin: auto;
+      border-radius: 999px;
+      display: grid;
+      place-items: center;
+      position: relative;
+      background:
+        radial-gradient(circle, var(--hf-surface-strong) 65%, transparent 66%),
+        conic-gradient(var(--app-primary) 0 72%, var(--hf-track) 72% 100%);
+    }
+    .cc-pomodoro-time {
+      color: var(--hf-text);
+      font-size: 27px;
+      letter-spacing: -.04em;
+      font-variant-numeric: tabular-nums;
+    }
+    .cc-pomodoro-label {
+      color: var(--hf-muted);
+      font-size: 9px;
+      text-align: center;
+      margin-top: 4px;
+    }
+    .cc-primary-button {
+      min-height: 38px;
+      border: 0;
+      border-radius: 11px;
+      padding: 0 14px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      color: white;
+      background: linear-gradient(135deg, var(--app-primary), color-mix(in srgb, var(--app-primary) 72%, #7f1028));
+      font-size: 10px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+    .cc-finance-metrics {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+    .cc-finance-metric {
+      padding: 11px;
+      border: 1px solid var(--hf-card-border);
+      border-radius: 12px;
+      background: var(--hf-input-bg);
+    }
+    .cc-finance-metric span {
+      display: block;
+      color: var(--hf-muted);
+      font-size: 8px;
+      margin-bottom: 5px;
+    }
+    .cc-finance-metric strong {
+      display: block;
+      color: var(--hf-text);
+      font-size: clamp(13px, 1.4vw, 18px);
+      line-height: 1;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .cc-finance-metric[data-tone="income"] strong { color: var(--app-success); }
+    .cc-finance-metric[data-tone="expense"] strong { color: var(--app-primary); }
+    .cc-agenda-time {
+      color: var(--hf-text);
+      font-size: 9px;
+      font-variant-numeric: tabular-nums;
+    }
+    .cc-agenda-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 99px;
+      background: var(--app-primary);
+    }
+    .cc-goal-body {
+      display: grid;
+      grid-template-columns: 112px minmax(0, 1fr);
+      gap: 14px;
+      align-items: stretch;
+    }
+    .cc-goal-image {
+      min-height: 118px;
+      border-radius: 12px;
+      background-size: cover;
+      background-position: center;
+      border: 1px solid var(--hf-card-border);
+    }
+    .cc-goal-title {
+      color: var(--hf-text);
+      font-size: 17px;
+      font-family: 'DM Serif Display', serif;
+      margin-bottom: 9px;
+    }
+    .cc-goal-stats {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 8px;
+      margin-top: 12px;
+    }
+    .cc-goal-stats span {
+      display: block;
+      color: var(--hf-muted);
+      font-size: 8px;
+      margin-bottom: 3px;
+    }
+    .cc-goal-stats strong {
+      color: var(--hf-text);
+      font-size: 10px;
+    }
+    .cc-recommendation {
+      display: grid;
+      grid-template-columns: 28px minmax(0, 1fr);
+      gap: 9px;
+      align-items: start;
+      padding: 9px 10px;
+      border: 1px solid var(--hf-card-border);
+      border-radius: 11px;
+      background: var(--hf-input-bg);
+    }
+    .cc-recommendation-icon {
+      width: 27px;
+      height: 27px;
+      border-radius: 9px;
+      display: grid;
+      place-items: center;
+      color: var(--app-primary);
+      background: color-mix(in srgb, var(--app-primary) 10%, transparent);
+    }
+    .cc-recommendation p {
+      margin: 0;
+      color: var(--hf-text);
+      font-size: 9px;
+      line-height: 1.45;
+    }
+    .cc-rail {
+      display: grid;
+      gap: 12px;
+      position: sticky;
+      top: 14px;
+    }
+    .cc-rail-card {
+      padding: 16px;
+      border: 1px solid var(--hf-card-border);
+      border-radius: 16px;
+      background: var(--hf-glass-quiet);
+      box-shadow: inset 0 1px 0 var(--hf-card-highlight);
+    }
+    .cc-rail-title {
+      color: var(--hf-text);
+      font-size: 12px;
+      font-weight: 800;
+      margin-bottom: 12px;
+    }
+    .cc-xp-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+    .cc-level-badge {
+      width: 38px;
+      height: 38px;
+      border-radius: 12px;
+      display: grid;
+      place-items: center;
+      border: 1px solid color-mix(in srgb, var(--app-primary) 45%, transparent);
+      background: color-mix(in srgb, var(--app-primary) 9%, transparent);
+      color: var(--app-primary);
+      font-weight: 900;
+      font-size: 11px;
+    }
+    .cc-achievements {
+      display: grid;
+      gap: 7px;
+    }
+    .cc-achievement {
+      display: grid;
+      grid-template-columns: 28px minmax(0, 1fr);
+      gap: 8px;
+      align-items: center;
+      padding: 8px;
+      border: 1px solid var(--hf-card-border);
+      border-radius: 11px;
+      background: var(--hf-input-bg);
+    }
+    .cc-achievement strong {
+      display: block;
+      color: var(--hf-text);
+      font-size: 9px;
+    }
+    .cc-achievement span {
+      display: block;
+      color: var(--hf-muted);
+      font-size: 8px;
+      margin-top: 2px;
+    }
+    .cc-ecosystem {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 7px;
+    }
+    .cc-module-button {
+      min-height: 62px;
+      padding: 7px 5px;
+      border: 1px solid var(--hf-card-border);
+      border-radius: 12px;
+      background: var(--hf-input-bg);
+      color: var(--hf-muted);
+      display: grid;
+      place-items: center;
+      gap: 4px;
+      cursor: pointer;
+      font-size: 8px;
+    }
+    .cc-module-button svg {
+      color: var(--app-primary);
+    }
+    .cc-coach {
+      display: grid;
+      grid-template-columns: 34px minmax(0, 1fr);
+      gap: 10px;
+      align-items: start;
+    }
+    .cc-coach-icon {
+      width: 34px;
+      height: 34px;
+      display: grid;
+      place-items: center;
+      border-radius: 11px;
+      color: var(--app-primary);
+      background: color-mix(in srgb, var(--app-primary) 10%, transparent);
+    }
+    .cc-coach p {
+      margin: 0;
+      color: var(--hf-muted);
+      font-size: 9px;
+      line-height: 1.5;
+    }
+    .cc-bottom {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 0;
+      margin-top: 14px;
+      border: 1px solid var(--hf-card-border);
+      border-radius: 15px;
+      background: var(--hf-surface);
+      overflow: hidden;
+    }
+    .cc-bottom-item {
+      display: grid;
+      grid-template-columns: 26px minmax(0, 1fr);
+      gap: 9px;
+      align-items: center;
+      min-width: 0;
+      padding: 11px 13px;
+    }
+    .cc-bottom-item:not(:last-child) {
+      border-right: 1px solid var(--hf-card-border);
+    }
+    .cc-bottom-item svg {
+      color: var(--app-primary);
+    }
+    .cc-bottom-item strong {
+      display: block;
+      color: var(--hf-text);
+      font-size: 9px;
+      margin-bottom: 2px;
+    }
+    .cc-bottom-item span {
+      display: block;
+      color: var(--hf-muted);
+      font-size: 8px;
+      line-height: 1.35;
+    }
+    @media (hover: hover) and (pointer: fine) {
+      .cc-quick-action:hover,
+      .cc-module-button:hover,
+      .cc-card:hover,
+      .cc-rail-card:hover {
+        border-color: var(--hf-card-border-strong);
+      }
+      .cc-quick-action:hover,
+      .cc-module-button:hover {
+        background: var(--hf-hover);
+        transform: translateY(-1px);
+      }
+    }
+    @media (max-width: 1250px) {
+      .cc-shell {
+        grid-template-columns: minmax(0, 1fr);
+      }
+      .cc-rail {
+        position: static;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+      .cc-rail .cc-rail-card:first-child {
+        grid-column: 1 / -1;
+      }
+    }
+    @media (max-width: 980px) {
+      .cc-flow {
+        display: flex;
+        overflow-x: auto;
+        scrollbar-width: thin;
+      }
+      .cc-flow-step {
+        min-width: 190px;
+      }
+      .cc-capture-row {
+        grid-template-columns: 1fr;
+      }
+      .cc-quick-actions {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+      }
+      .cc-card-plan,
+      .cc-card-habits,
+      .cc-card-pomodoro,
+      .cc-card-finance,
+      .cc-card-agenda,
+      .cc-card-goal {
+        grid-column: span 6;
+      }
+      .cc-rail {
+        grid-template-columns: 1fr 1fr;
+      }
+      .cc-rail .cc-rail-card:first-child {
+        grid-column: span 2;
+      }
+    }
+    @media (max-width: 900px) {
+      .cc-header {
+        display: block;
+      }
+      .cc-day-summary {
+        margin-top: 12px;
+      }
+      .cc-quick-actions {
+        grid-template-columns: 1fr 1fr;
+      }
+      .cc-card-plan,
+      .cc-card-habits,
+      .cc-card-pomodoro,
+      .cc-card-finance,
+      .cc-card-agenda,
+      .cc-card-goal,
+      .cc-card-recommendations {
+        grid-column: 1 / -1;
+      }
+      .cc-rail,
+      .cc-rail .cc-rail-card:first-child {
+        grid-template-columns: 1fr;
+        grid-column: auto;
+      }
+    }
+    @media (max-width: 680px) {
+      .control-center {
+        padding: 0;
+      }
+      .cc-flow {
+        margin-inline: -4px;
+        padding-inline: 4px;
+      }
+      .cc-flow-step {
+        min-width: 172px;
+        padding: 12px;
+      }
+      .cc-main {
+        padding: 15px 13px;
+        border-radius: 18px;
+      }
+      .cc-header {
+        display: block;
+      }
+      .cc-day-summary {
+        margin-top: 12px;
+      }
+      .cc-header h1 {
+        font-size: 29px;
+      }
+      .cc-capture-row {
+        gap: 10px;
+      }
+      .cc-quick-actions {
+        grid-template-columns: 1fr 1fr;
+      }
+      .cc-quick-action {
+        grid-template-columns: 28px 1fr;
+        min-height: 48px;
+        padding: 8px 10px;
+        font-size: 10px;
+      }
+      .cc-grid {
+        grid-template-columns: 1fr;
+      }
+      .cc-card-plan,
+      .cc-card-habits,
+      .cc-card-pomodoro,
+      .cc-card-finance,
+      .cc-card-agenda,
+      .cc-card-goal,
+      .cc-card-recommendations {
+        grid-column: 1 / -1;
+      }
+      .cc-card {
+        padding: 14px;
+        border-radius: 15px;
+      }
+      .cc-pomodoro-body {
+        grid-template-columns: 128px minmax(0, 1fr);
+      }
+      .cc-pomodoro-ring {
+        width: 112px;
+        height: 112px;
+      }
+      .cc-finance-metrics {
+        grid-template-columns: 1fr;
+      }
+      .cc-goal-body {
+        grid-template-columns: 90px minmax(0, 1fr);
+      }
+      .cc-goal-stats {
+        grid-template-columns: 1fr 1fr;
+      }
+      .cc-rail,
+      .cc-rail .cc-rail-card:first-child {
+        grid-template-columns: 1fr;
+        grid-column: auto;
+      }
+      .cc-bottom {
+        grid-template-columns: 1fr 1fr;
+      }
+      .cc-bottom-item:nth-child(2) {
+        border-right: 0;
+      }
+      .cc-bottom-item:nth-child(-n+2) {
+        border-bottom: 1px solid var(--hf-card-border);
+      }
+    }
+    @media (max-width: 390px) {
+      .cc-task-row {
+        grid-template-columns: 24px minmax(0, 1fr) auto;
+      }
+      .cc-task-row .cc-time {
+        display: none;
+      }
+      .cc-pomodoro-body {
+        grid-template-columns: 1fr;
+      }
+      .cc-finance-metric strong {
+        font-size: 15px;
+      }
+    }
     .creator-view {
       width: min(1180px, 100%);
       margin: 0 auto;
@@ -8221,6 +9045,7 @@ const generateInsights = (habits, records) => {
   const insights = [];
   const today = new Date();
   const dayNames = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'sábado'];
+  const pluralDayNames = ['domingos', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábados'];
 
   const dayRates = Array(7).fill(0).map(() => ({ total: 0, completed: 0 }));
   for (let i = 0; i < 30; i++) {
@@ -8238,7 +9063,7 @@ const generateInsights = (habits, records) => {
   const worstPct = dayRates[worstDay].total  ? Math.round((dayRates[worstDay].completed / dayRates[worstDay].total) * 100) : 0;
   if (bestDay !== worstDay && dayRates[bestDay].total > 0) {
     insights.push({ id: 'bestDay', icon: '\u{1F31F}', text: `Tu mejor día es el ${dayNames[bestDay]} con un ${bestPct}% de completitud`, type: 'positive' });
-    insights.push({ id: 'worstDay', icon: '\u{26A0}\u{FE0F}', text: `Los ${dayNames[worstDay]} suelen fallar más (${worstPct}% completitud). ¿Qué pasa ese día?`, type: 'warning' });
+    insights.push({ id: 'worstDay', icon: '\u{26A0}\u{FE0F}', text: `Los ${pluralDayNames[worstDay]} suelen fallar más (${worstPct}% completitud). ¿Qué pasa ese día?`, type: 'warning' });
   }
 
   const scores = habits.filter(h => h.active).map(h => ({ h, score: getHabitStrength(h.id, records) })).sort((a, b) => b.score - a.score);
@@ -8850,7 +9675,7 @@ const StatsTooltip = ({ active, payload, label }) => {
 };
 
 // SECTION: Panel / dashboard.
-const DashboardView = ({ data, onCompleteHabit, workoutData, onNavigate, onUpdateUser }) => {
+const LegacyDashboardView = ({ data, onCompleteHabit, workoutData, onNavigate, onUpdateUser }) => {
   const { habits, records } = data;
   const s = { fontFamily: "'Inter', sans-serif" };
   const today = toYYYYMMDD(new Date());
@@ -9111,6 +9936,528 @@ const DashboardView = ({ data, onCompleteHabit, workoutData, onNavigate, onUpdat
           </div>
         </div>
       </div>
+    </div>
+  );
+};
+
+const DailyFlowSteps = () => {
+  const steps = [
+    { title: 'Capturar', description: 'Ideas y tareas al instante.' },
+    { title: 'Planificar', description: 'Define prioridades del día.' },
+    { title: 'Enfocar', description: 'Protege un bloque de atención.' },
+    { title: 'Ejecutar', description: 'Avanza en tareas y hábitos.' },
+    { title: 'Revisar', description: 'Mide y ajusta tu progreso.' }
+  ];
+  return (
+    <div className="cc-flow" aria-label="Flujo diario">
+      {steps.map((step, index) => (
+        <div className="cc-flow-step" key={step.title}>
+          <div className="cc-flow-number">{index + 1}</div>
+          <div>
+            <strong>{step.title}</strong>
+            <span>{step.description}</span>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+};
+
+const ControlCardHeader = ({ title, subtitle, actionLabel, onAction }) => (
+  <div className="cc-card-head">
+    <div>
+      <h2>{title}</h2>
+      {subtitle && <p>{subtitle}</p>}
+    </div>
+    {actionLabel && (
+      <button type="button" className="cc-link-button" onClick={onAction}>
+        {actionLabel} <ChevronRight size={11} style={{ verticalAlign: 'middle' }} />
+      </button>
+    )}
+  </div>
+);
+
+const DashboardEmpty = ({ children }) => <div className="cc-empty">{children}</div>;
+
+const DashboardView = ({
+  data,
+  onCompleteHabit,
+  onNavigate,
+  onUpdateUser,
+  onUpdateAgenda,
+  onUpdateFinance,
+  onAddHabit
+}) => {
+  const habits = data.habits || [];
+  const records = data.records || [];
+  const finance = data.financeData || getFinanceData();
+  const today = toYYYYMMDD(new Date());
+  const greet = greets();
+  const userName = data.user?.name || 'Usuario';
+  const todayTasks = useMemo(() => {
+    const tasks = [...(data.agenda?.[today] || [])];
+    return tasks.sort((a, b) => {
+      const aTime = a.startTime || a.dueTime || a.time || '99:99';
+      const bTime = b.startTime || b.dueTime || b.time || '99:99';
+      return aTime.localeCompare(bTime) || Number(a.order || 0) - Number(b.order || 0);
+    });
+  }, [data.agenda, today]);
+  const completedTasks = todayTasks.filter(task => task.completed).length;
+  const taskProgress = todayTasks.length ? Math.round((completedTasks / todayTasks.length) * 100) : 0;
+  const habitsToday = useMemo(() => habits
+    .filter(habit => habit.active !== false && isExpectedDay(habit, today))
+    .map(habit => {
+      const completed = records.some(record => record.habitId === habit.id && record.date === today && record.completed);
+      return {
+        ...habit,
+        completed,
+        categoryInfo: getCategoryInfo(habit.category, data.customHabitCategories),
+        streak: getCurrentStreak(habit.id, records, habit)
+      };
+    }), [habits, records, today, data.customHabitCategories]);
+  const pendingHabits = habitsToday.filter(habit => !habit.completed);
+  const habitProgress = habitsToday.length
+    ? Math.round(((habitsToday.length - pendingHabits.length) / habitsToday.length) * 100)
+    : 0;
+  const insights = useMemo(() => generateInsights(habits, records).slice(0, 3), [habits, records]);
+  const todayCount = getTodayCount(habits, records);
+  const totalXp = Number(data.user?.xp || 0);
+  const currentLevel = Number(data.user?.level || getLevel(totalXp));
+  const currentLevelFloor = currentLevel > 1 ? getXpForLevel(currentLevel - 1) : 0;
+  const nextLevelTarget = getXpForLevel(currentLevel);
+  const xpProgress = {
+    level: currentLevel,
+    xp: Math.max(0, totalXp - currentLevelFloor),
+    needed: Math.max(1, nextLevelTarget - currentLevelFloor)
+  };
+  const totalCompletions = records.filter(record => record.completed).length;
+  const globalStreak = getGlobalCurrentStreak(habits, records);
+  const monthKey = today.slice(0, 7);
+  const monthlyTransactions = (finance.transactions || []).filter(transaction => String(transaction.date || '').startsWith(monthKey));
+  const monthIncome = monthlyTransactions
+    .filter(transaction => transaction.type === 'income' && transaction.category !== 'transfer' && transaction.category !== 'debt_payment')
+    .reduce((sum, transaction) => sum + Number(transaction.amount || 0), 0);
+  const monthExpenses = monthlyTransactions
+    .filter(transaction => transaction.type === 'expense' && transaction.category !== 'transfer')
+    .reduce((sum, transaction) => sum + Number(transaction.amount || 0), 0);
+  const monthBalance = monthIncome - monthExpenses;
+  const financeCurrency = finance.currency === 'COP' ? 'COP' : 'USD';
+  const financeRate = Math.max(1, Number(finance.copRate || 4000));
+  const formatDashboardMoney = (amount) => {
+    const converted = financeCurrency === 'COP' ? Number(amount || 0) * financeRate : Number(amount || 0);
+    return Math.round(converted).toLocaleString(financeCurrency === 'COP' ? 'es-CO' : 'en-US', {
+      style: 'currency',
+      currency: financeCurrency,
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0
+    });
+  };
+  const featuredGoal = (data.dreamGoals || getDreamGoals())
+    .filter(goal => Number(goal.target || 0) > 0)
+    .sort((a, b) => (Number(b.current || 0) / Number(b.target || 1)) - (Number(a.current || 0) / Number(a.target || 1)))[0];
+  const goalProgress = featuredGoal
+    ? Math.min(100, Math.round((Number(featuredGoal.current || 0) / Number(featuredGoal.target || 1)) * 100))
+    : 0;
+  const dailyQuotes = [
+    'Tú tienes el control. Haz de hoy un gran día.',
+    'Lo importante de hoy merece un lugar claro.',
+    'Avanza con intención, no con prisa.',
+    'Haz primero lo que más cambia tu día.',
+    'La constancia convierte planes en resultados.',
+    'Un buen día empieza con una decisión pequeña.',
+    'Menos ruido. Más dirección.'
+  ];
+  const dailyQuote = dailyQuotes[new Date().getDate() % dailyQuotes.length];
+  const [quickCapture, setQuickCapture] = useState('');
+  const [captureFeedback, setCaptureFeedback] = useState('');
+  const [tourStep, setTourStep] = useState(null);
+  const isFirstRun = !data.user?.onboardingDone && (habits.length === 0 || records.length === 0);
+  const tourSteps = [
+    { title: 'Crea tus primeros hábitos', text: 'Empieza con tres hábitos sencillos y sostenibles.', view: 'habits' },
+    { title: 'Organiza tu día', text: 'Agenda tus tareas importantes y asígnales una hora.', view: 'agenda' },
+    { title: 'Trabaja con foco', text: 'Usa Pomodoro para proteger bloques de atención.', view: 'pomodoro' }
+  ];
+
+  const achievements = useMemo(() => {
+    const items = [];
+    if (globalStreak >= 7) items.push({ icon: <Flame size={15} />, title: `${globalStreak} días de racha`, detail: 'Sigue así' });
+    if (totalCompletions >= 10) items.push({ icon: <Award size={15} />, title: 'Primeros pasos', detail: `${totalCompletions} hábitos completados` });
+    if (todayCount.total > 0 && todayCount.completed === todayCount.total) items.push({ icon: <Trophy size={15} />, title: 'Día perfecto', detail: 'Todo completado hoy' });
+    if (completedTasks > 0) items.push({ icon: <Check size={15} />, title: 'Plan en marcha', detail: `${completedTasks} tareas terminadas` });
+    if (!items.length) items.push({ icon: <Target size={15} />, title: 'Primer logro cerca', detail: `${totalCompletions}/10 hábitos completados` });
+    return items.slice(0, 3);
+  }, [globalStreak, totalCompletions, todayCount, completedTasks]);
+
+  const toggleTask = (taskId) => {
+    onUpdateAgenda?.(today, previous => previous.map(task => (
+      task.id === taskId ? { ...task, completed: !task.completed } : task
+    )));
+  };
+
+  const addQuickTask = (text) => {
+    onUpdateAgenda?.(today, previous => [...previous, {
+      id: `dash_task_${Date.now()}`,
+      text,
+      completed: false,
+      priority: 'P3',
+      category: 'Personal',
+      dueDate: today,
+      dueTime: '',
+      startTime: '',
+      endTime: '',
+      alarm: false,
+      recurrence: 'none',
+      intervalRepeat: 'none',
+      intervalEvery: 1,
+      repeatUntilDate: today,
+      repeatUntilTime: '23:59',
+      reminders: [],
+      tags: [],
+      order: previous.length
+    }]);
+    setCaptureFeedback('Tarea añadida al plan de hoy.');
+  };
+
+  const parseQuickAmount = (raw) => {
+    const normalized = String(raw || '').replace(/[^\d,.-]/g, '');
+    if (!normalized) return 0;
+    if (normalized.includes(',') && normalized.includes('.')) {
+      return Number(normalized.replace(/\./g, '').replace(',', '.')) || 0;
+    }
+    if (normalized.includes(',') && !normalized.includes('.')) {
+      const parts = normalized.split(',');
+      return Number(parts[1]?.length <= 2 ? normalized.replace(',', '.') : normalized.replace(/,/g, '')) || 0;
+    }
+    const dotParts = normalized.split('.');
+    return Number(dotParts.length > 1 && dotParts[dotParts.length - 1].length === 3
+      ? normalized.replace(/\./g, '')
+      : normalized) || 0;
+  };
+
+  const submitQuickCapture = () => {
+    const raw = quickCapture.trim();
+    if (!raw) return;
+    const expenseMatch = raw.match(/^(?:gasto|egreso)\s*:?\s*\$?\s*([\d.,]+)\s*(.*)$/i);
+    const habitMatch = raw.match(/^h[áa]bito\s*:?\s*(.+)$/i);
+    if (expenseMatch && onUpdateFinance) {
+      const displayAmount = parseQuickAmount(expenseMatch[1]);
+      if (displayAmount > 0) {
+        const baseAmount = financeCurrency === 'COP' ? displayAmount / financeRate : displayAmount;
+        const detail = expenseMatch[2].trim();
+        const categories = (finance.categories || []).filter(category => category.id !== 'income');
+        const matchedCategory = categories.find(category => detail.toLowerCase().includes(String(category.name || '').toLowerCase()));
+        const account = (finance.accounts || []).find(item => !['credit', 'loan'].includes(item.type)) || (finance.accounts || [])[0];
+        onUpdateFinance(previous => ({
+          ...previous,
+          transactions: [{
+            id: `dash_fin_${Date.now()}`,
+            type: 'expense',
+            amount: baseAmount,
+            currency: financeCurrency,
+            category: matchedCategory?.id || categories[0]?.id || 'food',
+            accountId: account?.id || 'cash',
+            payee: detail || 'Gasto rápido',
+            note: 'Creado desde el Panel',
+            date: today
+          }, ...(previous.transactions || [])]
+        }));
+        setCaptureFeedback(`Gasto registrado: ${formatDashboardMoney(baseAmount)}.`);
+      } else {
+        setCaptureFeedback('Escribe el gasto con un valor, por ejemplo: gasto 25000 comida.');
+      }
+    } else if (habitMatch && onAddHabit) {
+      const habitName = habitMatch[1].trim();
+      onAddHabit({
+        id: `h${Date.now()}`,
+        name: habitName,
+        description: 'Creado desde captura rápida',
+        category: 'otro',
+        icon: 'target',
+        color: HABIT_MARK_COLORS[5].value,
+        frequency: 'Diario',
+        targetStreak: 21,
+        active: true,
+        createdAt: today
+      });
+      setCaptureFeedback('Hábito diario creado. Puedes personalizarlo en Hábitos.');
+    } else {
+      const taskText = raw.replace(/^(?:tarea|idea)\s*:?\s*/i, '').trim() || raw;
+      addQuickTask(taskText);
+    }
+    setQuickCapture('');
+  };
+
+  const finishTour = (targetView = 'habits') => {
+    onUpdateUser?.({ onboardingDone: true });
+    setTourStep(null);
+    onNavigate?.(targetView);
+  };
+
+  const quickActions = [
+    { label: 'Nueva tarea', icon: <Plus size={16} />, view: 'agenda' },
+    { label: 'Iniciar Pomodoro', icon: <Timer size={16} />, view: 'pomodoro' },
+    { label: 'Registrar hábito', icon: <Target size={16} />, view: 'habits' },
+    { label: 'Nuevo gasto', icon: <CreditCard size={16} />, view: 'finance' }
+  ];
+  const moduleLinks = [
+    { label: 'Hábitos', icon: <Target size={16} />, view: 'habits' },
+    { label: 'Entreno', icon: <Dumbbell size={16} />, view: 'workout' },
+    { label: 'Pomodoro', icon: <Clock size={16} />, view: 'pomodoro' },
+    { label: 'Agenda', icon: <List size={16} />, view: 'agenda' },
+    { label: 'Finanzas', icon: <CreditCard size={16} />, view: 'finance' },
+    { label: 'Metas', icon: <Sparkles size={16} />, view: 'dreams' }
+  ];
+
+  return (
+    <div className="control-center">
+      <DailyFlowSteps />
+      <div className="cc-shell">
+        <main className="cc-main">
+          <header className="cc-header">
+            <div>
+              <div className="cc-eyebrow">{formatDateSpanish(new Date())}</div>
+              <h1>{greet.text}, {userName}. {greet.emoji}</h1>
+              <p>{dailyQuote}</p>
+            </div>
+            <div className="cc-day-summary">
+              <BarChart3 size={14} color="var(--app-primary)" />
+              {taskProgress}% del plan · {habitProgress}% hábitos
+            </div>
+          </header>
+
+          {isFirstRun && (
+            <div className="cc-card" style={{ marginBottom: 14, display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap' }}>
+              <div>
+                <div className="cc-row-title">Empieza con una guía rápida</div>
+                <div className="cc-row-meta">Tres pasos para organizar tus hábitos, tareas y enfoque.</div>
+              </div>
+              <button type="button" className="cc-primary-button" onClick={() => setTourStep(0)}>Activar mis hábitos</button>
+            </div>
+          )}
+
+          <div className="cc-capture-row">
+            <div className="cc-capture">
+              <Sparkles size={16} color="var(--app-primary)" />
+              <input
+                value={quickCapture}
+                onChange={event => setQuickCapture(event.target.value)}
+                onKeyDown={event => {
+                  if (event.key === 'Enter') submitQuickCapture();
+                }}
+                placeholder="Escribe una tarea, idea, hábito: Leer o gasto 25000 comida"
+                aria-label="Captura rápida"
+              />
+              <button type="button" onClick={submitQuickCapture} aria-label="Agregar captura rápida"><Plus size={17} /></button>
+            </div>
+            <div className="cc-quick-actions" aria-label="Acciones rápidas">
+              {quickActions.map(action => (
+                <button type="button" className="cc-quick-action" key={action.label} onClick={() => onNavigate?.(action.view)}>
+                  {action.icon}<span>{action.label}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+          <div className="cc-capture-feedback" aria-live="polite">{captureFeedback}</div>
+
+          <div className="cc-grid">
+            <section className="cc-card cc-card-plan">
+              <ControlCardHeader title="Plan del día" subtitle={`${completedTasks} de ${todayTasks.length} tareas · ${taskProgress}%`} actionLabel="Ver Agenda" onAction={() => onNavigate?.('agenda')} />
+              <div className="cc-progress-line" style={{ marginBottom: 10 }}><span style={{ width: `${taskProgress}%` }} /></div>
+              <div className="cc-task-list">
+                {todayTasks.slice(0, 5).map(task => (
+                  <div className="cc-task-row" key={task.id}>
+                    <button type="button" className="cc-check" data-complete={task.completed ? 'true' : 'false'} onClick={() => toggleTask(task.id)} aria-label={task.completed ? 'Marcar pendiente' : 'Completar tarea'}>
+                      {task.completed && <Check size={12} />}
+                    </button>
+                    <div>
+                      <div className="cc-row-title" style={{ textDecoration: task.completed ? 'line-through' : 'none', opacity: task.completed ? .58 : 1 }}>{task.text || task.title || 'Tarea'}</div>
+                      <div className="cc-row-meta">{task.category || 'Personal'}</div>
+                    </div>
+                    <span className="cc-priority">{task.priority || 'P3'}</span>
+                    <span className="cc-time">{task.startTime || task.dueTime || task.time || 'Sin hora'}</span>
+                  </div>
+                ))}
+                {!todayTasks.length && <DashboardEmpty>Tu plan está despejado. Añade una tarea con la captura rápida.</DashboardEmpty>}
+              </div>
+            </section>
+
+            <section className="cc-card cc-card-habits">
+              <ControlCardHeader title="Hábitos pendientes" subtitle={`${habitsToday.length - pendingHabits.length} de ${habitsToday.length} completados hoy`} actionLabel="Ver todos" onAction={() => onNavigate?.('habits')} />
+              <div className="cc-habit-list">
+                {pendingHabits.slice(0, 5).map(habit => (
+                  <div className="cc-habit-row" key={habit.id}>
+                    <div className="cc-habit-icon" style={{ '--habit-color': habit.color || habit.categoryInfo.color }}>
+                      <HabitIconGlyph habit={habit} size={15} strokeWidth={1.8} />
+                    </div>
+                    <div>
+                      <div className="cc-row-title">{habit.name}</div>
+                      <div className="cc-row-meta" style={{ color: habit.categoryInfo.color }}>{habit.categoryInfo.label}</div>
+                    </div>
+                    <span className="cc-time">{habit.streak > 0 ? `${habit.streak}d` : 'Hoy'}</span>
+                    <button type="button" className="cc-check" data-complete="false" onClick={() => onCompleteHabit?.(habit.id)} aria-label={`Completar ${habit.name}`} />
+                  </div>
+                ))}
+                {!pendingHabits.length && (
+                  <DashboardEmpty>{habitsToday.length ? 'Todos los hábitos de hoy están completos.' : 'No tienes hábitos programados para hoy.'}</DashboardEmpty>
+                )}
+              </div>
+            </section>
+
+            <section className="cc-card cc-card-pomodoro">
+              <ControlCardHeader title="Pomodoro" subtitle={`${(data.pomodoroRecords || []).filter(record => record.date === today).length} sesiones hoy`} actionLabel="Abrir" onAction={() => onNavigate?.('pomodoro')} />
+              <div className="cc-pomodoro-body">
+                <div className="cc-pomodoro-ring">
+                  <div>
+                    <div className="cc-pomodoro-time">{String(data.user?.pomodoro?.focus || 25).padStart(2, '0')}:00</div>
+                    <div className="cc-pomodoro-label">Enfoque profundo</div>
+                  </div>
+                </div>
+                <div>
+                  <div className="cc-row-title" style={{ marginBottom: 5 }}>Protege tu siguiente bloque</div>
+                  <div className="cc-row-meta" style={{ whiteSpace: 'normal', lineHeight: 1.5, marginBottom: 12 }}>El temporizador real y sus sonidos permanecen en Pomodoro para evitar sesiones duplicadas.</div>
+                  <button type="button" className="cc-primary-button" onClick={() => onNavigate?.('pomodoro')}><Play size={14} /> Iniciar sesión</button>
+                </div>
+              </div>
+            </section>
+
+            <section className="cc-card cc-card-finance">
+              <ControlCardHeader title="Finanzas rápidas" subtitle={`${new Date().toLocaleDateString('es-ES', { month: 'long' })}`} actionLabel="Ir a Finanzas" onAction={() => onNavigate?.('finance')} />
+              <div className="cc-finance-metrics">
+                <div className="cc-finance-metric" data-tone="income"><span>Ingresos</span><strong>{formatDashboardMoney(monthIncome)}</strong></div>
+                <div className="cc-finance-metric" data-tone="expense"><span>Gastos</span><strong>{formatDashboardMoney(monthExpenses)}</strong></div>
+                <div className="cc-finance-metric"><span>Balance neto</span><strong>{formatDashboardMoney(monthBalance)}</strong></div>
+              </div>
+              <div className="cc-row-meta" style={{ whiteSpace: 'normal', lineHeight: 1.5 }}>
+                {monthBalance >= 0 ? 'Mantienes un balance positivo este mes.' : 'Tus gastos superan los ingresos del mes.'}
+              </div>
+              <button type="button" className="cc-primary-button" style={{ width: '100%', marginTop: 13 }} onClick={() => onNavigate?.('finance')}>Revisar movimientos</button>
+            </section>
+
+            <section className="cc-card cc-card-agenda">
+              <ControlCardHeader title="Agenda de hoy" subtitle={`${todayTasks.filter(task => task.startTime || task.dueTime || task.time).length} eventos con hora`} actionLabel="Ver Agenda" onAction={() => onNavigate?.('agenda')} />
+              <div className="cc-agenda-list">
+                {todayTasks.filter(task => task.startTime || task.dueTime || task.time).slice(0, 4).map(task => (
+                  <div className="cc-agenda-row" key={`agenda_${task.id}`}>
+                    <div className="cc-agenda-time">{task.startTime || task.dueTime || task.time}</div>
+                    <div className="cc-agenda-dot" />
+                    <div>
+                      <div className="cc-row-title">{task.text || task.title || 'Evento'}</div>
+                      <div className="cc-row-meta">{task.category || 'Personal'}{task.endTime ? ` · hasta ${task.endTime}` : ''}</div>
+                    </div>
+                  </div>
+                ))}
+                {!todayTasks.some(task => task.startTime || task.dueTime || task.time) && <DashboardEmpty>No hay eventos con hora para hoy.</DashboardEmpty>}
+              </div>
+            </section>
+
+            <section className="cc-card cc-card-goal">
+              <ControlCardHeader title="Meta destacada" subtitle={featuredGoal ? `${goalProgress}% completado` : 'Sin meta activa'} actionLabel="Ver Metas" onAction={() => onNavigate?.('dreams')} />
+              {featuredGoal ? (
+                <div className="cc-goal-body">
+                  <div className="cc-goal-image" style={{ backgroundImage: featuredGoal.image ? `linear-gradient(rgba(0,0,0,.08), rgba(0,0,0,.18)), url("${featuredGoal.image}")` : 'none' }} />
+                  <div>
+                    <div className="cc-goal-title">{featuredGoal.icon} {featuredGoal.title}</div>
+                    <div className="cc-progress-line"><span style={{ width: `${goalProgress}%`, background: featuredGoal.accent || 'var(--app-primary)' }} /></div>
+                    <div className="cc-goal-stats">
+                      <div><span>Actual</span><strong>{Number(featuredGoal.current || 0).toLocaleString('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 })}</strong></div>
+                      <div><span>Objetivo</span><strong>{Number(featuredGoal.target || 0).toLocaleString('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 })}</strong></div>
+                      <div><span>Restante</span><strong>{Number(Math.max(0, featuredGoal.target - featuredGoal.current)).toLocaleString('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 })}</strong></div>
+                    </div>
+                  </div>
+                </div>
+              ) : <DashboardEmpty>Crea una meta para verla aquí.</DashboardEmpty>}
+            </section>
+
+            <section className="cc-card cc-card-recommendations">
+              <ControlCardHeader title="Recomendaciones inteligentes" subtitle="Calculadas con tu progreso local" />
+              <div className="cc-recommendation-list">
+                {(insights.length ? insights : [{ text: 'Completa algunos hábitos para recibir recomendaciones personalizadas.' }]).map((insight, index) => (
+                  <div className="cc-recommendation" key={insight.id || index}>
+                    <div className="cc-recommendation-icon"><Brain size={14} /></div>
+                    <p>{insight.text}</p>
+                  </div>
+                ))}
+              </div>
+            </section>
+          </div>
+        </main>
+
+        <aside className="cc-rail">
+          <section className="cc-rail-card">
+            <div className="cc-rail-title">XP y progreso unificados</div>
+            <div className="cc-xp-head">
+              <div>
+                <div className="cc-row-meta">Nivel actual</div>
+                <div style={{ color: 'var(--hf-text)', fontSize: 23, fontFamily: "'DM Serif Display', serif" }}>Nivel {xpProgress.level}</div>
+              </div>
+              <div className="cc-level-badge">XP</div>
+            </div>
+            <div className="cc-progress-line"><span style={{ width: `${Math.min(100, Math.round((xpProgress.xp / xpProgress.needed) * 100))}%` }} /></div>
+            <div className="cc-row-meta" style={{ marginTop: 7 }}>{xpProgress.xp.toLocaleString()} / {xpProgress.needed.toLocaleString()} XP para el siguiente nivel</div>
+          </section>
+
+          <section className="cc-rail-card">
+            <div className="cc-rail-title">Logros recientes</div>
+            <div className="cc-achievements">
+              {achievements.map((achievement, index) => (
+                <div className="cc-achievement" key={`${achievement.title}_${index}`}>
+                  <div className="cc-habit-icon">{achievement.icon}</div>
+                  <div><strong>{achievement.title}</strong><span>{achievement.detail}</span></div>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          <section className="cc-rail-card">
+            <div className="cc-rail-title">Ecosistema conectado</div>
+            <div className="cc-ecosystem">
+              {moduleLinks.map(module => (
+                <button type="button" className="cc-module-button" key={module.view} onClick={() => onNavigate?.(module.view)}>
+                  {module.icon}<span>{module.label}</span>
+                </button>
+              ))}
+            </div>
+          </section>
+
+          <section className="cc-rail-card">
+            <div className="cc-rail-title">Coach del día</div>
+            <div className="cc-coach">
+              <div className="cc-coach-icon"><Sparkles size={16} /></div>
+              <p>{insights[0]?.text || (pendingHabits.length ? `Empieza por "${pendingHabits[0].name}" y reduce la fricción del resto del día.` : 'Tu día está bien encaminado. Reserva un bloque de enfoque para tu tarea más importante.')}</p>
+            </div>
+          </section>
+        </aside>
+      </div>
+
+      <div className="cc-bottom">
+        {[
+          { icon: <Zap size={17} />, title: 'Tareas conectadas', text: `${todayTasks.length} tareas y ${habitsToday.length} hábitos en contexto.` },
+          { icon: <BarChart3 size={17} />, title: 'Resumen del día', text: `${taskProgress}% de tareas y ${habitProgress}% de hábitos.` },
+          { icon: <Sparkles size={17} />, title: 'Atajos inteligentes', text: 'Captura y navega sin perder el foco.' },
+          { icon: <Star size={17} />, title: 'XP y progreso', text: `${xpProgress.xp} XP avanzados en este nivel.` }
+        ].map(item => (
+          <div className="cc-bottom-item" key={item.title}>
+            {item.icon}<div><strong>{item.title}</strong><span>{item.text}</span></div>
+          </div>
+        ))}
+      </div>
+
+      <Modal isOpen={tourStep !== null} onClose={() => setTourStep(null)} title={tourStep !== null ? tourSteps[tourStep].title : ''} width={460}>
+        {tourStep !== null && (
+          <div>
+            <div style={{ display: 'flex', gap: 6, marginBottom: 16 }}>
+              {tourSteps.map((_, index) => <div key={index} style={{ flex: 1, height: 5, borderRadius: 99, background: index <= tourStep ? COLORS.primary : COLORS.border }} />)}
+            </div>
+            <p style={{ color: COLORS.textDim, fontSize: 13, lineHeight: 1.7, marginBottom: 18 }}>{tourSteps[tourStep].text}</p>
+            <div style={{ display: 'flex', justifyContent: 'space-between', gap: 10 }}>
+              <button type="button" onClick={() => setTourStep(null)} style={{ padding: '10px 14px', borderRadius: 10, border: `1px solid ${COLORS.border}`, background: 'transparent', color: COLORS.textDim, cursor: 'pointer' }}>Cerrar</button>
+              <button type="button" className="cc-primary-button" onClick={() => tourStep === tourSteps.length - 1 ? finishTour('habits') : setTourStep(step => step + 1)}>
+                {tourStep === tourSteps.length - 1 ? 'Crear mi primer hábito' : 'Siguiente'}
+              </button>
+            </div>
+          </div>
+        )}
+      </Modal>
     </div>
   );
 };
@@ -18981,7 +20328,7 @@ const HabitFlowApp = () => {
 
   const renderView = () => {
     switch (view) {
-      case 'dashboard': return <DashboardView data={data} onCompleteHabit={onCompleteHabit} workoutData={data.workoutData} onNavigate={navigateTo} onUpdateUser={onUpdateUser} />;
+      case 'dashboard': return <DashboardView data={data} onCompleteHabit={onCompleteHabit} workoutData={data.workoutData} onNavigate={navigateTo} onUpdateUser={onUpdateUser} onUpdateAgenda={onUpdateAgenda} onUpdateFinance={onUpdateFinance} onAddHabit={onAddHabit} />;
       case 'habits': return <HabitsView data={data} onAddHabit={onAddHabit} onUpdateHabit={onUpdateHabit} onDeleteHabit={onDeleteHabit} onToggleHabit={onToggleHabit} onCompleteHabit={onCompleteHabit} onUpdateRecord={onUpdateRecord} onCreateHabitCategory={onCreateHabitCategory} records={data.records} />;
       case 'pomodoro': return <PomodoroView data={data} onUpdateUser={onUpdateUser} onUpdatePomodoro={onUpdatePomodoro} />;
       case 'workout': return <WorkoutView data={data} onUpdateData={onUpdateWorkout} onCompleteHabit={onCompleteHabit} awardXp={(prev, amt) => awardXp(prev, amt)} />;
@@ -18989,9 +20336,9 @@ const HabitFlowApp = () => {
       case 'dreams': return <DreamGoalsView data={data} onUpdateDreamGoals={onUpdateDreamGoals} />;
       case 'finance': return <FinanceView data={data} onUpdateFinance={onUpdateFinance} />;
       case 'health': return <HealthView data={data} onUpdateHealth={onUpdateHealth} />;
-      case 'creator': return creatorAccess ? <CreatorView /> : <DashboardView data={data} onCompleteHabit={onCompleteHabit} workoutData={data.workoutData} onNavigate={navigateTo} onUpdateUser={onUpdateUser} />;
+      case 'creator': return creatorAccess ? <CreatorView /> : <DashboardView data={data} onCompleteHabit={onCompleteHabit} workoutData={data.workoutData} onNavigate={navigateTo} onUpdateUser={onUpdateUser} onUpdateAgenda={onUpdateAgenda} onUpdateFinance={onUpdateFinance} onAddHabit={onAddHabit} />;
       case 'settings': return <SettingsView data={data} onUpdateUser={onUpdateUser} onResetData={onResetData} cloudSync={cloudSync} onGenerateRandomData={onGenerateRandomData} />;
-      default: return <DashboardView data={data} onCompleteHabit={onCompleteHabit} workoutData={data.workoutData} onNavigate={navigateTo} onUpdateUser={onUpdateUser} />;
+      default: return <DashboardView data={data} onCompleteHabit={onCompleteHabit} workoutData={data.workoutData} onNavigate={navigateTo} onUpdateUser={onUpdateUser} onUpdateAgenda={onUpdateAgenda} onUpdateFinance={onUpdateFinance} onAddHabit={onAddHabit} />;
     }
   };
 
