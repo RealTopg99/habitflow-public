@@ -7,15 +7,15 @@ Las líneas son aproximadas. Para localizar una sección de forma estable, busca
 | Pantalla | ID | Símbolo principal | Ubicación aproximada | Datos | Escritura |
 | --- | --- | --- | --- | --- | --- |
 | Panel | `dashboard` | `DashboardView` | `HabitTrackerApp.jsx` ~8182 | `user`, `habits`, `records`, `workoutData` | `onCompleteHabit`, `onUpdateUser` |
-| Hábitos | `habits` | `HabitsView` | ~8568 | `habits`, `records`, `customHabitCategories` | alta/edición/borrado/completado |
-| Pomodoro | `pomodoro` | `PomodoroView` | ~13413 | `user.pomodoro`, `pomodoroRecords` | `onUpdateUser`, `onUpdatePomodoro` |
-| Entreno | `workout` | `WorkoutView` | ~14267 | `workoutData` | `onUpdateWorkout`, XP |
-| Agenda | `agenda` | `AgendaView` | ~15495 | `agenda`, todos, etiquetas y categorías | actualizadores por fecha |
-| Metas | `dreams` | `DreamGoalsView` | ~11665 | `dreamGoals` | `onUpdateDreamGoals` |
-| Finanzas | `finance` | `FinanceView` | ~9598 | `financeData` | `onUpdateFinance` |
-| Salud | `health` | `HealthView` | ~9126 | `healthData` | `onUpdateHealth` |
-| Creador | `creator` | `CreatorView` | ~12330 | API segura de clientes | Edge Function |
-| Configuración | `settings` | `SettingsView` | ~12577 | `user`, nube y almacenamiento | perfil, preferencias, import/export |
+| Hábitos | `habits` | `HabitsView` | ~9796 | `habits`, `records`, `customHabitCategories` | alta/edición/borrado/completado |
+| Pomodoro | `pomodoro` | `PomodoroView` | ~14472 | `user.pomodoro`, `pomodoroRecords` | `onUpdateUser`, `onUpdatePomodoro` |
+| Entreno | `workout` | `WorkoutView` | ~15326 | `workoutData` | `onUpdateWorkout`, XP |
+| Agenda | `agenda` | `AgendaView` | ~16554 | `agenda`, todos, etiquetas y categorías | actualizadores por fecha |
+| Metas | `dreams` | `DreamGoalsView` | ~12724 | `dreamGoals` | `onUpdateDreamGoals` |
+| Finanzas | `finance` | `FinanceView` | ~10657 | `financeData` | `onUpdateFinance` |
+| Salud | `health` | `HealthView` | ~10185 | `healthData` | `onUpdateHealth` |
+| Creador | `creator` | `CreatorView` | ~13389 | API segura de clientes | Edge Function |
+| Configuración | `settings` | `SettingsView` | ~13636 | `user`, nube y almacenamiento | perfil, preferencias, import/export |
 
 El registro que conecta IDs con componentes está en `HabitFlowApp.renderView()` cerca del final del archivo. El menú está en `navItems`.
 
@@ -51,9 +51,12 @@ Cambios de layout del panel deben comprobar el bloque `dashboard-*` dentro de `i
 Símbolos:
 
 - vista: `HabitsView`
+- vista anterior conservada temporalmente como referencia: `LegacyHabitsView`
 - formulario: `HabitForm`
 - iconos: `HABIT_ICONS`, `HabitIconGlyph`
+- colores de marcado: `HABIT_MARK_COLORS`, `normalizeHabitMarkColor`
 - mapa de días: `WEEKDAY_KEYS`, `getWeekStart`, `isHabitScheduledForDate`
+- registros únicos por hábito y fecha: `normalizeHabitRecords`
 - métricas: `getCurrentStreak`, `getBestStreak`, `getCompletionRate`
 - heatmaps: `CompletionHeatMap`, `HabitHeatMap30`
 

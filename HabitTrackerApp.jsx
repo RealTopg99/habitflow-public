@@ -58,6 +58,25 @@ const CATEGORIES = [
   { id: 'otro', label: 'Otro', icon: '\u{2B50}', color: '#a0a0b8' }
 ];
 
+const HABIT_MARK_COLORS = [
+  { id: 'lime', label: 'Verde lima', value: '#63d84f' },
+  { id: 'emerald', label: 'Esmeralda', value: '#22c98b' },
+  { id: 'aqua', label: 'Aqua', value: '#35bfe7' },
+  { id: 'blue', label: 'Azul', value: '#5b8def' },
+  { id: 'violet', label: 'Violeta', value: '#9b72f2' },
+  { id: 'pink', label: 'Rosa', value: '#ff7d95' },
+  { id: 'coral', label: 'Coral', value: '#ff6b6b' },
+  { id: 'amber', label: 'Ámbar', value: '#f5b942' }
+];
+
+const normalizeHabitMarkColor = (value, categoryId = 'salud', customCategories = []) => {
+  if (typeof value === 'string' && /^#[0-9a-f]{6}$/i.test(value.trim())) {
+    return value.trim().toLowerCase();
+  }
+  const category = [...CATEGORIES, ...customCategories].find(item => item.id === categoryId);
+  return category?.color || HABIT_MARK_COLORS[0].value;
+};
+
 const ICONS = [
   '\u{1F4A7}', '\u{1F4AA}', '\u{1F9E0}', '\u{1F4DA}', '\u{1F9D8}', '\u{1F3C3}',
   '\u{1F6B4}', '\u{1F3CB}\u{FE0F}', '\u{1F34E}', '\u{1F957}', '\u{1F964}', '\u{1F634}',
@@ -1024,9 +1043,30 @@ const repairStoredText = (value) => {
   return value;
 };
 
+const normalizeHabitRecords = (records = []) => {
+  const recordsByDay = new Map();
+  (Array.isArray(records) ? records : []).forEach(record => {
+    if (!record?.habitId || !record?.date) return;
+    const date = String(record.date).slice(0, 10);
+    const key = `${record.habitId}:${date}`;
+    const previous = recordsByDay.get(key);
+    recordsByDay.set(key, {
+      ...(previous || {}),
+      ...record,
+      habitId: record.habitId,
+      date,
+      completed: !!record.completed,
+      note: record.note || previous?.note || '',
+      mood: record.mood ?? previous?.mood ?? 0
+    });
+  });
+  return Array.from(recordsByDay.values());
+};
+
 const normalizeLoadedData = (parsed) => {
   parsed = repairStoredText(parsed);
   if (!parsed || !parsed.user || !parsed.habits || !parsed.records) return null;
+  parsed.records = normalizeHabitRecords(parsed.records);
   if (!parsed.user.xp) parsed.user.xp = 0;
   if (!parsed.user.level) parsed.user.level = 1;
   if (!parsed.user.levelUpShown) parsed.user.levelUpShown = 1;
@@ -1057,6 +1097,7 @@ const normalizeLoadedData = (parsed) => {
   parsed.habits.forEach(h => {
     if (!h.lastFocusSession) h.lastFocusSession = null;
     h.icon = normalizeHabitIconId(h.icon, h.category, h.name);
+    h.color = normalizeHabitMarkColor(h.color, h.category, parsed.customHabitCategories);
     if (h.frequency === 'Personalizado' || h.frequencyDays) {
       h.frequencyDays = normalizeHabitFrequencyDays(h.frequencyDays || h.days || []);
     }
@@ -2860,6 +2901,502 @@ const injectStyles = () => {
       .habit-week-dots { padding: 0 2px; }
     }
 
+    /* Hábitos: matriz mensual/semanal inspirada en el tracker de referencia. */
+    .habit-matrix-header-controls {
+      display: grid;
+      justify-items: end;
+      gap: 12px;
+      flex: 0 0 auto;
+    }
+    .habit-view-switch {
+      width: 250px;
+      padding: 3px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      border: 1px solid var(--habits-border);
+      border-radius: 11px;
+      background: var(--habits-surface);
+    }
+    .habit-view-switch button {
+      min-height: 38px;
+      border: 0;
+      border-radius: 8px;
+      color: var(--habits-muted);
+      background: transparent;
+      font: 700 12px/1 'Inter', sans-serif;
+      cursor: pointer;
+      transition: color 160ms ease, background-color 160ms ease;
+    }
+    .habit-view-switch button:hover { color: var(--habits-text); }
+    .habit-view-switch button.is-active {
+      color: #111;
+      background: var(--habits-accent);
+    }
+    .habit-period-row {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 8px;
+    }
+    .habit-period-control,
+    .habit-period-nav,
+    .habit-matrix-new {
+      height: 42px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid var(--habits-border);
+      border-radius: 10px;
+      color: var(--habits-text);
+      background: var(--habits-surface);
+      cursor: pointer;
+      transition: color 160ms ease, border-color 160ms ease, background-color 160ms ease;
+    }
+    .habit-period-control:hover,
+    .habit-period-nav:hover {
+      border-color: var(--habits-subtle);
+      background: var(--habits-surface-hover);
+    }
+    .habit-period-control {
+      position: relative;
+      min-width: 168px;
+      padding: 0 14px;
+      gap: 10px;
+    }
+    .habit-period-control input {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      opacity: 0;
+      cursor: pointer;
+    }
+    .habit-period-control span {
+      color: var(--habits-text);
+      font: 650 12px/1 'Inter', sans-serif;
+      text-transform: capitalize;
+    }
+    .habit-period-nav {
+      width: 42px;
+      padding: 0;
+    }
+    .habit-matrix-new {
+      min-width: 128px;
+      padding: 0 16px;
+      gap: 7px;
+      color: #111;
+      border-color: var(--habits-accent);
+      background: var(--habits-accent);
+      font: 800 12px/1 'Inter', sans-serif;
+    }
+    .habit-matrix-new:hover { background: var(--habits-accent-soft); }
+    .habit-matrix-summary {
+      margin-bottom: 18px;
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      border: 1px solid var(--habits-divider);
+      border-radius: 14px;
+      background: color-mix(in srgb, var(--habits-surface) 74%, transparent);
+    }
+    .habit-matrix-stat {
+      min-height: 94px;
+      padding: 20px clamp(20px, 3vw, 46px);
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      border-left: 1px solid var(--habits-divider);
+    }
+    .habit-matrix-stat:first-child { border-left: 0; }
+    .habit-matrix-stat > span {
+      width: 46px;
+      height: 46px;
+      flex: 0 0 46px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--habits-accent);
+      border: 1px solid color-mix(in srgb, var(--habits-accent) 42%, transparent);
+      border-radius: 50%;
+      background: color-mix(in srgb, var(--habits-accent) 6%, transparent);
+    }
+    .habit-matrix-stat small,
+    .habit-matrix-stat strong {
+      display: block;
+    }
+    .habit-matrix-stat small {
+      color: var(--habits-muted);
+      font-size: 12px;
+      line-height: 1.3;
+    }
+    .habit-matrix-stat strong {
+      margin-top: 5px;
+      color: var(--habits-text);
+      font: 400 clamp(24px, 2.2vw, 33px)/1 'DM Serif Display', Georgia, serif;
+    }
+    .habit-matrix-shell {
+      overflow: hidden;
+      border: 1px solid var(--habits-divider);
+      border-radius: 14px;
+      background: color-mix(in srgb, var(--habits-surface) 58%, transparent);
+    }
+    .habit-matrix-scroll {
+      width: 100%;
+      overflow-x: auto;
+      overscroll-behavior-inline: contain;
+      scrollbar-width: thin;
+      scrollbar-color: var(--habits-border) transparent;
+    }
+    .habit-matrix-table {
+      --habit-meta-width: 360px;
+      --habit-day-width: 27px;
+      min-width: calc(var(--habit-meta-width) + (var(--habit-day-count) * var(--habit-day-width)) + 48px);
+      color: var(--habits-text);
+    }
+    .habit-matrix-head,
+    .habit-matrix-row {
+      display: grid;
+      grid-template-columns:
+        var(--habit-meta-width)
+        minmax(calc(var(--habit-day-count) * var(--habit-day-width)), 1fr)
+        48px;
+      align-items: stretch;
+    }
+    .habit-matrix-head {
+      min-height: 78px;
+      color: var(--habits-muted);
+      border-bottom: 1px solid var(--habits-divider);
+      background: color-mix(in srgb, var(--habits-surface) 72%, transparent);
+    }
+    .habit-matrix-meta {
+      position: sticky;
+      left: 0;
+      z-index: 4;
+      min-width: 0;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 92px 64px;
+      align-items: center;
+      gap: 12px;
+      padding: 0 20px;
+      border-right: 1px solid var(--habits-divider);
+      background: var(--habits-surface);
+    }
+    .habit-matrix-head .habit-matrix-meta {
+      z-index: 6;
+      background: var(--habits-surface);
+      font-size: 11px;
+      font-weight: 650;
+    }
+    .habit-matrix-days-head {
+      min-width: 0;
+      display: grid;
+      grid-template-rows: 38px 40px;
+    }
+    .habit-matrix-week-groups,
+    .habit-matrix-day-numbers,
+    .habit-matrix-days {
+      display: grid;
+      grid-template-columns: repeat(var(--habit-day-count), minmax(var(--habit-day-width), 1fr));
+      align-items: center;
+    }
+    .habit-matrix-week-groups {
+      border-bottom: 1px solid var(--habits-divider);
+    }
+    .habit-matrix-week-groups span {
+      align-self: stretch;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--habits-muted);
+      border-left: 1px solid var(--habits-divider);
+      font-size: 10px;
+      font-weight: 650;
+    }
+    .habit-matrix-week-groups span:first-child { border-left: 0; }
+    .habit-matrix-day-numbers span {
+      min-width: 0;
+      color: var(--habits-muted);
+      font-size: 10px;
+      text-align: center;
+    }
+    .habit-matrix-day-numbers span.is-today {
+      color: var(--habits-accent);
+      font-weight: 850;
+    }
+    .habit-matrix-actions-head {
+      position: sticky;
+      right: 0;
+      z-index: 6;
+      border-left: 1px solid var(--habits-divider);
+      background: var(--habits-surface);
+    }
+    .habit-matrix-row {
+      min-height: 68px;
+      border-bottom: 1px solid var(--habits-divider);
+      transition: background-color 160ms ease;
+    }
+    .habit-matrix-row:last-child { border-bottom: 0; }
+    .habit-matrix-row:hover { background: var(--habits-surface-hover); }
+    .habit-matrix-row.is-paused { opacity: 0.48; }
+    .habit-matrix-row .habit-matrix-meta {
+      cursor: pointer;
+      color: inherit;
+      border-top: 0;
+      border-bottom: 0;
+      border-left: 0;
+      font-family: inherit;
+      text-align: left;
+      transition: background-color 160ms ease;
+    }
+    .habit-matrix-row:hover .habit-matrix-meta { background: var(--habits-surface-hover); }
+    .habit-matrix-identity {
+      min-width: 0;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .habit-matrix-identity > span:last-child { min-width: 0; }
+    .habit-matrix-icon {
+      width: 34px;
+      height: 34px;
+      flex: 0 0 34px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--habit-color);
+    }
+    .habit-matrix-identity strong,
+    .habit-matrix-identity small {
+      display: block;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .habit-matrix-identity strong {
+      color: var(--habits-text);
+      font-size: 12px;
+      line-height: 1.35;
+    }
+    .habit-matrix-identity small {
+      margin-top: 3px;
+      color: var(--habits-subtle);
+      font-size: 9px;
+    }
+    .habit-matrix-category,
+    .habit-matrix-streak {
+      min-width: 0;
+      overflow: hidden;
+      color: var(--habits-muted);
+      font-size: 10px;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .habit-matrix-streak {
+      color: var(--habits-text);
+      font-weight: 750;
+    }
+    .habit-matrix-days {
+      padding: 0;
+    }
+    .habit-matrix-day-cell {
+      height: 100%;
+      min-height: 68px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-left: 1px solid transparent;
+    }
+    .habit-matrix-day-cell.is-week-start {
+      border-left-color: var(--habits-divider);
+    }
+    .habit-matrix-day {
+      width: 13px;
+      height: 13px;
+      min-width: 13px !important;
+      min-height: 13px !important;
+      flex: 0 0 13px;
+      padding: 0;
+      border: 1px solid var(--habits-subtle);
+      border-radius: 4px;
+      background: transparent;
+      cursor: default;
+      transition: border-color 140ms ease, background-color 140ms ease, opacity 140ms ease;
+    }
+    .habit-matrix-day.is-complete {
+      border-color: var(--habit-color);
+      background: var(--habit-color);
+    }
+    .habit-matrix-day.is-complete:disabled {
+      opacity: 1 !important;
+      filter: none;
+    }
+    .habit-matrix-day.is-unscheduled {
+      border-color: var(--habits-divider);
+      opacity: 0.22;
+    }
+    .habit-matrix-day.is-complete.is-unscheduled {
+      border-color: var(--habit-color);
+      background: var(--habit-color);
+      opacity: 1;
+    }
+    .habit-matrix-day.is-future { opacity: 0.42; }
+    .habit-matrix-day.is-today {
+      outline: 2px solid color-mix(in srgb, var(--habit-color) 34%, transparent);
+      outline-offset: 3px;
+    }
+    .habit-matrix-day:not(:disabled) { cursor: pointer; }
+    .habit-matrix-day:not(:disabled):hover {
+      border-color: var(--habit-color);
+      background: color-mix(in srgb, var(--habit-color) 24%, transparent);
+    }
+    .habit-matrix-actions {
+      position: sticky;
+      right: 0;
+      z-index: 5;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-left: 1px solid var(--habits-divider);
+      background: var(--habits-surface);
+    }
+    .habit-matrix-row:hover .habit-matrix-actions { background: var(--habits-surface-hover); }
+    .habit-matrix-legend {
+      padding: 16px 18px;
+      display: flex;
+      align-items: center;
+      gap: 28px;
+      color: var(--habits-muted);
+      font-size: 11px;
+    }
+    .habit-matrix-legend span {
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+    }
+    .habit-matrix-legend i {
+      width: 13px;
+      height: 13px;
+      display: inline-block;
+      border: 1px solid var(--habits-subtle);
+      border-radius: 4px;
+    }
+    .habit-matrix-legend span:first-child i {
+      border-color: var(--habits-accent);
+      background: var(--habits-accent);
+    }
+    .habit-matrix-empty {
+      min-height: 240px;
+      padding: 40px 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      color: var(--habits-muted);
+      text-align: center;
+    }
+    .habit-matrix-empty strong { color: var(--habits-text); }
+    .habit-detail-actions {
+      width: 100%;
+      margin-top: 22px;
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 8px;
+    }
+    .habit-detail-actions button {
+      min-height: 42px;
+      margin: 0;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      color: var(--habits-text);
+      border: 1px solid var(--habits-border);
+      border-radius: 9px;
+      background: transparent;
+      font: 700 12px/1 'Inter', sans-serif;
+      cursor: pointer;
+    }
+    .habit-detail-actions button:hover { background: var(--habits-surface-hover); }
+    .habit-detail-actions button.is-danger {
+      color: var(--habits-accent-dark);
+      border-color: color-mix(in srgb, var(--habits-accent-dark) 42%, var(--habits-border));
+    }
+    @media (max-width: 860px) {
+      .habit-matrix-header-controls {
+        margin-top: 24px;
+        justify-items: stretch;
+      }
+      .habit-view-switch { width: 100%; }
+      .habit-period-row {
+        display: grid;
+        grid-template-columns: 42px minmax(0, 1fr) 42px 48px;
+      }
+      .habit-period-control {
+        min-width: 0;
+        width: 100%;
+        grid-column: 2;
+      }
+      .habit-period-row .habit-period-nav:first-of-type { grid-column: 1; grid-row: 1; }
+      .habit-matrix-new {
+        width: 48px;
+        min-width: 48px;
+        padding: 0;
+      }
+      .habit-matrix-new span { display: none; }
+      .habit-matrix-summary { grid-template-columns: 1fr; }
+      .habit-matrix-stat {
+        min-height: 76px;
+        padding: 14px 18px;
+        border-top: 1px solid var(--habits-divider);
+        border-left: 0;
+      }
+      .habit-matrix-stat:first-child { border-top: 0; }
+      .habit-matrix-stat > span {
+        width: 40px;
+        height: 40px;
+        flex-basis: 40px;
+      }
+      .habit-matrix-table {
+        --habit-meta-width: 224px;
+        --habit-day-width: 34px;
+      }
+      .habit-matrix-meta {
+        grid-template-columns: minmax(0, 1fr) 58px;
+        gap: 8px;
+        padding: 0 12px;
+      }
+      .habit-matrix-category { display: none; }
+      .habit-matrix-head .habit-matrix-meta span:nth-child(2) { display: none; }
+      .habit-matrix-row { min-height: 72px; }
+      .habit-matrix-day-cell { min-height: 72px; }
+      .habit-matrix-identity { gap: 8px; }
+      .habit-matrix-icon {
+        width: 30px;
+        height: 30px;
+        flex-basis: 30px;
+      }
+      .habit-matrix-legend {
+        position: sticky;
+        left: 0;
+        width: max-content;
+      }
+      .habit-detail-actions { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 430px) {
+      .habit-period-row { grid-template-columns: 40px minmax(0, 1fr) 40px 44px; }
+      .habit-period-nav { width: 40px; }
+      .habit-matrix-new { width: 44px; min-width: 44px; }
+      .habit-period-control { padding: 0 10px; }
+      .habit-period-control span { font-size: 11px; }
+      .habit-matrix-table {
+        --habit-meta-width: 202px;
+        --habit-day-width: 32px;
+      }
+      .habit-matrix-meta { grid-template-columns: minmax(0, 1fr) 48px; }
+      .habit-matrix-streak { font-size: 9px; }
+      .habit-matrix-identity strong { font-size: 11px; }
+    }
+
     /* Nuevo hábito: modal editorial con iconografía Lucide y controles táctiles. */
     .hf-modal-panel.habit-form-modal {
       --habit-modal-bg: #0b0e12;
@@ -3083,6 +3620,96 @@ const injectStyles = () => {
       border-color: var(--habit-modal-accent);
       background: var(--habit-modal-accent);
       font-weight: 800;
+    }
+    .habit-mark-color-section {
+      min-width: 0;
+    }
+    .habit-mark-color-heading {
+      margin-bottom: 13px;
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 18px;
+    }
+    .habit-mark-color-heading label,
+    .habit-mark-color-heading span {
+      display: block;
+    }
+    .habit-mark-color-heading label {
+      margin-bottom: 5px;
+      color: var(--habit-modal-muted);
+      font-size: 12px;
+      font-weight: 650;
+      letter-spacing: 0.075em;
+      text-transform: uppercase;
+    }
+    .habit-mark-color-heading > div:first-child > span {
+      color: var(--habit-modal-muted);
+      font-size: 12px;
+    }
+    .habit-mark-color-preview {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--habit-modal-muted);
+      font-size: 11px;
+      white-space: nowrap;
+    }
+    .habit-mark-color-preview i {
+      width: 13px;
+      height: 13px;
+      display: inline-block;
+      border-radius: 4px;
+      background: var(--habit-preview-color);
+    }
+    .habit-mark-color-options {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .habit-mark-color-options > button,
+    .habit-custom-color {
+      width: 44px;
+      height: 44px;
+      padding: 0;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid var(--habit-modal-border);
+      border-radius: 11px;
+      color: var(--habit-modal-muted);
+      background: transparent;
+      cursor: pointer;
+      transition: border-color 160ms ease, background-color 160ms ease;
+    }
+    .habit-mark-color-options > button > span {
+      width: 20px;
+      height: 20px;
+      display: block;
+      border-radius: 6px;
+      background: var(--habit-swatch);
+    }
+    .habit-mark-color-options > button:hover,
+    .habit-custom-color:hover {
+      border-color: var(--habit-modal-subtle);
+      background: var(--habit-modal-hover);
+    }
+    .habit-mark-color-options > button.is-selected {
+      border-color: var(--habit-swatch);
+      box-shadow: 0 0 0 2px color-mix(in srgb, var(--habit-swatch) 22%, transparent);
+    }
+    .habit-custom-color {
+      position: relative;
+      overflow: hidden;
+    }
+    .habit-custom-color input {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      opacity: 0;
+      cursor: pointer;
     }
     .habit-icon-section {
       min-width: 0;
@@ -7754,12 +8381,13 @@ const HabitForm = ({ initial, onSave, onCancel, categories = CATEGORIES, onCreat
     description: '',
     category: initialCategory,
     icon: normalizeHabitIconId(initial?.icon, initialCategory, initial?.name),
-    color: getCategoryInfo(initialCategory, categories.filter(c => !CATEGORIES.some(base => base.id === c.id))).color,
+    color: normalizeHabitMarkColor(initial?.color, initialCategory, categories),
     frequency: 'Diario',
     frequencyDays: WEEKDAY_KEYS.slice(0, 5),
     targetStreak: 21,
     active: true,
     ...initial,
+    color: normalizeHabitMarkColor(initial?.color, initialCategory, categories),
     frequencyDays: initialFrequencyDays,
     reminder: {
       enabled: false,
@@ -7849,6 +8477,7 @@ const HabitForm = ({ initial, onSave, onCancel, categories = CATEGORIES, onCreat
       description: form.description.trim(),
       frequencyDays: normalizeHabitFrequencyDays(form.frequencyDays),
       icon: normalizeHabitIconId(form.icon, form.category, form.name),
+      color: normalizeHabitMarkColor(form.color, form.category, categories),
       reminder: {
         ...form.reminder,
         message: form.reminder.message.trim()
@@ -7953,6 +8582,48 @@ const HabitForm = ({ initial, onSave, onCancel, categories = CATEGORIES, onCreat
           </div>
         </div>
       )}
+
+      <div className="habit-mark-color-section">
+        <div className="habit-mark-color-heading">
+          <div>
+            <label>Color de marcado</label>
+            <span>Este color identificará los días que completes el hábito.</span>
+          </div>
+          <div className="habit-mark-color-preview" style={{ '--habit-preview-color': form.color }}>
+            <i />
+            <span>Vista previa</span>
+          </div>
+        </div>
+        <div className="habit-mark-color-options" role="radiogroup" aria-label="Color para marcar el hábito">
+          {HABIT_MARK_COLORS.map(color => {
+            const selected = normalizeHabitMarkColor(form.color) === color.value.toLowerCase();
+            return (
+              <button
+                key={color.id}
+                type="button"
+                className={selected ? 'is-selected' : ''}
+                style={{ '--habit-swatch': color.value }}
+                onClick={() => handleChange('color', color.value)}
+                aria-label={color.label}
+                aria-checked={selected}
+                role="radio"
+                title={color.label}
+              >
+                <span />
+              </button>
+            );
+          })}
+          <label className="habit-custom-color" title="Elegir un color personalizado">
+            <Palette size={18} strokeWidth={1.7} />
+            <input
+              type="color"
+              value={normalizeHabitMarkColor(form.color, form.category, categories)}
+              onChange={event => handleChange('color', event.target.value)}
+              aria-label="Color personalizado"
+            />
+          </label>
+        </div>
+      </div>
 
       <div className="habit-icon-section">
         <div className="habit-icon-heading">
@@ -8565,7 +9236,7 @@ const ChallengesView = ({ data, onCompleteChallenge, onJoinChallenge, records })
 };
 
 // SECTION: Habits.
-const HabitsView = ({ data, onAddHabit, onUpdateHabit, onDeleteHabit, onToggleHabit, onCompleteHabit, onUpdateRecord, onCreateHabitCategory, records }) => {
+const LegacyHabitsView = ({ data, onAddHabit, onUpdateHabit, onDeleteHabit, onToggleHabit, onCompleteHabit, onUpdateRecord, onCreateHabitCategory, records }) => {
   const { habits } = data;
   const habitCategories = useMemo(
     () => [...CATEGORIES, ...(data.customHabitCategories || [])],
@@ -9118,6 +9789,425 @@ const HabitsView = ({ data, onAddHabit, onUpdateHabit, onDeleteHabit, onToggleHa
         message={`¿Estás seguro de eliminar "${confirmDelete?.name}"? Se perderán todos sus registros.`}
         danger onConfirm={() => { onDeleteHabit(confirmDelete.id); setConfirmDelete(null); }}
         onCancel={() => setConfirmDelete(null)} />
+    </div>
+  );
+};
+
+const HabitsView = ({ data, onAddHabit, onUpdateHabit, onDeleteHabit, onToggleHabit, onCompleteHabit, onCreateHabitCategory, records }) => {
+  const { habits } = data;
+  const today = toYYYYMMDD(new Date());
+  const habitCategories = useMemo(
+    () => [...CATEGORIES, ...(data.customHabitCategories || [])],
+    [data.customHabitCategories]
+  );
+  const [viewMode, setViewMode] = useState('month');
+  const [baseDate, setBaseDate] = useState(new Date());
+  const [showForm, setShowForm] = useState(false);
+  const [editHabit, setEditHabit] = useState(null);
+  const [viewHabit, setViewHabit] = useState(null);
+  const [confirmDelete, setConfirmDelete] = useState(null);
+
+  const displayDays = useMemo(() => {
+    if (viewMode === 'week') {
+      const monday = getWeekStart(baseDate, 'monday');
+      return WEEKDAY_META.map((day, index) => {
+        const date = addDays(monday, index);
+        const dateKey = toYYYYMMDD(date);
+        return {
+          date: dateKey,
+          dayNumber: date.getDate(),
+          label: day.label,
+          isToday: dateKey === today
+        };
+      });
+    }
+    const year = baseDate.getFullYear();
+    const month = baseDate.getMonth();
+    const totalDays = new Date(year, month + 1, 0).getDate();
+    return Array.from({ length: totalDays }, (_, index) => {
+      const date = new Date(year, month, index + 1);
+      const dateKey = toYYYYMMDD(date);
+      return {
+        date: dateKey,
+        dayNumber: index + 1,
+        label: date.toLocaleDateString('es-ES', { weekday: 'short' }),
+        isToday: dateKey === today
+      };
+    });
+  }, [baseDate, viewMode, today]);
+
+  const weekGroups = useMemo(() => {
+    const groups = [];
+    for (let index = 0; index < displayDays.length; index += 7) {
+      groups.push({
+        label: viewMode === 'week' ? 'Esta semana' : `Semana ${Math.floor(index / 7) + 1}`,
+        start: index + 1,
+        span: Math.min(7, displayDays.length - index)
+      });
+    }
+    return groups;
+  }, [displayDays, viewMode]);
+
+  const recordMap = useMemo(() => {
+    const map = new Map();
+    records.forEach(record => map.set(`${record.habitId}:${record.date}`, record));
+    return map;
+  }, [records]);
+
+  const displayHabits = useMemo(
+    () => [...habits].sort((a, b) => {
+      if ((a.active !== false) !== (b.active !== false)) return a.active === false ? 1 : -1;
+      return a.name.localeCompare(b.name, 'es', { sensitivity: 'base' });
+    }),
+    [habits]
+  );
+
+  const activeHabits = useMemo(() => habits.filter(habit => habit.active !== false), [habits]);
+  const periodTotals = useMemo(() => {
+    return activeHabits.reduce((totals, habit) => {
+      displayDays.forEach(day => {
+        const existed = !habit.createdAt || day.date >= habit.createdAt;
+        if (!existed || day.date > today || !isExpectedDay(habit, day.date)) return;
+        totals.expected += 1;
+        if (recordMap.get(`${habit.id}:${day.date}`)?.completed) totals.completed += 1;
+      });
+      return totals;
+    }, { expected: 0, completed: 0 });
+  }, [activeHabits, displayDays, recordMap, today]);
+  const periodCompletion = periodTotals.expected
+    ? Math.round((periodTotals.completed / periodTotals.expected) * 100)
+    : 0;
+  const globalStreak = getGlobalCurrentStreak(activeHabits, records);
+
+  const periodLabel = viewMode === 'month'
+    ? baseDate.toLocaleDateString('es-ES', { month: 'long', year: 'numeric' })
+    : (() => {
+        const first = displayDays[0];
+        const last = displayDays[displayDays.length - 1];
+        const firstDate = new Date(`${first.date}T00:00:00`);
+        const lastDate = new Date(`${last.date}T00:00:00`);
+        return `${firstDate.toLocaleDateString('es-ES', { day: 'numeric', month: 'short' })} - ${lastDate.toLocaleDateString('es-ES', { day: 'numeric', month: 'short', year: 'numeric' })}`;
+      })();
+  const monthInputValue = `${baseDate.getFullYear()}-${String(baseDate.getMonth() + 1).padStart(2, '0')}`;
+
+  const navigatePeriod = (direction) => {
+    const next = new Date(baseDate);
+    if (viewMode === 'month') next.setMonth(next.getMonth() + direction, 1);
+    else next.setDate(next.getDate() + direction * 7);
+    setBaseDate(next);
+  };
+
+  const handleMonthChange = (value) => {
+    if (!/^\d{4}-\d{2}$/.test(value)) return;
+    const [year, month] = value.split('-').map(Number);
+    setBaseDate(new Date(year, month - 1, 1));
+  };
+
+  const handleSave = (habitData) => {
+    const normalizedHabit = {
+      ...habitData,
+      color: normalizeHabitMarkColor(habitData.color, habitData.category, data.customHabitCategories)
+    };
+    if (editHabit) {
+      onUpdateHabit({ ...normalizedHabit, id: editHabit.id });
+    } else {
+      onAddHabit({
+        ...normalizedHabit,
+        id: `h${Date.now()}`,
+        createdAt: toYYYYMMDD(new Date()),
+        active: true
+      });
+    }
+    setShowForm(false);
+    setEditHabit(null);
+  };
+
+  const startNewHabit = () => {
+    setEditHabit(null);
+    setShowForm(true);
+  };
+
+  const startEditHabit = (habit) => {
+    setViewHabit(null);
+    setEditHabit(habit);
+    setShowForm(true);
+  };
+
+  const requestDeleteHabit = (habit) => {
+    setViewHabit(null);
+    setConfirmDelete(habit);
+  };
+
+  return (
+    <div className="habits-minimal-view">
+      <header className="habits-minimal-header">
+        <div>
+          <h2>Mis hábitos</h2>
+          <p>Pequeñas acciones diarias, grandes resultados.</p>
+        </div>
+        <div className="habit-matrix-header-controls">
+          <div className="habit-view-switch" role="tablist" aria-label="Vista de hábitos">
+            <button
+              type="button"
+              className={viewMode === 'week' ? 'is-active' : ''}
+              onClick={() => setViewMode('week')}
+              role="tab"
+              aria-selected={viewMode === 'week'}
+            >
+              Vista semanal
+            </button>
+            <button
+              type="button"
+              className={viewMode === 'month' ? 'is-active' : ''}
+              onClick={() => setViewMode('month')}
+              role="tab"
+              aria-selected={viewMode === 'month'}
+            >
+              Vista mensual
+            </button>
+          </div>
+          <div className="habit-period-row">
+            <button type="button" className="habit-period-nav" onClick={() => navigatePeriod(-1)} aria-label="Periodo anterior">
+              <ChevronLeft size={18} strokeWidth={1.8} />
+            </button>
+            <label className="habit-period-control">
+              <Calendar size={16} strokeWidth={1.7} />
+              <span>{periodLabel}</span>
+              <input
+                type="month"
+                value={monthInputValue}
+                onChange={event => handleMonthChange(event.target.value)}
+                aria-label="Elegir mes"
+              />
+            </label>
+            <button type="button" className="habit-period-nav" onClick={() => navigatePeriod(1)} aria-label="Periodo siguiente">
+              <ChevronRight size={18} strokeWidth={1.8} />
+            </button>
+            <button type="button" className="habit-matrix-new" onClick={startNewHabit}>
+              <Plus size={17} strokeWidth={2} />
+              <span>Nuevo hábito</span>
+            </button>
+          </div>
+        </div>
+      </header>
+
+      <section className="habit-matrix-summary" aria-label="Resumen del periodo">
+        <div className="habit-matrix-stat">
+          <span><Target size={24} strokeWidth={1.8} /></span>
+          <div>
+            <small>Hábitos activos</small>
+            <strong>{activeHabits.length}</strong>
+          </div>
+        </div>
+        <div className="habit-matrix-stat">
+          <span><Activity size={24} strokeWidth={1.8} /></span>
+          <div>
+            <small>{viewMode === 'month' ? 'Cumplimiento del mes' : 'Cumplimiento semanal'}</small>
+            <strong>{periodCompletion}%</strong>
+          </div>
+        </div>
+        <div className="habit-matrix-stat">
+          <span><Flame size={24} strokeWidth={1.8} /></span>
+          <div>
+            <small>Racha global</small>
+            <strong>{globalStreak} {globalStreak === 1 ? 'día' : 'días'}</strong>
+          </div>
+        </div>
+      </section>
+
+      <section className="habit-matrix-shell" aria-label={`Seguimiento de hábitos de ${periodLabel}`}>
+        {displayHabits.length ? (
+          <>
+            <div className="habit-matrix-scroll">
+              <div
+                className="habit-matrix-table"
+                style={{ '--habit-day-count': displayDays.length }}
+              >
+                <div className="habit-matrix-head" aria-hidden="true">
+                  <div className="habit-matrix-meta">
+                    <span>Hábito</span>
+                    <span>Categoría</span>
+                    <span>Racha actual</span>
+                  </div>
+                  <div className="habit-matrix-days-head">
+                    <div className="habit-matrix-week-groups">
+                      {weekGroups.map(group => (
+                        <span
+                          key={`${group.label}-${group.start}`}
+                          style={{ gridColumn: `${group.start} / span ${group.span}` }}
+                        >
+                          {group.label}
+                        </span>
+                      ))}
+                    </div>
+                    <div className="habit-matrix-day-numbers">
+                      {displayDays.map(day => (
+                        <span key={day.date} className={day.isToday ? 'is-today' : ''} title={day.label}>
+                          {day.dayNumber}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                  <div className="habit-matrix-actions-head" />
+                </div>
+
+                {displayHabits.map(habit => {
+                  const category = getCategoryInfo(habit.category, data.customHabitCategories);
+                  const HabitIcon = getHabitIconDefinition(habit.icon, habit.category, habit.name).icon;
+                  const streak = getCurrentStreak(habit.id, records, habit);
+                  const habitColor = normalizeHabitMarkColor(habit.color, habit.category, data.customHabitCategories);
+                  return (
+                    <article
+                      key={habit.id}
+                      className={`habit-matrix-row ${habit.active === false ? 'is-paused' : ''}`}
+                      style={{ '--habit-color': habitColor }}
+                    >
+                      <button
+                        type="button"
+                        className="habit-matrix-meta"
+                        onClick={() => setViewHabit(habit)}
+                        aria-label={`Ver detalle de ${habit.name}`}
+                      >
+                        <span className="habit-matrix-identity">
+                          <span className="habit-matrix-icon">
+                            <HabitIcon size={23} strokeWidth={1.8} />
+                          </span>
+                          <span>
+                            <strong>{habit.name}</strong>
+                            <small>{habit.description || habit.frequency}</small>
+                          </span>
+                        </span>
+                        <span className="habit-matrix-category">{category.label}</span>
+                        <span className="habit-matrix-streak">{streak} {streak === 1 ? 'día' : 'días'}</span>
+                      </button>
+
+                      <div className="habit-matrix-days" aria-label={`Registro de ${habit.name}`}>
+                        {displayDays.map((day, index) => {
+                          const record = recordMap.get(`${habit.id}:${day.date}`);
+                          const complete = !!record?.completed;
+                          const scheduled = isExpectedDay(habit, day.date);
+                          const existed = !habit.createdAt || day.date >= habit.createdAt;
+                          const future = day.date > today;
+                          const hasRecord = !!record;
+                          const canToggle = existed && canToggleHabitForDate(habit, day.date);
+                          return (
+                            <span
+                              key={day.date}
+                              className={`habit-matrix-day-cell ${index > 0 && index % 7 === 0 ? 'is-week-start' : ''}`}
+                            >
+                              <button
+                                type="button"
+                                className={[
+                                  'habit-matrix-day',
+                                  complete ? 'is-complete' : '',
+                                  !complete && (!scheduled || !existed) ? 'is-unscheduled' : '',
+                                  future ? 'is-future' : '',
+                                  day.isToday ? 'is-today' : ''
+                                ].filter(Boolean).join(' ')}
+                                onClick={canToggle ? () => onCompleteHabit(habit.id, day.date) : undefined}
+                                disabled={!canToggle}
+                                aria-label={`${habit.name}, ${day.date}: ${complete ? 'completado' : hasRecord || scheduled && existed ? 'pendiente' : 'no programado'}`}
+                                aria-pressed={complete}
+                                title={`${day.label} ${day.dayNumber}: ${complete ? 'Completado' : hasRecord || scheduled && existed ? 'Pendiente' : 'No programado'}`}
+                              />
+                            </span>
+                          );
+                        })}
+                      </div>
+
+                      <div className="habit-matrix-actions">
+                        <button
+                          type="button"
+                          className="habit-more-button"
+                          onClick={() => setViewHabit(habit)}
+                          aria-label={`Acciones para ${habit.name}`}
+                        >
+                          <MoreHorizontal size={19} strokeWidth={1.8} />
+                        </button>
+                      </div>
+                    </article>
+                  );
+                })}
+              </div>
+            </div>
+            <div className="habit-matrix-legend" aria-label="Leyenda">
+              <span><i /> Completado</span>
+              <span><i /> Pendiente</span>
+            </div>
+          </>
+        ) : (
+          <div className="habit-matrix-empty">
+            <Target size={32} strokeWidth={1.5} />
+            <strong>Aún no tienes hábitos</strong>
+            <span>Crea el primero para empezar a construir tu constancia.</span>
+            <button type="button" className="habit-matrix-new" onClick={startNewHabit}>
+              <Plus size={17} /> <span>Nuevo hábito</span>
+            </button>
+          </div>
+        )}
+      </section>
+
+      <Modal
+        isOpen={showForm}
+        onClose={() => { setShowForm(false); setEditHabit(null); }}
+        title={editHabit ? 'Editar hábito' : 'Nuevo hábito'}
+        width={900}
+        className="habit-form-modal"
+      >
+        <HabitForm
+          initial={editHabit}
+          onSave={handleSave}
+          categories={habitCategories}
+          onCreateCategory={onCreateHabitCategory}
+          onCancel={() => { setShowForm(false); setEditHabit(null); }}
+        />
+      </Modal>
+
+      <Modal isOpen={!!viewHabit} onClose={() => setViewHabit(null)} title="Detalle del hábito">
+        {viewHabit && (() => {
+          const category = getCategoryInfo(viewHabit.category, data.customHabitCategories);
+          const HabitIcon = getHabitIconDefinition(viewHabit.icon, viewHabit.category, viewHabit.name).icon;
+          const streak = getCurrentStreak(viewHabit.id, records, viewHabit);
+          const best = getBestStreak(viewHabit.id, records, viewHabit);
+          const monthRate = Math.round(getCompletionRate(viewHabit.id, records, 30, viewHabit) * 100);
+          const habitColor = normalizeHabitMarkColor(viewHabit.color, viewHabit.category, data.customHabitCategories);
+          return (
+            <div className="habit-detail-minimal" style={{ '--habits-accent': habitColor }}>
+              <HabitIcon size={34} strokeWidth={1.6} color={habitColor} />
+              <h3>{viewHabit.name}</h3>
+              <p><i />{category.label}</p>
+              <dl>
+                <div><dt>Frecuencia</dt><dd>{viewHabit.frequency}</dd></div>
+                <div><dt>Racha actual</dt><dd>{streak} días</dd></div>
+                <div><dt>Mejor racha</dt><dd>{best} días</dd></div>
+                <div><dt>Últimos 30 días</dt><dd>{monthRate}%</dd></div>
+              </dl>
+              <div className="habit-detail-actions">
+                <button type="button" onClick={() => startEditHabit(viewHabit)}><Edit size={15} /> Editar</button>
+                <button type="button" onClick={() => { onToggleHabit(viewHabit.id); setViewHabit(null); }}>
+                  {viewHabit.active === false ? <Eye size={15} /> : <EyeOff size={15} />}
+                  {viewHabit.active === false ? 'Activar' : 'Pausar'}
+                </button>
+                <button type="button" className="is-danger" onClick={() => requestDeleteHabit(viewHabit)}>
+                  <Trash2 size={15} /> Eliminar
+                </button>
+              </div>
+            </div>
+          );
+        })()}
+      </Modal>
+
+      <ConfirmModal
+        isOpen={!!confirmDelete}
+        title="Eliminar hábito"
+        message={`¿Estás seguro de eliminar "${confirmDelete?.name}"? Se perderán todos sus registros.`}
+        danger
+        onConfirm={() => {
+          onDeleteHabit(confirmDelete.id);
+          setConfirmDelete(null);
+        }}
+        onCancel={() => setConfirmDelete(null)}
+      />
     </div>
   );
 };
@@ -17273,23 +18363,25 @@ const HabitFlowApp = () => {
     setToast(null);
     setData(prev => {
       const habit = prev.habits.find(item => item.id === habitId);
+      const matchingRecords = prev.records.filter(record => record.habitId === habitId && record.date === targetDate);
       if (!habit || habit.active === false || !isExpectedDay(habit, targetDate)) return prev;
-      const records = [...prev.records];
-      const idx = records.findIndex(r => r.habitId === habitId && r.date === targetDate);
+      let records = prev.records.filter(record => !(record.habitId === habitId && record.date === targetDate));
+      const currentRecord = matchingRecords[matchingRecords.length - 1];
       const xpAwards = { ...(prev.xpAwards || {}) };
       const habitAwardKey = `habit:${habitId}:${targetDate}`;
       const perfectAwardKey = `perfect:${targetDate}`;
       let xpDelta = 0;
-      let completedNow = false;
+      const completedNow = !currentRecord?.completed;
 
-      if (idx >= 0) {
-        const wasCompleted = records[idx].completed;
-        records[idx] = { ...records[idx], completed: !wasCompleted };
-        completedNow = !wasCompleted;
-      } else {
-        records.push({ habitId, date: targetDate, completed: true, note: '', mood: 0 });
-        completedNow = true;
-      }
+      records.push({
+        ...(currentRecord || {}),
+        habitId,
+        date: targetDate,
+        completed: completedNow,
+        skipped: false,
+        note: currentRecord?.note || '',
+        mood: currentRecord?.mood ?? 0
+      });
 
       if (completedNow) {
         if (!Object.prototype.hasOwnProperty.call(xpAwards, habitAwardKey)) {
