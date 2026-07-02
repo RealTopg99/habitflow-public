@@ -7412,24 +7412,34 @@ const injectStyles = () => {
     }
     .cc-quick-actions {
       display: grid;
-      grid-template-columns: repeat(4, 78px);
-      gap: 8px;
+      grid-template-columns: repeat(4, 108px);
+      gap: 10px;
     }
     .cc-quick-action {
       border: 1px solid var(--hf-card-border);
       border-radius: 13px;
       background: var(--hf-surface);
       color: var(--hf-text);
-      min-height: 50px;
-      padding: 7px 6px;
+      min-height: 56px;
+      padding: 9px 10px;
       display: grid;
-      grid-template-columns: 22px 1fr;
-      gap: 5px;
+      grid-template-columns: 24px minmax(0, 1fr);
+      gap: 8px;
       align-items: center;
       text-align: left;
       cursor: pointer;
-      font-size: 9px;
-      line-height: 1.2;
+      font-size: 10px;
+      line-height: 1.25;
+      transition: transform 160ms ease, border-color 160ms ease, background 160ms ease;
+    }
+    .cc-quick-action:hover {
+      transform: translateY(-1px);
+      border-color: color-mix(in srgb, var(--app-primary) 42%, var(--hf-card-border));
+      background: var(--hf-surface-hover);
+    }
+    .cc-quick-action span {
+      min-width: 0;
+      text-wrap: balance;
     }
     .cc-quick-action svg {
       color: var(--app-primary);
