@@ -8658,10 +8658,12 @@ const injectStyles = () => {
       position: relative;
       z-index: 1;
       width: 74%;
+      min-width: 0;
       display: flex;
       flex-direction: column;
       align-items: center;
       text-align: center;
+      overflow: hidden;
     }
     .pomodoro-pro-ring-content > svg {
       position: static;
@@ -8687,10 +8689,13 @@ const injectStyles = () => {
       text-shadow: 0 0 18px rgba(255, 255, 255, .18);
     }
     .pomodoro-pro-current-task {
+      width: min(100%, 270px);
       max-width: 100%;
+      min-width: 0;
       min-height: 38px;
-      display: inline-flex;
+      display: flex;
       align-items: center;
+      justify-content: center;
       gap: 9px;
       padding: 9px 18px;
       border: 1px solid rgba(255, 21, 31, .7);
@@ -8698,6 +8703,7 @@ const injectStyles = () => {
       background: rgba(8, 9, 10, .86);
       color: var(--pomo-text);
       cursor: pointer;
+      overflow: hidden;
     }
     .pomodoro-pro-current-task:disabled {
       color: var(--pomo-muted);
@@ -8705,7 +8711,10 @@ const injectStyles = () => {
       cursor: default;
     }
     .pomodoro-pro-current-task span {
+      display: block;
+      max-width: 100%;
       min-width: 0;
+      flex: 1 1 auto;
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
@@ -8971,6 +8980,8 @@ const injectStyles = () => {
       background: var(--pomo-red);
     }
     .pomodoro-pro-task-name {
+      width: 100%;
+      max-width: 100%;
       min-width: 0;
       padding: 0;
       border: 0;
@@ -9167,11 +9178,121 @@ const injectStyles = () => {
       border-color: var(--pomo-red);
       background: var(--pomo-red);
     }
-    html[data-theme-mode="pinkLight"] .pomodoro-pro,
-    html[data-theme-mode="pinkLight"] .pomodoro-pro-panel,
+    html[data-theme-mode="pinkLight"] .pomodoro-pro {
+      --pomo-bg: #fff9fb;
+      --pomo-panel: #ffffff;
+      --pomo-surface: #fff5f7;
+      --pomo-surface-hover: #ffeff3;
+      --pomo-border: #e5d5db;
+      --pomo-border-soft: #eee1e6;
+      --pomo-text: #24181d;
+      --pomo-muted: #716269;
+      --pomo-red: #e11d48;
+      --pomo-red-soft: #c91843;
+      --pomo-green: #128653;
+      color-scheme: light;
+      background:
+        radial-gradient(circle at 18% 0%, rgba(225, 29, 72, .07), transparent 35%),
+        #fff9fb !important;
+      box-shadow: 0 18px 48px rgba(88, 50, 63, .08);
+    }
+    html[data-theme-mode="pinkLight"] .pomodoro-pro-panel {
+      color-scheme: light;
+      background: rgba(255, 255, 255, .94) !important;
+      border-color: var(--pomo-border) !important;
+      box-shadow: 0 14px 34px rgba(88, 50, 63, .075) !important;
+    }
+    html[data-theme-mode="pinkLight"] .pomodoro-pro-mode-tabs {
+      background: #fff5f7;
+      border-color: var(--pomo-border);
+    }
+    html[data-theme-mode="pinkLight"] .pomodoro-pro-mode-tabs button:hover,
+    html[data-theme-mode="pinkLight"] .pomodoro-pro-mode-tabs button.is-active {
+      background: rgba(225, 29, 72, .1);
+    }
+    html[data-theme-mode="pinkLight"] .pomodoro-pro-ring::before {
+      background: radial-gradient(circle, rgba(225, 29, 72, .065), transparent 69%);
+    }
+    html[data-theme-mode="pinkLight"] .pomodoro-pro-ring-track {
+      stroke: #eadde2;
+    }
+    html[data-theme-mode="pinkLight"] .pomodoro-pro-ring-progress {
+      filter: drop-shadow(0 0 5px rgba(225, 29, 72, .28));
+    }
+    html[data-theme-mode="pinkLight"] .pomodoro-pro-ring-content > strong {
+      color: var(--pomo-text);
+      text-shadow: none;
+    }
+    html[data-theme-mode="pinkLight"] .pomodoro-pro-current-task {
+      background: rgba(255, 255, 255, .92);
+      border-color: rgba(225, 29, 72, .44);
+      box-shadow: 0 7px 18px rgba(92, 45, 60, .07);
+    }
+    html[data-theme-mode="pinkLight"] .pomodoro-pro-current-task:disabled {
+      border-color: var(--pomo-border);
+    }
+    html[data-theme-mode="pinkLight"] .pomodoro-pro-controls button {
+      background: #ffffff;
+      border-color: var(--pomo-border);
+      box-shadow: 0 7px 18px rgba(92, 45, 60, .07);
+    }
+    html[data-theme-mode="pinkLight"] .pomodoro-pro-controls button:hover {
+      background: var(--pomo-surface-hover);
+      border-color: #d6bcc5;
+    }
+    html[data-theme-mode="pinkLight"] .pomodoro-pro-controls .pomodoro-pro-play {
+      color: #ffffff;
+      background: var(--pomo-red);
+      border-color: var(--pomo-red);
+      box-shadow: 0 12px 26px rgba(225, 29, 72, .2);
+    }
+    html[data-theme-mode="pinkLight"] .pomodoro-pro-utility button:hover {
+      border-color: #d6bcc5;
+    }
+    html[data-theme-mode="pinkLight"] .pomodoro-pro-notes textarea {
+      color-scheme: light;
+      background:
+        linear-gradient(90deg, transparent 20px, rgba(225, 29, 72, .4) 20px, rgba(225, 29, 72, .4) 21px, transparent 21px),
+        repeating-linear-gradient(to bottom, #ffffff 0, #ffffff 28px, #eadde2 29px);
+      color: var(--pomo-text);
+    }
     html[data-theme-mode="pinkLight"] .pomodoro-pro-task-composer input,
     html[data-theme-mode="pinkLight"] .pomodoro-pro-task-composer select {
-      color-scheme: dark;
+      color-scheme: light;
+      background: #ffffff;
+      color: var(--pomo-text);
+      border-color: var(--pomo-border);
+    }
+    html[data-theme-mode="pinkLight"] .pomodoro-pro-notes textarea::placeholder,
+    html[data-theme-mode="pinkLight"] .pomodoro-pro-task-composer input::placeholder {
+      color: #9a858d;
+    }
+    html[data-theme-mode="pinkLight"] .pomodoro-pro-task-row:hover,
+    html[data-theme-mode="pinkLight"] .pomodoro-pro-task-row.is-active {
+      background: rgba(225, 29, 72, .035);
+    }
+    html[data-theme-mode="pinkLight"] .pomodoro-pro-task-check {
+      border-color: #9e8d94;
+      color: #ffffff;
+    }
+    html[data-theme-mode="pinkLight"] .pomodoro-pro-task-row.is-complete .pomodoro-pro-task-name {
+      color: #9a8c91;
+    }
+    html[data-theme-mode="pinkLight"] .pomodoro-pro-task-delete {
+      color: #76676d;
+    }
+    html[data-theme-mode="pinkLight"] .pomodoro-pro-alert {
+      background: #ffffff;
+      color: var(--pomo-text);
+      border-color: var(--pomo-border);
+      box-shadow: 0 24px 80px rgba(72, 36, 48, .18);
+    }
+    html[data-theme-mode="pinkLight"] .pomodoro-pro-alert button {
+      color: var(--pomo-text);
+      border-color: var(--pomo-border);
+    }
+    html[data-theme-mode="pinkLight"] .pomodoro-pro-alert button.is-primary {
+      color: #ffffff;
     }
     @media (max-width: 1040px) {
       .pomodoro-pro-grid {
@@ -17425,7 +17546,8 @@ const PomodoroView = ({ data, onUpdateUser, onUpdatePomodoro }) => {
                 className="pomodoro-pro-current-task"
                 onClick={() => activePomodoroTask && setActiveTaskId(activePomodoroTask.id)}
                 disabled={!activePomodoroTask}
-                title={activePomodoroTask ? 'Tarea activa del Pomodoro' : 'Agrega una tarea en el panel derecho'}
+                title={activePomodoroTask?.text || 'Agrega una tarea en el panel derecho'}
+                aria-label={activePomodoroTask ? `Tarea activa: ${activePomodoroTask.text}` : 'Sin tarea seleccionada'}
               >
                 <FileText size={16} />
                 <span>{activePomodoroTask?.text || 'Sin tarea seleccionada'}</span>
@@ -17550,7 +17672,7 @@ const PomodoroView = ({ data, onUpdateUser, onUpdatePomodoro }) => {
                       type="button"
                       className="pomodoro-pro-task-name"
                       onClick={() => !task.completed && setActiveTaskId(task.id)}
-                      title="Usar como tarea activa"
+                      title={task.text}
                     >
                       {task.text}
                     </button>
