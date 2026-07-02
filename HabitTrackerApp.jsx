@@ -8530,6 +8530,744 @@ const injectStyles = () => {
         padding: 4px 7px;
       }
     }
+    .pomodoro-pro {
+      --pomo-bg: #050506;
+      --pomo-panel: #08090a;
+      --pomo-surface: #0d0f11;
+      --pomo-surface-hover: #121417;
+      --pomo-border: #292c31;
+      --pomo-border-soft: #1c1f23;
+      --pomo-text: #f7f7f7;
+      --pomo-muted: #8d9198;
+      --pomo-red: #ff151f;
+      --pomo-red-soft: #ff4048;
+      --pomo-green: #22d36f;
+      width: min(1440px, 100%);
+      min-height: calc(100vh - 128px);
+      margin: 0 auto;
+      padding: clamp(14px, 2vw, 30px);
+      color: var(--pomo-text);
+      background: var(--pomo-bg) !important;
+      border: 1px solid var(--pomo-border-soft);
+      border-radius: 22px;
+      font-family: "Inter", sans-serif;
+      overflow: hidden;
+      isolation: isolate;
+    }
+    .pomodoro-pro *,
+    .pomodoro-pro *::before,
+    .pomodoro-pro *::after {
+      box-sizing: border-box;
+    }
+    .pomodoro-pro button,
+    .pomodoro-pro input,
+    .pomodoro-pro select,
+    .pomodoro-pro textarea {
+      font: inherit;
+    }
+    .pomodoro-pro button {
+      -webkit-tap-highlight-color: transparent;
+    }
+    .pomodoro-pro-grid {
+      display: grid;
+      grid-template-columns: minmax(340px, 0.88fr) minmax(420px, 1.12fr);
+      gap: 16px;
+      min-height: clamp(610px, 72vh, 780px);
+    }
+    .pomodoro-pro-panel {
+      min-width: 0;
+      background: linear-gradient(145deg, #08090a, #050506) !important;
+      border: 1px solid var(--pomo-border);
+      border-radius: 14px;
+      box-shadow: none !important;
+    }
+    .pomodoro-pro-timer-panel {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: clamp(20px, 3vw, 38px);
+    }
+    .pomodoro-pro-mode-tabs {
+      display: inline-flex;
+      gap: 4px;
+      padding: 4px;
+      margin-bottom: 18px;
+      background: #08090a;
+      border: 1px solid var(--pomo-border-soft);
+      border-radius: 999px;
+    }
+    .pomodoro-pro-mode-tabs button {
+      min-height: 34px;
+      padding: 7px 14px;
+      border: 0;
+      border-radius: 999px;
+      background: transparent;
+      color: var(--pomo-muted);
+      cursor: pointer;
+      font-size: 11px;
+      font-weight: 700;
+      transition: color 160ms ease, background-color 160ms ease;
+    }
+    .pomodoro-pro-mode-tabs button:hover,
+    .pomodoro-pro-mode-tabs button.is-active {
+      color: var(--pomo-text);
+      background: rgba(255, 21, 31, .13);
+    }
+    .pomodoro-pro-mode-tabs button.is-active {
+      color: var(--pomo-red-soft);
+    }
+    .pomodoro-pro-ring {
+      position: relative;
+      width: min(100%, 390px);
+      aspect-ratio: 1;
+      display: grid;
+      place-items: center;
+    }
+    .pomodoro-pro-ring::before {
+      content: "";
+      position: absolute;
+      inset: 12%;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(255, 21, 31, .08), transparent 68%);
+      filter: blur(10px);
+      pointer-events: none;
+    }
+    .pomodoro-pro-ring > svg {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      transform: rotate(-90deg);
+      overflow: visible;
+    }
+    .pomodoro-pro-ring > svg circle {
+      fill: none;
+      stroke-width: 4;
+    }
+    .pomodoro-pro-ring-track {
+      stroke: #22252a;
+    }
+    .pomodoro-pro-ring-progress {
+      stroke: var(--pomo-red);
+      stroke-linecap: round;
+      filter: drop-shadow(0 0 7px rgba(255, 21, 31, .58));
+      transition: stroke-dashoffset 400ms linear;
+    }
+    .pomodoro-pro-ring-content {
+      position: relative;
+      z-index: 1;
+      width: 74%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+    }
+    .pomodoro-pro-ring-content > svg {
+      position: static;
+      width: 32px;
+      height: 32px;
+      margin-bottom: 8px;
+      color: var(--pomo-red);
+      transform: none;
+    }
+    .pomodoro-pro-mode-label {
+      color: var(--pomo-red);
+      font-size: clamp(12px, 1.1vw, 15px);
+      font-weight: 800;
+    }
+    .pomodoro-pro-ring-content > strong {
+      margin: 8px 0 16px;
+      color: #fff;
+      font-size: clamp(58px, 6.2vw, 92px);
+      font-weight: 520;
+      letter-spacing: -.06em;
+      line-height: 1;
+      font-variant-numeric: tabular-nums;
+      text-shadow: 0 0 18px rgba(255, 255, 255, .18);
+    }
+    .pomodoro-pro-current-task {
+      max-width: 100%;
+      min-height: 38px;
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      padding: 9px 18px;
+      border: 1px solid rgba(255, 21, 31, .7);
+      border-radius: 999px;
+      background: rgba(8, 9, 10, .86);
+      color: var(--pomo-text);
+      cursor: pointer;
+    }
+    .pomodoro-pro-current-task:disabled {
+      color: var(--pomo-muted);
+      border-color: var(--pomo-border);
+      cursor: default;
+    }
+    .pomodoro-pro-current-task span {
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      font-size: 12px;
+      font-weight: 700;
+    }
+    .pomodoro-pro-controls {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 38px;
+      margin-top: 10px;
+    }
+    .pomodoro-pro-controls button {
+      width: 58px;
+      height: 58px;
+      display: grid;
+      place-items: center;
+      border: 1px solid var(--pomo-border);
+      border-radius: 50%;
+      background: #0b0d0f;
+      color: var(--pomo-text);
+      cursor: pointer;
+      transition: transform 160ms ease, border-color 160ms ease, background-color 160ms ease;
+    }
+    .pomodoro-pro-controls button:hover {
+      transform: translateY(-2px);
+      border-color: #4a4e55;
+      background: #111316;
+    }
+    .pomodoro-pro-controls .pomodoro-pro-play {
+      width: 74px;
+      height: 74px;
+      border: 0;
+      background: var(--pomo-red);
+      color: #fff;
+      box-shadow: 0 10px 30px rgba(255, 21, 31, .25);
+    }
+    .pomodoro-pro-controls .pomodoro-pro-play:hover {
+      background: var(--pomo-red-soft);
+      transform: translateY(-2px) scale(1.02);
+    }
+    .pomodoro-pro-stats {
+      width: min(100%, 390px);
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      margin-top: 24px;
+    }
+    .pomodoro-pro-stats > div {
+      min-width: 0;
+      padding: 0 12px;
+      text-align: center;
+      border-right: 1px solid var(--pomo-border);
+    }
+    .pomodoro-pro-stats > div:last-child {
+      border-right: 0;
+    }
+    .pomodoro-pro-stats span {
+      display: block;
+      margin-bottom: 5px;
+      color: var(--pomo-muted);
+      font-size: 10px;
+    }
+    .pomodoro-pro-stats strong {
+      color: var(--pomo-text);
+      font-size: 15px;
+      font-weight: 800;
+    }
+    .pomodoro-pro-utility {
+      display: flex;
+      gap: 8px;
+      margin-top: 24px;
+    }
+    .pomodoro-pro-utility button {
+      min-height: 38px;
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 8px 13px;
+      border: 1px solid var(--pomo-border);
+      border-radius: 10px;
+      background: transparent;
+      color: var(--pomo-muted);
+      cursor: pointer;
+      font-size: 11px;
+      font-weight: 700;
+    }
+    .pomodoro-pro-utility button:hover {
+      color: var(--pomo-text);
+      border-color: #44484f;
+    }
+    .pomodoro-pro-side {
+      min-width: 0;
+      display: grid;
+      grid-template-rows: minmax(230px, .82fr) minmax(300px, 1.18fr);
+      gap: 16px;
+    }
+    .pomodoro-pro-notes,
+    .pomodoro-pro-tasks {
+      display: flex;
+      min-height: 0;
+      flex-direction: column;
+      padding: clamp(18px, 2vw, 26px);
+    }
+    .pomodoro-pro-panel > header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 14px;
+    }
+    .pomodoro-pro-panel > header > div {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 0;
+    }
+    .pomodoro-pro-panel > header svg {
+      flex: 0 0 auto;
+      color: var(--pomo-red);
+    }
+    .pomodoro-pro-panel h2 {
+      margin: 0;
+      color: var(--pomo-text);
+      font: 800 clamp(16px, 1.35vw, 20px)/1.2 "Inter", sans-serif !important;
+      letter-spacing: -.02em;
+    }
+    .pomodoro-pro-panel > header > span {
+      flex: 0 0 auto;
+      color: var(--pomo-muted);
+      font-size: 10px;
+      font-variant-numeric: tabular-nums;
+    }
+    .pomodoro-pro-notes textarea {
+      width: 100%;
+      flex: 1 1 auto;
+      min-height: 150px;
+      resize: none;
+      padding: 12px 16px 12px 31px;
+      border: 1px solid var(--pomo-border);
+      border-radius: 8px;
+      outline: none;
+      background:
+        linear-gradient(90deg, transparent 20px, rgba(255, 21, 31, .8) 20px, rgba(255, 21, 31, .8) 21px, transparent 21px),
+        repeating-linear-gradient(to bottom, #08090a 0, #08090a 28px, #24272c 29px);
+      color: var(--pomo-text);
+      font-size: 12px;
+      line-height: 29px;
+    }
+    .pomodoro-pro-notes textarea:focus,
+    .pomodoro-pro-task-composer input:focus,
+    .pomodoro-pro-task-composer select:focus {
+      border-color: var(--pomo-red);
+      box-shadow: 0 0 0 3px rgba(255, 21, 31, .12);
+    }
+    .pomodoro-pro-notes textarea::placeholder,
+    .pomodoro-pro-task-composer input::placeholder {
+      color: #6e7279;
+      opacity: 1;
+    }
+    .pomodoro-pro-note-actions {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 14px;
+      margin-top: 12px;
+    }
+    .pomodoro-pro-note-actions > span {
+      color: var(--pomo-muted);
+      font-size: 10px;
+    }
+    .pomodoro-pro-note-actions button {
+      min-height: 38px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 16px;
+      border: 1px solid var(--pomo-red);
+      border-radius: 8px;
+      background: transparent;
+      color: var(--pomo-red-soft);
+      cursor: pointer;
+      font-size: 11px;
+      font-weight: 800;
+    }
+    .pomodoro-pro-note-actions button:hover {
+      background: rgba(255, 21, 31, .1);
+    }
+    .pomodoro-pro-task-composer {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 94px 48px;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+    .pomodoro-pro-task-composer input,
+    .pomodoro-pro-task-composer select {
+      min-width: 0;
+      min-height: 44px;
+      padding: 10px 13px;
+      border: 1px solid var(--pomo-border);
+      border-radius: 8px;
+      outline: none;
+      background: #08090a;
+      color: var(--pomo-text);
+      font-size: 12px;
+    }
+    .pomodoro-pro-task-composer select {
+      color-scheme: dark;
+      cursor: pointer;
+    }
+    .pomodoro-pro-task-composer > button {
+      display: grid;
+      place-items: center;
+      border: 1px solid var(--pomo-red);
+      border-radius: 8px;
+      background: transparent;
+      color: var(--pomo-red);
+      cursor: pointer;
+    }
+    .pomodoro-pro-task-composer > button:disabled {
+      opacity: .38;
+      cursor: not-allowed;
+    }
+    .pomodoro-pro-task-list {
+      min-height: 0;
+      flex: 1 1 auto;
+      overflow-y: auto;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(255, 21, 31, .75) transparent;
+    }
+    .pomodoro-pro-task-row {
+      min-height: 54px;
+      display: grid;
+      grid-template-columns: 28px minmax(0, 1fr) 72px 34px;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 2px;
+      border-bottom: 1px solid var(--pomo-border-soft);
+      transition: background-color 160ms ease;
+    }
+    .pomodoro-pro-task-row:hover,
+    .pomodoro-pro-task-row.is-active {
+      background: rgba(255, 255, 255, .018);
+    }
+    .pomodoro-pro-task-row.is-active {
+      box-shadow: inset 2px 0 0 var(--pomo-red);
+    }
+    .pomodoro-pro-task-check {
+      width: 18px;
+      height: 18px;
+      display: grid;
+      place-items: center;
+      justify-self: center;
+      padding: 0;
+      border: 1px solid #7a7e86;
+      border-radius: 3px;
+      background: transparent;
+      color: #fff;
+      cursor: pointer;
+    }
+    .pomodoro-pro-task-row.is-complete .pomodoro-pro-task-check {
+      border-color: var(--pomo-red);
+      background: var(--pomo-red);
+    }
+    .pomodoro-pro-task-name {
+      min-width: 0;
+      padding: 0;
+      border: 0;
+      background: transparent;
+      color: var(--pomo-text);
+      cursor: pointer;
+      overflow: hidden;
+      text-align: left;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      font-size: 12px;
+      font-weight: 650;
+    }
+    .pomodoro-pro-task-row.is-complete .pomodoro-pro-task-name {
+      color: #666a71;
+      text-decoration: line-through;
+    }
+    .pomodoro-pro-priority {
+      justify-self: end;
+      min-width: 54px;
+      padding: 4px 9px;
+      border: 1px solid currentColor;
+      border-radius: 999px;
+      text-align: center;
+      font-size: 10px;
+      font-weight: 800;
+    }
+    .pomodoro-pro-priority.is-high { color: var(--pomo-red-soft); }
+    .pomodoro-pro-priority.is-medium { color: #f1ad3d; }
+    .pomodoro-pro-priority.is-low { color: #8d9198; }
+    .pomodoro-pro-task-delete {
+      width: 32px;
+      height: 32px;
+      display: grid;
+      place-items: center;
+      padding: 0;
+      border: 0;
+      border-radius: 8px;
+      background: transparent;
+      color: #676b72;
+      cursor: pointer;
+    }
+    .pomodoro-pro-task-delete:hover {
+      background: rgba(255, 21, 31, .1);
+      color: var(--pomo-red);
+    }
+    .pomodoro-pro-empty {
+      min-height: 170px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      color: var(--pomo-muted);
+      text-align: center;
+    }
+    .pomodoro-pro-empty svg {
+      color: var(--pomo-red);
+    }
+    .pomodoro-pro-empty strong {
+      color: var(--pomo-text);
+      font-size: 13px;
+    }
+    .pomodoro-pro-empty span {
+      max-width: 280px;
+      font-size: 11px;
+      line-height: 1.45;
+    }
+    .pomodoro-pro-settings,
+    .pomodoro-pro-guide {
+      display: grid;
+      gap: 16px;
+    }
+    .pomodoro-pro-settings label > span {
+      display: block;
+      margin-bottom: 7px;
+      color: var(--hf-muted);
+      font-size: 12px;
+      font-weight: 700;
+    }
+    .pomodoro-pro-settings label > div {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 64px;
+      align-items: center;
+      gap: 12px;
+    }
+    .pomodoro-pro-settings input {
+      width: 100%;
+      accent-color: var(--pomo-red);
+    }
+    .pomodoro-pro-settings input[type="number"] {
+      width: 68px;
+      min-height: 38px;
+      padding: 7px 8px;
+      border: 1px solid var(--hf-card-border);
+      border-radius: 9px;
+      background: var(--hf-input-bg);
+      color: var(--hf-text);
+      font-size: 12px;
+      text-align: right;
+    }
+    .pomodoro-pro-save-settings {
+      min-height: 44px;
+      border: 0;
+      border-radius: 10px;
+      background: var(--pomo-red);
+      color: #fff;
+      cursor: pointer;
+      font-weight: 800;
+    }
+    .pomodoro-pro-guide {
+      color: var(--hf-muted);
+      font-size: 13px;
+      line-height: 1.65;
+    }
+    .pomodoro-pro-guide strong {
+      color: var(--hf-text);
+    }
+    .pomodoro-pro-guide ol {
+      display: grid;
+      gap: 10px;
+      margin: 0;
+      padding-left: 22px;
+    }
+    .pomodoro-pro-alert-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 10020;
+      display: grid;
+      place-items: center;
+      padding: 18px;
+      background: rgba(0, 0, 0, .82);
+      backdrop-filter: blur(8px);
+      animation: fadeIn 180ms ease both;
+    }
+    .pomodoro-pro-alert {
+      width: min(100%, 470px);
+      padding: 34px;
+      border: 1px solid #3a3d43;
+      border-radius: 18px;
+      background: #090a0c;
+      color: #fff;
+      text-align: center;
+      box-shadow: 0 24px 80px rgba(0, 0, 0, .55);
+    }
+    .pomodoro-pro-alert-icon {
+      width: 64px;
+      height: 64px;
+      display: grid;
+      place-items: center;
+      margin: 0 auto 16px;
+      border: 1px solid rgba(34, 211, 111, .5);
+      border-radius: 50%;
+      background: rgba(34, 211, 111, .1);
+      color: var(--pomo-green);
+    }
+    .pomodoro-pro-alert > span {
+      color: var(--pomo-red);
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+    }
+    .pomodoro-pro-alert h2 {
+      margin: 10px 0 8px;
+      font-family: "DM Serif Display", serif;
+      font-size: clamp(26px, 4vw, 36px);
+      font-weight: 400;
+    }
+    .pomodoro-pro-alert p {
+      margin: 0 auto 24px;
+      color: var(--pomo-muted);
+      line-height: 1.55;
+    }
+    .pomodoro-pro-alert > div:last-child {
+      display: grid;
+      grid-template-columns: 1fr 1.25fr;
+      gap: 10px;
+    }
+    .pomodoro-pro-alert button {
+      min-height: 46px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      border: 1px solid var(--pomo-border);
+      border-radius: 10px;
+      background: transparent;
+      color: #fff;
+      cursor: pointer;
+      font-weight: 800;
+    }
+    .pomodoro-pro-alert button.is-primary {
+      border-color: var(--pomo-red);
+      background: var(--pomo-red);
+    }
+    html[data-theme-mode="pinkLight"] .pomodoro-pro,
+    html[data-theme-mode="pinkLight"] .pomodoro-pro-panel,
+    html[data-theme-mode="pinkLight"] .pomodoro-pro-task-composer input,
+    html[data-theme-mode="pinkLight"] .pomodoro-pro-task-composer select {
+      color-scheme: dark;
+    }
+    @media (max-width: 1040px) {
+      .pomodoro-pro-grid {
+        grid-template-columns: 1fr;
+      }
+      .pomodoro-pro-timer-panel {
+        min-height: 620px;
+      }
+      .pomodoro-pro-side {
+        grid-template-rows: minmax(270px, auto) minmax(350px, auto);
+      }
+    }
+    @media (max-width: 620px) {
+      .pomodoro-pro {
+        min-height: auto;
+        padding: 10px 10px 104px;
+        border: 0;
+        border-radius: 0;
+      }
+      .pomodoro-pro-grid {
+        gap: 12px;
+      }
+      .pomodoro-pro-panel {
+        border-radius: 12px;
+      }
+      .pomodoro-pro-timer-panel {
+        min-height: 560px;
+        padding: 20px 14px 24px;
+      }
+      .pomodoro-pro-mode-tabs {
+        width: 100%;
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+      }
+      .pomodoro-pro-mode-tabs button {
+        padding-inline: 6px;
+      }
+      .pomodoro-pro-ring {
+        width: min(100%, 330px);
+      }
+      .pomodoro-pro-ring-content > strong {
+        font-size: clamp(54px, 18vw, 72px);
+      }
+      .pomodoro-pro-controls {
+        gap: 25px;
+      }
+      .pomodoro-pro-stats > div {
+        padding-inline: 6px;
+      }
+      .pomodoro-pro-stats strong {
+        font-size: 13px;
+      }
+      .pomodoro-pro-notes,
+      .pomodoro-pro-tasks {
+        padding: 16px;
+      }
+      .pomodoro-pro-note-actions {
+        align-items: flex-end;
+        flex-direction: column-reverse;
+      }
+      .pomodoro-pro-task-composer {
+        grid-template-columns: minmax(0, 1fr) 48px;
+      }
+      .pomodoro-pro-task-composer select {
+        grid-column: 1 / -1;
+        grid-row: 2;
+      }
+      .pomodoro-pro-task-composer > button {
+        grid-column: 2;
+        grid-row: 1;
+      }
+      .pomodoro-pro-task-row {
+        grid-template-columns: 28px minmax(0, 1fr) 62px 32px;
+        gap: 6px;
+      }
+      .pomodoro-pro-priority {
+        min-width: 48px;
+        padding-inline: 6px;
+      }
+      .pomodoro-pro-alert {
+        padding: 28px 20px 22px;
+      }
+      .pomodoro-pro-alert > div:last-child {
+        grid-template-columns: 1fr;
+      }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .pomodoro-pro *,
+      .pomodoro-pro *::before,
+      .pomodoro-pro *::after {
+        scroll-behavior: auto !important;
+        transition-duration: .01ms !important;
+        animation-duration: .01ms !important;
+        animation-iteration-count: 1 !important;
+      }
+    }
   `;
   document.head.appendChild(style);
 };
@@ -16081,7 +16819,27 @@ const PomodoroView = ({ data, onUpdateUser, onUpdatePomodoro }) => {
   const [showSettings, setShowSettings] = useState(false);
   const [showGuide, setShowGuide] = useState(false);
   const [localSettings, setLocalSettings] = useState(settings);
+  const [focusNote, setFocusNote] = useState(() => {
+    try { return localStorage.getItem('habitflow_pomodoro_focus_note') || ''; } catch { return ''; }
+  });
+  const [noteSaved, setNoteSaved] = useState(false);
+  const [pomodoroTasks, setPomodoroTasks] = useState(() => {
+    try {
+      const stored = JSON.parse(localStorage.getItem('habitflow_pomodoro_tasks') || '[]');
+      return Array.isArray(stored) ? stored : [];
+    } catch {
+      return [];
+    }
+  });
+  const [taskDraft, setTaskDraft] = useState('');
+  const [taskPriority, setTaskPriority] = useState('media');
+  const [activeTaskId, setActiveTaskId] = useState(() => {
+    try { return localStorage.getItem('habitflow_pomodoro_active_task') || ''; } catch { return ''; }
+  });
+  const [sessionAlert, setSessionAlert] = useState(null);
   const intervalRef = useRef(null);
+  const autoStartRef = useRef(false);
+  const completionLockRef = useRef(false);
   const ambientCtxRef = useRef(null);
   const ambientNodesRef = useRef(null);
 
@@ -16268,18 +17026,87 @@ const PomodoroView = ({ data, onUpdateUser, onUpdatePomodoro }) => {
   const progress = total > 0  ? 1 - timeLeft / total : 0;
   const radius = 120;
   const circumference = 2 * Math.PI * radius;
-  const offset = circumference * (1 - progress);
+  const offset = circumference * progress;
 
-  const toggleTimer = () => setIsRunning(s => !s);
-  const resetTimer = () => { setIsRunning(false); setTimeLeft(durations[mode]); };
-  const switchMode = (m) => { setIsRunning(false); setMode(m); };
+  const toggleTimer = () => {
+    completionLockRef.current = false;
+    setIsRunning(s => !s);
+  };
+  const resetTimer = () => {
+    completionLockRef.current = false;
+    setIsRunning(false);
+    setTimeLeft(durations[mode]);
+  };
+  const switchMode = (m) => {
+    completionLockRef.current = false;
+    setIsRunning(false);
+    setMode(m);
+  };
 
   const totalFocusToday = todaySessions.reduce((sum, s) => sum + s.focusTime, 0);
+  const activePomodoroTask = pomodoroTasks.find(task => task.id === activeTaskId && !task.completed)
+    || pomodoroTasks.find(task => !task.completed)
+    || null;
+
+  const getNextPomodoroMode = (finishedMode) => {
+    if (finishedMode !== 'focus') return 'focus';
+    return (todaySessions.length + 1) % 4 === 0 ? 'longBreak' : 'shortBreak';
+  };
+
+  const saveFocusNote = () => {
+    try { localStorage.setItem('habitflow_pomodoro_focus_note', focusNote); } catch {}
+    setNoteSaved(true);
+    setTimeout(() => setNoteSaved(false), 1800);
+  };
+
+  const addPomodoroTask = () => {
+    const text = taskDraft.trim();
+    if (!text) return;
+    const task = {
+      id: `pomo-task-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
+      text,
+      priority: taskPriority,
+      completed: false,
+      createdAt: new Date().toISOString()
+    };
+    setPomodoroTasks(previous => [...previous, task]);
+    if (!activeTaskId) setActiveTaskId(task.id);
+    setTaskDraft('');
+  };
+
+  const togglePomodoroTask = (taskId) => {
+    setPomodoroTasks(previous => previous.map(task =>
+      task.id === taskId ? { ...task, completed: !task.completed } : task
+    ));
+  };
+
+  const removePomodoroTask = (taskId) => {
+    setPomodoroTasks(previous => previous.filter(task => task.id !== taskId));
+    if (activeTaskId === taskId) setActiveTaskId('');
+  };
+
+  useEffect(() => {
+    try { localStorage.setItem('habitflow_pomodoro_tasks', JSON.stringify(pomodoroTasks)); } catch {}
+  }, [pomodoroTasks]);
+
+  useEffect(() => {
+    try {
+      if (activeTaskId) localStorage.setItem('habitflow_pomodoro_active_task', activeTaskId);
+      else localStorage.removeItem('habitflow_pomodoro_active_task');
+    } catch {}
+  }, [activeTaskId]);
 
   const notifyPomodoroDone = useCallback((finishedMode) => {
     const copy = modeCopy[finishedMode] || modeCopy.focus;
+    const nextMode = getNextPomodoroMode(finishedMode);
     playBeep(copy.tone, 0.75);
     setTimeout(() => playBeep(copy.tone * 1.18, 0.45), 180);
+    setSessionAlert({
+      finishedMode,
+      nextMode,
+      title: finishedMode === 'focus' ? 'Sesión de enfoque completada' : finishedMode === 'shortBreak' ? 'Descanso corto completado' : 'Descanso largo completado',
+      message: copy.next
+    });
     requestHabitFlowNotifications().then(() => {
       showHabitFlowNotification('HabitFlow - Pomodoro terminado', {
         body: `Terminó tu ${copy.label}. ${copy.next}`,
@@ -16289,7 +17116,7 @@ const PomodoroView = ({ data, onUpdateUser, onUpdatePomodoro }) => {
         data: { url: window.location.href, type: 'pomodoro', mode: finishedMode }
       });
     }).catch(() => {});
-  }, [settings.focus, settings.shortBreak, settings.longBreak]);
+  }, [settings.focus, settings.shortBreak, settings.longBreak, todaySessions.length]);
 
   const weeklyRecords = records.filter(r => {
     const d = new Date(r.date);
@@ -16493,7 +17320,10 @@ const PomodoroView = ({ data, onUpdateUser, onUpdatePomodoro }) => {
 
   useEffect(() => {
     setTimeLeft(durations[mode]);
-    setIsRunning(false);
+    completionLockRef.current = false;
+    const shouldAutoStart = autoStartRef.current;
+    autoStartRef.current = false;
+    setIsRunning(shouldAutoStart);
     stopAmbient();
   }, [mode, settings.focus, settings.shortBreak, settings.longBreak]);
 
@@ -16508,10 +17338,13 @@ const PomodoroView = ({ data, onUpdateUser, onUpdatePomodoro }) => {
           clearInterval(intervalRef.current);
           setIsRunning(false);
           stopAmbient();
-          notifyPomodoroDone(mode);
-          if (mode === 'focus') {
-            const newRecord = { date: today, completedAt: new Date().toISOString(), focusTime: settings.focus };
-            onUpdatePomodoro(prev => [...prev, newRecord]);
+          if (!completionLockRef.current) {
+            completionLockRef.current = true;
+            notifyPomodoroDone(mode);
+            if (mode === 'focus') {
+              const newRecord = { date: today, completedAt: new Date().toISOString(), focusTime: settings.focus };
+              onUpdatePomodoro(prev => [...prev, newRecord]);
+            }
           }
           return 0;
         }
@@ -16520,6 +17353,304 @@ const PomodoroView = ({ data, onUpdateUser, onUpdatePomodoro }) => {
     }, 1000);
     return () => { clearInterval(intervalRef.current); stopAmbient(); };
   }, [isRunning, mode, settings.ambientSound, settings.ambientVolume, settings.focus, today, notifyPomodoroDone]);
+
+  const skipPomodoroSession = () => {
+    const nextMode = getNextPomodoroMode(mode);
+    completionLockRef.current = false;
+    setSessionAlert(null);
+    switchMode(nextMode);
+  };
+
+  const startNextPomodoroSession = () => {
+    const nextMode = sessionAlert?.nextMode || getNextPomodoroMode(mode);
+    setSessionAlert(null);
+    completionLockRef.current = false;
+    if (nextMode === mode) {
+      setTimeLeft(durations[nextMode]);
+      setIsRunning(true);
+      return;
+    }
+    autoStartRef.current = true;
+    setMode(nextMode);
+  };
+
+  const modeLabel = mode === 'focus' ? 'Enfoque profundo' : mode === 'shortBreak' ? 'Descanso corto' : 'Descanso largo';
+  const priorityCopy = {
+    alta: { label: 'Alta', className: 'is-high' },
+    media: { label: 'Media', className: 'is-medium' },
+    baja: { label: 'Baja', className: 'is-low' }
+  };
+  const sessionNumber = Math.min((todaySessions.length % 4) + 1, 4);
+
+  return (
+    <section className="pomodoro-pro" aria-label="Centro Pomodoro">
+      <div className="pomodoro-pro-grid">
+        <article className="pomodoro-pro-panel pomodoro-pro-timer-panel">
+          <div className="pomodoro-pro-mode-tabs" aria-label="Tipo de sesión">
+            {[
+              ['focus', 'Enfoque'],
+              ['shortBreak', 'Descanso'],
+              ['longBreak', 'Descanso largo']
+            ].map(([key, label]) => (
+              <button
+                key={key}
+                type="button"
+                className={mode === key ? 'is-active' : ''}
+                onClick={() => switchMode(key)}
+                aria-pressed={mode === key}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+
+          <div className="pomodoro-pro-ring" aria-live="polite">
+            <svg viewBox="0 0 280 280" aria-hidden="true">
+              <circle className="pomodoro-pro-ring-track" cx="140" cy="140" r={radius} />
+              <circle
+                className="pomodoro-pro-ring-progress"
+                cx="140"
+                cy="140"
+                r={radius}
+                strokeDasharray={circumference}
+                strokeDashoffset={offset}
+              />
+            </svg>
+            <div className="pomodoro-pro-ring-content">
+              <Brain size={32} strokeWidth={1.7} />
+              <span className="pomodoro-pro-mode-label">{modeLabel}</span>
+              <strong>{String(minutes).padStart(2, '0')}:{String(seconds).padStart(2, '0')}</strong>
+              <button
+                type="button"
+                className="pomodoro-pro-current-task"
+                onClick={() => activePomodoroTask && setActiveTaskId(activePomodoroTask.id)}
+                disabled={!activePomodoroTask}
+                title={activePomodoroTask ? 'Tarea activa del Pomodoro' : 'Agrega una tarea en el panel derecho'}
+              >
+                <FileText size={16} />
+                <span>{activePomodoroTask?.text || 'Sin tarea seleccionada'}</span>
+              </button>
+            </div>
+          </div>
+
+          <div className="pomodoro-pro-controls">
+            <button type="button" onClick={resetTimer} aria-label="Reiniciar temporizador" title="Reiniciar">
+              <RefreshCw size={22} />
+            </button>
+            <button
+              type="button"
+              className="pomodoro-pro-play"
+              onClick={toggleTimer}
+              aria-label={isRunning ? 'Pausar temporizador' : 'Iniciar temporizador'}
+              title={isRunning ? 'Pausar' : 'Iniciar'}
+            >
+              {isRunning ? <Pause size={30} fill="currentColor" /> : <Play size={30} fill="currentColor" />}
+            </button>
+            <button type="button" onClick={skipPomodoroSession} aria-label="Saltar a la siguiente sesión" title="Siguiente sesión">
+              <SkipForward size={23} />
+            </button>
+          </div>
+
+          <div className="pomodoro-pro-stats">
+            <div>
+              <span>Sesión</span>
+              <strong>{sessionNumber} de 4</strong>
+            </div>
+            <div>
+              <span>Hoy</span>
+              <strong>{Math.floor(totalFocusToday / 60)}h {totalFocusToday % 60}m</strong>
+            </div>
+            <div>
+              <span>Racha</span>
+              <strong>{currentStreak} {currentStreak === 1 ? 'día' : 'días'}</strong>
+            </div>
+          </div>
+
+          <div className="pomodoro-pro-utility">
+            <button type="button" onClick={() => setShowGuide(true)}>
+              <Sparkles size={15} /> Cómo usar
+            </button>
+            <button type="button" onClick={() => setShowSettings(true)}>
+              <Settings size={15} /> Configurar
+            </button>
+          </div>
+        </article>
+
+        <div className="pomodoro-pro-side">
+          <article className="pomodoro-pro-panel pomodoro-pro-notes">
+            <header>
+              <div>
+                <FileText size={21} />
+                <h2>Notas de enfoque</h2>
+              </div>
+              <span>{focusNote.length}/1200</span>
+            </header>
+            <textarea
+              value={focusNote}
+              onChange={event => setFocusNote(event.target.value.slice(0, 1200))}
+              placeholder={'Define la estructura de tu sesión...\nPrioriza claridad y una sola tarea.\nAnota ideas sin abandonar el enfoque.'}
+              aria-label="Notas de enfoque"
+            />
+            <div className="pomodoro-pro-note-actions">
+              <span role="status" aria-live="polite">{noteSaved ? 'Nota guardada' : 'Se guarda en este dispositivo'}</span>
+              <button type="button" onClick={saveFocusNote}>
+                <Bookmark size={16} /> Guardar nota
+              </button>
+            </div>
+          </article>
+
+          <article className="pomodoro-pro-panel pomodoro-pro-tasks">
+            <header>
+              <div>
+                <List size={21} />
+                <h2>Tareas del Pomodoro</h2>
+              </div>
+              <span>{pomodoroTasks.filter(task => task.completed).length}/{pomodoroTasks.length}</span>
+            </header>
+
+            <div className="pomodoro-pro-task-composer">
+              <input
+                value={taskDraft}
+                onChange={event => setTaskDraft(event.target.value)}
+                onKeyDown={event => event.key === 'Enter' && addPomodoroTask()}
+                placeholder="Agregar tarea rápida..."
+                aria-label="Nueva tarea del Pomodoro"
+              />
+              <select value={taskPriority} onChange={event => setTaskPriority(event.target.value)} aria-label="Prioridad">
+                <option value="alta">Alta</option>
+                <option value="media">Media</option>
+                <option value="baja">Baja</option>
+              </select>
+              <button type="button" onClick={addPomodoroTask} disabled={!taskDraft.trim()} aria-label="Agregar tarea">
+                <Plus size={22} />
+              </button>
+            </div>
+
+            <div className="pomodoro-pro-task-list">
+              {pomodoroTasks.length === 0 ? (
+                <div className="pomodoro-pro-empty">
+                  <List size={24} />
+                  <strong>Tu lista está lista para empezar</strong>
+                  <span>Agrega una tarea y conviértela en el foco de la sesión.</span>
+                </div>
+              ) : pomodoroTasks.map(task => {
+                const priority = priorityCopy[task.priority] || priorityCopy.media;
+                const isActive = activePomodoroTask?.id === task.id;
+                return (
+                  <div key={task.id} className={`pomodoro-pro-task-row ${task.completed ? 'is-complete' : ''} ${isActive ? 'is-active' : ''}`}>
+                    <button
+                      type="button"
+                      className="pomodoro-pro-task-check"
+                      onClick={() => togglePomodoroTask(task.id)}
+                      aria-label={task.completed ? `Marcar ${task.text} como pendiente` : `Completar ${task.text}`}
+                    >
+                      {task.completed && <Check size={14} />}
+                    </button>
+                    <button
+                      type="button"
+                      className="pomodoro-pro-task-name"
+                      onClick={() => !task.completed && setActiveTaskId(task.id)}
+                      title="Usar como tarea activa"
+                    >
+                      {task.text}
+                    </button>
+                    <span className={`pomodoro-pro-priority ${priority.className}`}>{priority.label}</span>
+                    <button
+                      type="button"
+                      className="pomodoro-pro-task-delete"
+                      onClick={() => removePomodoroTask(task.id)}
+                      aria-label={`Eliminar ${task.text}`}
+                    >
+                      <Trash2 size={16} />
+                    </button>
+                  </div>
+                );
+              })}
+            </div>
+          </article>
+        </div>
+      </div>
+
+      <div ref={youtubeContainerRef} style={{ display: 'none' }} />
+
+      {showSettings && (
+        <Modal isOpen={showSettings} onClose={() => setShowSettings(false)} title="Configurar Pomodoro" width={460}>
+          <div className="pomodoro-pro-settings">
+            {[
+              { key: 'focus', label: 'Enfoque', min: 1, max: 120 },
+              { key: 'shortBreak', label: 'Descanso corto', min: 1, max: 30 },
+              { key: 'longBreak', label: 'Descanso largo', min: 5, max: 60 }
+            ].map(({ key, label, min, max }) => (
+              <label key={key}>
+                <span>{label}</span>
+                <div>
+                  <input
+                    type="range"
+                    min={min}
+                    max={max}
+                    value={localSettings[key]}
+                    onChange={event => setLocalSettings(current => ({ ...current, [key]: Number(event.target.value) }))}
+                  />
+                  <input
+                    type="number"
+                    min={min}
+                    max={max}
+                    value={localSettings[key]}
+                    aria-label={`${label} en minutos`}
+                    onChange={event => {
+                      const value = Math.max(min, Math.min(max, Number(event.target.value) || min));
+                      setLocalSettings(current => ({ ...current, [key]: value }));
+                    }}
+                  />
+                </div>
+              </label>
+            ))}
+            <button
+              type="button"
+              className="pomodoro-pro-save-settings"
+              onClick={() => {
+                onUpdateUser({ pomodoro: localSettings });
+                setShowSettings(false);
+              }}
+            >
+              Guardar configuración
+            </button>
+          </div>
+        </Modal>
+      )}
+
+      {showGuide && (
+        <Modal isOpen={showGuide} onClose={() => setShowGuide(false)} title="Cómo usar la técnica Pomodoro" width={620}>
+          <div className="pomodoro-pro-guide">
+            <p><strong>Configuración recomendada:</strong> 25 minutos de enfoque, 5 de descanso corto y 15 de descanso largo después de cuatro sesiones.</p>
+            <ol>
+              <li>Elige una sola tarea concreta antes de iniciar.</li>
+              <li>Durante el enfoque, anota interrupciones en tus notas y vuelve a la tarea.</li>
+              <li>En el descanso, levántate y evita abrir otra tarea.</li>
+              <li>Al terminar cuatro sesiones, toma un descanso largo real.</li>
+            </ol>
+          </div>
+        </Modal>
+      )}
+
+      {sessionAlert && (
+        <div className="pomodoro-pro-alert-backdrop" role="dialog" aria-modal="true" aria-labelledby="pomodoro-alert-title">
+          <div className="pomodoro-pro-alert">
+            <div className="pomodoro-pro-alert-icon"><Check size={30} /></div>
+            <span>Pomodoro completado</span>
+            <h2 id="pomodoro-alert-title">{sessionAlert.title}</h2>
+            <p>{sessionAlert.message}</p>
+            <div>
+              <button type="button" onClick={() => setSessionAlert(null)}>Cerrar</button>
+              <button type="button" className="is-primary" onClick={startNextPomodoroSession}>
+                <Play size={17} fill="currentColor" /> Iniciar siguiente
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </section>
+  );
 
   return (
     <div className="pomodoro-mobile-view" style={{ animation: 'fadeIn 0.3s ease-out' }}>
