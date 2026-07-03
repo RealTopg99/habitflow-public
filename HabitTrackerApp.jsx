@@ -7321,12 +7321,20 @@ const injectStyles = () => {
     .cc-capture input {
       width: 100%;
       min-width: 0;
-      border: 0;
+      border: 0 !important;
+      border-radius: 0 !important;
       outline: 0;
-      background: transparent;
+      background: transparent !important;
+      box-shadow: none !important;
       color: var(--hf-text);
       font: inherit;
       font-size: 12px;
+    }
+    .cc-capture input:hover,
+    .cc-capture input:focus {
+      border: 0 !important;
+      background: transparent !important;
+      box-shadow: none !important;
     }
     .cc-capture input::placeholder {
       color: var(--hf-subtle);
