@@ -7365,6 +7365,9 @@ const injectStyles = () => {
       grid-template-columns: minmax(0, 1fr) 22px minmax(0, 1fr);
       align-items: end;
     }
+    .cc-finance-context[data-expense="true"] {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
     .cc-finance-account {
       display: grid;
       gap: 5px;
@@ -8018,6 +8021,9 @@ const injectStyles = () => {
         gap: 10px;
       }
       .cc-finance-context[data-transfer="true"] {
+        grid-template-columns: 1fr;
+      }
+      .cc-finance-context[data-expense="true"] {
         grid-template-columns: 1fr;
       }
       .cc-finance-direction {
@@ -10948,6 +10954,11 @@ const DashboardView = ({
     && account.type !== 'loan'
     && !String(account.id || '').startsWith('debt_')
   )), [finance.accounts]);
+  const dashboardExpenseCategories = useMemo(() => (finance.categories || []).filter(category => (
+    category
+    && category.id !== 'income'
+    && category.type !== 'income'
+  )), [finance.categories]);
   const today = toYYYYMMDD(new Date());
   const greet = greets();
   const userName = data.user?.name || 'Usuario';
@@ -11029,8 +11040,10 @@ const DashboardView = ({
   const [captureFeedback, setCaptureFeedback] = useState('');
   const [captureAccountId, setCaptureAccountId] = useState('');
   const [captureToAccountId, setCaptureToAccountId] = useState('');
+  const [captureCategoryId, setCaptureCategoryId] = useState('');
   const [tourStep, setTourStep] = useState(null);
   const dashboardAccountKey = dashboardAccounts.map(account => account.id).join('|');
+  const dashboardCategoryKey = dashboardExpenseCategories.map(category => category.id).join('|');
   const quickCaptureIntent = (() => {
     const text = quickCapture.trim();
     if (/^(?:g+a+s+t+o|egreso)\b/i.test(text)) return 'expense';
@@ -11065,6 +11078,14 @@ const DashboardView = ({
         : (dashboardAccounts.find(account => account.id !== sourceId)?.id || '');
     });
   }, [dashboardAccountKey]);
+
+  useEffect(() => {
+    setCaptureCategoryId(current => (
+      dashboardExpenseCategories.some(category => category.id === current)
+        ? current
+        : (dashboardExpenseCategories[0]?.id || '')
+    ));
+  }, [dashboardCategoryKey]);
 
   const achievements = useMemo(() => {
     const items = [];
@@ -11183,10 +11204,8 @@ const DashboardView = ({
         setCaptureFeedback(`Transferencia registrada de ${sourceAccount.name} a ${targetAccount.name}.`);
       } else {
         const transactionType = incomeMatch ? 'income' : 'expense';
-        const categories = (finance.categories || []).filter(category => category.id !== 'income');
-        const matchedCategory = categories.find(category => (
-          detail.toLowerCase().includes(String(category.name || '').toLowerCase())
-        ));
+        const selectedCategory = dashboardExpenseCategories.find(category => category.id === captureCategoryId)
+          || dashboardExpenseCategories[0];
         onUpdateFinance(previous => ({
           ...previous,
           transactions: [{
@@ -11194,14 +11213,18 @@ const DashboardView = ({
             type: transactionType,
             amount: baseAmount,
             currency: sourceCurrency,
-            category: transactionType === 'income' ? 'income' : (matchedCategory?.id || categories[0]?.id || 'food'),
+            category: transactionType === 'income' ? 'income' : (selectedCategory?.id || 'food'),
             accountId: sourceAccount.id,
             payee: detail || (transactionType === 'income' ? 'Ingreso rápido' : 'Gasto rápido'),
             note: 'Creado desde el Panel',
             date: today
           }, ...(previous.transactions || [])]
         }));
-        setCaptureFeedback(`${transactionType === 'income' ? 'Ingreso' : 'Gasto'} registrado en ${sourceAccount.name}: ${formatDashboardMoney(baseAmount)}.`);
+        setCaptureFeedback(
+          transactionType === 'income'
+            ? `Ingreso registrado en ${sourceAccount.name}: ${formatDashboardMoney(baseAmount)}.`
+            : `Gasto registrado en ${sourceAccount.name} · ${selectedCategory?.name || 'Sin categoría'}: ${formatDashboardMoney(baseAmount)}.`
+        );
       }
       setQuickCapture('');
       return;
@@ -11294,7 +11317,11 @@ const DashboardView = ({
                 <button type="button" onClick={submitQuickCapture} aria-label="Agregar captura rápida"><Plus size={17} /></button>
               </div>
               {quickCaptureIntent && (
-                <div className="cc-finance-context" data-transfer={quickCaptureIntent === 'transfer' ? 'true' : 'false'}>
+                <div
+                  className="cc-finance-context"
+                  data-transfer={quickCaptureIntent === 'transfer' ? 'true' : 'false'}
+                  data-expense={quickCaptureIntent === 'expense' ? 'true' : 'false'}
+                >
                   <label className="cc-finance-account">
                     <span>{quickCaptureIntent === 'transfer' ? 'Cuenta de origen' : quickCaptureIntent === 'income' ? 'Cuenta que recibe' : 'Pagar desde'}</span>
                     <select
@@ -11313,6 +11340,22 @@ const DashboardView = ({
                       ))}
                     </select>
                   </label>
+                  {quickCaptureIntent === 'expense' && (
+                    <label className="cc-finance-account">
+                      <span>Categoría del gasto</span>
+                      <select
+                        value={captureCategoryId}
+                        onChange={event => setCaptureCategoryId(event.target.value)}
+                        aria-label="Categoría del gasto"
+                        disabled={!dashboardExpenseCategories.length}
+                      >
+                        {!dashboardExpenseCategories.length && <option value="">Sin categorías disponibles</option>}
+                        {dashboardExpenseCategories.map(category => (
+                          <option key={category.id} value={category.id}>{category.name}</option>
+                        ))}
+                      </select>
+                    </label>
+                  )}
                   {quickCaptureIntent === 'transfer' && (
                     <>
                       <div className="cc-finance-direction" aria-hidden="true"><ChevronRight size={16} /></div>
@@ -11333,7 +11376,9 @@ const DashboardView = ({
                   <div className="cc-finance-hint">
                     {quickCaptureIntent === 'transfer'
                       ? 'El dinero saldrá de la cuenta de origen y entrará en la cuenta de destino sin contarse como ingreso o gasto.'
-                      : `El movimiento se registrará en ${dashboardAccounts.find(account => account.id === captureAccountId)?.name || 'la cuenta seleccionada'}.`}
+                      : quickCaptureIntent === 'expense'
+                        ? `El gasto se registrará en ${dashboardAccounts.find(account => account.id === captureAccountId)?.name || 'la cuenta seleccionada'} como ${dashboardExpenseCategories.find(category => category.id === captureCategoryId)?.name || 'sin categoría'}.`
+                        : `El movimiento se registrará en ${dashboardAccounts.find(account => account.id === captureAccountId)?.name || 'la cuenta seleccionada'}.`}
                   </div>
                 </div>
               )}
