@@ -15,7 +15,7 @@ const {
   PersonStanding, Apple, Coffee, Smile, Image: ImageIcon, Moon, Sun,
   Rocket, Laptop, FileText, AlarmClock, Lightbulb, Music,
   Palette, Camera, Leaf, Zap, Trophy, Medal, Star, Gift, Bookmark,
-  Flower2, ChevronDown, RefreshCw, Users, Send, Shield
+  Flower2, ChevronDown, RefreshCw, Users, Send, Shield, Mic, MicOff
 } = lucideReact;
 
 const supabase = window.supabaseClient;
@@ -9401,6 +9401,433 @@ const injectStyles = () => {
         transition-duration: .01ms !important;
         animation-duration: .01ms !important;
         animation-iteration-count: 1 !important;
+      }
+    }
+
+    /* Voice assistant */
+    .voice-assistant-launcher {
+      position: fixed;
+      right: 24px;
+      bottom: 24px;
+      z-index: 320;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-height: 48px;
+      padding: 6px 8px 6px 16px;
+      border: 1px solid rgba(229, 9, 20, .36);
+      border-radius: 999px;
+      background: rgba(8, 8, 8, .94);
+      color: #f5f5f5;
+      box-shadow: 0 18px 54px rgba(0, 0, 0, .42);
+      cursor: pointer;
+      transition: border-color .18s ease, background .18s ease, transform .18s ease;
+    }
+    .voice-assistant-launcher:hover {
+      border-color: rgba(255, 31, 31, .72);
+      background: #101010;
+      transform: translateY(-2px);
+    }
+    .voice-assistant-launcher:focus-visible,
+    .voice-assistant button:focus-visible,
+    .voice-assistant input:focus-visible,
+    .voice-assistant textarea:focus-visible,
+    .voice-assistant select:focus-visible {
+      outline: 2px solid #ff1f1f;
+      outline-offset: 2px;
+    }
+    .voice-assistant-launcher > span:first-child {
+      font-size: 12px;
+      font-weight: 750;
+      letter-spacing: .01em;
+    }
+    .voice-assistant-launcher-icon {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      background: #e50914;
+      color: #fff;
+      box-shadow: 0 0 0 6px rgba(229, 9, 20, .1);
+    }
+    .voice-assistant-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 100000;
+      display: grid;
+      place-items: center;
+      padding: 24px;
+      background: rgba(0, 0, 0, .78);
+      backdrop-filter: blur(4px);
+      animation: voiceFadeIn .18s ease-out;
+    }
+    .voice-assistant {
+      width: min(100%, 560px);
+      max-height: min(88vh, 760px);
+      overflow: auto;
+      color: #f5f5f5;
+      background: #080808;
+      border: 1px solid #2a2a2a;
+      border-radius: 20px;
+      box-shadow: 0 28px 90px rgba(0, 0, 0, .72);
+      font-family: 'Inter', sans-serif;
+      scrollbar-width: thin;
+      scrollbar-color: #8b1320 transparent;
+    }
+    .voice-assistant-header {
+      position: sticky;
+      top: 0;
+      z-index: 2;
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 22px 22px 16px;
+      background: rgba(8, 8, 8, .96);
+      border-bottom: 1px solid #202020;
+    }
+    .voice-assistant-header h2 {
+      margin: 0;
+      color: #fff;
+      font-family: 'DM Serif Display', serif;
+      font-size: 25px;
+      font-weight: 400;
+    }
+    .voice-assistant-header p {
+      margin: 5px 0 0;
+      color: #989898;
+      font-size: 12px;
+      line-height: 1.5;
+    }
+    .voice-icon-button {
+      width: 36px;
+      height: 36px;
+      flex: 0 0 36px;
+      display: grid;
+      place-items: center;
+      border: 1px solid #282828;
+      border-radius: 10px;
+      background: #101010;
+      color: #d6d6d6;
+      cursor: pointer;
+    }
+    .voice-assistant-body {
+      padding: 22px;
+    }
+    .voice-listening-hero {
+      display: grid;
+      justify-items: center;
+      gap: 13px;
+      padding: 10px 0 20px;
+      text-align: center;
+    }
+    .voice-wave {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 3px;
+      min-height: 24px;
+    }
+    .voice-wave span {
+      width: 3px;
+      height: 8px;
+      border-radius: 99px;
+      background: #e50914;
+      animation: voiceWave 1s ease-in-out infinite;
+    }
+    .voice-wave span:nth-child(2n) { animation-delay: .12s; }
+    .voice-wave span:nth-child(3n) { animation-delay: .24s; }
+    .voice-listening-mic {
+      width: 78px;
+      height: 78px;
+      display: grid;
+      place-items: center;
+      border: 1px solid rgba(255, 31, 31, .72);
+      border-radius: 50%;
+      background: radial-gradient(circle, #e50914 0 43%, #220305 45% 100%);
+      color: #fff;
+      box-shadow: 0 0 0 10px rgba(229, 9, 20, .07);
+      animation: voicePulse 1.6s ease-out infinite;
+    }
+    .voice-listening-hero strong {
+      font-size: 18px;
+    }
+    .voice-listening-hero span {
+      color: #a2a2a2;
+      font-size: 12px;
+    }
+    .voice-transcript {
+      width: 100%;
+      min-height: 112px;
+      resize: vertical;
+      padding: 14px 15px;
+      border: 1px solid #2d2d2d;
+      border-radius: 13px;
+      background: #111;
+      color: #f6f6f6;
+      font: 500 14px/1.55 'Inter', sans-serif;
+    }
+    .voice-support-note,
+    .voice-error {
+      margin-top: 10px;
+      padding: 10px 12px;
+      border-radius: 10px;
+      font-size: 11px;
+      line-height: 1.45;
+    }
+    .voice-support-note {
+      color: #aaa;
+      background: #0e0e0e;
+      border: 1px solid #252525;
+    }
+    .voice-error {
+      color: #ff9a9f;
+      background: rgba(229, 9, 20, .09);
+      border: 1px solid rgba(229, 9, 20, .28);
+    }
+    .voice-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      margin-top: 18px;
+    }
+    .voice-actions button,
+    .voice-correction button {
+      min-height: 42px;
+      padding: 0 17px;
+      border: 1px solid #303030;
+      border-radius: 11px;
+      background: #101010;
+      color: #efefef;
+      font-weight: 750;
+      cursor: pointer;
+      transition: background .18s ease, border-color .18s ease;
+    }
+    .voice-actions button:hover,
+    .voice-correction button:hover {
+      background: #181818;
+      border-color: #484848;
+    }
+    .voice-actions .is-primary,
+    .voice-correction .is-primary {
+      border-color: #e50914;
+      background: #e50914;
+      color: #fff;
+    }
+    .voice-actions .is-primary:hover,
+    .voice-correction .is-primary:hover {
+      background: #ff1f1f;
+    }
+    .voice-actions button:disabled {
+      opacity: .42;
+      cursor: not-allowed;
+    }
+    .voice-draft-list {
+      display: grid;
+      gap: 12px;
+    }
+    .voice-draft-card {
+      padding: 15px;
+      border: 1px solid #282828;
+      border-radius: 14px;
+      background: #0d0d0d;
+    }
+    .voice-draft-title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 13px;
+    }
+    .voice-draft-title strong {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+    }
+    .voice-draft-title span {
+      padding: 4px 8px;
+      border-radius: 999px;
+      background: rgba(229, 9, 20, .1);
+      color: #ff646b;
+      font-size: 10px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: .05em;
+    }
+    .voice-field-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+    .voice-field {
+      display: grid;
+      gap: 6px;
+      min-width: 0;
+    }
+    .voice-field.is-wide {
+      grid-column: 1 / -1;
+    }
+    .voice-field > span {
+      color: #8f8f8f;
+      font-size: 10px;
+      font-weight: 750;
+      letter-spacing: .05em;
+      text-transform: uppercase;
+    }
+    .voice-field input,
+    .voice-field select {
+      width: 100%;
+      min-width: 0;
+      height: 42px;
+      padding: 0 11px;
+      border: 1px solid #303030;
+      border-radius: 10px;
+      background: #121212;
+      color: #f5f5f5;
+      color-scheme: dark;
+      font: 500 12px 'Inter', sans-serif;
+    }
+    .voice-missing {
+      display: flex;
+      gap: 8px;
+      align-items: flex-start;
+      margin-top: 11px;
+      padding: 9px 10px;
+      border: 1px solid rgba(229, 9, 20, .3);
+      border-radius: 10px;
+      background: rgba(229, 9, 20, .08);
+      color: #ff989d;
+      font-size: 11px;
+      line-height: 1.45;
+    }
+    .voice-correction {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 9px;
+      margin-top: 15px;
+      padding-top: 15px;
+      border-top: 1px solid #222;
+    }
+    .voice-correction input {
+      min-width: 0;
+      height: 42px;
+      padding: 0 12px;
+      border: 1px solid #303030;
+      border-radius: 10px;
+      background: #111;
+      color: #f5f5f5;
+    }
+    .voice-help {
+      grid-column: 1 / -1;
+      color: #858585;
+      font-size: 10px;
+      line-height: 1.5;
+    }
+    .voice-success {
+      display: grid;
+      justify-items: center;
+      gap: 12px;
+      padding: 16px 4px 4px;
+      text-align: center;
+    }
+    .voice-success-icon {
+      width: 58px;
+      height: 58px;
+      display: grid;
+      place-items: center;
+      border: 1px solid #e50914;
+      border-radius: 50%;
+      color: #ff1f1f;
+      background: rgba(229, 9, 20, .08);
+    }
+    .voice-success h3 {
+      margin: 0;
+      font-family: 'DM Serif Display', serif;
+      font-size: 22px;
+      font-weight: 400;
+    }
+    .voice-success p {
+      max-width: 420px;
+      margin: 0;
+      color: #aaa;
+      font-size: 12px;
+      line-height: 1.6;
+    }
+    @keyframes voiceFadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    @keyframes voiceWave {
+      0%, 100% { height: 7px; opacity: .45; }
+      50% { height: 23px; opacity: 1; }
+    }
+    @keyframes voicePulse {
+      0%, 100% { box-shadow: 0 0 0 8px rgba(229, 9, 20, .06); }
+      50% { box-shadow: 0 0 0 16px rgba(229, 9, 20, 0); }
+    }
+    @media (max-width: 720px) {
+      .voice-assistant-launcher {
+        right: 14px;
+        bottom: calc(78px + env(safe-area-inset-bottom));
+        width: 52px;
+        height: 52px;
+        min-height: 52px;
+        padding: 7px;
+      }
+      .voice-assistant-launcher > span:first-child {
+        display: none;
+      }
+      .voice-assistant-launcher-icon {
+        width: 36px;
+        height: 36px;
+      }
+      .voice-assistant-backdrop {
+        align-items: end;
+        padding: 0;
+      }
+      .voice-assistant {
+        width: 100%;
+        max-height: calc(92dvh - env(safe-area-inset-top));
+        border-radius: 20px 20px 0 0;
+        border-bottom: 0;
+        padding-bottom: calc(14px + env(safe-area-inset-bottom));
+      }
+      .voice-assistant-header,
+      .voice-assistant-body {
+        padding-left: 17px;
+        padding-right: 17px;
+      }
+      .voice-assistant-body {
+        padding-bottom: calc(30px + env(safe-area-inset-bottom));
+      }
+      .voice-field-grid {
+        grid-template-columns: 1fr;
+      }
+      .voice-field.is-wide {
+        grid-column: auto;
+      }
+      .voice-actions {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+      }
+      .voice-actions button {
+        padding-inline: 10px;
+      }
+      .voice-actions .is-primary:last-child {
+        grid-column: 1 / -1;
+      }
+      .voice-correction {
+        grid-template-columns: 1fr;
+      }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .voice-assistant *,
+      .voice-assistant-launcher {
+        animation-duration: .01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: .01ms !important;
       }
     }
   `;
@@ -20843,6 +21270,876 @@ const AgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAgendaTo
   );
 };
 
+// SECTION: Local voice assistant, natural-language parser and confirmed domain writes.
+const VOICE_MONTHS = {
+  enero: 0, febrero: 1, marzo: 2, abril: 3, mayo: 4, junio: 5,
+  julio: 6, agosto: 7, septiembre: 8, setiembre: 8, octubre: 9, noviembre: 10, diciembre: 11
+};
+const VOICE_WEEKDAYS = {
+  domingo: 0, lunes: 1, martes: 2, miercoles: 3, jueves: 4, viernes: 5, sabado: 6
+};
+const voiceNormalize = (value = '') => String(value)
+  .normalize('NFD')
+  .replace(/[\u0300-\u036f]/g, '')
+  .toLowerCase()
+  .replace(/\s+/g, ' ')
+  .trim();
+const voiceTitleCase = (value = '') => String(value)
+  .trim()
+  .replace(/\s+/g, ' ')
+  .replace(/^./, char => char.toUpperCase());
+const voiceParseNumber = (value = '') => {
+  const clean = String(value).trim().toLowerCase();
+  const multiplier = /mill[oó]n/.test(clean) ? 1000000 : /\b(?:mil|lucas?)\b/.test(clean) ? 1000 : 1;
+  let numericText = clean.replace(/[^\d.,-]/g, '');
+  if (!numericText) return 0;
+  if (multiplier > 1) {
+    numericText = numericText.replace(',', '.');
+    return Math.max(0, Number(numericText) * multiplier || 0);
+  }
+  if (numericText.includes('.') && numericText.includes(',')) {
+    numericText = numericText.lastIndexOf(',') > numericText.lastIndexOf('.')
+      ? numericText.replace(/\./g, '').replace(',', '.')
+      : numericText.replace(/,/g, '');
+  } else if (/^\d{1,3}([.,]\d{3})+$/.test(numericText)) {
+    numericText = numericText.replace(/[.,]/g, '');
+  } else if (numericText.includes(',')) {
+    const parts = numericText.split(',');
+    numericText = parts[1]?.length <= 2 ? numericText.replace(',', '.') : numericText.replace(/,/g, '');
+  }
+  return Math.max(0, Number(numericText) || 0);
+};
+const voiceExtractAmount = (text = '') => {
+  const match = String(text).match(/(?:\$|cop|usd|eur)?\s*(\d+(?:[.,]\d+)?)\s*(millones?|mill[oó]n|mil|lucas?)?/i);
+  if (!match) return { amount: 0, raw: '' };
+  return { amount: voiceParseNumber(`${match[1]} ${match[2] || ''}`), raw: match[0] };
+};
+const voiceDetectCurrency = (text = '') => {
+  const normalized = voiceNormalize(text);
+  if (/\b(?:usd|dolar|dolares)\b/.test(normalized)) return 'USD';
+  if (/\b(?:eur|euro|euros)\b/.test(normalized)) return 'EUR';
+  return 'COP';
+};
+const voiceParseDate = (text = '', now = new Date()) => {
+  const normalized = voiceNormalize(text);
+  if (/\bpasado manana\b/.test(normalized)) return toYYYYMMDD(addDays(now, 2));
+  if (/\bmanana\b/.test(normalized)) return toYYYYMMDD(addDays(now, 1));
+  if (/\bhoy\b/.test(normalized)) return toYYYYMMDD(now);
+
+  const explicit = normalized.match(/\b(?:el\s+)?(\d{1,2})\s+de\s+(enero|febrero|marzo|abril|mayo|junio|julio|agosto|septiembre|setiembre|octubre|noviembre|diciembre)(?:\s+de\s+(\d{4}))?/);
+  if (explicit) {
+    const year = Number(explicit[3] || now.getFullYear());
+    const candidate = new Date(year, VOICE_MONTHS[explicit[2]], Number(explicit[1]), 12, 0, 0);
+    if (!explicit[3] && candidate < new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0)) {
+      candidate.setFullYear(candidate.getFullYear() + 1);
+    }
+    return toYYYYMMDD(candidate);
+  }
+
+  const weekdayName = Object.keys(VOICE_WEEKDAYS).find(day => new RegExp(`\\b(?:el|proximo)?\\s*${day}\\b`).test(normalized));
+  if (weekdayName) {
+    const targetDay = VOICE_WEEKDAYS[weekdayName];
+    const currentDay = now.getDay();
+    let offset = (targetDay - currentDay + 7) % 7;
+    if (offset === 0 || normalized.includes(`proximo ${weekdayName}`)) offset += 7;
+    return toYYYYMMDD(addDays(now, offset));
+  }
+  return '';
+};
+const voiceParseTime = (text = '', now = new Date()) => {
+  const normalized = voiceNormalize(text);
+  const relative = normalized.match(/\ben\s+(\d+(?:[.,]\d+)?)\s+horas?\b/);
+  if (relative) {
+    const date = new Date(now.getTime() + Number(relative[1].replace(',', '.')) * 3600000);
+    return `${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
+  }
+  const match = normalized.match(/\b(?:a\s+las?\s+)(\d{1,2})(?::(\d{2}))?\s*(a\.?\s*m\.?|p\.?\s*m\.?|de\s+la\s+manana|de\s+la\s+tarde|de\s+la\s+noche)?\b/)
+    || normalized.match(/\b(\d{1,2}):(\d{2})\s*(a\.?\s*m\.?|p\.?\s*m\.?|de\s+la\s+manana|de\s+la\s+tarde|de\s+la\s+noche)?\b/)
+    || normalized.match(/\b(\d{1,2})\s*(a\.?\s*m\.?|p\.?\s*m\.?|de\s+la\s+manana|de\s+la\s+tarde|de\s+la\s+noche)\b/);
+  if (!match) return '';
+  let hour = Number(match[1]);
+  const compactQualifier = match.length === 3 && /[ap]\.?|manana|tarde|noche/.test(match[2] || '');
+  const minute = compactQualifier ? 0 : Number(match[2] || 0);
+  const qualifier = compactQualifier ? match[2] : (match[3] || '');
+  const isPm = /p\.?\s*m\.?|tarde|noche/.test(qualifier);
+  const isAm = /a\.?\s*m\.?|manana/.test(qualifier);
+  if (isPm && hour < 12) hour += 12;
+  if (isAm && hour === 12) hour = 0;
+  if (hour > 23 || minute > 59) return '';
+  return `${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`;
+};
+const voiceFindAccount = (text = '', accounts = []) => {
+  const normalized = voiceNormalize(text)
+    .replace(/\b(?:tarjeta|cuenta|banco|billetera|credito|debito|de|la|el)\b/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+  return accounts
+    .map(account => {
+      const accountName = voiceNormalize(account.name);
+      const compactName = accountName.replace(/\b(?:tarjeta|cuenta|banco|billetera|credito|debito)\b/g, ' ').replace(/\s+/g, ' ').trim();
+      const score = normalized.includes(accountName) || normalized.includes(compactName)
+        ? Math.max(accountName.length, compactName.length)
+        : 0;
+      return { account, score };
+    })
+    .filter(item => item.score > 0)
+    .sort((a, b) => b.score - a.score)[0]?.account || null;
+};
+const voiceFindCategory = (text = '', categories = []) => {
+  const normalized = voiceNormalize(text);
+  const rules = [
+    { terms: ['hamburguesa', 'pizza', 'almuerzo', 'cena', 'desayuno', 'restaurante', 'cafe', 'comida', 'domicilio', 'rappi'], names: ['comida', 'restaurante', 'alimentacion'] },
+    { terms: ['d1', 'ara', 'exito', 'olimpica', 'jumbo', 'supermercado', 'mercado'], names: ['mercado', 'comida', 'alimentacion'] },
+    { terms: ['uber', 'taxi', 'gasolina', 'bus', 'metro', 'transporte'], names: ['transporte'] },
+    { terms: ['netflix', 'spotify', 'icloud', 'chatgpt', 'suscripcion'], names: ['suscripciones', 'servicios', 'ocio'] },
+    { terms: ['luz', 'agua', 'internet', 'gas', 'celular'], names: ['servicios', 'casa'] },
+    { terms: ['farmacia', 'medico', 'doctor', 'medicina', 'consulta'], names: ['salud'] },
+    { terms: ['ropa', 'tenis', 'camiseta'], names: ['ropa', 'ocio'] },
+    { terms: ['computador', 'software', 'app', 'tecnologia'], names: ['tecnologia', 'productividad'] }
+  ];
+  const direct = categories.find(category => {
+    const categoryName = voiceNormalize(category.name);
+    return categoryName && normalized.includes(categoryName);
+  });
+  if (direct) return direct;
+  const rule = rules.find(item => item.terms.some(term => normalized.includes(term)));
+  if (rule) {
+    const matched = categories.find(category => rule.names.some(name => voiceNormalize(category.name).includes(name)));
+    if (matched) return matched;
+  }
+  return categories.find(category => ['otros', 'otro'].includes(voiceNormalize(category.name))) || null;
+};
+const voiceParseFrequency = (text = '') => {
+  const normalized = voiceNormalize(text);
+  if (/lunes\s+a\s+viernes/.test(normalized)) return { frequency: 'Lun-Vie', frequencyDays: WEEKDAY_KEYS.slice(0, 5) };
+  if (/fines?\s+de\s+semana|sabado\s+y\s+domingo/.test(normalized)) return { frequency: 'Fines de semana', frequencyDays: ['sat', 'sun'] };
+  const mentionedDays = Object.entries({
+    lunes: 'mon', martes: 'tue', miercoles: 'wed', jueves: 'thu',
+    viernes: 'fri', sabado: 'sat', domingo: 'sun'
+  }).filter(([name]) => new RegExp(`\\b${name}\\b`).test(normalized)).map(([, key]) => key);
+  if (mentionedDays.length) return { frequency: 'Personalizado', frequencyDays: mentionedDays };
+  if (/todos?\s+los\s+dias|diario|diaria/.test(normalized)) return { frequency: 'Diario', frequencyDays: WEEKDAY_KEYS };
+  return { frequency: 'Diario', frequencyDays: WEEKDAY_KEYS };
+};
+const voiceCleanDescription = (text = '', amountRaw = '') => {
+  let cleaned = String(text);
+  if (amountRaw) cleaned = cleaned.replace(amountRaw, ' ');
+  cleaned = cleaned
+    .replace(/\b(?:acabe\s+de|registre?|registra|agrega|anade|añade|gaste|gasté|gasto|compre|compré|pague|pagué|un|una|de|por)\b/gi, ' ')
+    .replace(/\b(?:con|desde|usando)\s+(?:la\s+)?(?:tarjeta|cuenta)?\s*[\p{L}\d\s]+$/giu, ' ')
+    .replace(/\b(?:hoy|manana|mañana|pasado\s+manana|pasado\s+mañana)\b/gi, ' ')
+    .replace(/\s+/g, ' ')
+    .trim()
+    .replace(/^[,.;:\s]+|[,.;:\s]+$/g, '');
+  return voiceTitleCase(cleaned || 'Movimiento por voz');
+};
+const voiceSplitCommands = (text = '') => String(text)
+  .split(/\s*(?:,|\by\b)\s*(?=(?:registra|agrega|anade|añade|crea|agenda|gaste|gasté|gasto|ingreso|me\s+entraron|movi|moví|transfiere|transfiere|elimina|borra|quita)\b)/i)
+  .map(item => item.trim())
+  .filter(Boolean);
+const voiceItemMissingFields = (item) => {
+  if (item.action === 'delete') return item.targetId ? [] : ['elemento a eliminar'];
+  if (item.type === 'expense' || item.type === 'income' || item.type === 'debtPayment') {
+    const fields = [];
+    if (!(Number(item.amount) > 0)) fields.push('monto');
+    if (!item.accountId) fields.push('cuenta o tarjeta');
+    if (item.type === 'expense' && !item.categoryId) fields.push('categoría');
+    if (item.currency === 'EUR') fields.push('cambia EUR a COP o USD');
+    return fields;
+  }
+  if (item.type === 'transfer') {
+    const fields = [];
+    if (!(Number(item.amount) > 0)) fields.push('monto');
+    if (!item.fromAccountId) fields.push('cuenta de origen');
+    if (!item.toAccountId) fields.push('cuenta de destino');
+    if (item.fromAccountId && item.fromAccountId === item.toAccountId) fields.push('cuentas diferentes');
+    return fields;
+  }
+  if (item.type === 'task' || item.type === 'event') {
+    const fields = [];
+    if (!item.title) fields.push('título');
+    if (!item.date) fields.push('fecha');
+    return fields;
+  }
+  if (item.type === 'habit') return item.title ? [] : ['nombre del hábito'];
+  return ['datos del comando'];
+};
+const voiceParseCommand = (rawText = '', data = {}) => {
+  const accounts = (data.financeData?.accounts || []).filter(account => account && account.type !== 'loan' && !String(account.id || '').startsWith('debt_'));
+  const categories = (data.financeData?.categories || []).filter(category => category && category.id !== 'income' && category.type !== 'income');
+  const now = new Date();
+  const segments = voiceSplitCommands(rawText);
+  const items = [];
+
+  segments.forEach((segment, index) => {
+    const normalized = voiceNormalize(segment);
+    const id = `voice_${Date.now()}_${index}`;
+    const deleteIntent = /^(?:elimina|borra|quita)\b/.test(normalized);
+    if (deleteIntent) {
+      const targetType = /\bhabito\b/.test(normalized) ? 'habit' : /\b(?:tarea|evento|reunion)\b/.test(normalized) ? 'task' : 'expense';
+      const targetName = voiceTitleCase(segment.replace(/^(?:elimina|borra|quita)\s+(?:la|el)?\s*(?:tarea|evento|reuni[oó]n|h[áa]bito|gasto)?\s*(?:de)?\s*/i, '').trim());
+      let targetId = '';
+      let targetDate = '';
+      if (targetType === 'habit') {
+        targetId = (data.habits || []).find(habit => voiceNormalize(habit.name).includes(voiceNormalize(targetName)))?.id || '';
+      } else if (targetType === 'task') {
+        Object.entries(data.agenda || {}).some(([date, tasks]) => {
+          const task = (tasks || []).find(entry => voiceNormalize(entry.text || entry.title).includes(voiceNormalize(targetName)));
+          if (!task) return false;
+          targetId = task.id;
+          targetDate = date;
+          return true;
+        });
+      } else {
+        targetId = (data.financeData?.transactions || []).find(transaction => (
+          transaction.type === 'expense'
+          && voiceNormalize(transaction.payee || transaction.description).includes(voiceNormalize(targetName))
+        ))?.id || '';
+      }
+      items.push({ id, module: targetType === 'habit' ? 'habits' : targetType === 'task' ? 'agenda' : 'finance', type: targetType, action: 'delete', title: targetName, targetId, targetDate });
+      return;
+    }
+
+    const isTransfer = /\b(?:transferencia|transferir|transfiere|mover|movi|moví|pasar\s+plata|enviar\s+de)\b/.test(normalized);
+    const isIncome = /\b(?:ingreso|me\s+entraron|me\s+pagaron|salario|pago\s+recibido|cobro)\b/.test(normalized);
+    const isExpense = /\b(?:gasto|gastar|gaste|gasté|compro|comprar|compre|compré|pago|pagar|pague|pagué|compra)\b/.test(normalized);
+    const isHabit = /\bhabito\b/.test(normalized) || /\bcrea(?:r)?\s+(?:el\s+)?habito\b/.test(normalized);
+    const isAgenda = /\b(?:agenda|tarea|evento|reunion|reuni[oó]n|recordatorio)\b/.test(normalized);
+    const amountInfo = voiceExtractAmount(segment);
+
+    if (isTransfer) {
+      const accountMentions = accounts.filter(account => normalized.includes(voiceNormalize(account.name)));
+      items.push({
+        id, module: 'finance', type: 'transfer', action: 'create',
+        title: 'Transferencia', amount: amountInfo.amount, currency: voiceDetectCurrency(segment),
+        fromAccountId: accountMentions[0]?.id || '', toAccountId: accountMentions[1]?.id || '',
+        date: voiceParseDate(segment, now) || toYYYYMMDD(now), time: voiceParseTime(segment, now) || `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`
+      });
+      return;
+    }
+
+    if (isExpense || isIncome) {
+      const account = voiceFindAccount(segment, accounts);
+      const category = isIncome ? null : voiceFindCategory(segment, categories);
+      const isDebtPayment = !isIncome && /\b(?:deuda|prestamo|cuota|tarjeta\s+de\s+credito)\b/.test(normalized);
+      items.push({
+        id, module: 'finance', type: isDebtPayment ? 'debtPayment' : isIncome ? 'income' : 'expense', action: 'create',
+        title: voiceCleanDescription(segment, amountInfo.raw),
+        amount: amountInfo.amount,
+        currency: voiceDetectCurrency(segment),
+        categoryId: isIncome ? 'income' : isDebtPayment ? 'debt_payment' : (category?.id || ''),
+        accountId: account?.id || '',
+        date: voiceParseDate(segment, now) || toYYYYMMDD(now),
+        time: voiceParseTime(segment, now) || `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`
+      });
+      return;
+    }
+
+    if (isHabit) {
+      const frequency = voiceParseFrequency(segment);
+      const time = voiceParseTime(segment, now);
+      const title = voiceTitleCase(segment
+        .replace(/^.*?\b(?:crea|crear|agrega|anade|añade)\s+(?:el\s+)?h[áa]bito\s+(?:de\s+)?/i, '')
+        .replace(/\b(?:todos?\s+los\s+d[íi]as|diario|de\s+lunes\s+a\s+viernes|fines?\s+de\s+semana|lunes|martes|mi[ée]rcoles|jueves|viernes|s[áa]bado|domingo)(?:\s*,?\s*y\s*)?/gi, ' ')
+        .replace(/\b(?:a\s+las?\s+)?\d{1,2}(?::\d{2})?\s*(?:am|pm|a\.m\.|p\.m\.|de\s+la\s+noche|de\s+la\s+tarde|de\s+la\s+ma[ñn]ana)?\b/gi, ' ')
+        .replace(/\s+/g, ' ')
+        .trim());
+      items.push({
+        id, module: 'habits', type: 'habit', action: 'create', title,
+        frequency: frequency.frequency, frequencyDays: frequency.frequencyDays,
+        time, date: toYYYYMMDD(now), categoryId: 'otro'
+      });
+      return;
+    }
+
+    if (isAgenda) {
+      const date = voiceParseDate(segment, now);
+      const time = voiceParseTime(segment, now);
+      const reminderMatch = normalized.match(/(?:recuerdame|avisa(?:me)?)\s+(\d+)\s+(minutos?|horas?)\s+antes/);
+      const reminderMinutes = reminderMatch
+        ? Number(reminderMatch[1]) * (reminderMatch[2].startsWith('hora') ? 60 : 1)
+        : 0;
+      const title = voiceTitleCase(segment
+        .replace(/^.*?\b(?:agenda|agendar|crea|crear|agrega|anade|añade)\s+(?:una|un|la|el)?\s*(?:tarea|evento)?\s*/i, '')
+        .replace(/\b(?:hoy|ma[ñn]ana|pasado\s+ma[ñn]ana|el\s+pr[oó]ximo\s+\w+|el\s+lunes|el\s+martes|el\s+mi[ée]rcoles|el\s+jueves|el\s+viernes|el\s+s[áa]bado|el\s+domingo)\b/gi, ' ')
+        .replace(/\b(?:a\s+las?\s+)?\d{1,2}(?::\d{2})?\s*(?:am|pm|a\.m\.|p\.m\.|de\s+la\s+noche|de\s+la\s+tarde|de\s+la\s+ma[ñn]ana)?\b/gi, ' ')
+        .replace(/\s+y\s+(?:recuerdame|avisa(?:me)?).*$/i, '')
+        .replace(/\s+/g, ' ')
+        .trim());
+      items.push({
+        id, module: 'agenda', type: time ? 'event' : 'task', action: 'create',
+        title, date, time, reminder: reminderMinutes === 60 ? '1hour' : reminderMinutes ? `${reminderMinutes}min` : 'exact'
+      });
+      return;
+    }
+
+    items.push({
+      id, module: 'agenda', type: 'task', action: 'create',
+      title: voiceTitleCase(segment), date: toYYYYMMDD(now), time: ''
+    });
+  });
+
+  return {
+    id: `voice_draft_${Date.now()}`,
+    module: items.length > 1 ? 'mixed' : (items[0]?.module || 'agenda'),
+    action: items.some(item => item.action === 'delete') ? 'delete' : 'create',
+    confidence: items.every(item => voiceItemMissingFields(item).length === 0) ? 'high' : 'medium',
+    items,
+    rawTranscript: String(rawText).trim()
+  };
+};
+
+const VoiceAssistant = ({
+  data,
+  onUpdateAgenda,
+  onUpdateFinance,
+  onAddHabit,
+  onDeleteHabit
+}) => {
+  const [state, setState] = useState('closed');
+  const [transcript, setTranscript] = useState('');
+  const [draft, setDraft] = useState(null);
+  const [correction, setCorrection] = useState('');
+  const [error, setError] = useState('');
+  const [successMessage, setSuccessMessage] = useState('');
+  const recognitionRef = useRef(null);
+  const recognitionActiveRef = useRef(false);
+  const transcriptRef = useRef('');
+  const closeRef = useRef(null);
+  const accounts = useMemo(() => (data.financeData?.accounts || []).filter(account => (
+    account && account.type !== 'loan' && !String(account.id || '').startsWith('debt_')
+  )), [data.financeData?.accounts]);
+  const categories = useMemo(() => (data.financeData?.categories || []).filter(category => (
+    category && category.id !== 'income' && category.type !== 'income'
+  )), [data.financeData?.categories]);
+  const habitCategories = useMemo(() => [...CATEGORIES, ...(data.customHabitCategories || [])], [data.customHabitCategories]);
+  const speechSupported = typeof window !== 'undefined' && !!(window.SpeechRecognition || window.webkitSpeechRecognition);
+
+  const stopRecognition = useCallback(() => {
+    recognitionActiveRef.current = false;
+    try { recognitionRef.current?.stop(); } catch {}
+    recognitionRef.current = null;
+  }, []);
+
+  const closeAssistant = useCallback(() => {
+    stopRecognition();
+    setState('closed');
+    setTranscript('');
+    transcriptRef.current = '';
+    setDraft(null);
+    setCorrection('');
+    setError('');
+  }, [stopRecognition]);
+
+  const interpretTranscript = useCallback((text) => {
+    const clean = String(text || '').trim();
+    if (!clean) {
+      setError('Habla o escribe un comando antes de continuar.');
+      return;
+    }
+    const parsed = voiceParseCommand(clean, data);
+    if (!parsed.items.length) {
+      setError('No pude interpretar el comando. Prueba con “gasto 25000 en comida con Nequi”.');
+      return;
+    }
+    setDraft(parsed);
+    setError('');
+    setState('review');
+  }, [data]);
+
+  const startListening = useCallback(() => {
+    stopRecognition();
+    setTranscript('');
+    transcriptRef.current = '';
+    setDraft(null);
+    setError('');
+    setState('listening');
+    if (!speechSupported) return;
+    const Recognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    const recognition = new Recognition();
+    recognition.lang = 'es-CO';
+    recognition.continuous = false;
+    recognition.interimResults = true;
+    recognition.maxAlternatives = 1;
+    recognitionActiveRef.current = true;
+    recognition.onresult = (event) => {
+      let nextTranscript = '';
+      for (let index = event.resultIndex; index < event.results.length; index += 1) {
+        nextTranscript += event.results[index][0].transcript;
+      }
+      transcriptRef.current = nextTranscript.trim();
+      setTranscript(transcriptRef.current);
+    };
+    recognition.onerror = (event) => {
+      recognitionActiveRef.current = false;
+      const message = event.error === 'not-allowed'
+        ? 'El micrófono está bloqueado. Actívalo en el navegador o escribe el comando.'
+        : 'No pude escuchar con claridad. Puedes escribir el comando manualmente.';
+      setError(message);
+    };
+    recognition.onend = () => {
+      recognitionRef.current = null;
+      if (!recognitionActiveRef.current) return;
+      recognitionActiveRef.current = false;
+      if (transcriptRef.current) interpretTranscript(transcriptRef.current);
+    };
+    recognitionRef.current = recognition;
+    try {
+      recognition.start();
+    } catch {
+      setError('No fue posible iniciar el micrófono. Escribe el comando manualmente.');
+    }
+  }, [interpretTranscript, speechSupported, stopRecognition]);
+
+  const pauseAndReview = () => {
+    const current = transcriptRef.current || transcript;
+    stopRecognition();
+    interpretTranscript(current);
+  };
+
+  useEffect(() => {
+    if (state === 'closed') return undefined;
+    const onKeyDown = (event) => {
+      if (event.key === 'Escape') closeAssistant();
+    };
+    window.addEventListener('keydown', onKeyDown);
+    const timer = setTimeout(() => closeRef.current?.focus(), 30);
+    return () => {
+      window.removeEventListener('keydown', onKeyDown);
+      clearTimeout(timer);
+    };
+  }, [state, closeAssistant]);
+
+  useEffect(() => () => stopRecognition(), [stopRecognition]);
+
+  const updateItem = (itemId, updates) => {
+    setDraft(previous => ({
+      ...previous,
+      items: previous.items.map(item => item.id === itemId ? { ...item, ...updates } : item)
+    }));
+  };
+
+  const applyCorrection = () => {
+    const text = correction.trim();
+    if (!text || !draft?.items?.length) return;
+    const normalized = voiceNormalize(text);
+    if (/^(?:cancela|cancelar)$/.test(normalized)) {
+      closeAssistant();
+      return;
+    }
+    if (/^(?:agrega|anade|añade|crea|agenda|registra|gaste|gasté|gasto|ingreso|transfiere)/.test(normalized)) {
+      const extraDraft = voiceParseCommand(text, data);
+      setDraft(previous => ({ ...previous, module: 'mixed', items: [...previous.items, ...extraDraft.items] }));
+      setCorrection('');
+      return;
+    }
+    const amountInfo = voiceExtractAmount(text);
+    const category = voiceFindCategory(text, categories);
+    const account = voiceFindAccount(text, accounts);
+    const date = voiceParseDate(text);
+    const time = voiceParseTime(text);
+    setDraft(previous => ({
+      ...previous,
+      items: previous.items.map((item, index) => {
+        if (index !== 0) return item;
+        const updates = {};
+        if (amountInfo.amount > 0 && /(?:fueron|monto|valor|mil|mill|lucas?|\d)/.test(normalized)) updates.amount = amountInfo.amount;
+        if (category && /(?:categoria|cambialo|mercado|comida|transporte|salud|servicios|ropa|tecnologia)/.test(normalized)) updates.categoryId = category.id;
+        if (account && /(?:con|cuenta|tarjeta|fue)/.test(normalized)) {
+          if (item.type === 'transfer') {
+            if (/destino|hacia|a\s+/.test(normalized)) updates.toAccountId = account.id;
+            else updates.fromAccountId = account.id;
+          } else updates.accountId = account.id;
+        }
+        if (date) updates.date = date;
+        if (time) updates.time = time;
+        if (/quita\s+el\s+recordatorio/.test(normalized)) updates.reminder = 'exact';
+        return { ...item, ...updates };
+      })
+    }));
+    setCorrection('');
+  };
+
+  const saveDraft = () => {
+    if (!draft?.items?.length || draft.items.some(item => voiceItemMissingFields(item).length)) return;
+    const financeRate = Math.max(1, Number(data.financeData?.copRate || 4000));
+    const createdLabels = [];
+    draft.items.forEach((item, index) => {
+      if (item.action === 'delete') {
+        if (item.type === 'habit') {
+          onDeleteHabit?.(item.targetId);
+          createdLabels.push(`Hábito “${item.title}” eliminado`);
+        } else if (item.type === 'task') {
+          onUpdateAgenda?.(item.targetDate, previous => previous.filter(task => task.id !== item.targetId));
+          createdLabels.push(`Tarea “${item.title}” eliminada`);
+        } else {
+          onUpdateFinance?.(previous => ({
+            ...previous,
+            transactions: (previous.transactions || []).filter(transaction => transaction.id !== item.targetId)
+          }));
+          createdLabels.push(`Movimiento “${item.title}” eliminado`);
+        }
+        return;
+      }
+
+      if (item.module === 'finance') {
+        const sourceAccountId = item.type === 'transfer' ? item.fromAccountId : item.accountId;
+        const sourceAccount = accounts.find(account => account.id === sourceAccountId);
+        const inputAmount = Number(item.amount || 0);
+        const baseAmount = item.currency === 'COP' ? inputAmount / financeRate : inputAmount;
+        const stamp = Date.now() + index;
+        if (item.type === 'transfer') {
+          const targetAccount = accounts.find(account => account.id === item.toAccountId);
+          onUpdateFinance?.(previous => ({
+            ...previous,
+            transactions: [
+              {
+                id: `voice_fin_${stamp}_out`, type: 'expense', amount: baseAmount,
+                currency: sourceAccount?.currency || item.currency, category: 'transfer',
+                accountId: sourceAccount.id, payee: item.title || 'Transferencia enviada',
+                note: `Transferencia a ${targetAccount?.name || 'cuenta destino'} · Asistente de voz`,
+                date: item.date, time: item.time
+              },
+              {
+                id: `voice_fin_${stamp}_in`, type: 'income', amount: baseAmount,
+                currency: targetAccount?.currency || item.currency, category: 'transfer',
+                accountId: targetAccount.id, payee: item.title || 'Transferencia recibida',
+                note: `Transferencia desde ${sourceAccount?.name || 'cuenta origen'} · Asistente de voz`,
+                date: item.date, time: item.time
+              },
+              ...(previous.transactions || [])
+            ]
+          }));
+          createdLabels.push(`${item.title} · ${sourceAccount?.name} → ${targetAccount?.name}`);
+        } else {
+          const transactionType = item.type === 'debtPayment' ? 'debt_payment' : item.type;
+          onUpdateFinance?.(previous => ({
+            ...previous,
+            transactions: [{
+              id: `voice_fin_${stamp}`,
+              type: transactionType,
+              amount: baseAmount,
+              currency: sourceAccount?.currency || item.currency,
+              category: item.type === 'income' ? 'income' : item.categoryId,
+              accountId: sourceAccount.id,
+              payee: item.title,
+              note: 'Creado con el Asistente de voz',
+              date: item.date,
+              time: item.time
+            }, ...(previous.transactions || [])]
+          }));
+          createdLabels.push(`${item.title} · ${Math.round(inputAmount).toLocaleString('es-CO')} ${item.currency} · ${sourceAccount?.name}`);
+        }
+        return;
+      }
+
+      if (item.module === 'agenda') {
+        onUpdateAgenda?.(item.date, previous => [...previous, {
+          id: `voice_task_${Date.now()}_${index}`,
+          text: item.title,
+          completed: false,
+          priority: 'P3',
+          category: 'Personal',
+          dueDate: item.date,
+          dueTime: item.time || '',
+          startTime: item.time || '',
+          endTime: '',
+          alarm: !!item.time,
+          recurrence: 'none',
+          intervalRepeat: 'none',
+          intervalEvery: 1,
+          repeatUntilDate: item.date,
+          repeatUntilTime: '23:59',
+          reminders: [item.reminder || 'exact'],
+          tags: ['voz'],
+          order: previous.length
+        }]);
+        createdLabels.push(`${item.title} · ${item.date}${item.time ? ` ${item.time}` : ''}`);
+        return;
+      }
+
+      if (item.module === 'habits') {
+        const category = habitCategories.find(entry => entry.id === item.categoryId) || habitCategories[habitCategories.length - 1] || CATEGORIES[6];
+        onAddHabit?.({
+          id: `voice_habit_${Date.now()}_${index}`,
+          name: item.title,
+          description: 'Creado con el Asistente de voz',
+          category: category.id,
+          icon: category.id === 'fitness' ? 'dumbbell' : category.id === 'salud' ? 'droplet' : 'target',
+          color: normalizeHabitMarkColor('', category.id, data.customHabitCategories),
+          frequency: item.frequency || 'Diario',
+          frequencyDays: item.frequencyDays || WEEKDAY_KEYS,
+          targetStreak: 21,
+          active: true,
+          createdAt: toYYYYMMDD(new Date()),
+          reminder: item.time ? {
+            enabled: true,
+            time: item.time,
+            days: (item.frequencyDays || WEEKDAY_KEYS).map(key => ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'].indexOf(key)).filter(day => day >= 0),
+            message: `Es hora de ${item.title}.`
+          } : { enabled: false, time: '', days: [] }
+        });
+        createdLabels.push(`${item.title} · ${item.frequency || 'Diario'}`);
+      }
+    });
+    setSuccessMessage(createdLabels.join('\n'));
+    setState('success');
+  };
+
+  const renderFinanceFields = (item) => {
+    const isTransfer = item.type === 'transfer';
+    return (
+      <>
+        <label className="voice-field">
+          <span>Monto</span>
+          <input type="number" min="0" value={item.amount || ''} onChange={event => updateItem(item.id, { amount: Number(event.target.value) })} />
+        </label>
+        <label className="voice-field">
+          <span>Moneda</span>
+          <select value={item.currency || 'COP'} onChange={event => updateItem(item.id, { currency: event.target.value })}>
+            <option value="COP">COP</option>
+            <option value="USD">USD</option>
+            <option value="EUR">EUR (requiere cambiar)</option>
+          </select>
+        </label>
+        <label className="voice-field is-wide">
+          <span>Descripción</span>
+          <input value={item.title || ''} onChange={event => updateItem(item.id, { title: event.target.value })} />
+        </label>
+        {isTransfer ? (
+          <>
+            <label className="voice-field">
+              <span>Cuenta de origen</span>
+              <select value={item.fromAccountId || ''} onChange={event => updateItem(item.id, { fromAccountId: event.target.value })}>
+                <option value="">Selecciona una cuenta</option>
+                {accounts.map(account => <option key={account.id} value={account.id}>{account.name}</option>)}
+              </select>
+            </label>
+            <label className="voice-field">
+              <span>Cuenta de destino</span>
+              <select value={item.toAccountId || ''} onChange={event => updateItem(item.id, { toAccountId: event.target.value })}>
+                <option value="">Selecciona una cuenta</option>
+                {accounts.filter(account => account.id !== item.fromAccountId).map(account => <option key={account.id} value={account.id}>{account.name}</option>)}
+              </select>
+            </label>
+          </>
+        ) : (
+          <>
+            {item.type === 'expense' && (
+              <label className="voice-field">
+                <span>Categoría</span>
+                <select value={item.categoryId || ''} onChange={event => updateItem(item.id, { categoryId: event.target.value })}>
+                  <option value="">Selecciona una categoría</option>
+                  {categories.map(category => <option key={category.id} value={category.id}>{category.name}</option>)}
+                </select>
+              </label>
+            )}
+            <label className={`voice-field ${item.type === 'income' || item.type === 'debtPayment' ? 'is-wide' : ''}`}>
+              <span>Cuenta o tarjeta</span>
+              <select value={item.accountId || ''} onChange={event => updateItem(item.id, { accountId: event.target.value })}>
+                <option value="">Selecciona una cuenta</option>
+                {accounts.map(account => <option key={account.id} value={account.id}>{account.name}</option>)}
+              </select>
+            </label>
+          </>
+        )}
+        <label className="voice-field">
+          <span>Fecha</span>
+          <input type="date" value={item.date || ''} onChange={event => updateItem(item.id, { date: event.target.value })} />
+        </label>
+        <label className="voice-field">
+          <span>Hora</span>
+          <input type="time" value={item.time || ''} onChange={event => updateItem(item.id, { time: event.target.value })} />
+        </label>
+      </>
+    );
+  };
+
+  const renderDraftItem = (item) => {
+    const missing = voiceItemMissingFields(item);
+    const typeLabel = item.action === 'delete'
+      ? `Eliminar ${item.type === 'habit' ? 'hábito' : item.type === 'task' ? 'tarea' : 'movimiento'}`
+      : item.type === 'expense' ? 'Nuevo gasto'
+        : item.type === 'income' ? 'Nuevo ingreso'
+          : item.type === 'transfer' ? 'Nueva transferencia'
+            : item.type === 'habit' ? 'Nuevo hábito'
+              : item.type === 'debtPayment' ? 'Pago de deuda'
+                : 'Nueva tarea';
+    return (
+      <div className="voice-draft-card" key={item.id}>
+        <div className="voice-draft-title">
+          <strong>{item.module === 'finance' ? <CreditCard size={16} /> : item.module === 'habits' ? <Target size={16} /> : <Calendar size={16} />}{typeLabel}</strong>
+          <span>{item.module}</span>
+        </div>
+        {item.action === 'delete' ? (
+          <div className="voice-field-grid">
+            <label className="voice-field is-wide">
+              <span>Elemento encontrado</span>
+              <input value={item.title || ''} readOnly />
+            </label>
+          </div>
+        ) : (
+          <div className="voice-field-grid">
+            {item.module === 'finance' && renderFinanceFields(item)}
+            {item.module === 'agenda' && (
+              <>
+                <label className="voice-field is-wide">
+                  <span>Título</span>
+                  <input value={item.title || ''} onChange={event => updateItem(item.id, { title: event.target.value })} />
+                </label>
+                <label className="voice-field">
+                  <span>Fecha</span>
+                  <input type="date" value={item.date || ''} onChange={event => updateItem(item.id, { date: event.target.value })} />
+                </label>
+                <label className="voice-field">
+                  <span>Hora opcional</span>
+                  <input type="time" value={item.time || ''} onChange={event => updateItem(item.id, { time: event.target.value })} />
+                </label>
+              </>
+            )}
+            {item.module === 'habits' && (
+              <>
+                <label className="voice-field is-wide">
+                  <span>Nombre</span>
+                  <input value={item.title || ''} onChange={event => updateItem(item.id, { title: event.target.value })} />
+                </label>
+                <label className="voice-field">
+                  <span>Frecuencia</span>
+                  <select value={item.frequency || 'Diario'} onChange={event => updateItem(item.id, { frequency: event.target.value })}>
+                    <option value="Diario">Todos los días</option>
+                    <option value="Lun-Vie">Lunes a viernes</option>
+                    <option value="Fines de semana">Fines de semana</option>
+                    <option value="Personalizado">Personalizado</option>
+                  </select>
+                </label>
+                <label className="voice-field">
+                  <span>Recordatorio opcional</span>
+                  <input type="time" value={item.time || ''} onChange={event => updateItem(item.id, { time: event.target.value })} />
+                </label>
+                <label className="voice-field is-wide">
+                  <span>Categoría</span>
+                  <select value={item.categoryId || 'otro'} onChange={event => updateItem(item.id, { categoryId: event.target.value })}>
+                    {habitCategories.map(category => <option key={category.id} value={category.id}>{category.label || category.name}</option>)}
+                  </select>
+                </label>
+              </>
+            )}
+          </div>
+        )}
+        {!!missing.length && (
+          <div className="voice-missing">
+            <AlertCircle size={14} />
+            <span>Falta completar: {missing.join(', ')}.</span>
+          </div>
+        )}
+      </div>
+    );
+  };
+
+  if (state === 'closed') {
+    return (
+      <button
+        type="button"
+        className="voice-assistant-launcher"
+        onClick={startListening}
+        aria-label="Abrir Asistente de voz"
+        title="Habla para crear tareas, hábitos, eventos o movimientos financieros"
+      >
+        <span>Asistente de voz</span>
+        <span className="voice-assistant-launcher-icon"><Mic size={19} /></span>
+      </button>
+    );
+  }
+
+  const hasMissing = draft?.items?.some(item => voiceItemMissingFields(item).length) ?? true;
+  return (
+    <div className="voice-assistant-backdrop" role="presentation" onMouseDown={event => {
+      if (event.target === event.currentTarget) closeAssistant();
+    }}>
+      <section className="voice-assistant" role="dialog" aria-modal="true" aria-labelledby="voice-assistant-title">
+        <header className="voice-assistant-header">
+          <div>
+            <h2 id="voice-assistant-title">
+              {state === 'listening' ? 'Asistente de voz' : state === 'review' ? 'Entendí esto' : 'Listo'}
+            </h2>
+            <p>
+              {state === 'listening'
+                ? 'Habla natural. Yo lo organizo.'
+                : state === 'review'
+                  ? 'Revisa y corrige antes de guardar.'
+                  : 'Tus datos reales ya fueron actualizados.'}
+            </p>
+          </div>
+          <button ref={closeRef} type="button" className="voice-icon-button" onClick={closeAssistant} aria-label="Cerrar Asistente de voz"><X size={17} /></button>
+        </header>
+        <div className="voice-assistant-body">
+          {state === 'listening' && (
+            <>
+              <div className="voice-listening-hero">
+                <div className="voice-wave" aria-hidden="true">
+                  {Array.from({ length: 11 }).map((_, index) => <span key={index} />)}
+                </div>
+                <div className="voice-listening-mic">{speechSupported ? <Mic size={31} /> : <MicOff size={31} />}</div>
+                <strong>{speechSupported ? 'Escuchando...' : 'Escribe tu comando'}</strong>
+                <span>{speechSupported ? 'Puedes hablar de Agenda, Hábitos o Finanzas.' : 'Tu navegador no ofrece reconocimiento de voz, pero el asistente funciona escribiendo.'}</span>
+              </div>
+              <textarea
+                className="voice-transcript"
+                value={transcript}
+                onChange={event => {
+                  setTranscript(event.target.value);
+                  transcriptRef.current = event.target.value;
+                }}
+                placeholder="Ej.: Gasté 10.000 pesos en una hamburguesa con Bancolombia."
+                aria-label="Comando del Asistente de voz"
+              />
+              {error && <div className="voice-error">{error}</div>}
+              <div className="voice-support-note">Nada se guardará hasta que revises y confirmes el borrador.</div>
+              <div className="voice-actions">
+                <button type="button" onClick={closeAssistant}>Cancelar</button>
+                <button type="button" className="is-primary" onClick={pauseAndReview}>{speechSupported ? 'Pausar y revisar' : 'Interpretar comando'}</button>
+              </div>
+            </>
+          )}
+          {state === 'review' && draft && (
+            <>
+              <div className="voice-draft-list">{draft.items.map(renderDraftItem)}</div>
+              <div className="voice-correction">
+                <input
+                  value={correction}
+                  onChange={event => setCorrection(event.target.value)}
+                  onKeyDown={event => { if (event.key === 'Enter') applyCorrection(); }}
+                  placeholder="Ej.: No, fue con Nequi."
+                  aria-label="Corregir borrador por texto"
+                />
+                <button type="button" onClick={applyCorrection}>Aplicar corrección</button>
+                <span className="voice-help">Puedes escribir: “cámbialo a mercado”, “fue con Nequi”, “fueron 12 mil” o agregar otro comando.</span>
+              </div>
+              <div className="voice-actions">
+                <button type="button" onClick={startListening}>Escuchar de nuevo</button>
+                <button type="button" onClick={closeAssistant}>Cancelar</button>
+                <button type="button" className="is-primary" disabled={hasMissing} onClick={saveDraft}>Guardar</button>
+              </div>
+            </>
+          )}
+          {state === 'success' && (
+            <div className="voice-success">
+              <div className="voice-success-icon"><Check size={28} /></div>
+              <h3>Listo, actualicé HabitFlow.</h3>
+              <p>{successMessage}</p>
+              <p>¿Quieres agregar algo más?</p>
+              <div className="voice-actions">
+                <button type="button" onClick={closeAssistant}>Cerrar</button>
+                <button type="button" className="is-primary" onClick={startListening}><Mic size={15} /> Escuchar de nuevo</button>
+              </div>
+            </div>
+          )}
+        </div>
+      </section>
+    </div>
+  );
+};
+
 // SECTION: Application shell, root state, navigation, notifications and update handlers.
 const HabitFlowApp = () => {
   const [data, setData] = useState(null);
@@ -22075,6 +23372,14 @@ const HabitFlowApp = () => {
           )}
         </div>
       </nav>
+
+      <VoiceAssistant
+        data={data}
+        onUpdateAgenda={onUpdateAgenda}
+        onUpdateFinance={onUpdateFinance}
+        onAddHabit={onAddHabit}
+        onDeleteHabit={onDeleteHabit}
+      />
 
       <LevelUpModal open={showLevelUp !== null} level={showLevelUp} onClose={() => setShowLevelUp(null)} />
       {showChallengeComplete !== null && (
