@@ -7184,57 +7184,6 @@ const injectStyles = () => {
       color: var(--hf-text);
       font-family: 'Inter', sans-serif;
     }
-    .cc-flow {
-      display: grid;
-      grid-template-columns: repeat(5, minmax(0, 1fr));
-      gap: 0;
-      margin-bottom: 16px;
-      border-block: 1px solid var(--hf-card-border);
-      overflow: hidden;
-    }
-    .cc-flow-step {
-      position: relative;
-      display: grid;
-      grid-template-columns: 32px minmax(0, 1fr);
-      gap: 10px;
-      align-items: start;
-      min-width: 0;
-      padding: 14px 18px;
-    }
-    .cc-flow-step:not(:last-child)::after {
-      content: '';
-      position: absolute;
-      top: 14px;
-      right: 0;
-      bottom: 14px;
-      width: 1px;
-      background: var(--hf-card-border);
-    }
-    .cc-flow-number {
-      width: 28px;
-      height: 28px;
-      border: 1px solid color-mix(in srgb, var(--app-primary) 62%, transparent);
-      border-radius: 999px;
-      display: grid;
-      place-items: center;
-      color: var(--app-primary);
-      font-size: 11px;
-      font-weight: 800;
-      background: color-mix(in srgb, var(--app-primary) 7%, transparent);
-    }
-    .cc-flow-step strong {
-      display: block;
-      color: var(--hf-text);
-      font-size: 12px;
-      line-height: 1.25;
-      margin: 1px 0 4px;
-    }
-    .cc-flow-step span {
-      display: block;
-      color: var(--hf-muted);
-      font-size: 10px;
-      line-height: 1.4;
-    }
     .cc-shell {
       display: grid;
       grid-template-columns: minmax(0, 1fr) 286px;
@@ -7938,14 +7887,6 @@ const injectStyles = () => {
       }
     }
     @media (max-width: 980px) {
-      .cc-flow {
-        display: flex;
-        overflow-x: auto;
-        scrollbar-width: thin;
-      }
-      .cc-flow-step {
-        min-width: 190px;
-      }
       .cc-capture-row {
         grid-template-columns: 1fr;
       }
@@ -7995,14 +7936,6 @@ const injectStyles = () => {
     @media (max-width: 680px) {
       .control-center {
         padding: 0;
-      }
-      .cc-flow {
-        margin-inline: -4px;
-        padding-inline: 4px;
-      }
-      .cc-flow-step {
-        min-width: 172px;
-        padding: 12px;
       }
       .cc-main {
         padding: 15px 13px;
@@ -11334,29 +11267,6 @@ const LegacyDashboardView = ({ data, onCompleteHabit, workoutData, onNavigate, o
   );
 };
 
-const DailyFlowSteps = () => {
-  const steps = [
-    { title: 'Capturar', description: 'Ideas y tareas al instante.' },
-    { title: 'Planificar', description: 'Define prioridades del día.' },
-    { title: 'Enfocar', description: 'Protege un bloque de atención.' },
-    { title: 'Ejecutar', description: 'Avanza en tareas y hábitos.' },
-    { title: 'Revisar', description: 'Mide y ajusta tu progreso.' }
-  ];
-  return (
-    <div className="cc-flow" aria-label="Flujo diario">
-      {steps.map((step, index) => (
-        <div className="cc-flow-step" key={step.title}>
-          <div className="cc-flow-number">{index + 1}</div>
-          <div>
-            <strong>{step.title}</strong>
-            <span>{step.description}</span>
-          </div>
-        </div>
-      ))}
-    </div>
-  );
-};
-
 const ControlCardHeader = ({ title, subtitle, actionLabel, onAction }) => (
   <div className="cc-card-head">
     <div>
@@ -11712,7 +11622,6 @@ const DashboardView = ({
 
   return (
     <div className="control-center">
-      <DailyFlowSteps />
       <div className="cc-shell">
         <main className="cc-main">
           <header className="cc-header">
