@@ -9538,6 +9538,11 @@ const injectStyles = () => {
     }
     .voice-wave span:nth-child(2n) { animation-delay: .12s; }
     .voice-wave span:nth-child(3n) { animation-delay: .24s; }
+    .voice-wave.is-idle span {
+      height: 5px;
+      opacity: .42;
+      animation: none;
+    }
     .voice-listening-mic {
       width: 78px;
       height: 78px;
@@ -9549,6 +9554,10 @@ const injectStyles = () => {
       color: #fff;
       box-shadow: 0 0 0 10px rgba(229, 9, 20, .07);
       animation: voicePulse 1.6s ease-out infinite;
+    }
+    .voice-listening-mic.is-idle {
+      opacity: .66;
+      animation: none;
     }
     .voice-listening-hero strong {
       font-size: 18px;
@@ -21603,6 +21612,7 @@ const VoiceAssistant = ({
   const [correction, setCorrection] = useState('');
   const [error, setError] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
+  const [isListening, setIsListening] = useState(false);
   const recognitionRef = useRef(null);
   const recognitionActiveRef = useRef(false);
   const recognitionRunRef = useRef(0);
@@ -21616,6 +21626,13 @@ const VoiceAssistant = ({
   )), [data.financeData?.categories]);
   const habitCategories = useMemo(() => [...CATEGORIES, ...(data.customHabitCategories || [])], [data.customHabitCategories]);
   const speechSupported = typeof window !== 'undefined' && !!(window.SpeechRecognition || window.webkitSpeechRecognition);
+  const speechUsesFinalResults = typeof navigator !== 'undefined' && (
+    /iPad|iPhone|iPod/i.test(navigator.userAgent || '')
+    || (
+      /Safari/i.test(navigator.userAgent || '')
+      && !/Chrome|CriOS|Edg|OPR|SamsungBrowser/i.test(navigator.userAgent || '')
+    )
+  );
 
   const stopRecognition = useCallback(() => {
     recognitionRunRef.current += 1;
@@ -21626,6 +21643,8 @@ const VoiceAssistant = ({
     recognition.onresult = null;
     recognition.onerror = null;
     recognition.onend = null;
+    recognition.onstart = null;
+    recognition.onspeechstart = null;
     try {
       if (typeof recognition.abort === 'function') recognition.abort();
       else recognition.stop();
@@ -21640,6 +21659,7 @@ const VoiceAssistant = ({
     setDraft(null);
     setCorrection('');
     setError('');
+    setIsListening(false);
   }, [stopRecognition]);
 
   const interpretTranscript = useCallback((text) => {
@@ -21666,17 +21686,37 @@ const VoiceAssistant = ({
     setCorrection('');
     setError('');
     setSuccessMessage('');
+    setIsListening(true);
     setState('listening');
-    if (!speechSupported) return;
+    if (!speechSupported) {
+      setIsListening(false);
+      return;
+    }
     const Recognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     const recognition = new Recognition();
     const runId = recognitionRunRef.current + 1;
     recognitionRunRef.current = runId;
-    recognition.lang = 'es-CO';
+    const preferredLanguage = (
+      Array.from(navigator.languages || []).find(language => /^es(?:-|$)/i.test(language))
+      || navigator.language
+      || 'es-ES'
+    );
+    if (!speechUsesFinalResults) {
+      recognition.lang = /^es(?:-|$)/i.test(preferredLanguage) ? preferredLanguage : 'es-ES';
+    }
     recognition.continuous = false;
-    recognition.interimResults = true;
+    recognition.interimResults = !speechUsesFinalResults;
     recognition.maxAlternatives = 1;
     recognitionActiveRef.current = true;
+    recognition.onstart = () => {
+      if (runId !== recognitionRunRef.current || recognitionRef.current !== recognition) return;
+      setIsListening(true);
+      setError('');
+    };
+    recognition.onspeechstart = () => {
+      if (runId !== recognitionRunRef.current || recognitionRef.current !== recognition) return;
+      setError('');
+    };
     recognition.onresult = (event) => {
       if (runId !== recognitionRunRef.current || recognitionRef.current !== recognition) return;
       let nextTranscript = '';
@@ -21688,19 +21728,33 @@ const VoiceAssistant = ({
     };
     recognition.onerror = (event) => {
       if (runId !== recognitionRunRef.current || recognitionRef.current !== recognition) return;
+      const errorCode = String(event.error || 'unknown');
       recognitionActiveRef.current = false;
       recognitionRef.current = null;
-      const message = event.error === 'not-allowed'
-        ? 'El micrófono está bloqueado. Actívalo en el navegador o escribe el comando.'
-        : 'No pude escuchar con claridad. Puedes escribir el comando manualmente.';
-      setError(message);
+      setIsListening(false);
+      if (errorCode === 'aborted') return;
+      const messages = {
+        'no-speech': 'No detecté voz. Toca “Reintentar micrófono” y habla justo después del tono.',
+        'audio-capture': 'El navegador no está recibiendo audio. Cierra otras apps que usen el micrófono y vuelve a intentarlo.',
+        network: 'El servicio de voz no pudo conectarse. Revisa tu conexión y vuelve a intentarlo.',
+        'language-not-supported': 'El reconocimiento no admite el idioma del dispositivo. Puedes escribir el comando manualmente.',
+        'not-allowed': 'El micrófono está bloqueado. Actívalo para HabitFlow en los ajustes del navegador.',
+        'service-not-allowed': 'El reconocimiento de voz está desactivado en el navegador o en el sistema.'
+      };
+      console.warn('[HabitFlow Voice] Speech recognition error:', errorCode);
+      setError(messages[errorCode] || 'La escucha se interrumpió. Toca “Reintentar micrófono” para probar de nuevo.');
     };
     recognition.onend = () => {
       if (runId !== recognitionRunRef.current || recognitionRef.current !== recognition) return;
       recognitionRef.current = null;
       if (!recognitionActiveRef.current) return;
       recognitionActiveRef.current = false;
-      if (transcriptRef.current) interpretTranscript(transcriptRef.current);
+      setIsListening(false);
+      if (transcriptRef.current) {
+        interpretTranscript(transcriptRef.current);
+      } else {
+        setError(previous => previous || 'No detecté voz. Toca “Reintentar micrófono” y habla justo después del tono.');
+      }
     };
     recognitionRef.current = recognition;
     try {
@@ -21708,12 +21762,14 @@ const VoiceAssistant = ({
     } catch {
       if (recognitionRef.current === recognition) recognitionRef.current = null;
       recognitionActiveRef.current = false;
+      setIsListening(false);
       setError('No fue posible iniciar el micrófono. Escribe el comando manualmente.');
     }
-  }, [interpretTranscript, speechSupported, stopRecognition]);
+  }, [interpretTranscript, speechSupported, speechUsesFinalResults, stopRecognition]);
 
   const pauseAndReview = () => {
     const current = transcriptRef.current || transcript;
+    setIsListening(false);
     stopRecognition();
     interpretTranscript(current);
   };
@@ -22080,6 +22136,7 @@ const VoiceAssistant = ({
   }
 
   const hasMissing = draft?.items?.some(item => voiceItemMissingFields(item).length) ?? true;
+  const hasTypedCommand = transcript.trim().length > 0;
   return (
     <div className="voice-assistant-backdrop" role="presentation" onMouseDown={event => {
       if (event.target === event.currentTarget) closeAssistant();
@@ -22104,12 +22161,20 @@ const VoiceAssistant = ({
           {state === 'listening' && (
             <>
               <div className="voice-listening-hero">
-                <div className="voice-wave" aria-hidden="true">
+                <div className={`voice-wave${isListening ? '' : ' is-idle'}`} aria-hidden="true">
                   {Array.from({ length: 11 }).map((_, index) => <span key={index} />)}
                 </div>
-                <div className="voice-listening-mic">{speechSupported ? <Mic size={31} /> : <MicOff size={31} />}</div>
-                <strong>{speechSupported ? 'Escuchando...' : 'Escribe tu comando'}</strong>
-                <span>{speechSupported ? 'Puedes hablar de Agenda, Hábitos o Finanzas.' : 'Tu navegador no ofrece reconocimiento de voz, pero el asistente funciona escribiendo.'}</span>
+                <div className={`voice-listening-mic${isListening ? '' : ' is-idle'}`}>{speechSupported ? <Mic size={31} /> : <MicOff size={31} />}</div>
+                <strong>
+                  {speechSupported
+                    ? (isListening ? 'Escuchando...' : error ? 'Escucha detenida' : 'Listo para escuchar')
+                    : 'Escribe tu comando'}
+                </strong>
+                <span>
+                  {speechSupported
+                    ? (isListening ? 'Habla ahora de Agenda, Hábitos o Finanzas.' : 'Puedes reintentar el micrófono o escribir el comando.')
+                    : 'Tu navegador no ofrece reconocimiento de voz, pero el asistente funciona escribiendo.'}
+                </span>
               </div>
               <textarea
                 className="voice-transcript"
@@ -22125,7 +22190,17 @@ const VoiceAssistant = ({
               <div className="voice-support-note">Nada se guardará hasta que revises y confirmes el borrador.</div>
               <div className="voice-actions">
                 <button type="button" onClick={closeAssistant}>Cancelar</button>
-                <button type="button" className="is-primary" onClick={pauseAndReview}>{speechSupported ? 'Pausar y revisar' : 'Interpretar comando'}</button>
+                <button
+                  type="button"
+                  className="is-primary"
+                  onClick={!isListening && error && !hasTypedCommand ? startListening : pauseAndReview}
+                >
+                  {!speechSupported || hasTypedCommand
+                    ? 'Interpretar comando'
+                    : isListening
+                      ? 'Pausar y revisar'
+                      : 'Reintentar micrófono'}
+                </button>
               </div>
             </>
           )}
