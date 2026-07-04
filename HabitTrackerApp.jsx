@@ -21503,7 +21503,8 @@ const voiceParseCommand = (rawText = '', data = {}) => {
     const isTransfer = /\b(?:transferencia|transferir|transfiere|mover|movi|moví|pasar\s+plata|enviar\s+de)\b/.test(normalized);
     const isIncome = /\b(?:ingreso|me\s+entraron|me\s+pagaron|salario|pago\s+recibido|cobro)\b/.test(normalized);
     const isExpense = /\b(?:gasto|gastar|gaste|gasté|compro|comprar|compre|compré|pago|pagar|pague|pagué|compra)\b/.test(normalized);
-    const isHabit = /\bhabito\b/.test(normalized) || /\bcrea(?:r)?\s+(?:el\s+)?habito\b/.test(normalized);
+    const isHabit = /\bhabitos?\b/.test(normalized)
+      || /\b(?:crea(?:r)?|agrega(?:r)?|anade|anadir|registra(?:r)?)\s+(?:(?:un|el|nuevo)\s+)?habito\b/.test(normalized);
     const isAgenda = /\b(?:agenda|tarea|evento|reunion|reuni[oó]n|recordatorio)\b/.test(normalized);
     const amountInfo = voiceExtractAmount(segment);
 
@@ -21539,7 +21540,7 @@ const voiceParseCommand = (rawText = '', data = {}) => {
       const frequency = voiceParseFrequency(segment);
       const time = voiceParseTime(segment, now);
       const title = voiceTitleCase(segment
-        .replace(/^.*?\b(?:crea|crear|agrega|anade|añade)\s+(?:el\s+)?h[áa]bito\s+(?:de\s+)?/i, '')
+        .replace(/^.*?\bh[áa]bito(?:\s+de)?\s*/i, '')
         .replace(/\b(?:todos?\s+los\s+d[íi]as|diario|de\s+lunes\s+a\s+viernes|fines?\s+de\s+semana|lunes|martes|mi[ée]rcoles|jueves|viernes|s[áa]bado|domingo)(?:\s*,?\s*y\s*)?/gi, ' ')
         .replace(/\b(?:a\s+las?\s+)?\d{1,2}(?::\d{2})?\s*(?:am|pm|a\.m\.|p\.m\.|de\s+la\s+noche|de\s+la\s+tarde|de\s+la\s+ma[ñn]ana)?\b/gi, ' ')
         .replace(/\s+/g, ' ')
@@ -21604,6 +21605,7 @@ const VoiceAssistant = ({
   const [successMessage, setSuccessMessage] = useState('');
   const recognitionRef = useRef(null);
   const recognitionActiveRef = useRef(false);
+  const recognitionRunRef = useRef(0);
   const transcriptRef = useRef('');
   const closeRef = useRef(null);
   const accounts = useMemo(() => (data.financeData?.accounts || []).filter(account => (
@@ -21616,9 +21618,18 @@ const VoiceAssistant = ({
   const speechSupported = typeof window !== 'undefined' && !!(window.SpeechRecognition || window.webkitSpeechRecognition);
 
   const stopRecognition = useCallback(() => {
+    recognitionRunRef.current += 1;
     recognitionActiveRef.current = false;
-    try { recognitionRef.current?.stop(); } catch {}
+    const recognition = recognitionRef.current;
     recognitionRef.current = null;
+    if (!recognition) return;
+    recognition.onresult = null;
+    recognition.onerror = null;
+    recognition.onend = null;
+    try {
+      if (typeof recognition.abort === 'function') recognition.abort();
+      else recognition.stop();
+    } catch {}
   }, []);
 
   const closeAssistant = useCallback(() => {
@@ -21652,32 +21663,40 @@ const VoiceAssistant = ({
     setTranscript('');
     transcriptRef.current = '';
     setDraft(null);
+    setCorrection('');
     setError('');
+    setSuccessMessage('');
     setState('listening');
     if (!speechSupported) return;
     const Recognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     const recognition = new Recognition();
+    const runId = recognitionRunRef.current + 1;
+    recognitionRunRef.current = runId;
     recognition.lang = 'es-CO';
     recognition.continuous = false;
     recognition.interimResults = true;
     recognition.maxAlternatives = 1;
     recognitionActiveRef.current = true;
     recognition.onresult = (event) => {
+      if (runId !== recognitionRunRef.current || recognitionRef.current !== recognition) return;
       let nextTranscript = '';
-      for (let index = event.resultIndex; index < event.results.length; index += 1) {
-        nextTranscript += event.results[index][0].transcript;
+      for (let index = 0; index < event.results.length; index += 1) {
+        nextTranscript += `${event.results[index][0].transcript} `;
       }
       transcriptRef.current = nextTranscript.trim();
       setTranscript(transcriptRef.current);
     };
     recognition.onerror = (event) => {
+      if (runId !== recognitionRunRef.current || recognitionRef.current !== recognition) return;
       recognitionActiveRef.current = false;
+      recognitionRef.current = null;
       const message = event.error === 'not-allowed'
         ? 'El micrófono está bloqueado. Actívalo en el navegador o escribe el comando.'
         : 'No pude escuchar con claridad. Puedes escribir el comando manualmente.';
       setError(message);
     };
     recognition.onend = () => {
+      if (runId !== recognitionRunRef.current || recognitionRef.current !== recognition) return;
       recognitionRef.current = null;
       if (!recognitionActiveRef.current) return;
       recognitionActiveRef.current = false;
@@ -21687,6 +21706,8 @@ const VoiceAssistant = ({
     try {
       recognition.start();
     } catch {
+      if (recognitionRef.current === recognition) recognitionRef.current = null;
+      recognitionActiveRef.current = false;
       setError('No fue posible iniciar el micrófono. Escribe el comando manualmente.');
     }
   }, [interpretTranscript, speechSupported, stopRecognition]);
@@ -21860,26 +21881,33 @@ const VoiceAssistant = ({
 
       if (item.module === 'habits') {
         const category = habitCategories.find(entry => entry.id === item.categoryId) || habitCategories[habitCategories.length - 1] || CATEGORIES[6];
-        onAddHabit?.({
+        const habitName = String(item.title || '').trim();
+        const frequencyDays = Array.from(new Set(
+          (Array.isArray(item.frequencyDays) ? item.frequencyDays : [])
+            .filter(day => WEEKDAY_KEYS.includes(day))
+        ));
+        const savedFrequencyDays = frequencyDays.length ? frequencyDays : [...WEEKDAY_KEYS];
+        const habit = {
           id: `voice_habit_${Date.now()}_${index}`,
-          name: item.title,
+          name: habitName,
           description: 'Creado con el Asistente de voz',
           category: category.id,
           icon: category.id === 'fitness' ? 'dumbbell' : category.id === 'salud' ? 'droplet' : 'target',
           color: normalizeHabitMarkColor('', category.id, data.customHabitCategories),
           frequency: item.frequency || 'Diario',
-          frequencyDays: item.frequencyDays || WEEKDAY_KEYS,
+          frequencyDays: savedFrequencyDays,
           targetStreak: 21,
           active: true,
           createdAt: toYYYYMMDD(new Date()),
           reminder: item.time ? {
             enabled: true,
             time: item.time,
-            days: (item.frequencyDays || WEEKDAY_KEYS).map(key => ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'].indexOf(key)).filter(day => day >= 0),
-            message: `Es hora de ${item.title}.`
+            days: savedFrequencyDays.map(key => ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'].indexOf(key)).filter(day => day >= 0),
+            message: `Es hora de ${habitName}.`
           } : { enabled: false, time: '', days: [] }
-        });
-        createdLabels.push(`${item.title} · ${item.frequency || 'Diario'}`);
+        };
+        onAddHabit?.(habit);
+        createdLabels.push(`${habitName} · ${habit.frequency}`);
       }
     });
     setSuccessMessage(createdLabels.join('\n'));
