@@ -21613,10 +21613,13 @@ const VoiceAssistant = ({
   const [error, setError] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
   const [isListening, setIsListening] = useState(false);
+  const [microphoneStatus, setMicrophoneStatus] = useState('idle');
   const recognitionRef = useRef(null);
   const recognitionActiveRef = useRef(false);
   const recognitionRunRef = useRef(0);
   const transcriptRef = useRef('');
+  const mediaStreamRef = useRef(null);
+  const microphoneReadyRef = useRef(false);
   const closeRef = useRef(null);
   const accounts = useMemo(() => (data.financeData?.accounts || []).filter(account => (
     account && account.type !== 'loan' && !String(account.id || '').startsWith('debt_')
@@ -21626,13 +21629,16 @@ const VoiceAssistant = ({
   )), [data.financeData?.categories]);
   const habitCategories = useMemo(() => [...CATEGORIES, ...(data.customHabitCategories || [])], [data.customHabitCategories]);
   const speechSupported = typeof window !== 'undefined' && !!(window.SpeechRecognition || window.webkitSpeechRecognition);
-  const speechUsesFinalResults = typeof navigator !== 'undefined' && (
-    /iPad|iPhone|iPod/i.test(navigator.userAgent || '')
-    || (
-      /Safari/i.test(navigator.userAgent || '')
-      && !/Chrome|CriOS|Edg|OPR|SamsungBrowser/i.test(navigator.userAgent || '')
-    )
-  );
+
+  const releaseMicrophone = useCallback(() => {
+    const stream = mediaStreamRef.current;
+    mediaStreamRef.current = null;
+    (stream?.getTracks?.() || []).forEach(track => {
+      try {
+        track.stop();
+      } catch {}
+    });
+  }, []);
 
   const stopRecognition = useCallback(() => {
     recognitionRunRef.current += 1;
@@ -21649,7 +21655,8 @@ const VoiceAssistant = ({
       if (typeof recognition.abort === 'function') recognition.abort();
       else recognition.stop();
     } catch {}
-  }, []);
+    releaseMicrophone();
+  }, [releaseMicrophone]);
 
   const closeAssistant = useCallback(() => {
     stopRecognition();
@@ -21660,6 +21667,7 @@ const VoiceAssistant = ({
     setCorrection('');
     setError('');
     setIsListening(false);
+    setMicrophoneStatus('idle');
   }, [stopRecognition]);
 
   const interpretTranscript = useCallback((text) => {
@@ -21678,39 +21686,81 @@ const VoiceAssistant = ({
     setState('review');
   }, [data]);
 
-  const startListening = useCallback(() => {
+  const startListening = useCallback(async () => {
     stopRecognition();
+    const runId = recognitionRunRef.current + 1;
+    recognitionRunRef.current = runId;
     setTranscript('');
     transcriptRef.current = '';
     setDraft(null);
     setCorrection('');
     setError('');
     setSuccessMessage('');
-    setIsListening(true);
+    setIsListening(false);
     setState('listening');
     if (!speechSupported) {
       setIsListening(false);
+      setMicrophoneStatus('unsupported');
       return;
     }
+
+    if (navigator.mediaDevices?.getUserMedia) {
+      setMicrophoneStatus('checking');
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        if (runId !== recognitionRunRef.current) {
+          stream.getTracks().forEach(track => track.stop());
+          return;
+        }
+        mediaStreamRef.current = stream;
+        const audioTrack = stream.getAudioTracks()[0];
+        if (!audioTrack || audioTrack.readyState !== 'live') {
+          throw new DOMException('No active audio track', 'NotReadableError');
+        }
+        microphoneReadyRef.current = true;
+        setMicrophoneStatus('ready');
+      } catch (microphoneError) {
+        if (runId !== recognitionRunRef.current) return;
+        const errorName = String(microphoneError?.name || 'UnknownError');
+        const messages = {
+          NotAllowedError: 'El micrófono está bloqueado para HabitFlow. Actívalo en los permisos del navegador y vuelve a intentarlo.',
+          SecurityError: 'El navegador bloqueó el acceso al micrófono por seguridad.',
+          NotFoundError: 'No encontré un micrófono disponible en este dispositivo.',
+          DevicesNotFoundError: 'No encontré un micrófono disponible en este dispositivo.',
+          NotReadableError: 'El micrófono está ocupado por otra aplicación. Cierra llamadas o grabadoras y vuelve a intentarlo.',
+          TrackStartError: 'El micrófono está ocupado por otra aplicación. Cierra llamadas o grabadoras y vuelve a intentarlo.',
+          AbortError: 'La conexión con el micrófono se interrumpió. Vuelve a intentarlo.'
+        };
+        microphoneReadyRef.current = false;
+        setMicrophoneStatus('unavailable');
+        setError(messages[errorName] || 'No fue posible abrir el micrófono. Revisa sus permisos y vuelve a intentarlo.');
+        setIsListening(false);
+        console.warn('[HabitFlow Voice] Microphone preflight error:', errorName);
+        releaseMicrophone();
+        return;
+      }
+      releaseMicrophone();
+    } else {
+      setMicrophoneStatus('ready');
+    }
+
+    if (runId !== recognitionRunRef.current) return;
     const Recognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     const recognition = new Recognition();
-    const runId = recognitionRunRef.current + 1;
-    recognitionRunRef.current = runId;
     const preferredLanguage = (
       Array.from(navigator.languages || []).find(language => /^es(?:-|$)/i.test(language))
       || navigator.language
-      || 'es-ES'
+      || 'es-CO'
     );
-    if (!speechUsesFinalResults) {
-      recognition.lang = /^es(?:-|$)/i.test(preferredLanguage) ? preferredLanguage : 'es-ES';
-    }
+    recognition.lang = /^es(?:-|$)/i.test(preferredLanguage) ? preferredLanguage : 'es-CO';
     recognition.continuous = false;
-    recognition.interimResults = !speechUsesFinalResults;
+    recognition.interimResults = true;
     recognition.maxAlternatives = 1;
     recognitionActiveRef.current = true;
     recognition.onstart = () => {
       if (runId !== recognitionRunRef.current || recognitionRef.current !== recognition) return;
       setIsListening(true);
+      setMicrophoneStatus('listening');
       setError('');
     };
     recognition.onspeechstart = () => {
@@ -21733,10 +21783,16 @@ const VoiceAssistant = ({
       recognitionRef.current = null;
       setIsListening(false);
       if (errorCode === 'aborted') return;
+      if (['audio-capture', 'not-allowed', 'service-not-allowed'].includes(errorCode)) {
+        microphoneReadyRef.current = false;
+        setMicrophoneStatus('unavailable');
+      } else {
+        setMicrophoneStatus('ready');
+      }
       const messages = {
         'no-speech': 'No detecté voz. Toca “Reintentar micrófono” y habla justo después del tono.',
         'audio-capture': 'El navegador no está recibiendo audio. Cierra otras apps que usen el micrófono y vuelve a intentarlo.',
-        network: 'El servicio de voz no pudo conectarse. Revisa tu conexión y vuelve a intentarlo.',
+        network: 'El micrófono funciona, pero el servicio de reconocimiento no pudo conectarse. Revisa tu conexión y vuelve a intentarlo.',
         'language-not-supported': 'El reconocimiento no admite el idioma del dispositivo. Puedes escribir el comando manualmente.',
         'not-allowed': 'El micrófono está bloqueado. Actívalo para HabitFlow en los ajustes del navegador.',
         'service-not-allowed': 'El reconocimiento de voz está desactivado en el navegador o en el sistema.'
@@ -21750,6 +21806,7 @@ const VoiceAssistant = ({
       if (!recognitionActiveRef.current) return;
       recognitionActiveRef.current = false;
       setIsListening(false);
+      setMicrophoneStatus('ready');
       if (transcriptRef.current) {
         interpretTranscript(transcriptRef.current);
       } else {
@@ -21763,9 +21820,10 @@ const VoiceAssistant = ({
       if (recognitionRef.current === recognition) recognitionRef.current = null;
       recognitionActiveRef.current = false;
       setIsListening(false);
+      setMicrophoneStatus(microphoneReadyRef.current ? 'ready' : 'unavailable');
       setError('No fue posible iniciar el micrófono. Escribe el comando manualmente.');
     }
-  }, [interpretTranscript, speechSupported, speechUsesFinalResults, stopRecognition]);
+  }, [interpretTranscript, releaseMicrophone, speechSupported, stopRecognition]);
 
   const pauseAndReview = () => {
     const current = transcriptRef.current || transcript;
@@ -22167,12 +22225,22 @@ const VoiceAssistant = ({
                 <div className={`voice-listening-mic${isListening ? '' : ' is-idle'}`}>{speechSupported ? <Mic size={31} /> : <MicOff size={31} />}</div>
                 <strong>
                   {speechSupported
-                    ? (isListening ? 'Escuchando...' : error ? 'Escucha detenida' : 'Listo para escuchar')
+                    ? (microphoneStatus === 'checking'
+                      ? 'Comprobando micrófono...'
+                      : isListening
+                        ? 'Escuchando...'
+                        : error
+                          ? 'Escucha detenida'
+                          : 'Listo para escuchar')
                     : 'Escribe tu comando'}
                 </strong>
                 <span>
                   {speechSupported
-                    ? (isListening ? 'Habla ahora de Agenda, Hábitos o Finanzas.' : 'Puedes reintentar el micrófono o escribir el comando.')
+                    ? (microphoneStatus === 'checking'
+                      ? 'Confirmando que el dispositivo entrega audio a HabitFlow.'
+                      : isListening
+                        ? 'Micrófono conectado. Habla ahora de Agenda, Hábitos o Finanzas.'
+                        : 'Puedes reintentar el micrófono o escribir el comando.')
                     : 'Tu navegador no ofrece reconocimiento de voz, pero el asistente funciona escribiendo.'}
                 </span>
               </div>
@@ -22194,8 +22262,11 @@ const VoiceAssistant = ({
                   type="button"
                   className="is-primary"
                   onClick={!isListening && error && !hasTypedCommand ? startListening : pauseAndReview}
+                  disabled={microphoneStatus === 'checking'}
                 >
-                  {!speechSupported || hasTypedCommand
+                  {microphoneStatus === 'checking'
+                    ? 'Comprobando...'
+                    : !speechSupported || hasTypedCommand
                     ? 'Interpretar comando'
                     : isListening
                       ? 'Pausar y revisar'
