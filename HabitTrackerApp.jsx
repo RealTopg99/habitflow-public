@@ -20091,6 +20091,7 @@ const AgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAgendaTo
 
   const btnBase = { border: 'none', borderRadius: 8, cursor: 'pointer', fontFamily: "'Inter', sans-serif", fontSize: 11, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4, transition: 'all 0.15s' };
   const TASK_BLOCK_COLORS = { 1: { bg: '#ff6b6b18', border: '#ff6b6b', text: '#ff6b6b' }, 2: { bg: '#ff9f4318', border: '#ff9f43', text: '#ff9f43' }, 3: { bg: '#e11d4818', border: '#e11d48', text: '#e11d48' }, 4: { bg: '#8888a015', border: '#8888a0', text: '#8888a0' } };
+  const getTaskBlockColors = (priority) => TASK_BLOCK_COLORS[Number(priority)] || TASK_BLOCK_COLORS[3];
 
   const renderStatsCards = () => {
     const cards = [
@@ -20122,7 +20123,7 @@ const AgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAgendaTo
 
   const renderTaskBlock = (task, opts = {}) => {
     const { compact, mini, hideTime, noDrag, onClick } = opts;
-    const pc = TASK_BLOCK_COLORS[task.priority || 3];
+    const pc = getTaskBlockColors(task.priority);
     const taskStartTime = getTaskStartTime(task);
     const taskEndTime = getTaskEndTime(task);
     const taskTimeLabel = getTaskTimeRangeLabel(task);
@@ -20267,42 +20268,53 @@ const AgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAgendaTo
   );
 
   const renderWeekView = () => (
-    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7,1fr)', gap: 10, background: COLORS.card, borderRadius: 18, border: `1px solid ${COLORS.border}`, padding: 14 }}>
-      {weekDays.map((d, i) => {
-        const ds = toYYYYMMDD(d);
-        const isSel = ds === dateStr;
-        const isT = ds === todayStr;
-        const dayTasks = (expandedAgenda[ds] || []).map(t => normalizeTaskTimes(t, ds)).sort(compareTaskTime);
-        const dayPct = dayTasks.length > 0  ? Math.round(dayTasks.filter(t => t.completed).length / dayTasks.length * 100) : 0;
-        return (
-          <div key={i} onClick={() => { setCurrentDate(d); }}
-            style={{ background: isSel  ? `${COLORS.primary}08` : 'transparent', borderRadius: 14, padding: 10, border: `1px solid ${isSel  ? COLORS.primary + '35' : COLORS.border}`, cursor: 'pointer', minHeight: 142 }}>
-            <div style={{ textAlign: 'center', marginBottom: 9, padding: '7px 0', borderRadius: 10, background: isT  ? COLORS.primary : 'transparent' }}>
-              <div style={{ fontSize: 10, color: isT  ? '#fff' : COLORS.textDim, fontWeight: 700, letterSpacing: '0.03em', ...s }}>{DAY_NAMES[i]}</div>
-              <div style={{ fontSize: 22, fontWeight: 800, color: isT  ? '#fff' : COLORS.text, lineHeight: 1.1, ...s }}>{d.getDate()}</div>
+    <div className="agenda-week-scroll" style={{ width: '100%', maxWidth: '100%', overflowX: 'auto', boxSizing: 'border-box', background: COLORS.card, borderRadius: 18, border: `1px solid ${COLORS.border}`, padding: 12, scrollbarWidth: 'thin' }}>
+      <div className="agenda-week-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(7, minmax(0, 1fr))', gap: 8, width: '100%', minWidth: 860 }}>
+        {weekDays.map((d, i) => {
+          const ds = toYYYYMMDD(d);
+          const isSel = ds === dateStr;
+          const isT = ds === todayStr;
+          const dayTasks = (expandedAgenda[ds] || []).map(t => normalizeTaskTimes(t, ds)).sort(compareTaskTime);
+          const visibleTasks = dayTasks.filter(t => !hideDone || !t.completed);
+          const dayPct = dayTasks.length > 0  ? Math.round(dayTasks.filter(t => t.completed).length / dayTasks.length * 100) : 0;
+          return (
+            <div className="agenda-week-day" key={i} onClick={() => { setCurrentDate(d); }}
+              style={{ minWidth: 0, overflow: 'hidden', background: isSel  ? `${COLORS.primary}08` : 'transparent', borderRadius: 12, padding: 8, border: `1px solid ${isSel  ? COLORS.primary + '55' : COLORS.border}`, cursor: 'pointer', minHeight: 190, boxSizing: 'border-box', transition: 'border-color 160ms ease, background 160ms ease' }}>
+              <div style={{ textAlign: 'center', marginBottom: 8, padding: '6px 0', borderRadius: 9, background: isT  ? `${COLORS.primary}18` : 'transparent', border: isT  ? `1px solid ${COLORS.primary}45` : '1px solid transparent' }}>
+                <div style={{ fontSize: 9, color: isT  ? COLORS.primary : COLORS.textDim, fontWeight: 700, letterSpacing: '0.05em', textTransform: 'uppercase', ...s }}>{DAY_NAMES[i]}</div>
+                <div style={{ fontSize: 20, fontWeight: 800, color: isT  ? COLORS.primary : COLORS.text, lineHeight: 1.1, ...s }}>{d.getDate()}</div>
+              </div>
+              <div style={{ height: 3, borderRadius: 4, background: COLORS.bg, marginBottom: 8, overflow: 'hidden', opacity: dayTasks.length ? 1 : 0.45 }}>
+                <div style={{ width: `${dayPct}%`, height: '100%', borderRadius: 4, background: COLORS.success, transition: 'width 0.3s' }} />
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 5, minWidth: 0 }}>
+                {visibleTasks.slice(0, 4).map(t => {
+                  const taskColors = getTaskBlockColors(t.priority);
+                  return (
+                    <div key={t.id} title={`${getTaskTimeRangeLabel(t)} ${t.text}`.trim()} style={{
+                      width: '100%', minWidth: 0, boxSizing: 'border-box', padding: '5px 6px', borderRadius: 7, lineHeight: 1.2, ...s,
+                      background: t.completed  ? `${COLORS.success}0d` : taskColors.bg,
+                      borderLeft: `2px solid ${t.completed  ? COLORS.success : taskColors.border}`,
+                      color: t.completed  ? COLORS.textDim : COLORS.text,
+                      overflow: 'hidden'
+                    }}>
+                      {hasTaskTime(t) && (
+                        <div style={{ color: t.completed  ? COLORS.textDim : taskColors.text, fontSize: 8, fontWeight: 700, marginBottom: 2, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                          {getTaskTimeRangeLabel(t)}
+                        </div>
+                      )}
+                      <div style={{ fontSize: 9.5, fontWeight: 650, textDecoration: t.completed  ? 'line-through' : 'none', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                        {t.text}
+                      </div>
+                    </div>
+                  );
+                })}
+                {visibleTasks.length > 4 && <div style={{ fontSize: 9, color: COLORS.textDim, textAlign: 'center', fontWeight: 700, paddingTop: 1, ...s }}>+{visibleTasks.length - 4} más</div>}
+              </div>
             </div>
-            {dayTasks.length > 0 && <div style={{ height: 4, borderRadius: 4, background: COLORS.bg, marginBottom: 7, overflow: 'hidden' }}>
-              <div style={{ width: `${dayPct}%`, height: '100%', borderRadius: 4, background: COLORS.success, transition: 'width 0.3s' }} />
-            </div>}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-              {dayTasks.filter(t => !hideDone || !t.completed).slice(0, 4).map(t => (
-                <div key={t.id} style={{
-                  padding: '4px 6px', borderRadius: 6, fontSize: 10, lineHeight: 1.25, fontWeight: 700, ...s,
-                  background: t.completed  ? `${COLORS.success}10` : `${TASK_BLOCK_COLORS[t.priority || 3].bg}`,
-                  borderLeft: `2px solid ${t.completed  ? COLORS.success : TASK_BLOCK_COLORS[t.priority || 3].border}`,
-                  color: t.completed  ? COLORS.textDim : COLORS.text,
-                  textDecoration: t.completed  ? 'line-through' : 'none',
-                  overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap'
-                }}>
-                  {hasTaskTime(t) && <span style={{ color: TASK_BLOCK_COLORS[t.priority || 3].text, marginRight: 4 }}>{getTaskTimeRangeLabel(t)}</span>}
-                  {t.text}
-                </div>
-              ))}
-              {dayTasks.length > 4 && <div style={{ fontSize: 10, color: COLORS.textDim, textAlign: 'center', fontWeight: 700, ...s }}>+{dayTasks.length - 4}</div>}
-            </div>
-          </div>
-        );
-      })}
+          );
+        })}
+      </div>
     </div>
   );
 
@@ -20332,8 +20344,8 @@ const AgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAgendaTo
                 {dayTasks.slice(0, 4).map(t => (
                   <div key={t.id} style={{
                     padding: '3px 6px', borderRadius: 5, fontSize: 9, lineHeight: 1.25, fontWeight: 600, ...s,
-                    background: t.completed  ? `${COLORS.success}15` : `${TASK_BLOCK_COLORS[t.priority || 3].bg}`,
-                    color: t.completed  ? COLORS.textDim : TASK_BLOCK_COLORS[t.priority || 3].text,
+                    background: t.completed  ? `${COLORS.success}15` : getTaskBlockColors(t.priority).bg,
+                    color: t.completed  ? COLORS.textDim : getTaskBlockColors(t.priority).text,
                     overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap'
                   }}>{hasTaskTime(t) && <span style={{ marginRight: 4 }}>{getTaskStartTime(t)}</span>}{t.text}</div>
                 ))}
