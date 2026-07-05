@@ -25,7 +25,7 @@ const BASE_COLORS = {
   bg: '#000000',
   surface: '#050505',
   card: '#0b0b0b',
-  primary: '#ff0000',
+  primary: '#e00000',
   secondary: '#f5f5f5',
   success: '#16c784',
   alert: '#ff3333',
@@ -265,12 +265,12 @@ const isBrokenHabitIcon = (icon) => !icon || /^\?+$/.test(icon) || icon.includes
 const FREQUENCIES = ['Diario', 'Lun-Vie', 'Fines de semana', 'Personalizado'];
 
 const THEME_ACCENTS = {
-  pureDark: { id: 'pureRed', primary: '#ff0000', secondary: '#f5f5f5' },
+  pureDark: { id: 'pureRed', primary: '#e00000', secondary: '#f5f5f5' },
   pinkLight: { id: 'roseQuartz', primary: '#d96b7d', secondary: '#f2a4b2' }
 };
 
 const THEME_ICON_COLORS = {
-  pureDark: { id: 'pureRed', primary: '#ff0000', hover: '#ff4d4d', deep: '#990000', rgb: '255,0,0' },
+  pureDark: { id: 'pureRed', primary: '#ef0000', hover: '#ff2a2a', deep: '#780000', rgb: '239,0,0' },
   pinkLight: { id: 'rose', primary: '#d96b7d', hover: '#f2a4b2', deep: '#b94e61', rgb: '217,107,125' }
 };
 
@@ -281,7 +281,7 @@ const THEME_MODES = [
     surface: '#050505',
     card: '#0b0b0b',
     cardHover: '#141414',
-    primary: '#ff0000',
+    primary: '#e00000',
     secondary: '#f5f5f5',
     alert: '#ff3333',
     text: '#f5f5f5',
@@ -332,6 +332,9 @@ const getThemeVisualTokens = (themeModeId, colors) => {
       '--hf-select-menu-selected': 'rgba(217,107,125,0.12)',
       '--hf-select-menu-border': '#E8D7D9',
       '--hf-select-accent': '#D96B7D',
+      '--hf-action-primary': '#d96b7d',
+      '--hf-action-primary-hover': '#c95a70',
+      '--hf-action-soft': 'rgba(217,107,125,0.12)',
       '--hf-hover': 'rgba(225,29,72,0.065)',
       '--hf-pressed': 'rgba(225,29,72,0.12)',
       '--hf-overlay': 'rgba(52,31,40,0.38)',
@@ -370,15 +373,18 @@ const getThemeVisualTokens = (themeModeId, colors) => {
     '--hf-select-menu-hover': '#151515',
     '--hf-select-menu-selected': 'rgba(255,0,0,0.14)',
     '--hf-select-menu-border': '#2a2a2a',
-    '--hf-select-accent': '#ff0000',
+    '--hf-select-accent': '#e00000',
+    '--hf-action-primary': '#a60000',
+    '--hf-action-primary-hover': '#bf0000',
+    '--hf-action-soft': 'rgba(224,0,0,0.09)',
     '--hf-hover': 'rgba(255,255,255,0.055)',
-    '--hf-pressed': 'rgba(255,0,0,0.16)',
+    '--hf-pressed': 'rgba(224,0,0,0.13)',
     '--hf-overlay': 'rgba(0,0,0,0.72)',
     '--hf-grid': 'rgba(255,255,255,0.075)',
     '--hf-track': 'rgba(255,255,255,0.08)',
     '--hf-header': 'rgba(2,2,2,0.88)',
     '--hf-nav': 'rgba(5,5,5,0.96)',
-    '--hf-glow': 'rgba(255,0,0,0.20)',
+    '--hf-glow': 'rgba(224,0,0,0.10)',
     '--hf-heading-start': '#ffffff',
     '--hf-heading-end': '#cccccc'
   };
@@ -2212,6 +2218,7 @@ const injectStyles = () => {
       --habits-accent: #ff0000;
       --habits-accent-soft: #ff4d4d;
       --habits-accent-dark: #b30000;
+      --habits-on-accent: #ffffff;
       --habits-track: #262626;
       width: min(100%, 1580px);
       margin: 0 auto;
@@ -2231,6 +2238,7 @@ const injectStyles = () => {
       --habits-accent: #d96b7d;
       --habits-accent-soft: #f2a4b2;
       --habits-accent-dark: #b94e61;
+      --habits-on-accent: #111111;
       --habits-track: #eadcde;
     }
     .habits-minimal-header {
@@ -2895,7 +2903,7 @@ const injectStyles = () => {
     }
     .habit-view-switch button:hover { color: var(--habits-text); }
     .habit-view-switch button.is-active {
-      color: #111;
+      color: var(--habits-on-accent);
       background: var(--habits-accent);
     }
     .habit-period-row {
@@ -2950,7 +2958,7 @@ const injectStyles = () => {
       min-width: 128px;
       padding: 0 16px;
       gap: 7px;
-      color: #111;
+      color: var(--habits-on-accent);
       border-color: var(--habits-accent);
       background: var(--habits-accent);
       font: 800 12px/1 'Inter', sans-serif;
@@ -3373,8 +3381,9 @@ const injectStyles = () => {
       --habit-modal-text: #f4f1ea;
       --habit-modal-muted: #9ca1aa;
       --habit-modal-subtle: #747a84;
-      --habit-modal-accent: #ff5f7f;
-      --habit-modal-accent-hover: #ff7691;
+      --habit-modal-accent: #b90000;
+      --habit-modal-accent-hover: #d00000;
+      --habit-modal-on-accent: #ffffff;
       --habit-modal-track: #343a43;
       width: min(92vw, 900px) !important;
       max-width: 900px !important;
@@ -3398,6 +3407,7 @@ const injectStyles = () => {
       --habit-modal-subtle: #96898e;
       --habit-modal-accent: #d96b7d;
       --habit-modal-accent-hover: #c95a70;
+      --habit-modal-on-accent: #111111;
       --habit-modal-track: #eadde0;
       background: #fffafb !important;
       box-shadow: 0 28px 78px rgba(99,57,73,0.18) !important;
@@ -3553,7 +3563,7 @@ const injectStyles = () => {
       padding: 0 15px;
       border: 1px solid var(--habit-modal-accent);
       border-radius: 10px;
-      color: #111;
+      color: var(--habit-modal-on-accent);
       background: var(--habit-modal-accent);
       font-weight: 750;
       cursor: pointer;
@@ -3582,10 +3592,15 @@ const injectStyles = () => {
       background: var(--habit-modal-hover);
     }
     .habit-form-days button.is-active {
-      color: #111;
+      color: #ff3b3b;
+      border-color: color-mix(in srgb, var(--habit-modal-accent) 70%, var(--habit-modal-border));
+      background: color-mix(in srgb, var(--habit-modal-accent) 18%, transparent);
+      font-weight: 800;
+    }
+    html[data-theme-mode="pinkLight"] .habit-form-days button.is-active {
+      color: var(--habit-modal-on-accent);
       border-color: var(--habit-modal-accent);
       background: var(--habit-modal-accent);
-      font-weight: 800;
     }
     .habit-mark-color-section {
       min-width: 0;
@@ -3815,7 +3830,7 @@ const injectStyles = () => {
     }
     .habit-switch.is-on > span {
       transform: translateX(20px);
-      background: #111;
+      background: var(--habit-modal-on-accent);
     }
     .habit-reminder-content {
       margin-top: 18px;
@@ -3830,10 +3845,10 @@ const injectStyles = () => {
     }
     .habit-form-error {
       padding: 11px 13px;
-      color: #ffb2c0;
-      border: 1px solid rgba(255,95,127,0.32);
+      color: #ff8b8b;
+      border: 1px solid rgba(224,0,0,0.32);
       border-radius: 10px;
-      background: rgba(255,95,127,0.08);
+      background: rgba(224,0,0,0.08);
       font-size: 12px;
     }
     html[data-theme-mode="pinkLight"] .habit-form-error {
@@ -3866,7 +3881,7 @@ const injectStyles = () => {
     }
     .habit-form-submit {
       min-width: 180px;
-      color: #111;
+      color: var(--habit-modal-on-accent);
       border: 1px solid var(--habit-modal-accent);
       background: var(--habit-modal-accent);
     }
@@ -7257,14 +7272,19 @@ const injectStyles = () => {
     .cc-capture button {
       width: 36px;
       height: 36px;
-      border: 0;
+      border: 1px solid rgba(224, 0, 0, .38);
       border-radius: 11px;
       display: grid;
       place-items: center;
-      color: white;
-      background: var(--app-primary);
+      color: #ff2525;
+      background: var(--hf-action-soft);
       cursor: pointer;
       flex: 0 0 auto;
+    }
+    html[data-theme-mode="pinkLight"] .cc-capture button {
+      border-color: transparent;
+      color: #fff;
+      background: var(--app-primary);
     }
     .cc-finance-context {
       display: grid;
@@ -7582,7 +7602,7 @@ const injectStyles = () => {
       justify-content: center;
       gap: 7px;
       color: white;
-      background: linear-gradient(135deg, var(--app-primary), color-mix(in srgb, var(--app-primary) 72%, #7f1028));
+      background: var(--hf-action-primary);
       font-size: 10px;
       font-weight: 800;
       cursor: pointer;
@@ -8452,8 +8472,8 @@ const injectStyles = () => {
       --pomo-border-soft: #1c1f23;
       --pomo-text: #f7f7f7;
       --pomo-muted: #8d9198;
-      --pomo-red: #ff151f;
-      --pomo-red-soft: #ff4048;
+      --pomo-red: #be0000;
+      --pomo-red-soft: #df1515;
       --pomo-green: #22d36f;
       width: min(1440px, 100%);
       min-height: calc(100vh - 128px);
@@ -8525,7 +8545,7 @@ const injectStyles = () => {
     .pomodoro-pro-mode-tabs button:hover,
     .pomodoro-pro-mode-tabs button.is-active {
       color: var(--pomo-text);
-      background: rgba(255, 21, 31, .13);
+      background: rgba(190, 0, 0, .08);
     }
     .pomodoro-pro-mode-tabs button.is-active {
       color: var(--pomo-red-soft);
@@ -8542,8 +8562,8 @@ const injectStyles = () => {
       position: absolute;
       inset: 12%;
       border-radius: 50%;
-      background: radial-gradient(circle, rgba(255, 21, 31, .08), transparent 68%);
-      filter: blur(10px);
+      background: radial-gradient(circle, rgba(214, 0, 0, .035), transparent 68%);
+      filter: blur(6px);
       pointer-events: none;
     }
     .pomodoro-pro-ring > svg {
@@ -8564,7 +8584,7 @@ const injectStyles = () => {
     .pomodoro-pro-ring-progress {
       stroke: var(--pomo-red);
       stroke-linecap: round;
-      filter: drop-shadow(0 0 7px rgba(255, 21, 31, .58));
+      filter: drop-shadow(0 0 3px rgba(190, 0, 0, .16));
       transition: stroke-dashoffset 400ms linear;
     }
     .pomodoro-pro-ring-content {
@@ -8611,7 +8631,7 @@ const injectStyles = () => {
       justify-content: center;
       gap: 9px;
       padding: 9px 18px;
-      border: 1px solid rgba(255, 21, 31, .7);
+      border: 1px solid rgba(214, 0, 0, .42);
       border-radius: 999px;
       background: rgba(8, 9, 10, .86);
       color: var(--pomo-text);
@@ -8664,7 +8684,7 @@ const injectStyles = () => {
       border: 0;
       background: var(--pomo-red);
       color: #fff;
-      box-shadow: 0 10px 30px rgba(255, 21, 31, .25);
+      box-shadow: 0 8px 20px rgba(190, 0, 0, .11);
     }
     .pomodoro-pro-controls .pomodoro-pro-play:hover {
       background: var(--pomo-red-soft);
@@ -9314,7 +9334,7 @@ const injectStyles = () => {
       gap: 10px;
       min-height: 48px;
       padding: 6px 8px 6px 16px;
-      border: 1px solid rgba(229, 9, 20, .36);
+      border: 1px solid rgba(201, 0, 0, .32);
       border-radius: 999px;
       background: rgba(8, 8, 8, .94);
       color: #f5f5f5;
@@ -9323,7 +9343,7 @@ const injectStyles = () => {
       transition: border-color .18s ease, background .18s ease, transform .18s ease;
     }
     .voice-assistant-launcher:hover {
-      border-color: rgba(255, 31, 31, .72);
+      border-color: rgba(224, 0, 0, .46);
       background: #101010;
       transform: translateY(-2px);
     }
@@ -9346,9 +9366,9 @@ const injectStyles = () => {
       border-radius: 50%;
       display: grid;
       place-items: center;
-      background: #e50914;
+      background: #b50000;
       color: #fff;
-      box-shadow: 0 0 0 6px rgba(229, 9, 20, .1);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.12);
     }
     .voice-assistant-backdrop {
       position: fixed;
@@ -14184,7 +14204,7 @@ const FinanceView = ({ data, onUpdateFinance }) => {
 
   const moneyFlowData = [
     { name: 'Ingresos', value: Math.max(0, income), color: '#35C46A' },
-    { name: 'Gastos', value: Math.max(0, expenses), color: '#FF3F78' },
+    { name: 'Gastos', value: Math.max(0, expenses), color: isPinkLightFinance ? '#d96b7d' : '#d00000' },
     { name: 'Ahorros', value: Math.max(0, savings), color: '#5A9CFF' },
     { name: 'Recurrentes', value: Math.max(0, recurringExpense + subscriptionsExpense), color: '#7B8089' }
   ].filter(item => item.value > 0);
@@ -14210,7 +14230,7 @@ const FinanceView = ({ data, onUpdateFinance }) => {
   const financeMetrics = [
     { label: 'Balance neto', value: money(netWorth), hint: 'vs mes anterior', trend: positiveTrend, color: COLORS.primary, series: metricSeries },
     { label: 'Ingresos', value: money(income), hint: 'Este mes', trend: incomeTrend, color: '#35C46A', series: cashFlow.map(item => item.ingresos) },
-    { label: 'Gastos', value: money(expenses), hint: 'Este mes', trend: -Math.abs(expenseTrend), color: '#FF4D78', series: cashFlow.map(item => item.gastos) },
+    { label: 'Gastos', value: money(expenses), hint: 'Este mes', trend: -Math.abs(expenseTrend), color: '#e53939', series: cashFlow.map(item => item.gastos) },
     { label: 'Ahorros', value: money(savings), hint: `Tasa de ahorro ${Math.max(0, savingRate)}%`, trend: savingRate, color: '#35C46A', series: cashFlow.map(item => Math.max(0, item.balance)) },
     { label: 'Deudas', value: money(totalDebt), hint: debtItems.length ? `En ${debtItems.length} deudas` : 'Sin deudas activas', trend: null, color: '#A7A7A7', series: debtItems.map(item => item.pending) }
   ];
@@ -14218,13 +14238,13 @@ const FinanceView = ({ data, onUpdateFinance }) => {
   const proButtonStyle = {
     border: 'none',
     borderRadius: 12,
-    background: `linear-gradient(135deg, ${COLORS.primary}, #FF5F8F)`,
+    background: 'var(--hf-action-primary)',
     color: '#fff',
     padding: '12px 16px',
     minHeight: 44,
     fontWeight: 850,
     cursor: 'pointer',
-    boxShadow: `0 14px 32px ${COLORS.primary}28`,
+    boxShadow: '0 10px 24px rgba(0,0,0,.22)',
     ...s
   };
   const ghostButtonStyle = {
@@ -20990,7 +21010,7 @@ const AgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAgendaTo
           <button onClick={goPrev} style={{ ...btnBase, width: 32, height: 32, color: COLORS.textDim, background: COLORS.card }}><ChevronLeft size={14} /></button>
           <button onClick={goToday} style={{ ...btnBase, padding: '0 10px', height: 32, color: isToday  ? COLORS.primary : COLORS.textDim, background: COLORS.card, fontWeight: 700 }}>Hoy</button>
           <button onClick={goNext} style={{ ...btnBase, width: 32, height: 32, color: COLORS.textDim, background: COLORS.card }}><ChevronRight size={14} /></button>
-          <button onClick={() => openTaskModal(null)} style={{ ...btnBase, marginLeft: 5, height: 32, padding: '0 13px', color: '#fff', background: COLORS.primary, fontWeight: 700 }}><Plus size={14} /> Nueva tarea</button>
+          <button onClick={() => openTaskModal(null)} style={{ ...btnBase, marginLeft: 5, height: 32, padding: '0 13px', color: '#fff', background: 'var(--hf-action-primary)', fontWeight: 700 }}><Plus size={14} /> Nueva tarea</button>
         </div>
       </div>
 
