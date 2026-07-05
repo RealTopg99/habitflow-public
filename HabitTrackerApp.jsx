@@ -781,9 +781,9 @@ const getDreamGoals = () => ([
 
 const greets = () => {
   const h = new Date().getHours();
-  if (h < 12) return { text: 'Buenos días', emoji: '\u{1F305}' };
-  if (h < 19) return { text: 'Buenas tardes', emoji: '\u{2600}\u{FE0F}' };
-  return { text: 'Buenas noches', emoji: '\u{1F319}' };
+  if (h < 12) return { text: 'Buenos días' };
+  if (h < 19) return { text: 'Buenas tardes' };
+  return { text: 'Buenas noches' };
 };
 
 const SPANISH_WEEKDAYS = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
@@ -11038,7 +11038,7 @@ const LegacyDashboardView = ({ data, onCompleteHabit, workoutData, onNavigate, o
     <div className="dashboard-view">
       <div style={{ marginBottom: 24 }}>
         <div style={{ fontSize: 28, color: COLORS.text, fontFamily: "'DM Serif Display', serif", marginBottom: 4 }}>
-          {greet.text} {greet.emoji}
+          {greet.text}
         </div>
         <div style={{ fontSize: 14, color: COLORS.textDim }}>
           {formatDateSpanish(new Date())}
@@ -11613,7 +11613,7 @@ const DashboardView = ({
           <header className="cc-header">
             <div>
               <div className="cc-eyebrow">{formatDateSpanish(new Date())}</div>
-              <h1>{greet.text}, {userName}. {greet.emoji}</h1>
+              <h1>{greet.text}, {userName}.</h1>
               <p>{dailyQuote}</p>
             </div>
             <div className="cc-day-summary">
