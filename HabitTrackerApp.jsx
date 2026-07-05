@@ -11273,6 +11273,7 @@ const DashboardView = ({
   data,
   onCompleteHabit,
   onNavigate,
+  onQuickAction,
   onUpdateUser,
   onUpdateAgenda,
   onUpdateFinance,
@@ -11592,10 +11593,10 @@ const DashboardView = ({
   };
 
   const quickActions = [
-    { label: 'Nueva tarea', icon: <Plus size={16} />, view: 'agenda' },
-    { label: 'Iniciar Pomodoro', icon: <Timer size={16} />, view: 'pomodoro' },
-    { label: 'Registrar hábito', icon: <Target size={16} />, view: 'habits' },
-    { label: 'Nuevo gasto', icon: <CreditCard size={16} />, view: 'finance' }
+    { label: 'Nueva tarea', icon: <Plus size={16} />, action: 'newTask' },
+    { label: 'Iniciar Pomodoro', icon: <Timer size={16} />, action: 'startPomodoro' },
+    { label: 'Registrar hábito', icon: <Target size={16} />, action: 'newHabit' },
+    { label: 'Nuevo gasto', icon: <CreditCard size={16} />, action: 'newExpense' }
   ];
   const moduleLinks = [
     { label: 'Hábitos', icon: <Target size={16} />, view: 'habits' },
@@ -11716,7 +11717,7 @@ const DashboardView = ({
             </div>
             <div className="cc-quick-actions" aria-label="Acciones rápidas">
               {quickActions.map(action => (
-                <button type="button" className="cc-quick-action" key={action.label} onClick={() => onNavigate?.(action.view)}>
+                <button type="button" className="cc-quick-action" key={action.label} onClick={() => onQuickAction?.(action.action)}>
                   {action.icon}<span>{action.label}</span>
                 </button>
               ))}
@@ -12605,7 +12606,7 @@ const LegacyHabitsView = ({ data, onAddHabit, onUpdateHabit, onDeleteHabit, onTo
   );
 };
 
-const HabitsView = ({ data, onAddHabit, onUpdateHabit, onDeleteHabit, onToggleHabit, onCompleteHabit, onCreateHabitCategory, records }) => {
+const HabitsView = ({ data, onAddHabit, onUpdateHabit, onDeleteHabit, onToggleHabit, onCompleteHabit, onCreateHabitCategory, records, quickAction, onQuickActionHandled }) => {
   const { habits } = data;
   const today = toYYYYMMDD(new Date());
   const habitCategories = useMemo(
@@ -12618,6 +12619,13 @@ const HabitsView = ({ data, onAddHabit, onUpdateHabit, onDeleteHabit, onToggleHa
   const [editHabit, setEditHabit] = useState(null);
   const [viewHabit, setViewHabit] = useState(null);
   const [confirmDelete, setConfirmDelete] = useState(null);
+
+  useEffect(() => {
+    if (quickAction?.type !== 'newHabit') return;
+    setEditHabit(null);
+    setShowForm(true);
+    onQuickActionHandled?.(quickAction.id);
+  }, [quickAction?.id]);
 
   const displayDays = useMemo(() => {
     if (viewMode === 'week') {
@@ -13497,7 +13505,7 @@ const FinanceMoneyInput = ({ value, onValueChange, ...props }) => {
   );
 };
 
-const FinanceView = ({ data, onUpdateFinance }) => {
+const FinanceView = ({ data, onUpdateFinance, quickAction, onQuickActionHandled }) => {
   const finance = data.financeData || getFinanceData();
   const s = { fontFamily: "'Inter', sans-serif" };
   const isPinkLightFinance = (data?.user?.themeMode || '') === 'pinkLight';
@@ -13759,6 +13767,12 @@ const FinanceView = ({ data, onUpdateFinance }) => {
     setTransactionModalStep(type ? 'form' : 'type');
     setShowTransactionModal(true);
   };
+
+  useEffect(() => {
+    if (quickAction?.type !== 'newExpense') return;
+    openTransactionFlow('expense');
+    onQuickActionHandled?.(quickAction.id);
+  }, [quickAction?.id]);
 
   const closeTransactionFlow = () => {
     setShowTransactionModal(false);
@@ -17255,7 +17269,7 @@ class ErrorBoundary extends React.Component {
 }
 
 // SECTION: Pomodoro and focus sessions.
-const PomodoroView = ({ data, onUpdateUser, onUpdatePomodoro }) => {
+const PomodoroView = ({ data, onUpdateUser, onUpdatePomodoro, quickAction, onQuickActionHandled }) => {
   const today = toYYYYMMDD(new Date());
   const settings = data.user?.pomodoro || { focus: 25, shortBreak: 5, longBreak: 15, ambientSound: 'none', ambientVolume: 0.3 };
   const records = data.pomodoroRecords || [];
@@ -17774,6 +17788,20 @@ const PomodoroView = ({ data, onUpdateUser, onUpdatePomodoro }) => {
     setIsRunning(shouldAutoStart);
     stopAmbient();
   }, [mode, settings.focus, settings.shortBreak, settings.longBreak]);
+
+  useEffect(() => {
+    if (quickAction?.type !== 'startPomodoro') return;
+    setSessionAlert(null);
+    completionLockRef.current = false;
+    if (mode !== 'focus') {
+      autoStartRef.current = true;
+      setMode('focus');
+    } else {
+      setTimeLeft(current => current > 0 ? current : durations.focus);
+      setIsRunning(true);
+    }
+    onQuickActionHandled?.(quickAction.id);
+  }, [quickAction?.id]);
 
   useEffect(() => {
     if (!isRunning) { stopAmbient(); return; }
@@ -19731,7 +19759,7 @@ const generateRecurrenceDates = (task, fromDate, count = 90) => {
   return dates;
 };
 
-const AgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAgendaTodos, onUpdateAgendaTodoLabels, onUpdateAgendaTaskCategories, onMoveTaskToDate, onCompleteHabit }) => {
+const AgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAgendaTodos, onUpdateAgendaTodoLabels, onUpdateAgendaTaskCategories, onMoveTaskToDate, onCompleteHabit, quickAction, onQuickActionHandled }) => {
   const { habits, records, agenda = {}, agendaNotes = {}, agendaTodos = {}, agendaTodoLabels = [], agendaTaskCategories = [] } = data;
   const [currentDate, setCurrentDate] = useState(() => new Date());
   const [viewMode, setViewMode] = useState('day');
@@ -19982,6 +20010,12 @@ const AgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAgendaTo
     );
     setShowModal(true);
   };
+  useEffect(() => {
+    if (quickAction?.type !== 'newTask') return;
+    openTaskModal(null);
+    onQuickActionHandled?.(quickAction.id);
+  }, [quickAction?.id]);
+
   const closeTaskModal = () => { setShowModal(false); setEditModalTask(null); setShowDatePicker(false); setShowTimePicker(false); };
   const saveTaskModal = () => {
     let task = editModalTask;
@@ -22160,6 +22194,8 @@ const HabitFlowApp = () => {
     if (saved === 'creator' && !hasCreatorAccess()) return 'dashboard';
     return saved && !['reading', 'stats'].includes(saved)  ? saved : 'dashboard';
   });
+  const [pendingQuickAction, setPendingQuickAction] = useState(null);
+  const quickActionSequenceRef = useRef(0);
   const [confetti, setConfetti] = useState(null);
   const [mobileMenu, setMobileMenu] = useState(false);
   const [showMoreNav, setShowMoreNav] = useState(false);
@@ -22824,6 +22860,23 @@ const HabitFlowApp = () => {
     });
   }, []);
 
+  const runDashboardQuickAction = useCallback((type) => {
+    const targetView = {
+      newTask: 'agenda',
+      startPomodoro: 'pomodoro',
+      newHabit: 'habits',
+      newExpense: 'finance'
+    }[type];
+    if (!targetView) return;
+    quickActionSequenceRef.current += 1;
+    setPendingQuickAction({ id: quickActionSequenceRef.current, type });
+    navigateTo(targetView);
+  }, [navigateTo]);
+
+  const markQuickActionHandled = useCallback((id) => {
+    setPendingQuickAction(current => current?.id === id ? null : current);
+  }, []);
+
   const onUpdateAgendaTaskCategories = useCallback((updater) => {
     setData(prev => {
       const agendaTaskCategories = updater(prev.agendaTaskCategories || []);
@@ -23166,17 +23219,17 @@ const HabitFlowApp = () => {
 
   const renderView = () => {
     switch (view) {
-      case 'dashboard': return <DashboardView data={data} onCompleteHabit={onCompleteHabit} workoutData={data.workoutData} onNavigate={navigateTo} onUpdateUser={onUpdateUser} onUpdateAgenda={onUpdateAgenda} onUpdateFinance={onUpdateFinance} onAddHabit={onAddHabit} />;
-      case 'habits': return <HabitsView data={data} onAddHabit={onAddHabit} onUpdateHabit={onUpdateHabit} onDeleteHabit={onDeleteHabit} onToggleHabit={onToggleHabit} onCompleteHabit={onCompleteHabit} onUpdateRecord={onUpdateRecord} onCreateHabitCategory={onCreateHabitCategory} records={data.records} />;
-      case 'pomodoro': return <PomodoroView data={data} onUpdateUser={onUpdateUser} onUpdatePomodoro={onUpdatePomodoro} />;
+      case 'dashboard': return <DashboardView data={data} onCompleteHabit={onCompleteHabit} workoutData={data.workoutData} onNavigate={navigateTo} onQuickAction={runDashboardQuickAction} onUpdateUser={onUpdateUser} onUpdateAgenda={onUpdateAgenda} onUpdateFinance={onUpdateFinance} onAddHabit={onAddHabit} />;
+      case 'habits': return <HabitsView data={data} onAddHabit={onAddHabit} onUpdateHabit={onUpdateHabit} onDeleteHabit={onDeleteHabit} onToggleHabit={onToggleHabit} onCompleteHabit={onCompleteHabit} onUpdateRecord={onUpdateRecord} onCreateHabitCategory={onCreateHabitCategory} records={data.records} quickAction={pendingQuickAction} onQuickActionHandled={markQuickActionHandled} />;
+      case 'pomodoro': return <PomodoroView data={data} onUpdateUser={onUpdateUser} onUpdatePomodoro={onUpdatePomodoro} quickAction={pendingQuickAction} onQuickActionHandled={markQuickActionHandled} />;
       case 'workout': return <WorkoutView data={data} onUpdateData={onUpdateWorkout} onCompleteHabit={onCompleteHabit} awardXp={(prev, amt) => awardXp(prev, amt)} />;
-      case 'agenda': return <AgendaView data={data} onUpdateAgenda={onUpdateAgenda} onUpdateAgendaNote={onUpdateAgendaNote} onUpdateAgendaTodos={onUpdateAgendaTodos} onUpdateAgendaTodoLabels={onUpdateAgendaTodoLabels} onUpdateAgendaTaskCategories={onUpdateAgendaTaskCategories} onMoveTaskToDate={onMoveTaskToDate} onCompleteHabit={onCompleteHabit} />;
+      case 'agenda': return <AgendaView data={data} onUpdateAgenda={onUpdateAgenda} onUpdateAgendaNote={onUpdateAgendaNote} onUpdateAgendaTodos={onUpdateAgendaTodos} onUpdateAgendaTodoLabels={onUpdateAgendaTodoLabels} onUpdateAgendaTaskCategories={onUpdateAgendaTaskCategories} onMoveTaskToDate={onMoveTaskToDate} onCompleteHabit={onCompleteHabit} quickAction={pendingQuickAction} onQuickActionHandled={markQuickActionHandled} />;
       case 'dreams': return <DreamGoalsView data={data} onUpdateDreamGoals={onUpdateDreamGoals} />;
-      case 'finance': return <FinanceView data={data} onUpdateFinance={onUpdateFinance} />;
+      case 'finance': return <FinanceView data={data} onUpdateFinance={onUpdateFinance} quickAction={pendingQuickAction} onQuickActionHandled={markQuickActionHandled} />;
       case 'health': return <HealthView data={data} onUpdateHealth={onUpdateHealth} />;
-      case 'creator': return creatorAccess ? <CreatorView /> : <DashboardView data={data} onCompleteHabit={onCompleteHabit} workoutData={data.workoutData} onNavigate={navigateTo} onUpdateUser={onUpdateUser} onUpdateAgenda={onUpdateAgenda} onUpdateFinance={onUpdateFinance} onAddHabit={onAddHabit} />;
+      case 'creator': return creatorAccess ? <CreatorView /> : <DashboardView data={data} onCompleteHabit={onCompleteHabit} workoutData={data.workoutData} onNavigate={navigateTo} onQuickAction={runDashboardQuickAction} onUpdateUser={onUpdateUser} onUpdateAgenda={onUpdateAgenda} onUpdateFinance={onUpdateFinance} onAddHabit={onAddHabit} />;
       case 'settings': return <SettingsView data={data} onUpdateUser={onUpdateUser} onResetData={onResetData} cloudSync={cloudSync} onGenerateRandomData={onGenerateRandomData} />;
-      default: return <DashboardView data={data} onCompleteHabit={onCompleteHabit} workoutData={data.workoutData} onNavigate={navigateTo} onUpdateUser={onUpdateUser} onUpdateAgenda={onUpdateAgenda} onUpdateFinance={onUpdateFinance} onAddHabit={onAddHabit} />;
+      default: return <DashboardView data={data} onCompleteHabit={onCompleteHabit} workoutData={data.workoutData} onNavigate={navigateTo} onQuickAction={runDashboardQuickAction} onUpdateUser={onUpdateUser} onUpdateAgenda={onUpdateAgenda} onUpdateFinance={onUpdateFinance} onAddHabit={onAddHabit} />;
     }
   };
 
