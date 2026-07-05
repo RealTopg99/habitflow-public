@@ -22,17 +22,17 @@ const supabase = window.supabaseClient;
 
 // SECTION: Global design tokens, themes and static domain catalogs.
 const BASE_COLORS = {
-  bg: '#0a0a0f',
-  surface: '#12121a',
-  card: '#1a1a26',
-  primary: '#e11d48',
-  secondary: '#efefef',
-  success: '#00ff9d',
-  alert: '#ff6b6b',
-  text: '#e8e8f0',
-  textDim: '#8888a0',
-  border: 'rgba(255,255,255,0.06)',
-  cardHover: '#22223a'
+  bg: '#000000',
+  surface: '#050505',
+  card: '#0b0b0b',
+  primary: '#ff0000',
+  secondary: '#f5f5f5',
+  success: '#16c784',
+  alert: '#ff3333',
+  text: '#f5f5f5',
+  textDim: '#9a9a9a',
+  border: 'rgba(255,255,255,0.12)',
+  cardHover: '#141414'
 };
 
 const COLORS = { ...BASE_COLORS };
@@ -264,51 +264,29 @@ const isBrokenHabitIcon = (icon) => !icon || /^\?+$/.test(icon) || icon.includes
 
 const FREQUENCIES = ['Diario', 'Lun-Vie', 'Fines de semana', 'Personalizado'];
 
-const THEME_VARIANTS = [
-  { id: 'labCrimson', name: 'Lab Crimson', primary: '#e11d48', secondary: '#efefef' },
-  { id: 'roseQuartz', name: 'Rosa claro', primary: '#e11d48', secondary: '#fb7185' },
-  { id: 'monoInk', name: 'Mono Ink', primary: '#5f6673', secondary: '#efefef' },
-  { id: 'violet', name: 'Violeta', primary: '#6d28d9', secondary: '#efefef' },
-  { id: 'cyan', name: 'Cian', primary: '#0e7490', secondary: '#efefef' },
-  { id: 'green', name: 'Verde', primary: '#047857', secondary: '#efefef' }
-];
+const THEME_ACCENTS = {
+  pureDark: { id: 'pureRed', primary: '#ff0000', secondary: '#f5f5f5' },
+  pinkLight: { id: 'roseQuartz', primary: '#d96b7d', secondary: '#f2a4b2' }
+};
 
-const ICON_COLOR_PALETTE = [
-  { id: 'labRed', name: 'Lab rojo', primary: '#e11d48', hover: '#f5f5f5', deep: '#7f1028', rgb: '225,29,72' },
-  { id: 'rimuWhite', name: 'Blanco premium', primary: '#d8d8df', hover: '#ffffff', deep: '#777782', rgb: '216,216,223' },
-  { id: 'fire', name: 'Fuego', primary: '#f97316', hover: '#ffb86b', deep: '#b91c1c', rgb: '249,115,22' },
-  { id: 'gold', name: 'Dorado', primary: '#d4a017', hover: '#f5d76e', deep: '#92400e', rgb: '212,160,23' },
-  { id: 'violet', name: 'Violeta', primary: '#8b5cf6', hover: '#c4b5fd', deep: '#4c1d95', rgb: '139,92,246' },
-  { id: 'cyan', name: 'Cian', primary: '#38bdf8', hover: '#bae6fd', deep: '#075985', rgb: '56,189,248' },
-  { id: 'emerald', name: 'Verde', primary: '#10b981', hover: '#86efac', deep: '#065f46', rgb: '16,185,129' },
-  { id: 'rose', name: 'Rosa', primary: '#e11d48', hover: '#fda4af', deep: '#9f1239', rgb: '225,29,72' },
-  { id: 'red', name: 'Rojo', primary: '#ef4444', hover: '#fca5a5', deep: '#991b1b', rgb: '239,68,68' },
-  { id: 'ice', name: 'Hielo', primary: '#93c5fd', hover: '#eff6ff', deep: '#1d4ed8', rgb: '147,197,253' }
-];
+const THEME_ICON_COLORS = {
+  pureDark: { id: 'pureRed', primary: '#ff0000', hover: '#ff4d4d', deep: '#990000', rgb: '255,0,0' },
+  pinkLight: { id: 'rose', primary: '#d96b7d', hover: '#f2a4b2', deep: '#b94e61', rgb: '217,107,125' }
+};
 
 const THEME_MODES = [
-  { id: 'labNeon', name: 'Lab Neon', desc: 'Negro absoluto, bordes finos, rojo neon y estetica de app premium.', colors: {
+  { id: 'pureDark', name: 'Dark puro', desc: 'Negro absoluto, superficies neutras y acentos en rojo puro.', defaultAccent: 'pureRed', defaultIconColor: 'pureRed', colors: {
     ...BASE_COLORS,
     bg: '#000000',
     surface: '#050505',
-    card: '#0f0f0f',
-    cardHover: '#171717',
-    success: '#efefef',
-    alert: '#e11d48',
-    text: '#efefef',
-    textDim: '#9a9aa0',
-    border: 'rgba(239,239,239,0.11)'
-  } },
-  { id: 'midnight', name: 'Dark suave', desc: 'Oscuro con tarjetas visibles y contraste cómodo.', colors: BASE_COLORS },
-  { id: 'pureDark', name: 'Dark puro', desc: 'Negro profundo, menos brillo y bordes más finos.', colors: {
-    ...BASE_COLORS,
-    bg: '#000000',
-    surface: '#060607',
-    card: '#0d0d0f',
-    cardHover: '#17171b',
-    text: '#f7f7f8',
-    textDim: '#a1a1aa',
-    border: 'rgba(255,255,255,0.11)'
+    card: '#0b0b0b',
+    cardHover: '#141414',
+    primary: '#ff0000',
+    secondary: '#f5f5f5',
+    alert: '#ff3333',
+    text: '#f5f5f5',
+    textDim: '#9a9a9a',
+    border: 'rgba(255,255,255,0.12)'
   } },
   { id: 'pinkLight', name: 'Claro rosa', desc: 'Fondo claro, tarjetas blancas, acentos rosa y contraste suave.', defaultAccent: 'roseQuartz', defaultIconColor: 'rose', colors: {
     ...BASE_COLORS,
@@ -316,8 +294,8 @@ const THEME_MODES = [
     surface: '#fff9fb',
     card: '#ffffff',
     cardHover: '#fff0f5',
-    primary: '#e11d48',
-    secondary: '#fb7185',
+    primary: '#d96b7d',
+    secondary: '#f2a4b2',
     success: '#059669',
     alert: '#be123c',
     text: '#291820',
@@ -367,51 +345,42 @@ const getThemeVisualTokens = (themeModeId, colors) => {
     };
   }
 
-  const pure = themeModeId === 'pureDark';
   return {
     '--hf-canvas': colors.bg,
-    '--hf-canvas-raised': pure  ? '#040405' : colors.surface,
-    '--hf-surface': pure  ? 'rgba(13,13,15,0.88)' : 'rgba(18,18,26,0.88)',
-    '--hf-surface-strong': pure  ? '#101013' : colors.card,
-    '--hf-surface-soft': pure  ? '#08080a' : colors.surface,
-    '--hf-card-border': pure  ? 'rgba(255,255,255,0.105)' : colors.border,
+    '--hf-canvas-raised': '#030303',
+    '--hf-surface': 'rgba(8,8,8,0.92)',
+    '--hf-surface-strong': '#0b0b0b',
+    '--hf-surface-soft': '#050505',
+    '--hf-card-border': 'rgba(255,255,255,0.12)',
     '--hf-card-border-strong': 'rgba(255,255,255,0.17)',
     '--hf-card-highlight': 'rgba(255,255,255,0.055)',
     '--hf-text': colors.text,
     '--hf-muted': colors.textDim,
-    '--hf-subtle': pure  ? '#767680' : colors.textDim,
-    '--hf-glass': pure
-       ? 'linear-gradient(145deg, rgba(20,20,23,0.92), rgba(7,7,9,0.96))'
-      : 'linear-gradient(145deg, rgba(30,30,43,0.90), rgba(13,13,20,0.94))',
-    '--hf-glass-quiet': pure
-       ? 'linear-gradient(145deg, rgba(16,16,19,0.88), rgba(6,6,8,0.94))'
-      : 'linear-gradient(145deg, rgba(25,25,36,0.86), rgba(11,11,17,0.92))',
-    '--hf-shadow': pure
-       ? '0 24px 64px rgba(0,0,0,0.52), inset 0 1px 0 rgba(255,255,255,0.052)'
-      : '0 22px 58px rgba(0,0,0,0.34), inset 0 1px 0 rgba(255,255,255,0.045)',
-    '--hf-shadow-soft': pure
-       ? '0 12px 34px rgba(0,0,0,0.40), inset 0 1px 0 rgba(255,255,255,0.04)'
-      : '0 12px 32px rgba(0,0,0,0.24), inset 0 1px 0 rgba(255,255,255,0.04)',
+    '--hf-subtle': '#737373',
+    '--hf-glass': 'linear-gradient(145deg, rgba(14,14,14,0.94), rgba(3,3,3,0.98))',
+    '--hf-glass-quiet': 'linear-gradient(145deg, rgba(11,11,11,0.92), rgba(2,2,2,0.97))',
+    '--hf-shadow': '0 24px 64px rgba(0,0,0,0.58), inset 0 1px 0 rgba(255,255,255,0.052)',
+    '--hf-shadow-soft': '0 12px 34px rgba(0,0,0,0.44), inset 0 1px 0 rgba(255,255,255,0.04)',
     '--hf-shadow-raised': '0 28px 76px rgba(0,0,0,0.58), inset 0 1px 0 rgba(255,255,255,0.065)',
-    '--hf-input-bg': pure  ? 'rgba(255,255,255,0.045)' : 'rgba(255,255,255,0.055)',
-    '--hf-input-hover': pure  ? 'rgba(255,255,255,0.065)' : 'rgba(255,255,255,0.075)',
-    '--hf-select-menu-bg': pure  ? '#0D1014' : '#11141A',
+    '--hf-input-bg': 'rgba(255,255,255,0.045)',
+    '--hf-input-hover': 'rgba(255,255,255,0.07)',
+    '--hf-select-menu-bg': '#080808',
     '--hf-select-menu-text': '#F4F1EA',
     '--hf-select-menu-muted': '#A7A7A7',
-    '--hf-select-menu-hover': '#151922',
-    '--hf-select-menu-selected': 'rgba(255,125,149,0.12)',
-    '--hf-select-menu-border': '#2E333D',
-    '--hf-select-accent': '#FF7D95',
+    '--hf-select-menu-hover': '#151515',
+    '--hf-select-menu-selected': 'rgba(255,0,0,0.14)',
+    '--hf-select-menu-border': '#2a2a2a',
+    '--hf-select-accent': '#ff0000',
     '--hf-hover': 'rgba(255,255,255,0.055)',
-    '--hf-pressed': 'rgba(225,29,72,0.16)',
+    '--hf-pressed': 'rgba(255,0,0,0.16)',
     '--hf-overlay': 'rgba(0,0,0,0.72)',
     '--hf-grid': 'rgba(255,255,255,0.075)',
     '--hf-track': 'rgba(255,255,255,0.08)',
-    '--hf-header': pure  ? 'rgba(3,3,4,0.86)' : 'rgba(8,8,12,0.88)',
-    '--hf-nav': pure  ? 'rgba(6,6,8,0.94)' : 'rgba(12,12,18,0.94)',
-    '--hf-glow': 'rgba(225,29,72,0.18)',
+    '--hf-header': 'rgba(2,2,2,0.88)',
+    '--hf-nav': 'rgba(5,5,5,0.96)',
+    '--hf-glow': 'rgba(255,0,0,0.20)',
     '--hf-heading-start': '#ffffff',
-    '--hf-heading-end': pure  ? '#c9c9d0' : colors.text
+    '--hf-heading-end': '#cccccc'
   };
 };
 
@@ -972,7 +941,7 @@ const getDefaultData = (reset = false) => {
   const records = reset  ? [] : genSampleRecords(habits);
   const xp = reset  ? 0 : records.filter(r => r.completed).length * 10;
   return {
-    user: { name: 'Usuario', motto: 'Cada día es una nueva oportunidad', accentColor: 'violet', themeMode: 'midnight', iconColor: 'fire', notificationsEnabled: true, createdAt: toYYYYMMDD(new Date()), xp, level: getLevel(xp), levelUpShown: getLevel(xp), pomodoro: { focus: 25, shortBreak: 5, longBreak: 15 } },
+    user: { name: 'Usuario', motto: 'Cada día es una nueva oportunidad', accentColor: 'pureRed', themeMode: 'pureDark', iconColor: 'pureRed', visualVersion: 'twoThemes2026', notificationsEnabled: true, createdAt: toYYYYMMDD(new Date()), xp, level: getLevel(xp), levelUpShown: getLevel(xp), pomodoro: { focus: 25, shortBreak: 5, longBreak: 15 } },
     habits,
     records,
     dailyNotes: reset  ? {} : { [toYYYYMMDD(new Date())]: { note: 'Buen día en general, cumplí todos mis hábitos', mood: 4 } },
@@ -1070,15 +1039,12 @@ const normalizeLoadedData = (parsed) => {
   if (!parsed.user.xp) parsed.user.xp = 0;
   if (!parsed.user.level) parsed.user.level = 1;
   if (!parsed.user.levelUpShown) parsed.user.levelUpShown = 1;
-  if (!parsed.user.themeMode) parsed.user.themeMode = 'midnight';
-  if (!parsed.user.iconColor) parsed.user.iconColor = 'fire';
   if (parsed.user.notificationsEnabled === undefined) parsed.user.notificationsEnabled = true;
-  if (parsed.user.visualVersion !== 'labNeon2026') {
-    parsed.user.themeMode = 'labNeon';
-    parsed.user.accentColor = 'labCrimson';
-    parsed.user.iconColor = 'labRed';
-    parsed.user.visualVersion = 'labNeon2026';
-  }
+  const normalizedThemeMode = parsed.user.themeMode === 'pinkLight' ? 'pinkLight' : 'pureDark';
+  parsed.user.themeMode = normalizedThemeMode;
+  parsed.user.accentColor = THEME_ACCENTS[normalizedThemeMode].id;
+  parsed.user.iconColor = THEME_ICON_COLORS[normalizedThemeMode].id;
+  parsed.user.visualVersion = 'twoThemes2026';
   if (!parsed.dailyNotes) parsed.dailyNotes = {};
   if (!parsed.challenges) parsed.challenges = [];
   if (!parsed.customHabitCategories) parsed.customHabitCategories = [];
@@ -1647,7 +1613,7 @@ const injectStyles = () => {
       --motion-ease-out: cubic-bezier(0.2, 0.8, 0.2, 1);
     }
     input, select, textarea { font-size: 14px; }
-    button:focus-visible { outline: 2px solid var(--primary, #e11d48); outline-offset: 2px; }
+    button:focus-visible { outline: 2px solid var(--primary, #ff0000); outline-offset: 2px; }
     button:active { transform: scale(0.97); }
     button:not(:disabled):hover { filter: brightness(1.035); }
     button.flash-green { animation: flashScale 0.5s ease-out; }
@@ -1738,7 +1704,7 @@ const injectStyles = () => {
       filter: blur(8px);
     }
     .lab-hero-title {
-      background: linear-gradient(155deg, #ffffff 16%, #b7b7bd 62%, var(--icon-primary,#e11d48) 128%);
+      background: linear-gradient(155deg, #ffffff 16%, #b7b7bd 62%, var(--icon-primary,#ff0000) 128%);
       -webkit-background-clip: text;
       background-clip: text;
       color: transparent !important;
@@ -1755,7 +1721,7 @@ const injectStyles = () => {
       position: relative;
       overflow: hidden;
       border: 1px solid rgba(239,239,239,0.14) !important;
-      background: linear-gradient(#090909, #090909) padding-box, conic-gradient(from 0deg, transparent, var(--icon-primary,#e11d48), #ffffff, var(--icon-primary,#e11d48), transparent) border-box !important;
+      background: linear-gradient(#090909, #090909) padding-box, conic-gradient(from 0deg, transparent, var(--icon-primary,#ff0000), #ffffff, var(--icon-primary,#ff0000), transparent) border-box !important;
       color: #ffffff !important;
       box-shadow: 0 0 20px rgba(var(--icon-rgb,225,29,72),0.11) !important;
     }
@@ -1814,7 +1780,7 @@ const injectStyles = () => {
       font-family: 'Inter', sans-serif;
     }
     .fire-logo {
-      background: linear-gradient(120deg, var(--icon-hover, #ffffff) 0%, var(--icon-primary, #e11d48) 35%, var(--icon-deep, #7f1028) 62%, var(--icon-hover, #ffffff) 100%);
+      background: linear-gradient(120deg, var(--icon-hover, #ffffff) 0%, var(--icon-primary, #ff0000) 35%, var(--icon-deep, #990000) 62%, var(--icon-hover, #ffffff) 100%);
       background-size: 240% 240%;
       -webkit-background-clip: text;
       background-clip: text;
@@ -1852,7 +1818,7 @@ const injectStyles = () => {
       font-size: 22px;
       font-weight: 700;
       letter-spacing: -0.04em;
-      background: linear-gradient(120deg, #ffffff 0%, #f2f2f4 32%, var(--icon-primary, #e11d48) 76%, #ffffff 100%);
+      background: linear-gradient(120deg, #ffffff 0%, #f2f2f4 32%, var(--icon-primary, #ff0000) 76%, #ffffff 100%);
       background-size: 220% 220%;
       -webkit-background-clip: text;
       background-clip: text;
@@ -1973,7 +1939,7 @@ const injectStyles = () => {
       border-color: rgba(var(--icon-rgb,225,29,72),0.34) !important;
     }
     .auth-form-card .cl-formButtonPrimary {
-      background: linear-gradient(135deg, var(--icon-primary,#e11d48), var(--icon-deep,#7f1028)) !important;
+      background: linear-gradient(135deg, var(--icon-primary,#ff0000), var(--icon-deep,#990000)) !important;
       box-shadow: 0 10px 22px rgba(var(--icon-rgb,225,29,72),0.16) !important;
       color: #fff !important;
     }
@@ -1998,7 +1964,7 @@ const injectStyles = () => {
       border-top: 1px solid rgba(255,255,255,0.06) !important;
     }
     .auth-form-card .cl-footerActionLink, .auth-form-card .cl-formFieldAction {
-      color: var(--icon-primary,#e11d48) !important;
+      color: var(--icon-primary,#ff0000) !important;
     }
     @media (max-width: 860px) {
       .auth-shell { grid-template-columns: 1fr; max-width: 460px; }
@@ -2007,8 +1973,8 @@ const injectStyles = () => {
       .auth-screen { padding: 18px; }
     }
     body svg:not(.recharts-surface):not(.kpi-progress-ring):not(.soft-check) {
-      color: var(--icon-primary, #e11d48) !important;
-      stroke: var(--icon-primary, #e11d48) !important;
+      color: var(--icon-primary, #ff0000) !important;
+      stroke: var(--icon-primary, #ff0000) !important;
       filter: drop-shadow(0 0 4px rgba(var(--icon-rgb, 225,29,72),0.12));
       stroke-width: 2.2;
     }
@@ -2021,7 +1987,7 @@ const injectStyles = () => {
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      color: var(--icon-primary, #e11d48) !important;
+      color: var(--icon-primary, #ff0000) !important;
       text-shadow: 0 0 6px rgba(var(--icon-rgb, 225,29,72),0.20), 0 0 12px rgba(var(--icon-rgb, 225,29,72),0.08);
       filter: saturate(1.04) drop-shadow(0 0 3px rgba(var(--icon-rgb, 225,29,72),0.12));
     }
@@ -2235,18 +2201,18 @@ const injectStyles = () => {
 
     /* Hábitos: tracker editorial, ligero y sin tarjetas decorativas. */
     .habits-minimal-view {
-      --habits-bg: #080a0d;
-      --habits-surface: #0d1014;
-      --habits-surface-hover: #11141a;
-      --habits-border: #2e333d;
-      --habits-divider: #242831;
-      --habits-text: #f4f1ea;
-      --habits-muted: #a7a7a7;
-      --habits-subtle: #6f737a;
-      --habits-accent: #ff7d95;
-      --habits-accent-soft: #f48ba0;
-      --habits-accent-dark: #d9647b;
-      --habits-track: #2a2e36;
+      --habits-bg: #000000;
+      --habits-surface: #070707;
+      --habits-surface-hover: #111111;
+      --habits-border: #2a2a2a;
+      --habits-divider: #202020;
+      --habits-text: #f5f5f5;
+      --habits-muted: #a3a3a3;
+      --habits-subtle: #737373;
+      --habits-accent: #ff0000;
+      --habits-accent-soft: #ff4d4d;
+      --habits-accent-dark: #b30000;
+      --habits-track: #262626;
       width: min(100%, 1580px);
       margin: 0 auto;
       color: var(--habits-text);
@@ -5133,7 +5099,7 @@ const injectStyles = () => {
         height: 32px !important;
         min-height: 32px !important;
         border-radius: 10px !important;
-        color: var(--icon-primary, #e11d48) !important;
+        color: var(--icon-primary, #ff0000) !important;
       }
       .agenda-todo-list {
         margin-top: 12px !important;
@@ -5275,7 +5241,7 @@ const injectStyles = () => {
     select:focus-visible,
     textarea:focus-visible,
     [tabindex]:focus-visible {
-      outline: 2px solid var(--app-primary, #e11d48) !important;
+      outline: 2px solid var(--app-primary, #ff0000) !important;
       outline-offset: 3px;
     }
     button:not(:disabled):active { transform: translateY(1px); }
@@ -16815,12 +16781,13 @@ const SettingsView = ({ data, onUpdateUser, onResetData, cloudSync, onGenerateRa
           </h3>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: 10 }}>
             {THEME_MODES.map(mode => {
-              const selected = (user.themeMode || 'midnight') === mode.id;
+              const selected = (user.themeMode === 'pinkLight' ? 'pinkLight' : 'pureDark') === mode.id;
               return (
                 <button key={mode.id} onClick={() => onUpdateUser({
                   themeMode: mode.id,
-                  ...(mode.defaultAccent  ? { accentColor: mode.defaultAccent } : {}),
-                  ...(mode.defaultIconColor  ? { iconColor: mode.defaultIconColor } : {})
+                  accentColor: mode.defaultAccent,
+                  iconColor: mode.defaultIconColor,
+                  visualVersion: 'twoThemes2026'
                 })} style={{
                   padding: 14, borderRadius: 12, cursor: 'pointer', textAlign: 'left',
                   border: `1px solid ${selected  ? COLORS.primary + '88' : COLORS.border}`,
@@ -16866,64 +16833,6 @@ const SettingsView = ({ data, onUpdateUser, onResetData, cloudSync, onGenerateRa
             }}>Quitar</button>
           </div>
           {clerkMsg && <div style={{ marginTop: 8, fontSize: 11, color: clerkMsg.includes('debe')  ? COLORS.alert : COLORS.success }}>{clerkMsg}</div>}
-        </div>
-
-          <div className="stats-chart-card" style={{ background: COLORS.card, borderRadius: 16, border: `1px solid ${COLORS.border}`, padding: 24 }}>
-          <h3 style={{ fontSize: 16, color: COLORS.text, marginBottom: 16, fontFamily: "'DM Serif Display', serif" }}>
-            <Target size={16} style={{ verticalAlign: 'middle', marginRight: 6, color: COLORS.primary }} />
-            Tema de Color
-          </h3>
-          <div className="settings-theme-row" style={{ display: 'flex', gap: 12 }}>
-            {THEME_VARIANTS.map(t => (
-              <button key={t.id} onClick={() => onUpdateUser({ accentColor: t.id })} style={{
-                flex: 1, padding: '14px 16px', borderRadius: 12, cursor: 'pointer',
-                border: `2px solid ${user.accentColor === t.id  ? t.primary : COLORS.border}`,
-                background: user.accentColor === t.id  ? `${t.primary}15` : COLORS.bg,
-                transition: 'all 0.2s', textAlign: 'center'
-              }}>
-                <div style={{ display: 'flex', gap: 4, justifyContent: 'center', marginBottom: 6 }}>
-                  <div style={{ width: 20, height: 20, borderRadius: '50%', background: t.primary }} />
-                  <div style={{ width: 20, height: 20, borderRadius: '50%', background: t.secondary }} />
-                </div>
-                <div style={{ fontSize: 13, color: COLORS.text }}>{t.name}</div>
-              </button>
-            ))}
-          </div>
-        </div>
-
-          <div className="stats-chart-card" style={{ background: COLORS.card, borderRadius: 16, border: `1px solid ${COLORS.border}`, padding: 24 }}>
-          <h3 style={{ fontSize: 16, color: COLORS.text, marginBottom: 8, fontFamily: "'DM Serif Display', serif" }}>
-            <Flame size={16} style={{ verticalAlign: 'middle', marginRight: 6, color: COLORS.alert }} />
-            Color de iconos
-          </h3>
-          <div style={{ fontSize: 11, color: COLORS.textDim, marginBottom: 14, lineHeight: 1.45 }}>
-            Cambia el color global de iconos, emojis de hábitos y logo.
-          </div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(132px, 1fr))', gap: 10 }}>
-            {ICON_COLOR_PALETTE.map(p => {
-              const selected = (user.iconColor || 'fire') === p.id;
-              return (
-                <button key={p.id} onClick={() => onUpdateUser({ iconColor: p.id })} style={{
-                  padding: '11px 12px', borderRadius: 12, cursor: 'pointer',
-                  border: `1px solid ${selected  ? p.primary : COLORS.border}`,
-                  background: selected  ? `${p.primary}18` : COLORS.bg,
-                  display: 'flex', alignItems: 'center', gap: 10,
-                  textAlign: 'left', transition: 'all 0.2s'
-                }}>
-                  <span style={{
-                    width: 30, height: 30, borderRadius: 10,
-                    background: `linear-gradient(135deg, ${p.hover}, ${p.primary}, ${p.deep})`,
-                    boxShadow: `0 0 16px rgba(${p.rgb},0.32)`,
-                    flexShrink: 0
-                  }} />
-                  <span>
-                    <span style={{ display: 'block', color: COLORS.text, fontSize: 12, fontWeight: 700, fontFamily: "'Inter', sans-serif" }}>{p.name}</span>
-                    <span style={{ display: 'block', color: selected  ? p.primary : COLORS.textDim, fontSize: 10, marginTop: 2 }}>{selected  ? 'Activo' : 'Elegir'}</span>
-                  </span>
-                </button>
-              );
-            })}
-          </div>
         </div>
 
           <div className="stats-chart-card" style={{ background: COLORS.card, borderRadius: 16, border: `1px solid ${COLORS.border}`, padding: 24 }}>
@@ -23171,11 +23080,11 @@ const HabitFlowApp = () => {
     });
   }, []);
 
-  const accentColor = data?.user?.accentColor || 'violet';
-  const themeMode = THEME_MODES.find(t => t.id === (data?.user?.themeMode || 'midnight')) || THEME_MODES[0];
+  const themeModeId = data?.user?.themeMode === 'pinkLight' ? 'pinkLight' : 'pureDark';
+  const themeMode = THEME_MODES.find(t => t.id === themeModeId) || THEME_MODES[0];
   Object.assign(COLORS, themeMode.colors);
-  const theme = THEME_VARIANTS.find(t => t.id === accentColor) || THEME_VARIANTS[0];
-  const iconTheme = ICON_COLOR_PALETTE.find(t => t.id === (data?.user?.iconColor || 'fire')) || ICON_COLOR_PALETTE[0];
+  const theme = THEME_ACCENTS[themeModeId];
+  const iconTheme = THEME_ICON_COLORS[themeModeId];
   const visualTokens = getThemeVisualTokens(themeMode.id, COLORS);
   COLORS.primary = theme.primary;
   COLORS.secondary = theme.secondary;
@@ -23186,6 +23095,7 @@ const HabitFlowApp = () => {
         document.documentElement.style.setProperty(token, value);
       });
       document.documentElement.style.setProperty('--primary', theme.primary);
+      document.documentElement.style.setProperty('--app-primary', theme.primary);
       document.documentElement.style.setProperty('--app-bg', COLORS.bg);
       document.documentElement.style.setProperty('--app-text', COLORS.text);
       document.documentElement.style.setProperty('--app-text-dim', COLORS.textDim);
