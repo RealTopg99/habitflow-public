@@ -5,7 +5,7 @@ const {
   PolarAngleAxis, PolarRadiusAxis, Legend, Area
 } = Recharts;
 const {
-  Activity, Check, Edit, Flame, Menu, Plus, Settings, Trash2,
+  Activity, Check, Edit, Flame, Menu, Plus, Minus, Settings, Trash2,
   User, X, Target, TrendingUp, Download, Upload, AlertTriangle, AlertCircle,
   Sparkles, Eye, EyeOff, BarChart3, Calendar, BookOpen,
   Clock, Play, Pause, StopCircle, Award, ChevronLeft, ChevronRight,
@@ -36,6 +36,101 @@ const BASE_COLORS = {
 };
 
 const COLORS = { ...BASE_COLORS };
+
+const HYDRATION_STORAGE_KEYS = {
+  today: 'habitflow_hydration_today',
+  goal: 'habitflow_hydration_goal',
+  remindersEnabled: 'habitflow_hydration_reminders_enabled',
+  widgetEnabled: 'habitflow_hydration_widget_enabled',
+  streak: 'habitflow_hydration_streak'
+};
+
+const getHydrationDateKey = (date = new Date()) => {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+};
+
+const getHydrationDayDifference = (fromDate, toDate) => {
+  if (!fromDate || !toDate) return Number.POSITIVE_INFINITY;
+  const from = new Date(`${fromDate}T12:00:00`);
+  const to = new Date(`${toDate}T12:00:00`);
+  return Math.round((to.getTime() - from.getTime()) / 86400000);
+};
+
+const readHydrationStorage = () => {
+  const todayKey = getHydrationDateKey();
+  let savedToday = {};
+  let savedStreak = {};
+  try { savedToday = JSON.parse(localStorage.getItem(HYDRATION_STORAGE_KEYS.today) || '{}') || {}; } catch {}
+  try { savedStreak = JSON.parse(localStorage.getItem(HYDRATION_STORAGE_KEYS.streak) || '{}') || {}; } catch {}
+
+  const storedGoal = Number(localStorage.getItem(HYDRATION_STORAGE_KEYS.goal));
+  const goal = Number.isFinite(storedGoal) && storedGoal >= 250 ? storedGoal : 2500;
+  const remindersEnabled = localStorage.getItem(HYDRATION_STORAGE_KEYS.remindersEnabled) === 'true';
+  const widgetSetting = localStorage.getItem(HYDRATION_STORAGE_KEYS.widgetEnabled);
+  let streak = Math.max(0, Number(savedStreak.count || 0));
+  let lastCompletedDate = savedStreak.lastCompletedDate || '';
+  let amount = Math.max(0, Number(savedToday.amount || 0));
+  let lastReminderAt = Math.max(0, Number(savedToday.lastReminderAt || 0));
+
+  if (savedToday.date !== todayKey) {
+    const previousCompleted = Number(savedToday.amount || 0) >= goal;
+    const dayGap = getHydrationDayDifference(savedToday.date, todayKey);
+    if (previousCompleted && savedToday.date !== lastCompletedDate) {
+      streak = dayGap === 1 ? streak + 1 : 1;
+      lastCompletedDate = savedToday.date || lastCompletedDate;
+    } else if (dayGap > 1 || !previousCompleted) {
+      streak = 0;
+    }
+    amount = 0;
+    lastReminderAt = Date.now();
+  }
+
+  if (amount >= goal && lastCompletedDate !== todayKey) {
+    streak = getHydrationDayDifference(lastCompletedDate, todayKey) === 1 ? streak + 1 : 1;
+    lastCompletedDate = todayKey;
+  }
+
+  const state = {
+    date: todayKey,
+    amount,
+    goal,
+    remindersEnabled,
+    widgetEnabled: widgetSetting === null ? true : widgetSetting === 'true',
+    streak,
+    lastCompletedDate,
+    lastReminderAt
+  };
+  localStorage.setItem(HYDRATION_STORAGE_KEYS.today, JSON.stringify({
+    date: state.date,
+    amount: state.amount,
+    lastReminderAt: state.lastReminderAt
+  }));
+  localStorage.setItem(HYDRATION_STORAGE_KEYS.streak, JSON.stringify({
+    count: state.streak,
+    lastCompletedDate: state.lastCompletedDate
+  }));
+  return state;
+};
+
+const persistHydrationStorage = (state) => {
+  try {
+    localStorage.setItem(HYDRATION_STORAGE_KEYS.today, JSON.stringify({
+      date: state.date,
+      amount: Math.max(0, Number(state.amount || 0)),
+      lastReminderAt: Math.max(0, Number(state.lastReminderAt || 0))
+    }));
+    localStorage.setItem(HYDRATION_STORAGE_KEYS.goal, String(Math.max(250, Number(state.goal || 2500))));
+    localStorage.setItem(HYDRATION_STORAGE_KEYS.remindersEnabled, state.remindersEnabled ? 'true' : 'false');
+    localStorage.setItem(HYDRATION_STORAGE_KEYS.widgetEnabled, state.widgetEnabled ? 'true' : 'false');
+    localStorage.setItem(HYDRATION_STORAGE_KEYS.streak, JSON.stringify({
+      count: Math.max(0, Number(state.streak || 0)),
+      lastCompletedDate: state.lastCompletedDate || ''
+    }));
+  } catch {}
+};
 
 const APP_UPDATE_VERSION = '2026-06-04-pro-ui-audit-v4';
 const APP_UPDATE_NOTES = [
@@ -9758,11 +9853,674 @@ const injectStyles = () => {
         transition-duration: .01ms !important;
       }
     }
+    .hydration-sidebar-slot {
+      flex: 0 0 auto;
+      padding: 0 9px 10px;
+      position: relative;
+    }
+    .hydration-widget {
+      width: 100%;
+      border: 1px solid var(--hf-card-border-strong);
+      border-radius: 16px;
+      background: var(--hf-surface);
+      color: var(--hf-text);
+      padding: 12px;
+      cursor: pointer;
+      text-align: left;
+      box-shadow: var(--hf-shadow-soft);
+      transition: border-color 180ms ease, background-color 180ms ease;
+    }
+    .hydration-widget:hover {
+      border-color: color-mix(in srgb, var(--primary) 48%, var(--hf-card-border-strong));
+      background: var(--hf-input-hover);
+    }
+    .hydration-widget-header,
+    .hydration-widget-footer,
+    .hydration-popover-header,
+    .hydration-popover-progress,
+    .hydration-popover-goal,
+    .hydration-popover-reminder {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+    .hydration-widget-title {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      min-width: 0;
+    }
+    .hydration-widget-title > span {
+      display: grid;
+      gap: 1px;
+      min-width: 0;
+    }
+    .hydration-widget-title strong,
+    .hydration-popover h3 {
+      font-family: 'Inter', sans-serif;
+      font-weight: 700;
+      color: var(--hf-text);
+    }
+    .hydration-widget-title strong { font-size: 12px; }
+    .hydration-widget-title small,
+    .hydration-widget small,
+    .hydration-popover small {
+      color: var(--hf-muted);
+      font-size: 9px;
+      line-height: 1.35;
+    }
+    .hydration-widget-settings,
+    .hydration-popover-close,
+    .hydration-goal-button {
+      border: 1px solid var(--hf-card-border);
+      background: var(--hf-input-bg);
+      color: var(--hf-muted);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex: 0 0 auto;
+    }
+    .hydration-widget-settings {
+      width: 27px;
+      height: 27px;
+      border-radius: 9px;
+    }
+    .hydration-widget-body {
+      display: grid;
+      grid-template-columns: 44px minmax(0, 1fr);
+      gap: 11px;
+      align-items: center;
+      margin: 11px 0 9px;
+    }
+    .hydration-bottle {
+      width: 38px;
+      height: 84px;
+      border: 1px solid var(--hf-card-border-strong);
+      border-radius: 9px 9px 11px 11px;
+      background: var(--hf-track);
+      padding: 3px;
+      position: relative;
+      overflow: hidden;
+    }
+    .hydration-bottle::before {
+      content: '';
+      position: absolute;
+      width: 17px;
+      height: 5px;
+      top: -1px;
+      left: 50%;
+      transform: translateX(-50%);
+      border-radius: 0 0 4px 4px;
+      background: var(--hf-card-border-strong);
+      z-index: 2;
+    }
+    .hydration-bottle-fill {
+      position: absolute;
+      left: 3px;
+      right: 3px;
+      bottom: 3px;
+      border-radius: 6px 6px 8px 8px;
+      background: var(--primary);
+      transition: height 380ms cubic-bezier(.22,1,.36,1);
+    }
+    .hydration-widget-value {
+      display: flex;
+      align-items: baseline;
+      gap: 5px;
+      margin-bottom: 5px;
+    }
+    .hydration-widget-value strong {
+      font-size: 21px;
+      letter-spacing: -.03em;
+      white-space: nowrap;
+    }
+    .hydration-widget-value span {
+      color: var(--hf-muted);
+      font-size: 10px;
+    }
+    .hydration-progress-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 38px;
+      height: 21px;
+      padding: 0 8px;
+      border-radius: 999px;
+      color: var(--primary);
+      background: color-mix(in srgb, var(--primary) 14%, transparent);
+      border: 1px solid color-mix(in srgb, var(--primary) 34%, transparent);
+      font-size: 10px;
+      font-weight: 800;
+    }
+    .hydration-meta-copy {
+      display: grid;
+      gap: 2px;
+      margin-top: 6px;
+      font-size: 9px;
+      color: var(--hf-muted);
+    }
+    .hydration-meta-copy strong {
+      color: var(--hf-text);
+      font-size: 10px;
+      font-weight: 650;
+    }
+    .hydration-quick-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+    }
+    .hydration-quick-actions button,
+    .hydration-amount-options button,
+    .hydration-popover-actions button {
+      min-height: 34px;
+      border-radius: 10px;
+      border: 1px solid var(--hf-card-border);
+      background: var(--hf-input-bg);
+      color: var(--hf-text);
+      cursor: pointer;
+      font: 650 10px/1 'Inter', sans-serif;
+      transition: border-color 160ms ease, background-color 160ms ease, color 160ms ease;
+    }
+    .hydration-quick-actions button:hover,
+    .hydration-amount-options button:hover,
+    .hydration-amount-options button.is-active {
+      border-color: var(--primary);
+      color: var(--primary);
+      background: color-mix(in srgb, var(--primary) 10%, var(--hf-input-bg));
+    }
+    .hydration-widget-footer {
+      margin-top: 9px;
+      padding-top: 8px;
+      border-top: 1px solid var(--hf-card-border);
+      justify-content: center;
+      color: var(--hf-muted);
+      font-size: 9px;
+    }
+    .hydration-widget.is-complete .hydration-meta-copy strong,
+    .hydration-widget.is-complete .hydration-widget-footer {
+      color: var(--hf-success, #16c784);
+    }
+    .hydration-collapsed-button {
+      width: 44px;
+      height: 44px;
+      margin: 0 auto;
+      border-radius: 14px;
+      border: 1px solid var(--hf-card-border-strong);
+      background: var(--hf-surface);
+      color: var(--primary);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+    .hydration-collapsed-button span {
+      position: absolute;
+      right: -3px;
+      bottom: -3px;
+      min-width: 19px;
+      height: 19px;
+      padding: 0 4px;
+      border-radius: 999px;
+      background: var(--primary);
+      color: #fff;
+      font-size: 8px;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .hydration-popover {
+      position: fixed;
+      width: 292px;
+      max-height: calc(100dvh - 32px);
+      overflow-y: auto;
+      z-index: 320;
+      padding: 16px;
+      border-radius: 18px;
+      border: 1px solid var(--hf-card-border-strong);
+      background: var(--hf-surface-strong);
+      color: var(--hf-text);
+      box-shadow: var(--hf-shadow-raised);
+      animation: hydrationPopoverIn 180ms cubic-bezier(.22,1,.36,1);
+    }
+    .hydration-popover::before {
+      content: '';
+      position: absolute;
+      left: -7px;
+      bottom: 44px;
+      width: 12px;
+      height: 12px;
+      transform: rotate(45deg);
+      background: var(--hf-surface-strong);
+      border-left: 1px solid var(--hf-card-border-strong);
+      border-bottom: 1px solid var(--hf-card-border-strong);
+    }
+    @keyframes hydrationPopoverIn {
+      from { opacity: 0; transform: translateX(-6px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+    .hydration-popover-header h3 {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 15px;
+    }
+    .hydration-popover-close {
+      width: 30px;
+      height: 30px;
+      border-radius: 10px;
+    }
+    .hydration-popover-progress {
+      margin-top: 14px;
+      font-size: 13px;
+      font-weight: 700;
+    }
+    .hydration-progress-track {
+      height: 7px;
+      margin: 8px 0 14px;
+      border-radius: 999px;
+      overflow: hidden;
+      background: var(--hf-track);
+    }
+    .hydration-progress-track > span {
+      display: block;
+      height: 100%;
+      border-radius: inherit;
+      background: var(--primary);
+      transition: width 380ms cubic-bezier(.22,1,.36,1);
+    }
+    .hydration-amount-options {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 7px;
+      margin-bottom: 12px;
+    }
+    .hydration-field {
+      display: grid;
+      gap: 6px;
+      color: var(--hf-muted);
+      font-size: 10px;
+      font-weight: 650;
+    }
+    .hydration-input-wrap {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      align-items: center;
+      background: var(--hf-input-bg);
+      border: 1px solid var(--hf-card-border);
+      border-radius: 11px;
+      overflow: hidden;
+    }
+    .hydration-input-wrap input {
+      width: 100%;
+      min-width: 0;
+      border: 0 !important;
+      background: transparent !important;
+      color: var(--hf-text) !important;
+      padding: 10px 11px !important;
+      outline: none;
+    }
+    .hydration-input-wrap span {
+      padding-right: 11px;
+      color: var(--hf-muted);
+      font-size: 11px;
+    }
+    .hydration-popover-goal,
+    .hydration-popover-reminder {
+      margin-top: 14px;
+      padding-top: 13px;
+      border-top: 1px solid var(--hf-card-border);
+    }
+    .hydration-goal-copy {
+      display: grid;
+      gap: 3px;
+      font-size: 10px;
+      color: var(--hf-muted);
+    }
+    .hydration-goal-copy strong {
+      color: var(--hf-text);
+      font-size: 14px;
+    }
+    .hydration-goal-controls {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+    }
+    .hydration-goal-button {
+      width: 32px;
+      height: 32px;
+      border-radius: 10px;
+    }
+    .hydration-popover-reminder > span:first-child {
+      display: grid;
+      gap: 3px;
+      color: var(--hf-text);
+      font-size: 11px;
+      font-weight: 650;
+    }
+    .hydration-toggle {
+      width: 42px;
+      height: 24px;
+      padding: 3px;
+      border: 0;
+      border-radius: 999px;
+      background: var(--hf-track);
+      cursor: pointer;
+      transition: background-color 180ms ease;
+    }
+    .hydration-toggle::after {
+      content: '';
+      display: block;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: var(--hf-text);
+      transition: transform 180ms ease;
+    }
+    .hydration-toggle.is-active { background: var(--primary); }
+    .hydration-toggle.is-active::after { transform: translateX(18px); }
+    .hydration-popover-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-top: 15px;
+    }
+    .hydration-popover-actions button {
+      min-height: 40px;
+      font-size: 11px;
+    }
+    .hydration-popover-actions .is-primary {
+      background: var(--primary);
+      border-color: var(--primary);
+      color: #fff;
+    }
+    .hydration-visibility-control {
+      margin: 0 0 18px;
+      padding: 14px 16px;
+      border: 1px solid var(--habits-border);
+      border-radius: 14px;
+      background: var(--habits-surface);
+      color: var(--habits-text);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+    }
+    .hydration-visibility-copy {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      min-width: 0;
+    }
+    .hydration-visibility-copy > span:first-child {
+      width: 34px;
+      height: 34px;
+      border-radius: 11px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--habits-accent);
+      border: 1px solid color-mix(in srgb, var(--habits-accent) 28%, var(--habits-border));
+      background: color-mix(in srgb, var(--habits-accent) 8%, transparent);
+      flex: 0 0 auto;
+    }
+    .hydration-visibility-copy > span:last-child {
+      display: grid;
+      gap: 3px;
+      min-width: 0;
+    }
+    .hydration-visibility-copy strong { font-size: 13px; }
+    .hydration-visibility-copy small {
+      color: var(--habits-muted);
+      font-size: 11px;
+      line-height: 1.4;
+    }
+    .hydration-visibility-action {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex: 0 0 auto;
+    }
+    .hydration-visibility-action > span {
+      color: var(--habits-muted);
+      font-size: 11px;
+      font-weight: 650;
+    }
+    html[data-theme-mode="pinkLight"] .hydration-widget,
+    html[data-theme-mode="pinkLight"] .hydration-popover {
+      box-shadow: 0 16px 42px rgba(93, 36, 52, 0.12);
+    }
+    @media (max-width: 900px) {
+      .hydration-sidebar-slot { display: none; }
+      .hydration-visibility-control {
+        align-items: flex-start;
+      }
+    }
+    @media (max-width: 520px) {
+      .hydration-visibility-control {
+        padding: 13px;
+        gap: 12px;
+      }
+      .hydration-visibility-copy small {
+        max-width: 210px;
+      }
+      .hydration-visibility-action > span { display: none; }
+    }
   `;
   document.head.appendChild(style);
 };
 
 // SECTION: Shared visual primitives, feedback, authentication and analytics helpers.
+const formatHydrationLiters = (milliliters) => {
+  const liters = Math.max(0, Number(milliliters || 0)) / 1000;
+  return `${liters.toFixed(2).replace(/\.?0+$/, '') || '0'} L`;
+};
+
+const HydrationWidget = ({
+  hydration,
+  sidebarOpen,
+  onAdd,
+  onGoalChange,
+  onReminderChange
+}) => {
+  const [open, setOpen] = useState(false);
+  const [selectedAmount, setSelectedAmount] = useState(250);
+  const [customAmount, setCustomAmount] = useState('');
+  const rootRef = useRef(null);
+  const popoverRef = useRef(null);
+  const percent = Math.min(100, Math.round((hydration.amount / Math.max(250, hydration.goal)) * 100));
+  const remaining = Math.max(0, hydration.goal - hydration.amount);
+  const complete = hydration.amount >= hydration.goal;
+
+  useEffect(() => {
+    if (!open) return undefined;
+    const closeOnOutsideClick = (event) => {
+      if (rootRef.current?.contains(event.target) || popoverRef.current?.contains(event.target)) return;
+      setOpen(false);
+    };
+    const closeOnEscape = (event) => {
+      if (event.key === 'Escape') setOpen(false);
+    };
+    document.addEventListener('pointerdown', closeOnOutsideClick);
+    document.addEventListener('keydown', closeOnEscape);
+    return () => {
+      document.removeEventListener('pointerdown', closeOnOutsideClick);
+      document.removeEventListener('keydown', closeOnEscape);
+    };
+  }, [open]);
+
+  const addQuickAmount = (amount, event) => {
+    event?.stopPropagation();
+    onAdd(amount);
+  };
+
+  const addSelectedAmount = () => {
+    const amount = customAmount === '' ? selectedAmount : Number(customAmount);
+    if (!Number.isFinite(amount) || amount <= 0) return;
+    onAdd(Math.round(amount));
+    setCustomAmount('');
+  };
+
+  return (
+    <div className="hydration-sidebar-slot" ref={rootRef}>
+      {sidebarOpen ? (
+        <section
+          className={`hydration-widget ${complete ? 'is-complete' : ''}`}
+          onClick={() => setOpen(true)}
+          role="button"
+          tabIndex={0}
+          aria-label="Abrir control de hidratación"
+          onKeyDown={event => {
+            if (event.key === 'Enter' || event.key === ' ') {
+              event.preventDefault();
+              setOpen(true);
+            }
+          }}
+        >
+          <div className="hydration-widget-header">
+            <div className="hydration-widget-title">
+              <Droplet size={17} color="var(--primary)" strokeWidth={1.9} />
+              <span>
+                <strong>Hidratación</strong>
+                <small>click para registrar</small>
+              </span>
+            </div>
+            <button
+              type="button"
+              className="hydration-widget-settings"
+              onClick={event => { event.stopPropagation(); setOpen(value => !value); }}
+              aria-label="Configurar hidratación"
+            >
+              <Settings size={14} />
+            </button>
+          </div>
+          <div className="hydration-widget-body">
+            <div className="hydration-bottle" aria-hidden="true">
+              <span className="hydration-bottle-fill" style={{ height: `${percent}%` }} />
+            </div>
+            <div>
+              <div className="hydration-widget-value">
+                <strong>{formatHydrationLiters(hydration.amount)}</strong>
+                <span>de {formatHydrationLiters(hydration.goal)}</span>
+              </div>
+              <span className="hydration-progress-badge">{percent}%</span>
+              <span className="hydration-meta-copy">
+                <span>Meta de hoy</span>
+                <strong>{complete ? 'Meta completada' : `Faltan ${formatHydrationLiters(remaining)}`}</strong>
+              </span>
+            </div>
+          </div>
+          <div className="hydration-quick-actions">
+            <button type="button" onClick={event => addQuickAmount(250, event)}>+250 ml</button>
+            <button type="button" onClick={event => addQuickAmount(500, event)}>+500 ml</button>
+          </div>
+          <div className="hydration-widget-footer">
+            <Flame size={12} color="var(--primary)" />
+            <span>Racha {hydration.streak} {hydration.streak === 1 ? 'día' : 'días'}</span>
+          </div>
+        </section>
+      ) : (
+        <button
+          type="button"
+          className="hydration-collapsed-button"
+          onClick={() => setOpen(value => !value)}
+          aria-label={`Hidratación, ${percent}% completado`}
+        >
+          <Droplet size={19} strokeWidth={1.9} />
+          <span>{percent}%</span>
+        </button>
+      )}
+
+      {open && (
+        <section
+          className="hydration-popover"
+          ref={popoverRef}
+          style={{ left: sidebarOpen ? 248 : 72, bottom: 58 }}
+          role="dialog"
+          aria-modal="false"
+          aria-label="Registrar agua"
+        >
+          <header className="hydration-popover-header">
+            <h3><Droplet size={17} color="var(--primary)" /> Registrar agua</h3>
+            <button type="button" className="hydration-popover-close" onClick={() => setOpen(false)} aria-label="Cerrar">
+              <X size={15} />
+            </button>
+          </header>
+          <div className="hydration-popover-progress">
+            <span>{formatHydrationLiters(hydration.amount)} / {formatHydrationLiters(hydration.goal)}</span>
+            <span>{percent}%</span>
+          </div>
+          <div className="hydration-progress-track" aria-label={`${percent}% de la meta diaria`}>
+            <span style={{ width: `${percent}%` }} />
+          </div>
+          <div className="hydration-amount-options">
+            {[250, 500, 750].map(amount => (
+              <button
+                key={amount}
+                type="button"
+                className={customAmount === '' && selectedAmount === amount ? 'is-active' : ''}
+                onClick={() => { setSelectedAmount(amount); setCustomAmount(''); }}
+              >
+                {amount} ml
+              </button>
+            ))}
+          </div>
+          <label className="hydration-field">
+            Personalizado
+            <span className="hydration-input-wrap">
+              <input
+                type="number"
+                min="1"
+                step="50"
+                inputMode="numeric"
+                value={customAmount}
+                onChange={event => setCustomAmount(event.target.value.replace(/^-/, ''))}
+                placeholder="0"
+                aria-label="Cantidad personalizada de agua"
+              />
+              <span>ml</span>
+            </span>
+          </label>
+          <div className="hydration-popover-goal">
+            <span className="hydration-goal-copy">
+              <span>Meta diaria</span>
+              <strong>{formatHydrationLiters(hydration.goal)}</strong>
+            </span>
+            <span className="hydration-goal-controls">
+              <button type="button" className="hydration-goal-button" onClick={() => onGoalChange(-250)} aria-label="Reducir meta diaria">
+                <Minus size={15} />
+              </button>
+              <button type="button" className="hydration-goal-button" onClick={() => onGoalChange(250)} aria-label="Aumentar meta diaria">
+                <Plus size={15} />
+              </button>
+            </span>
+          </div>
+          <div className="hydration-popover-reminder">
+            <span>
+              <span>Recordarme cada 2h</span>
+              <small>Avisos mientras las notificaciones estén activas.</small>
+            </span>
+            <button
+              type="button"
+              className={`hydration-toggle ${hydration.remindersEnabled ? 'is-active' : ''}`}
+              onClick={() => onReminderChange(!hydration.remindersEnabled)}
+              aria-pressed={hydration.remindersEnabled}
+              aria-label={`${hydration.remindersEnabled ? 'Desactivar' : 'Activar'} recordatorios de hidratación`}
+            />
+          </div>
+          <div className="hydration-popover-actions">
+            <button type="button" className="is-primary" onClick={addSelectedAmount}>Agregar</button>
+            <button type="button" onClick={() => setOpen(false)}>Guardar meta</button>
+          </div>
+        </section>
+      )}
+    </div>
+  );
+};
+
 const Confetti = ({ x, y }) => {
   const colors = ['#e11d48', '#efefef', '#00ff9d', '#ff6b6b', '#ffd93d', '#e11d48'];
   const particles = Array.from({ length: 20 }, (_, i) => {
@@ -12606,7 +13364,20 @@ const LegacyHabitsView = ({ data, onAddHabit, onUpdateHabit, onDeleteHabit, onTo
   );
 };
 
-const HabitsView = ({ data, onAddHabit, onUpdateHabit, onDeleteHabit, onToggleHabit, onCompleteHabit, onCreateHabitCategory, records, quickAction, onQuickActionHandled }) => {
+const HabitsView = ({
+  data,
+  onAddHabit,
+  onUpdateHabit,
+  onDeleteHabit,
+  onToggleHabit,
+  onCompleteHabit,
+  onCreateHabitCategory,
+  records,
+  quickAction,
+  onQuickActionHandled,
+  hydrationWidgetEnabled,
+  onToggleHydrationWidget
+}) => {
   const { habits } = data;
   const today = toYYYYMMDD(new Date());
   const habitCategories = useMemo(
@@ -12810,6 +13581,26 @@ const HabitsView = ({ data, onAddHabit, onUpdateHabit, onDeleteHabit, onToggleHa
           </div>
         </div>
       </header>
+
+      <section className="hydration-visibility-control" aria-label="Preferencia del widget de hidratación">
+        <div className="hydration-visibility-copy">
+          <span><Droplet size={18} strokeWidth={1.9} /></span>
+          <span>
+            <strong>Widget de hidratación</strong>
+            <small>Muestra el control de agua diaria en el sidebar.</small>
+          </span>
+        </div>
+        <div className="hydration-visibility-action">
+          <span>{hydrationWidgetEnabled ? 'Activo' : 'Oculto'}</span>
+          <button
+            type="button"
+            className={`hydration-toggle ${hydrationWidgetEnabled ? 'is-active' : ''}`}
+            onClick={() => onToggleHydrationWidget(!hydrationWidgetEnabled)}
+            aria-pressed={hydrationWidgetEnabled}
+            aria-label={`${hydrationWidgetEnabled ? 'Ocultar' : 'Mostrar'} widget de hidratación`}
+          />
+        </div>
+      </section>
 
       <section className="habit-matrix-summary" aria-label="Resumen del periodo">
         <div className="habit-matrix-stat">
@@ -22212,6 +23003,7 @@ const HabitFlowApp = () => {
   const [mobileMenu, setMobileMenu] = useState(false);
   const [showMoreNav, setShowMoreNav] = useState(false);
   const [toast, setToast] = useState(null);
+  const [hydration, setHydration] = useState(() => readHydrationStorage());
   const [showUpdateNotes, setShowUpdateNotes] = useState(false);
   const [cloudSync, setCloudSync] = useState({ status: 'checking', label: 'Conectando nube', reason: '' });
   const pushAutoSyncRef = useRef(false);
@@ -22557,6 +23349,110 @@ const HabitFlowApp = () => {
     setData(newData);
     saveData(newData);
   }, []);
+
+  const updateHydration = useCallback((updater) => {
+    setHydration(previous => {
+      const current = previous.date === getHydrationDateKey() ? previous : readHydrationStorage();
+      const next = typeof updater === 'function' ? updater(current) : updater;
+      persistHydrationStorage(next);
+      return next;
+    });
+  }, []);
+
+  const addHydration = useCallback((amount) => {
+    const safeAmount = Math.max(0, Math.round(Number(amount || 0)));
+    if (!safeAmount) return;
+    updateHydration(previous => {
+      const nextAmount = previous.amount + safeAmount;
+      const reachedGoal = nextAmount >= previous.goal && previous.lastCompletedDate !== previous.date;
+      const streak = reachedGoal
+        ? (getHydrationDayDifference(previous.lastCompletedDate, previous.date) === 1 ? previous.streak + 1 : 1)
+        : previous.streak;
+      return {
+        ...previous,
+        amount: nextAmount,
+        streak,
+        lastCompletedDate: reachedGoal ? previous.date : previous.lastCompletedDate
+      };
+    });
+    setToast({ message: `${safeAmount} ml agregados a Hidratación`, type: 'success' });
+  }, [updateHydration]);
+
+  const changeHydrationGoal = useCallback((delta) => {
+    updateHydration(previous => {
+      const goal = Math.min(10000, Math.max(250, previous.goal + Number(delta || 0)));
+      const reachedGoal = previous.amount >= goal && previous.lastCompletedDate !== previous.date;
+      return {
+        ...previous,
+        goal,
+        streak: reachedGoal
+          ? (getHydrationDayDifference(previous.lastCompletedDate, previous.date) === 1 ? previous.streak + 1 : 1)
+          : previous.streak,
+        lastCompletedDate: reachedGoal ? previous.date : previous.lastCompletedDate
+      };
+    });
+  }, [updateHydration]);
+
+  const changeHydrationReminder = useCallback(async (enabled) => {
+    if (enabled) {
+      const permission = await requestHabitFlowNotifications().catch(() => ({ ok: false }));
+      if (permission?.ok === false && getNotificationPermissionState() !== 'granted') {
+        setToast({ message: 'Activa el permiso de notificaciones para recibir recordatorios.', type: 'warning' });
+      }
+    }
+    updateHydration(previous => ({
+      ...previous,
+      remindersEnabled: enabled,
+      lastReminderAt: enabled ? Date.now() : previous.lastReminderAt
+    }));
+  }, [updateHydration]);
+
+  const setHydrationWidgetEnabled = useCallback((enabled) => {
+    updateHydration(previous => ({ ...previous, widgetEnabled: !!enabled }));
+  }, [updateHydration]);
+
+  useEffect(() => {
+    const checkDate = () => {
+      if (hydration.date !== getHydrationDateKey()) setHydration(readHydrationStorage());
+    };
+    const timer = setInterval(checkDate, 60000);
+    window.addEventListener('focus', checkDate);
+    document.addEventListener('visibilitychange', checkDate);
+    return () => {
+      clearInterval(timer);
+      window.removeEventListener('focus', checkDate);
+      document.removeEventListener('visibilitychange', checkDate);
+    };
+  }, [hydration.date]);
+
+  useEffect(() => {
+    if (!hydration.remindersEnabled || hydration.amount >= hydration.goal) return undefined;
+    if (data?.user?.notificationsEnabled === false) return undefined;
+    const checkReminder = () => {
+      if (getNotificationPermissionState() !== 'granted') return;
+      const twoHours = 2 * 60 * 60 * 1000;
+      if (Date.now() - Number(hydration.lastReminderAt || 0) < twoHours) return;
+      const remaining = Math.max(0, hydration.goal - hydration.amount);
+      showHabitFlowNotification('HabitFlow - Hidratación', {
+        body: `Es hora de tomar agua. Te faltan ${formatHydrationLiters(remaining)} para completar tu meta de hoy.`,
+        tag: `habitflow-hydration-${hydration.date}`,
+        data: { view: 'habits', section: 'hydration' },
+        renotify: true
+      });
+      updateHydration(previous => ({ ...previous, lastReminderAt: Date.now() }));
+    };
+    checkReminder();
+    const timer = setInterval(checkReminder, 60000);
+    return () => clearInterval(timer);
+  }, [
+    hydration.remindersEnabled,
+    hydration.amount,
+    hydration.goal,
+    hydration.lastReminderAt,
+    hydration.date,
+    data?.user?.notificationsEnabled,
+    updateHydration
+  ]);
 
   const [showLevelUp, setShowLevelUp] = useState(null);
   const [showChallengeComplete, setShowChallengeComplete] = useState(null);
@@ -23232,7 +24128,7 @@ const HabitFlowApp = () => {
   const renderView = () => {
     switch (view) {
       case 'dashboard': return <DashboardView data={data} onCompleteHabit={onCompleteHabit} workoutData={data.workoutData} onNavigate={navigateTo} onQuickAction={runDashboardQuickAction} onUpdateUser={onUpdateUser} onUpdateAgenda={onUpdateAgenda} onUpdateFinance={onUpdateFinance} onAddHabit={onAddHabit} />;
-      case 'habits': return <HabitsView data={data} onAddHabit={onAddHabit} onUpdateHabit={onUpdateHabit} onDeleteHabit={onDeleteHabit} onToggleHabit={onToggleHabit} onCompleteHabit={onCompleteHabit} onUpdateRecord={onUpdateRecord} onCreateHabitCategory={onCreateHabitCategory} records={data.records} quickAction={pendingQuickAction} onQuickActionHandled={markQuickActionHandled} />;
+      case 'habits': return <HabitsView data={data} onAddHabit={onAddHabit} onUpdateHabit={onUpdateHabit} onDeleteHabit={onDeleteHabit} onToggleHabit={onToggleHabit} onCompleteHabit={onCompleteHabit} onUpdateRecord={onUpdateRecord} onCreateHabitCategory={onCreateHabitCategory} records={data.records} quickAction={pendingQuickAction} onQuickActionHandled={markQuickActionHandled} hydrationWidgetEnabled={hydration.widgetEnabled} onToggleHydrationWidget={setHydrationWidgetEnabled} />;
       case 'pomodoro': return <PomodoroView data={data} onUpdateUser={onUpdateUser} onUpdatePomodoro={onUpdatePomodoro} quickAction={pendingQuickAction} onQuickActionHandled={markQuickActionHandled} />;
       case 'workout': return <WorkoutView data={data} onUpdateData={onUpdateWorkout} onCompleteHabit={onCompleteHabit} awardXp={(prev, amt) => awardXp(prev, amt)} />;
       case 'agenda': return <AgendaView data={data} onUpdateAgenda={onUpdateAgenda} onUpdateAgendaNote={onUpdateAgendaNote} onUpdateAgendaTodos={onUpdateAgendaTodos} onUpdateAgendaTodoLabels={onUpdateAgendaTodoLabels} onUpdateAgendaTaskCategories={onUpdateAgendaTaskCategories} onMoveTaskToDate={onMoveTaskToDate} onCompleteHabit={onCompleteHabit} quickAction={pendingQuickAction} onQuickActionHandled={markQuickActionHandled} />;
@@ -23305,7 +24201,7 @@ const HabitFlowApp = () => {
           </div>
         </div>
 
-        <nav style={{ flex: 1, padding: sidebarOpen  ? '16px 12px' : '16px 8px', display: 'flex', flexDirection: 'column', gap: 4, transition: 'padding 0.3s ease' }}>
+        <nav style={{ flex: 1, minHeight: 0, overflowY: 'auto', padding: sidebarOpen  ? '16px 12px' : '16px 8px', display: 'flex', flexDirection: 'column', gap: 4, transition: 'padding 0.3s ease' }}>
           {navItems.map(item => (
             <button key={item.id} aria-label={item.label} title={item.label} onClick={() => { navigateTo(item.id); setMobileMenu(false); }} style={{
               display: 'flex', alignItems: 'center', justifyContent: sidebarOpen  ? 'flex-start' : 'center', gap: sidebarOpen  ? 12 : 0,
@@ -23327,6 +24223,16 @@ const HabitFlowApp = () => {
             </button>
           ))}
         </nav>
+
+        {hydration.widgetEnabled && (
+          <HydrationWidget
+            hydration={hydration}
+            sidebarOpen={sidebarOpen}
+            onAdd={addHydration}
+            onGoalChange={changeHydrationGoal}
+            onReminderChange={changeHydrationReminder}
+          />
+        )}
 
         <div className="user-info" style={{ padding: sidebarOpen  ? '16px 20px' : '14px 8px', borderTop: `1px solid ${COLORS.border}`, fontSize: 11, color: COLORS.textDim }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: sidebarOpen  ? 'flex-start' : 'center', gap: sidebarOpen  ? 8 : 4, margin: sidebarOpen  ? 0 : '0 auto', minHeight: 24, borderRadius: 9, background: sidebarOpen  ? 'transparent' : `${COLORS.alert}10`, border: sidebarOpen  ? 'none' : `1px solid ${COLORS.alert}24`, color: sidebarOpen  ? COLORS.textDim : COLORS.text, fontWeight: sidebarOpen  ? 400 : 700 }} title={`Racha global: ${getGlobalCurrentStreak(data.habits, data.records)} días`}>
