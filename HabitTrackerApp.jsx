@@ -10472,12 +10472,47 @@ const injectStyles = () => {
       color: var(--hf-text) !important;
       color-scheme: dark;
     }
+    .widget-popover-layer {
+      position: fixed;
+      inset: 0;
+      z-index: 900;
+      display: grid;
+      place-items: center;
+      padding: 20px;
+      background: rgba(0, 0, 0, .66);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      animation: widgetLayerIn 160ms ease-out;
+    }
+    .widget-popover-layer .hydration-popover {
+      position: relative !important;
+      inset: auto !important;
+      right: auto !important;
+      bottom: auto !important;
+      left: auto !important;
+      width: min(380px, calc(100vw - 32px)) !important;
+      max-height: min(680px, calc(100dvh - 32px));
+      margin: 0;
+      box-shadow: 0 28px 90px rgba(0, 0, 0, .55), inset 0 1px 0 var(--hf-card-highlight);
+    }
+    .widget-popover-layer .hydration-popover::before { display: none; }
+    @keyframes widgetLayerIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
     @media (max-width: 900px) {
       .hydration-sidebar-slot { display: none; }
       .cc-rail .hydration-panel-slot { display: block; }
       .cc-rail { order: 2; }
       .hydration-panel-slot .hydration-popover,
       .brushing-popover { right: 12px; bottom: calc(74px + env(safe-area-inset-bottom)); width: min(292px, calc(100vw - 24px)); }
+      .widget-popover-layer { padding: 12px; align-items: end; }
+      .widget-popover-layer .hydration-popover {
+        width: 100% !important;
+        max-height: calc(100dvh - 24px);
+        border-radius: 20px 20px 14px 14px;
+        padding-bottom: calc(16px + env(safe-area-inset-bottom));
+      }
       .hydration-visibility-control {
         align-items: flex-start;
       }
@@ -10519,6 +10554,11 @@ const HydrationWidget = ({
   const remaining = Math.max(0, hydration.goal - hydration.amount);
   const complete = hydration.amount >= hydration.goal;
 
+  const setWidgetOpen = (nextOpen) => {
+    if (nextOpen) window.dispatchEvent(new CustomEvent('habitflow:widget-settings', { detail: 'hydration' }));
+    setOpen(nextOpen);
+  };
+
   useEffect(() => {
     if (!open) return undefined;
     const closeOnOutsideClick = (event) => {
@@ -10535,6 +10575,14 @@ const HydrationWidget = ({
       document.removeEventListener('keydown', closeOnEscape);
     };
   }, [open]);
+
+  useEffect(() => {
+    const closeForAnotherWidget = (event) => {
+      if (event.detail !== 'hydration') setOpen(false);
+    };
+    window.addEventListener('habitflow:widget-settings', closeForAnotherWidget);
+    return () => window.removeEventListener('habitflow:widget-settings', closeForAnotherWidget);
+  }, []);
 
   const addQuickAmount = (amount, event) => {
     event?.stopPropagation();
@@ -10553,14 +10601,14 @@ const HydrationWidget = ({
       {sidebarOpen ? (
         <section
           className={`hydration-widget ${complete ? 'is-complete' : ''}`}
-          onClick={() => setOpen(true)}
+          onClick={() => setWidgetOpen(true)}
           role="button"
           tabIndex={0}
           aria-label="Abrir control de hidratación"
           onKeyDown={event => {
             if (event.key === 'Enter' || event.key === ' ') {
               event.preventDefault();
-              setOpen(true);
+              setWidgetOpen(true);
             }
           }}
         >
@@ -10575,7 +10623,7 @@ const HydrationWidget = ({
             <button
               type="button"
               className="hydration-widget-settings"
-              onClick={event => { event.stopPropagation(); setOpen(value => !value); }}
+              onClick={event => { event.stopPropagation(); setWidgetOpen(!open); }}
               aria-label="Configurar hidratación"
             >
               <Settings size={14} />
@@ -10610,7 +10658,7 @@ const HydrationWidget = ({
         <button
           type="button"
           className="hydration-collapsed-button"
-          onClick={() => setOpen(value => !value)}
+          onClick={() => setWidgetOpen(!open)}
           aria-label={`Hidratación, ${percent}% completado`}
         >
           <Droplet size={19} strokeWidth={1.9} />
@@ -10618,18 +10666,12 @@ const HydrationWidget = ({
         </button>
       )}
 
-      {open && (
-        <section
-          className="hydration-popover"
-          ref={popoverRef}
-          style={panelMode ? undefined : { left: sidebarOpen ? 248 : 72, bottom: 58 }}
-          role="dialog"
-          aria-modal="false"
-          aria-label="Registrar agua"
-        >
+      {open && ReactDOM.createPortal((
+        <div className="widget-popover-layer" onMouseDown={event => { if (event.target === event.currentTarget) setWidgetOpen(false); }}>
+        <section className="hydration-popover" ref={popoverRef} role="dialog" aria-modal="true" aria-label="Registrar agua">
           <header className="hydration-popover-header">
             <h3><Droplet size={17} color="var(--primary)" /> Registrar agua</h3>
-            <button type="button" className="hydration-popover-close" onClick={() => setOpen(false)} aria-label="Cerrar">
+            <button type="button" className="hydration-popover-close" onClick={() => setWidgetOpen(false)} aria-label="Cerrar">
               <X size={15} />
             </button>
           </header>
@@ -10697,10 +10739,11 @@ const HydrationWidget = ({
           </div>
           <div className="hydration-popover-actions">
             <button type="button" className="is-primary" onClick={addSelectedAmount}>Agregar</button>
-            <button type="button" onClick={() => setOpen(false)}>Guardar meta</button>
+            <button type="button" onClick={() => setWidgetOpen(false)}>Guardar meta</button>
           </div>
         </section>
-      )}
+        </div>
+      ), document.body)}
     </div>
   );
 };
@@ -10720,6 +10763,17 @@ const BrushingWidget = ({ brushing, onAdd, onUndo, onGoalChange, onReminderChang
     next[index] = value;
     onTimesChange(next);
   };
+  const setWidgetOpen = (nextOpen) => {
+    if (nextOpen) window.dispatchEvent(new CustomEvent('habitflow:widget-settings', { detail: 'brushing' }));
+    setOpen(nextOpen);
+  };
+  useEffect(() => {
+    const closeForAnotherWidget = (event) => {
+      if (event.detail !== 'brushing') setOpen(false);
+    };
+    window.addEventListener('habitflow:widget-settings', closeForAnotherWidget);
+    return () => window.removeEventListener('habitflow:widget-settings', closeForAnotherWidget);
+  }, []);
   return (
     <div className="brushing-widget-slot">
       <section className={`brushing-widget ${complete ? 'is-complete' : ''}`}>
@@ -10728,7 +10782,7 @@ const BrushingWidget = ({ brushing, onAdd, onUndo, onGoalChange, onReminderChang
             <span className="brushing-icon"><ToothbrushGlyph size={18} /></span>
             <span><strong>Cepillado dental</strong><small>{complete ? 'Meta de hoy completada' : 'Cuida tu rutina diaria'}</small></span>
           </div>
-          <button type="button" className="hydration-widget-settings" onClick={() => setOpen(value => !value)} aria-label="Configurar cepillado"><Settings size={14} /></button>
+          <button type="button" className="hydration-widget-settings" onClick={() => setWidgetOpen(!open)} aria-label="Configurar cepillado"><Settings size={14} /></button>
         </div>
         <div className="brushing-progress-row">
           <div className="brushing-count"><strong>{brushing.count}</strong><span>de {brushing.goal} {brushing.goal === 1 ? 'cepillado' : 'cepillados'}</span></div>
@@ -10741,9 +10795,10 @@ const BrushingWidget = ({ brushing, onAdd, onUndo, onGoalChange, onReminderChang
         </div>
         <div className="hydration-widget-footer"><Flame size={12} color="var(--primary)" /><span>Racha {brushing.streak} {brushing.streak === 1 ? 'día' : 'días'}</span></div>
       </section>
-      {open && (
-        <section className="hydration-popover brushing-popover" role="dialog" aria-label="Configurar cepillado">
-          <header className="hydration-popover-header"><h3><ToothbrushGlyph size={17} /> Configurar cepillado</h3><button type="button" className="hydration-popover-close" onClick={() => setOpen(false)} aria-label="Cerrar"><X size={15} /></button></header>
+      {open && ReactDOM.createPortal((
+        <div className="widget-popover-layer" onMouseDown={event => { if (event.target === event.currentTarget) setWidgetOpen(false); }}>
+        <section className="hydration-popover brushing-popover" role="dialog" aria-modal="true" aria-label="Configurar cepillado">
+          <header className="hydration-popover-header"><h3><ToothbrushGlyph size={17} /> Configurar cepillado</h3><button type="button" className="hydration-popover-close" onClick={() => setWidgetOpen(false)} aria-label="Cerrar"><X size={15} /></button></header>
           <div className="hydration-popover-goal">
             <span className="hydration-goal-copy"><span>Meta diaria</span><strong>{brushing.goal} veces</strong></span>
             <span className="hydration-goal-controls"><button type="button" className="hydration-goal-button" onClick={() => onGoalChange(-1)}><Minus size={15} /></button><button type="button" className="hydration-goal-button" onClick={() => onGoalChange(1)}><Plus size={15} /></button></span>
@@ -10756,9 +10811,10 @@ const BrushingWidget = ({ brushing, onAdd, onUndo, onGoalChange, onReminderChang
             <span><span>Recordatorios</span><small>Avisa en los horarios configurados.</small></span>
             <button type="button" className={`hydration-toggle ${brushing.remindersEnabled ? 'is-active' : ''}`} onClick={() => onReminderChange(!brushing.remindersEnabled)} aria-pressed={brushing.remindersEnabled} />
           </div>
-          <div className="hydration-popover-actions"><button type="button" className="is-primary" onClick={() => setOpen(false)}>Guardar configuración</button></div>
+          <div className="hydration-popover-actions"><button type="button" className="is-primary" onClick={() => setWidgetOpen(false)}>Guardar configuración</button></div>
         </section>
-      )}
+        </div>
+      ), document.body)}
     </div>
   );
 };
