@@ -45,6 +45,14 @@ const HYDRATION_STORAGE_KEYS = {
   streak: 'habitflow_hydration_streak'
 };
 
+const BRUSHING_STORAGE_KEYS = {
+  today: 'habitflow_brushing_today',
+  goal: 'habitflow_brushing_goal',
+  remindersEnabled: 'habitflow_brushing_reminders_enabled',
+  reminderTimes: 'habitflow_brushing_reminder_times',
+  streak: 'habitflow_brushing_streak'
+};
+
 const getHydrationDateKey = (date = new Date()) => {
   const year = date.getFullYear();
   const month = String(date.getMonth() + 1).padStart(2, '0');
@@ -126,6 +134,72 @@ const persistHydrationStorage = (state) => {
     localStorage.setItem(HYDRATION_STORAGE_KEYS.remindersEnabled, state.remindersEnabled ? 'true' : 'false');
     localStorage.setItem(HYDRATION_STORAGE_KEYS.widgetEnabled, state.widgetEnabled ? 'true' : 'false');
     localStorage.setItem(HYDRATION_STORAGE_KEYS.streak, JSON.stringify({
+      count: Math.max(0, Number(state.streak || 0)),
+      lastCompletedDate: state.lastCompletedDate || ''
+    }));
+  } catch {}
+};
+
+const readBrushingStorage = () => {
+  const todayKey = getHydrationDateKey();
+  let savedToday = {};
+  let savedStreak = {};
+  let reminderTimes = ['07:00', '21:00'];
+  try { savedToday = JSON.parse(localStorage.getItem(BRUSHING_STORAGE_KEYS.today) || '{}') || {}; } catch {}
+  try { savedStreak = JSON.parse(localStorage.getItem(BRUSHING_STORAGE_KEYS.streak) || '{}') || {}; } catch {}
+  try {
+    const storedTimes = JSON.parse(localStorage.getItem(BRUSHING_STORAGE_KEYS.reminderTimes) || '[]');
+    if (Array.isArray(storedTimes) && storedTimes.length) reminderTimes = storedTimes.slice(0, 4);
+  } catch {}
+  const storedGoalRaw = localStorage.getItem(BRUSHING_STORAGE_KEYS.goal);
+  const storedGoal = Number(storedGoalRaw);
+  const goal = storedGoalRaw !== null && Number.isFinite(storedGoal)
+    ? Math.min(4, Math.max(1, Math.round(storedGoal)))
+    : 2;
+  const remindersEnabled = localStorage.getItem(BRUSHING_STORAGE_KEYS.remindersEnabled) === 'true';
+  let count = Math.max(0, Number(savedToday.count || 0));
+  let streak = Math.max(0, Number(savedStreak.count || 0));
+  let lastCompletedDate = savedStreak.lastCompletedDate || '';
+  if (savedToday.date !== todayKey) {
+    const previousCompleted = Number(savedToday.count || 0) >= goal;
+    const dayGap = getHydrationDayDifference(savedToday.date, todayKey);
+    if (previousCompleted && savedToday.date !== lastCompletedDate) {
+      streak = dayGap === 1 ? streak + 1 : 1;
+      lastCompletedDate = savedToday.date || lastCompletedDate;
+    } else if (dayGap > 1 || !previousCompleted) {
+      streak = 0;
+    }
+    count = 0;
+  }
+  if (count >= goal && lastCompletedDate !== todayKey) {
+    streak = getHydrationDayDifference(lastCompletedDate, todayKey) === 1 ? streak + 1 : 1;
+    lastCompletedDate = todayKey;
+  }
+  return {
+    date: todayKey,
+    count,
+    goal,
+    remindersEnabled,
+    reminderTimes,
+    streak,
+    lastCompletedDate,
+    sentReminderKeys: savedToday.date === todayKey && Array.isArray(savedToday.sentReminderKeys)
+      ? savedToday.sentReminderKeys
+      : []
+  };
+};
+
+const persistBrushingStorage = (state) => {
+  try {
+    localStorage.setItem(BRUSHING_STORAGE_KEYS.today, JSON.stringify({
+      date: state.date,
+      count: Math.max(0, Number(state.count || 0)),
+      sentReminderKeys: Array.isArray(state.sentReminderKeys) ? state.sentReminderKeys : []
+    }));
+    localStorage.setItem(BRUSHING_STORAGE_KEYS.goal, String(Math.min(4, Math.max(1, Number(state.goal || 2)))));
+    localStorage.setItem(BRUSHING_STORAGE_KEYS.remindersEnabled, state.remindersEnabled ? 'true' : 'false');
+    localStorage.setItem(BRUSHING_STORAGE_KEYS.reminderTimes, JSON.stringify(state.reminderTimes || ['07:00', '21:00']));
+    localStorage.setItem(BRUSHING_STORAGE_KEYS.streak, JSON.stringify({
       count: Math.max(0, Number(state.streak || 0)),
       lastCompletedDate: state.lastCompletedDate || ''
     }));
@@ -10293,8 +10367,117 @@ const injectStyles = () => {
     html[data-theme-mode="pinkLight"] .hydration-popover {
       box-shadow: 0 16px 42px rgba(93, 36, 52, 0.12);
     }
+    .cc-widgets-heading {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 2px 2px 0;
+    }
+    .cc-widgets-heading strong {
+      color: var(--hf-text);
+      font-size: 12px;
+      letter-spacing: .01em;
+    }
+    .cc-widgets-heading span {
+      color: var(--hf-muted);
+      font-size: 9px;
+    }
+    .hydration-panel-slot,
+    .brushing-widget-slot {
+      position: relative;
+      padding: 0;
+      min-width: 0;
+    }
+    .hydration-panel-slot .hydration-widget,
+    .brushing-widget {
+      box-shadow: inset 0 1px 0 var(--hf-card-highlight);
+      background: var(--hf-glass-quiet);
+    }
+    .hydration-panel-slot .hydration-widget-body {
+      grid-template-columns: 38px minmax(0, 1fr);
+    }
+    .hydration-panel-slot .hydration-bottle {
+      width: 33px;
+      height: 70px;
+    }
+    .hydration-panel-slot .hydration-popover,
+    .brushing-popover {
+      right: 24px;
+      left: auto;
+      bottom: 24px;
+    }
+    .brushing-widget {
+      width: 100%;
+      padding: 13px;
+      border: 1px solid var(--hf-card-border-strong);
+      border-radius: 16px;
+      color: var(--hf-text);
+    }
+    .brushing-widget-head,
+    .brushing-widget-title,
+    .brushing-progress-row,
+    .brushing-actions {
+      display: flex;
+      align-items: center;
+    }
+    .brushing-widget-head,
+    .brushing-progress-row { justify-content: space-between; gap: 10px; }
+    .brushing-widget-title { gap: 8px; min-width: 0; }
+    .brushing-widget-title > span:last-child { display: grid; gap: 2px; min-width: 0; }
+    .brushing-widget-title strong { color: var(--hf-text); font-size: 12px; }
+    .brushing-widget-title small { color: var(--hf-muted); font-size: 9px; }
+    .brushing-icon {
+      width: 31px;
+      height: 31px;
+      border-radius: 10px;
+      display: grid;
+      place-items: center;
+      color: var(--primary);
+      background: color-mix(in srgb, var(--primary) 10%, transparent);
+      border: 1px solid color-mix(in srgb, var(--primary) 28%, transparent);
+    }
+    .brushing-progress-row { margin: 14px 0 9px; }
+    .brushing-count { display: flex; align-items: baseline; gap: 7px; }
+    .brushing-count strong { color: var(--hf-text); font-size: 28px; line-height: 1; }
+    .brushing-count span { color: var(--hf-muted); font-size: 10px; }
+    .brushing-actions { gap: 7px; margin-top: 11px; }
+    .brushing-actions button {
+      min-height: 36px;
+      border: 1px solid var(--hf-card-border);
+      border-radius: 10px;
+      background: var(--hf-input-bg);
+      color: var(--hf-text);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      font: 700 10px/1 'Inter', sans-serif;
+    }
+    .brushing-actions .is-primary { flex: 1; color: #fff; border-color: var(--primary); background: var(--primary); }
+    .brushing-actions button:last-child { width: 38px; }
+    .brushing-actions button:disabled { opacity: .35; cursor: default; }
+    .brushing-widget.is-complete .brushing-icon,
+    .brushing-widget.is-complete .hydration-widget-footer { color: var(--hf-success, #16c784); }
+    .brushing-time-list { display: grid; gap: 7px; margin-top: 14px; }
+    .brushing-time-list > span { color: var(--hf-muted); font-size: 10px; }
+    .brushing-time-list input {
+      width: 100%;
+      min-height: 39px;
+      padding: 0 11px;
+      border: 1px solid var(--hf-card-border) !important;
+      border-radius: 10px;
+      background: var(--hf-input-bg) !important;
+      color: var(--hf-text) !important;
+      color-scheme: dark;
+    }
     @media (max-width: 900px) {
       .hydration-sidebar-slot { display: none; }
+      .cc-rail .hydration-panel-slot { display: block; }
+      .cc-rail { order: 2; }
+      .hydration-panel-slot .hydration-popover,
+      .brushing-popover { right: 12px; bottom: calc(74px + env(safe-area-inset-bottom)); width: min(292px, calc(100vw - 24px)); }
       .hydration-visibility-control {
         align-items: flex-start;
       }
@@ -10321,7 +10504,8 @@ const formatHydrationLiters = (milliliters) => {
 
 const HydrationWidget = ({
   hydration,
-  sidebarOpen,
+  sidebarOpen = true,
+  panelMode = false,
   onAdd,
   onGoalChange,
   onReminderChange
@@ -10365,7 +10549,7 @@ const HydrationWidget = ({
   };
 
   return (
-    <div className="hydration-sidebar-slot" ref={rootRef}>
+    <div className={`hydration-sidebar-slot ${panelMode ? 'hydration-panel-slot' : ''}`} ref={rootRef}>
       {sidebarOpen ? (
         <section
           className={`hydration-widget ${complete ? 'is-complete' : ''}`}
@@ -10438,7 +10622,7 @@ const HydrationWidget = ({
         <section
           className="hydration-popover"
           ref={popoverRef}
-          style={{ left: sidebarOpen ? 248 : 72, bottom: 58 }}
+          style={panelMode ? undefined : { left: sidebarOpen ? 248 : 72, bottom: 58 }}
           role="dialog"
           aria-modal="false"
           aria-label="Registrar agua"
@@ -10515,6 +10699,64 @@ const HydrationWidget = ({
             <button type="button" className="is-primary" onClick={addSelectedAmount}>Agregar</button>
             <button type="button" onClick={() => setOpen(false)}>Guardar meta</button>
           </div>
+        </section>
+      )}
+    </div>
+  );
+};
+
+const ToothbrushGlyph = ({ size = 18 }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" aria-hidden="true">
+    <path d="M4 18.5 14.6 7.9m-8.8 12.4-2.1-2.1 2.7-2.7 2.1 2.1-2.7 2.7Zm8.8-12.4 1.8-1.8m-1.1 2.5 2-2m-1.2 2.6 1.8-1.8m-3.3 1.3 2.2 2.2" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" />
+  </svg>
+);
+
+const BrushingWidget = ({ brushing, onAdd, onUndo, onGoalChange, onReminderChange, onTimesChange }) => {
+  const [open, setOpen] = useState(false);
+  const percent = Math.min(100, Math.round((brushing.count / Math.max(1, brushing.goal)) * 100));
+  const complete = brushing.count >= brushing.goal;
+  const updateTime = (index, value) => {
+    const next = [...brushing.reminderTimes];
+    next[index] = value;
+    onTimesChange(next);
+  };
+  return (
+    <div className="brushing-widget-slot">
+      <section className={`brushing-widget ${complete ? 'is-complete' : ''}`}>
+        <div className="brushing-widget-head">
+          <div className="brushing-widget-title">
+            <span className="brushing-icon"><ToothbrushGlyph size={18} /></span>
+            <span><strong>Cepillado dental</strong><small>{complete ? 'Meta de hoy completada' : 'Cuida tu rutina diaria'}</small></span>
+          </div>
+          <button type="button" className="hydration-widget-settings" onClick={() => setOpen(value => !value)} aria-label="Configurar cepillado"><Settings size={14} /></button>
+        </div>
+        <div className="brushing-progress-row">
+          <div className="brushing-count"><strong>{brushing.count}</strong><span>de {brushing.goal} {brushing.goal === 1 ? 'cepillado' : 'cepillados'}</span></div>
+          <span className="hydration-progress-badge">{percent}%</span>
+        </div>
+        <div className="hydration-progress-track"><span style={{ width: `${percent}%` }} /></div>
+        <div className="brushing-actions">
+          <button type="button" className="is-primary" onClick={onAdd}><Check size={14} /> Registrar cepillado</button>
+          <button type="button" onClick={onUndo} disabled={brushing.count <= 0} aria-label="Deshacer último cepillado"><Minus size={14} /></button>
+        </div>
+        <div className="hydration-widget-footer"><Flame size={12} color="var(--primary)" /><span>Racha {brushing.streak} {brushing.streak === 1 ? 'día' : 'días'}</span></div>
+      </section>
+      {open && (
+        <section className="hydration-popover brushing-popover" role="dialog" aria-label="Configurar cepillado">
+          <header className="hydration-popover-header"><h3><ToothbrushGlyph size={17} /> Configurar cepillado</h3><button type="button" className="hydration-popover-close" onClick={() => setOpen(false)} aria-label="Cerrar"><X size={15} /></button></header>
+          <div className="hydration-popover-goal">
+            <span className="hydration-goal-copy"><span>Meta diaria</span><strong>{brushing.goal} veces</strong></span>
+            <span className="hydration-goal-controls"><button type="button" className="hydration-goal-button" onClick={() => onGoalChange(-1)}><Minus size={15} /></button><button type="button" className="hydration-goal-button" onClick={() => onGoalChange(1)}><Plus size={15} /></button></span>
+          </div>
+          <div className="brushing-time-list">
+            <span>Horarios de recordatorio</span>
+            {brushing.reminderTimes.map((time, index) => <input key={index} type="time" value={time} onChange={event => updateTime(index, event.target.value)} aria-label={`Recordatorio ${index + 1}`} />)}
+          </div>
+          <div className="hydration-popover-reminder">
+            <span><span>Recordatorios</span><small>Avisa en los horarios configurados.</small></span>
+            <button type="button" className={`hydration-toggle ${brushing.remindersEnabled ? 'is-active' : ''}`} onClick={() => onReminderChange(!brushing.remindersEnabled)} aria-pressed={brushing.remindersEnabled} />
+          </div>
+          <div className="hydration-popover-actions"><button type="button" className="is-primary" onClick={() => setOpen(false)}>Guardar configuración</button></div>
         </section>
       )}
     </div>
@@ -12035,7 +12277,17 @@ const DashboardView = ({
   onUpdateUser,
   onUpdateAgenda,
   onUpdateFinance,
-  onAddHabit
+  onAddHabit,
+  hydration,
+  onAddHydration,
+  onHydrationGoalChange,
+  onHydrationReminderChange,
+  brushing,
+  onAddBrushing,
+  onUndoBrushing,
+  onBrushingGoalChange,
+  onBrushingReminderChange,
+  onBrushingTimesChange
 }) => {
   const habits = data.habits || [];
   const records = data.records || [];
@@ -12606,50 +12858,12 @@ const DashboardView = ({
           </div>
         </main>
 
-        <aside className="cc-rail">
-          <section className="cc-rail-card">
-            <div className="cc-rail-title">XP y progreso unificados</div>
-            <div className="cc-xp-head">
-              <div>
-                <div className="cc-row-meta">Nivel actual</div>
-                <div style={{ color: 'var(--hf-text)', fontSize: 23, fontFamily: "'DM Serif Display', serif" }}>Nivel {xpProgress.level}</div>
-              </div>
-              <div className="cc-level-badge">XP</div>
-            </div>
-            <div className="cc-progress-line"><span style={{ width: `${Math.min(100, Math.round((xpProgress.xp / xpProgress.needed) * 100))}%` }} /></div>
-            <div className="cc-row-meta" style={{ marginTop: 7 }}>{xpProgress.xp.toLocaleString()} / {xpProgress.needed.toLocaleString()} XP para el siguiente nivel</div>
-          </section>
-
-          <section className="cc-rail-card">
-            <div className="cc-rail-title">Logros recientes</div>
-            <div className="cc-achievements">
-              {achievements.map((achievement, index) => (
-                <div className="cc-achievement" key={`${achievement.title}_${index}`}>
-                  <div className="cc-habit-icon">{achievement.icon}</div>
-                  <div><strong>{achievement.title}</strong><span>{achievement.detail}</span></div>
-                </div>
-              ))}
-            </div>
-          </section>
-
-          <section className="cc-rail-card">
-            <div className="cc-rail-title">Ecosistema conectado</div>
-            <div className="cc-ecosystem">
-              {moduleLinks.map(module => (
-                <button type="button" className="cc-module-button" key={module.view} onClick={() => onNavigate?.(module.view)}>
-                  {module.icon}<span>{module.label}</span>
-                </button>
-              ))}
-            </div>
-          </section>
-
-          <section className="cc-rail-card">
-            <div className="cc-rail-title">Coach del día</div>
-            <div className="cc-coach">
-              <div className="cc-coach-icon"><Sparkles size={16} /></div>
-              <p>{insights[0]?.text || (pendingHabits.length ? `Empieza por "${pendingHabits[0].name}" y reduce la fricción del resto del día.` : 'Tu día está bien encaminado. Reserva un bloque de enfoque para tu tarea más importante.')}</p>
-            </div>
-          </section>
+        <aside className="cc-rail" aria-label="Widgets diarios">
+          <div className="cc-widgets-heading"><strong>Widgets diarios</strong><span>Tu cuidado, a la vista</span></div>
+          {hydration?.widgetEnabled && (
+            <HydrationWidget hydration={hydration} panelMode onAdd={onAddHydration} onGoalChange={onHydrationGoalChange} onReminderChange={onHydrationReminderChange} />
+          )}
+          <BrushingWidget brushing={brushing} onAdd={onAddBrushing} onUndo={onUndoBrushing} onGoalChange={onBrushingGoalChange} onReminderChange={onBrushingReminderChange} onTimesChange={onBrushingTimesChange} />
         </aside>
       </div>
 
@@ -13587,7 +13801,7 @@ const HabitsView = ({
           <span><Droplet size={18} strokeWidth={1.9} /></span>
           <span>
             <strong>Widget de hidratación</strong>
-            <small>Muestra el control de agua diaria en el sidebar.</small>
+            <small>Muestra el control de agua diaria en el Panel.</small>
           </span>
         </div>
         <div className="hydration-visibility-action">
@@ -23004,6 +23218,7 @@ const HabitFlowApp = () => {
   const [showMoreNav, setShowMoreNav] = useState(false);
   const [toast, setToast] = useState(null);
   const [hydration, setHydration] = useState(() => readHydrationStorage());
+  const [brushing, setBrushing] = useState(() => readBrushingStorage());
   const [showUpdateNotes, setShowUpdateNotes] = useState(false);
   const [cloudSync, setCloudSync] = useState({ status: 'checking', label: 'Conectando nube', reason: '' });
   const pushAutoSyncRef = useRef(false);
@@ -23398,7 +23613,13 @@ const HabitFlowApp = () => {
       const permission = await requestHabitFlowNotifications().catch(() => ({ ok: false }));
       if (permission?.ok === false && getNotificationPermissionState() !== 'granted') {
         setToast({ message: 'Activa el permiso de notificaciones para recibir recordatorios.', type: 'warning' });
+        return;
       }
+      showHabitFlowNotification('HabitFlow - Hidratación', {
+        body: 'Recordatorios activados. Te avisaremos cada 2 horas mientras te falte agua.',
+        tag: 'habitflow-hydration-enabled',
+        data: { view: 'dashboard', section: 'hydration' }
+      });
     }
     updateHydration(previous => ({
       ...previous,
@@ -23411,9 +23632,64 @@ const HabitFlowApp = () => {
     updateHydration(previous => ({ ...previous, widgetEnabled: !!enabled }));
   }, [updateHydration]);
 
+  const updateBrushing = useCallback((updater) => {
+    setBrushing(previous => {
+      const current = previous.date === getHydrationDateKey() ? previous : readBrushingStorage();
+      const next = typeof updater === 'function' ? updater(current) : updater;
+      persistBrushingStorage(next);
+      return next;
+    });
+  }, []);
+
+  const addBrushing = useCallback(() => {
+    updateBrushing(previous => {
+      const nextCount = previous.count + 1;
+      const reachedGoal = nextCount >= previous.goal && previous.lastCompletedDate !== previous.date;
+      return {
+        ...previous,
+        count: nextCount,
+        streak: reachedGoal
+          ? (getHydrationDayDifference(previous.lastCompletedDate, previous.date) === 1 ? previous.streak + 1 : 1)
+          : previous.streak,
+        lastCompletedDate: reachedGoal ? previous.date : previous.lastCompletedDate
+      };
+    });
+    setToast({ message: 'Cepillado registrado', type: 'success' });
+  }, [updateBrushing]);
+
+  const undoBrushing = useCallback(() => {
+    updateBrushing(previous => ({ ...previous, count: Math.max(0, previous.count - 1) }));
+  }, [updateBrushing]);
+
+  const changeBrushingGoal = useCallback((delta) => {
+    updateBrushing(previous => ({ ...previous, goal: Math.min(4, Math.max(1, previous.goal + Number(delta || 0))) }));
+  }, [updateBrushing]);
+
+  const changeBrushingTimes = useCallback((times) => {
+    updateBrushing(previous => ({ ...previous, reminderTimes: times.filter(Boolean).slice(0, 4) }));
+  }, [updateBrushing]);
+
+  const changeBrushingReminder = useCallback(async (enabled) => {
+    if (enabled) {
+      const permission = await requestHabitFlowNotifications().catch(() => ({ ok: false }));
+      if (permission?.ok === false && getNotificationPermissionState() !== 'granted') {
+        setToast({ message: 'Activa las notificaciones del navegador para recibir recordatorios.', type: 'warning' });
+        return;
+      }
+      showHabitFlowNotification('HabitFlow - Cepillado', {
+        body: 'Recordatorios activados. Te avisaremos en los horarios configurados.',
+        tag: 'habitflow-brushing-enabled',
+        data: { view: 'dashboard', section: 'brushing' }
+      });
+    }
+    updateBrushing(previous => ({ ...previous, remindersEnabled: !!enabled }));
+  }, [updateBrushing]);
+
   useEffect(() => {
     const checkDate = () => {
-      if (hydration.date !== getHydrationDateKey()) setHydration(readHydrationStorage());
+      const todayKey = getHydrationDateKey();
+      if (hydration.date !== todayKey) setHydration(readHydrationStorage());
+      if (brushing.date !== todayKey) setBrushing(readBrushingStorage());
     };
     const timer = setInterval(checkDate, 60000);
     window.addEventListener('focus', checkDate);
@@ -23423,7 +23699,7 @@ const HabitFlowApp = () => {
       window.removeEventListener('focus', checkDate);
       document.removeEventListener('visibilitychange', checkDate);
     };
-  }, [hydration.date]);
+  }, [hydration.date, brushing.date]);
 
   useEffect(() => {
     if (!hydration.remindersEnabled || hydration.amount >= hydration.goal) return undefined;
@@ -23453,6 +23729,39 @@ const HabitFlowApp = () => {
     data?.user?.notificationsEnabled,
     updateHydration
   ]);
+
+  useEffect(() => {
+    if (!brushing.remindersEnabled || brushing.count >= brushing.goal) return undefined;
+    if (data?.user?.notificationsEnabled === false) return undefined;
+    const checkReminder = () => {
+      if (getNotificationPermissionState() !== 'granted') return;
+      const now = new Date();
+      const nowTime = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+      const matchedTime = brushing.reminderTimes.find(time => time === nowTime);
+      if (!matchedTime) return;
+      const reminderKey = `${brushing.date}:${matchedTime}`;
+      if (brushing.sentReminderKeys.includes(reminderKey)) return;
+      showHabitFlowNotification('HabitFlow - Cepillado dental', {
+        body: `Es hora de cepillarte. Llevas ${brushing.count} de ${brushing.goal} cepillados hoy.`,
+        tag: `habitflow-brushing-${reminderKey}`,
+        data: { view: 'dashboard', section: 'brushing' },
+        renotify: true
+      });
+      updateBrushing(previous => ({
+        ...previous,
+        sentReminderKeys: [...new Set([...(previous.sentReminderKeys || []), reminderKey])]
+      }));
+    };
+    checkReminder();
+    const timer = setInterval(checkReminder, 30000);
+    window.addEventListener('focus', checkReminder);
+    document.addEventListener('visibilitychange', checkReminder);
+    return () => {
+      clearInterval(timer);
+      window.removeEventListener('focus', checkReminder);
+      document.removeEventListener('visibilitychange', checkReminder);
+    };
+  }, [brushing, data?.user?.notificationsEnabled, updateBrushing]);
 
   const [showLevelUp, setShowLevelUp] = useState(null);
   const [showChallengeComplete, setShowChallengeComplete] = useState(null);
@@ -24127,7 +24436,7 @@ const HabitFlowApp = () => {
 
   const renderView = () => {
     switch (view) {
-      case 'dashboard': return <DashboardView data={data} onCompleteHabit={onCompleteHabit} workoutData={data.workoutData} onNavigate={navigateTo} onQuickAction={runDashboardQuickAction} onUpdateUser={onUpdateUser} onUpdateAgenda={onUpdateAgenda} onUpdateFinance={onUpdateFinance} onAddHabit={onAddHabit} />;
+      case 'dashboard': return <DashboardView data={data} onCompleteHabit={onCompleteHabit} workoutData={data.workoutData} onNavigate={navigateTo} onQuickAction={runDashboardQuickAction} onUpdateUser={onUpdateUser} onUpdateAgenda={onUpdateAgenda} onUpdateFinance={onUpdateFinance} onAddHabit={onAddHabit} hydration={hydration} onAddHydration={addHydration} onHydrationGoalChange={changeHydrationGoal} onHydrationReminderChange={changeHydrationReminder} brushing={brushing} onAddBrushing={addBrushing} onUndoBrushing={undoBrushing} onBrushingGoalChange={changeBrushingGoal} onBrushingReminderChange={changeBrushingReminder} onBrushingTimesChange={changeBrushingTimes} />;
       case 'habits': return <HabitsView data={data} onAddHabit={onAddHabit} onUpdateHabit={onUpdateHabit} onDeleteHabit={onDeleteHabit} onToggleHabit={onToggleHabit} onCompleteHabit={onCompleteHabit} onUpdateRecord={onUpdateRecord} onCreateHabitCategory={onCreateHabitCategory} records={data.records} quickAction={pendingQuickAction} onQuickActionHandled={markQuickActionHandled} hydrationWidgetEnabled={hydration.widgetEnabled} onToggleHydrationWidget={setHydrationWidgetEnabled} />;
       case 'pomodoro': return <PomodoroView data={data} onUpdateUser={onUpdateUser} onUpdatePomodoro={onUpdatePomodoro} quickAction={pendingQuickAction} onQuickActionHandled={markQuickActionHandled} />;
       case 'workout': return <WorkoutView data={data} onUpdateData={onUpdateWorkout} onCompleteHabit={onCompleteHabit} awardXp={(prev, amt) => awardXp(prev, amt)} />;
@@ -24135,9 +24444,9 @@ const HabitFlowApp = () => {
       case 'dreams': return <DreamGoalsView data={data} onUpdateDreamGoals={onUpdateDreamGoals} />;
       case 'finance': return <FinanceView data={data} onUpdateFinance={onUpdateFinance} quickAction={pendingQuickAction} onQuickActionHandled={markQuickActionHandled} />;
       case 'health': return <HealthView data={data} onUpdateHealth={onUpdateHealth} />;
-      case 'creator': return creatorAccess ? <CreatorView /> : <DashboardView data={data} onCompleteHabit={onCompleteHabit} workoutData={data.workoutData} onNavigate={navigateTo} onQuickAction={runDashboardQuickAction} onUpdateUser={onUpdateUser} onUpdateAgenda={onUpdateAgenda} onUpdateFinance={onUpdateFinance} onAddHabit={onAddHabit} />;
+      case 'creator': return creatorAccess ? <CreatorView /> : <DashboardView data={data} onCompleteHabit={onCompleteHabit} workoutData={data.workoutData} onNavigate={navigateTo} onQuickAction={runDashboardQuickAction} onUpdateUser={onUpdateUser} onUpdateAgenda={onUpdateAgenda} onUpdateFinance={onUpdateFinance} onAddHabit={onAddHabit} hydration={hydration} onAddHydration={addHydration} onHydrationGoalChange={changeHydrationGoal} onHydrationReminderChange={changeHydrationReminder} brushing={brushing} onAddBrushing={addBrushing} onUndoBrushing={undoBrushing} onBrushingGoalChange={changeBrushingGoal} onBrushingReminderChange={changeBrushingReminder} onBrushingTimesChange={changeBrushingTimes} />;
       case 'settings': return <SettingsView data={data} onUpdateUser={onUpdateUser} onResetData={onResetData} cloudSync={cloudSync} onGenerateRandomData={onGenerateRandomData} />;
-      default: return <DashboardView data={data} onCompleteHabit={onCompleteHabit} workoutData={data.workoutData} onNavigate={navigateTo} onQuickAction={runDashboardQuickAction} onUpdateUser={onUpdateUser} onUpdateAgenda={onUpdateAgenda} onUpdateFinance={onUpdateFinance} onAddHabit={onAddHabit} />;
+      default: return <DashboardView data={data} onCompleteHabit={onCompleteHabit} workoutData={data.workoutData} onNavigate={navigateTo} onQuickAction={runDashboardQuickAction} onUpdateUser={onUpdateUser} onUpdateAgenda={onUpdateAgenda} onUpdateFinance={onUpdateFinance} onAddHabit={onAddHabit} hydration={hydration} onAddHydration={addHydration} onHydrationGoalChange={changeHydrationGoal} onHydrationReminderChange={changeHydrationReminder} brushing={brushing} onAddBrushing={addBrushing} onUndoBrushing={undoBrushing} onBrushingGoalChange={changeBrushingGoal} onBrushingReminderChange={changeBrushingReminder} onBrushingTimesChange={changeBrushingTimes} />;
     }
   };
 
@@ -24223,16 +24532,6 @@ const HabitFlowApp = () => {
             </button>
           ))}
         </nav>
-
-        {hydration.widgetEnabled && (
-          <HydrationWidget
-            hydration={hydration}
-            sidebarOpen={sidebarOpen}
-            onAdd={addHydration}
-            onGoalChange={changeHydrationGoal}
-            onReminderChange={changeHydrationReminder}
-          />
-        )}
 
         <div className="user-info" style={{ padding: sidebarOpen  ? '16px 20px' : '14px 8px', borderTop: `1px solid ${COLORS.border}`, fontSize: 11, color: COLORS.textDim }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: sidebarOpen  ? 'flex-start' : 'center', gap: sidebarOpen  ? 8 : 4, margin: sidebarOpen  ? 0 : '0 auto', minHeight: 24, borderRadius: 9, background: sidebarOpen  ? 'transparent' : `${COLORS.alert}10`, border: sidebarOpen  ? 'none' : `1px solid ${COLORS.alert}24`, color: sidebarOpen  ? COLORS.textDim : COLORS.text, fontWeight: sidebarOpen  ? 400 : 700 }} title={`Racha global: ${getGlobalCurrentStreak(data.habits, data.records)} días`}>
