@@ -53,6 +53,21 @@ const BRUSHING_STORAGE_KEYS = {
   streak: 'habitflow_brushing_streak'
 };
 
+const BRUSHING_MAX_DAILY_GOAL = 6;
+const BRUSHING_DEFAULT_REMINDER_TIMES = ['07:00', '10:00', '13:00', '16:00', '19:00', '22:00'];
+
+const normalizeBrushingReminderTimes = (times, goal) => {
+  const safeGoal = Math.min(BRUSHING_MAX_DAILY_GOAL, Math.max(1, Math.round(Number(goal || 2))));
+  const validTimes = Array.isArray(times)
+    ? times.filter(time => typeof time === 'string' && /^([01]\d|2[0-3]):[0-5]\d$/.test(time))
+    : [];
+  const uniqueTimes = [...new Set(validTimes)];
+  BRUSHING_DEFAULT_REMINDER_TIMES.forEach(time => {
+    if (uniqueTimes.length < safeGoal && !uniqueTimes.includes(time)) uniqueTimes.push(time);
+  });
+  return uniqueTimes.sort((a, b) => a.localeCompare(b)).slice(0, safeGoal);
+};
+
 const getHydrationDateKey = (date = new Date()) => {
   const year = date.getFullYear();
   const month = String(date.getMonth() + 1).padStart(2, '0');
@@ -149,13 +164,14 @@ const readBrushingStorage = () => {
   try { savedStreak = JSON.parse(localStorage.getItem(BRUSHING_STORAGE_KEYS.streak) || '{}') || {}; } catch {}
   try {
     const storedTimes = JSON.parse(localStorage.getItem(BRUSHING_STORAGE_KEYS.reminderTimes) || '[]');
-    if (Array.isArray(storedTimes) && storedTimes.length) reminderTimes = storedTimes.slice(0, 4);
+    if (Array.isArray(storedTimes) && storedTimes.length) reminderTimes = storedTimes;
   } catch {}
   const storedGoalRaw = localStorage.getItem(BRUSHING_STORAGE_KEYS.goal);
   const storedGoal = Number(storedGoalRaw);
   const goal = storedGoalRaw !== null && Number.isFinite(storedGoal)
-    ? Math.min(4, Math.max(1, Math.round(storedGoal)))
+    ? Math.min(BRUSHING_MAX_DAILY_GOAL, Math.max(1, Math.round(storedGoal)))
     : 2;
+  reminderTimes = normalizeBrushingReminderTimes(reminderTimes, goal);
   const remindersEnabled = localStorage.getItem(BRUSHING_STORAGE_KEYS.remindersEnabled) === 'true';
   let count = Math.max(0, Number(savedToday.count || 0));
   let streak = Math.max(0, Number(savedStreak.count || 0));
@@ -196,9 +212,10 @@ const persistBrushingStorage = (state) => {
       count: Math.max(0, Number(state.count || 0)),
       sentReminderKeys: Array.isArray(state.sentReminderKeys) ? state.sentReminderKeys : []
     }));
-    localStorage.setItem(BRUSHING_STORAGE_KEYS.goal, String(Math.min(4, Math.max(1, Number(state.goal || 2)))));
+    const safeGoal = Math.min(BRUSHING_MAX_DAILY_GOAL, Math.max(1, Number(state.goal || 2)));
+    localStorage.setItem(BRUSHING_STORAGE_KEYS.goal, String(safeGoal));
     localStorage.setItem(BRUSHING_STORAGE_KEYS.remindersEnabled, state.remindersEnabled ? 'true' : 'false');
-    localStorage.setItem(BRUSHING_STORAGE_KEYS.reminderTimes, JSON.stringify(state.reminderTimes || ['07:00', '21:00']));
+    localStorage.setItem(BRUSHING_STORAGE_KEYS.reminderTimes, JSON.stringify(normalizeBrushingReminderTimes(state.reminderTimes, safeGoal)));
     localStorage.setItem(BRUSHING_STORAGE_KEYS.streak, JSON.stringify({
       count: Math.max(0, Number(state.streak || 0)),
       lastCompletedDate: state.lastCompletedDate || ''
@@ -10801,7 +10818,7 @@ const BrushingWidget = ({ brushing, onAdd, onUndo, onGoalChange, onReminderChang
           <header className="hydration-popover-header"><h3><ToothbrushGlyph size={17} /> Configurar cepillado</h3><button type="button" className="hydration-popover-close" onClick={() => setWidgetOpen(false)} aria-label="Cerrar"><X size={15} /></button></header>
           <div className="hydration-popover-goal">
             <span className="hydration-goal-copy"><span>Meta diaria</span><strong>{brushing.goal} veces</strong></span>
-            <span className="hydration-goal-controls"><button type="button" className="hydration-goal-button" onClick={() => onGoalChange(-1)}><Minus size={15} /></button><button type="button" className="hydration-goal-button" onClick={() => onGoalChange(1)}><Plus size={15} /></button></span>
+            <span className="hydration-goal-controls"><button type="button" className="hydration-goal-button" onClick={() => onGoalChange(-1)} aria-label="Reducir meta diaria de cepillado"><Minus size={15} /></button><button type="button" className="hydration-goal-button" onClick={() => onGoalChange(1)} aria-label="Aumentar meta diaria de cepillado"><Plus size={15} /></button></span>
           </div>
           <div className="brushing-time-list">
             <span>Horarios de recordatorio</span>
@@ -23718,11 +23735,21 @@ const HabitFlowApp = () => {
   }, [updateBrushing]);
 
   const changeBrushingGoal = useCallback((delta) => {
-    updateBrushing(previous => ({ ...previous, goal: Math.min(4, Math.max(1, previous.goal + Number(delta || 0))) }));
+    updateBrushing(previous => {
+      const goal = Math.min(BRUSHING_MAX_DAILY_GOAL, Math.max(1, previous.goal + Number(delta || 0)));
+      return {
+        ...previous,
+        goal,
+        reminderTimes: normalizeBrushingReminderTimes(previous.reminderTimes, goal)
+      };
+    });
   }, [updateBrushing]);
 
   const changeBrushingTimes = useCallback((times) => {
-    updateBrushing(previous => ({ ...previous, reminderTimes: times.filter(Boolean).slice(0, 4) }));
+    updateBrushing(previous => ({
+      ...previous,
+      reminderTimes: normalizeBrushingReminderTimes(times, previous.goal)
+    }));
   }, [updateBrushing]);
 
   const changeBrushingReminder = useCallback(async (enabled) => {
