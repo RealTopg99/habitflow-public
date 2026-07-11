@@ -20782,11 +20782,20 @@ const getTaskDurationMinutes = (task = {}) => {
   if (!isValidTaskTimeRange(start, end) || !start || !end) return undefined;
   return timeToMinutes(end) - timeToMinutes(start);
 };
+const formatAgendaClock = (value = '') => {
+  const match = String(value).match(/^(\d{1,2}):(\d{2})/);
+  if (!match) return String(value || '');
+  const hours = Number(match[1]);
+  const minutes = match[2];
+  const suffix = hours >= 12 ? 'pm' : 'am';
+  const displayHour = hours % 12 || 12;
+  return `${displayHour}:${minutes}${suffix}`;
+};
 const getTaskTimeRangeLabel = (task = {}) => {
   const start = getTaskStartTime(task);
   const end = getTaskEndTime(task);
   if (!start) return 'Sin hora';
-  return end ? `${start} - ${end}` : start;
+  return end ? `${formatAgendaClock(start)} - ${formatAgendaClock(end)}` : formatAgendaClock(start);
 };
 const normalizeTaskTimes = (task = {}, fallbackDate = '') => {
   const startTime = getTaskStartTime(task);
@@ -22273,6 +22282,12 @@ const AgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAgendaTa
   const [upcomingRange, setUpcomingRange] = useState('all');
   const [upcomingSort, setUpcomingSort] = useState('date');
   const [calendarDraft, setCalendarDraft] = useState({ name: '', color: '#e00000' });
+  const [googleClientId, setGoogleClientId] = useState(() => localStorage.getItem('habitflow_google_calendar_client_id') || window.HABITFLOW_GOOGLE_CLIENT_ID || '');
+  const [googleSession, setGoogleSession] = useState(() => {
+    try { return JSON.parse(sessionStorage.getItem('habitflow_google_calendar_session') || 'null'); } catch { return null; }
+  });
+  const [googleSyncing, setGoogleSyncing] = useState(false);
+  const [googleMessage, setGoogleMessage] = useState('');
   const [visibleCalendars, setVisibleCalendars] = useState(() => {
     try { return JSON.parse(localStorage.getItem('habitflow_agenda_visible_calendars') || 'null'); } catch { return null; }
   });
@@ -22421,15 +22436,16 @@ const AgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAgendaTa
 
       /* Timeline geometry and semantic Agenda controls. */
       .agenda-pro{--ag-timeline-height:clamp(620px,calc(100dvh - 330px),900px);--ag-time-width:56px;--ag-week-head-height:62px;--ag-all-day-height:46px}
+      .ag-week{grid-template-columns:var(--ag-time-width) repeat(7,minmax(0,1fr));min-width:0}.ag-day-grid,.ag-day-all{grid-template-columns:var(--ag-time-width) minmax(0,1fr);min-width:0}.ag-time-label{right:4px;font-size:9px;white-space:nowrap}
       .ag-time-col,.ag-day-col,.ag-day-events{height:var(--ag-timeline-height)}
       .ag-time-col,.ag-day-col,.ag-day-events{background-size:100% calc(var(--ag-timeline-height) / 16)}
       .ag-day-col,.ag-day-events{background-image:repeating-linear-gradient(to bottom,transparent 0,transparent calc((var(--ag-timeline-height) / 16) - 1px),var(--ag-line) calc(var(--ag-timeline-height) / 16))}
       .ag-now{height:2px;background:var(--ag-red);z-index:8;pointer-events:none}
       .ag-now:before{width:10px;height:10px;top:-4px;left:-5px}
-      .ag-now-label{position:absolute;right:calc(100% + 7px);top:-10px;padding:3px 6px;border-radius:5px;background:var(--ag-red);color:#fff;font-size:10px;font-weight:800;line-height:1;white-space:nowrap}
+      .ag-now-label{position:absolute;left:calc((var(--ag-time-width) * -1) + 3px);top:-10px;width:calc(var(--ag-time-width) - 7px);box-sizing:border-box;padding:3px 2px;border-radius:5px;background:var(--ag-red);color:#fff;font-size:9px;font-weight:800;line-height:1;text-align:center;white-space:nowrap}
       .ag-week-now-layer{position:absolute;left:var(--ag-time-width);right:0;top:calc(var(--ag-week-head-height) + var(--ag-all-day-height));z-index:9;pointer-events:none;height:var(--ag-timeline-height)}
       .ag-week-now-line{position:absolute;left:0;right:0;height:2px;background:var(--ag-red)}
-      .ag-week-now-label{position:absolute;right:calc(100% + 7px);transform:translateY(-50%);padding:3px 5px;border-radius:5px;background:var(--ag-red);color:#fff;font-size:10px;font-weight:800;line-height:1;white-space:nowrap}
+      .ag-week-now-label{position:absolute;left:calc((var(--ag-time-width) * -1) + 3px);transform:translateY(-50%);width:calc(var(--ag-time-width) - 7px);box-sizing:border-box;padding:3px 2px;border-radius:5px;background:var(--ag-red);color:#fff;font-size:9px;font-weight:800;line-height:1;text-align:center;white-space:nowrap}
       .ag-week-now-dot{position:absolute;width:10px;height:10px;border-radius:50%;background:var(--ag-red);transform:translate(-50%,-4px);box-shadow:0 0 0 3px color-mix(in srgb,var(--ag-red) 22%,transparent)}
       .ag-row{grid-template-columns:84px minmax(180px,1.45fr) minmax(105px,.72fr) minmax(100px,.9fr) 42px 38px;align-items:center}
       .ag-status,.ag-row-action{width:36px;height:36px;border-radius:9px;border:1px solid var(--ag-line);background:transparent;color:var(--ag-muted);display:grid;place-items:center;cursor:pointer;transition:.18s}
@@ -22437,6 +22453,7 @@ const AgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAgendaTa
       .ag-status.done{border-color:#168b5e;background:#168b5e;color:#fff}
       .ag-status-placeholder{width:36px;height:36px;display:grid;place-items:center;color:var(--ag-muted)}
       .ag-type-state{display:inline-flex;align-items:center;gap:6px;font-size:10px;color:var(--ag-muted)}
+      .ag-google-config{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:9px;align-items:center;margin-top:10px}.ag-google-state{display:inline-flex;align-items:center;gap:7px;font-size:11px}.ag-google-state.connected{color:#24c784}.ag-google-message{display:block;margin-top:5px;color:var(--ag-muted);font-size:10px;line-height:1.45}
       @media(min-width:1600px){.agenda-pro{--ag-timeline-height:clamp(700px,calc(100dvh - 330px),920px)}}
       @media(max-width:1279px){.agenda-pro{--ag-timeline-height:clamp(600px,calc(100dvh - 310px),820px);--ag-time-width:48px;--ag-week-head-height:56px}.ag-row{grid-template-columns:72px minmax(0,1fr) minmax(90px,.7fr) 40px 36px}.ag-row .location{display:none}}
       @media(max-width:700px){.agenda-pro{--ag-timeline-height:clamp(560px,calc(100dvh - 300px),760px);--ag-time-width:38px;--ag-week-head-height:50px}.ag-row{grid-template-columns:54px minmax(0,1fr) 38px 34px}.ag-row .category,.ag-row .location{display:none}.ag-status,.ag-row-action{width:34px;height:34px}.ag-week-now-label,.ag-now-label{font-size:9px}}
@@ -22593,7 +22610,7 @@ const AgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAgendaTa
   };
   const nowMinutes = agendaNow.getHours() * 60 + agendaNow.getMinutes();
   const nowInTimeline = nowMinutes >= AGENDA_START_MINUTES && nowMinutes <= AGENDA_END_MINUTES;
-  const nowLabel = agendaNow.toLocaleTimeString('es-CO', { hour:'2-digit', minute:'2-digit' });
+  const nowLabel = formatAgendaClock(`${String(agendaNow.getHours()).padStart(2, '0')}:${String(agendaNow.getMinutes()).padStart(2, '0')}`);
   const CurrentTimeLine = ({ targetDate = dateStr }) => targetDate === todayStr && nowInTimeline
     ? <div className="ag-now" data-testid="agenda-day-current-time-line" style={{top:`${timelinePercent(nowMinutes)}%`}}><span className="ag-now-label" data-testid="agenda-current-time-label">{nowLabel}</span></div>
     : null;
@@ -22604,9 +22621,9 @@ const AgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAgendaTa
     return <div className="ag-week-now-layer" data-testid="agenda-week-current-time-layer"><div className="ag-week-now-line" data-testid="agenda-week-current-time-line" style={{top:`${top}%`}}><span className="ag-week-now-label" data-testid="agenda-current-time-label">{nowLabel}</span><i className="ag-week-now-dot" data-testid="agenda-current-time-dot" style={{left:`${((todayIndex + .5) / 7) * 100}%`}}/></div></div>;
   };
 
-  const renderDay = () => <div className="ag-day-shell"><div className="ag-day-all"><div>Todo el día</div><div>{selectedTasks.filter(t=>t.allDay||!hasTaskTime(t)).map(t=><button key={t.id} className="ag-month-event" onClick={()=>setSelectedTask(t)}><i className="ag-dot" style={{background:eventColor(t)}}/>{t.text}</button>)}</div></div><div className="ag-day-grid"><div className="ag-time-col">{HOURS.slice(0,17).map(h=><span key={h} className="ag-time-label" style={{top:`${timelinePercent(h*60)}%`}}>{String(h).padStart(2,'0')}:00</span>)}</div><div className="ag-day-events" onDoubleClick={()=>openNew({dueDate:dateStr})}><CurrentTimeLine/>{selectedTasks.filter(hasTaskTime).map(t=><EventBlock key={`${t.id}-${t.dueDate}`} task={t}/>)}</div></div></div>;
-  const renderWeek = () => <div className="ag-week-shell"><div className="ag-week"><div className="ag-week-head"/>{weekDays.map(day=><div key={toYYYYMMDD(day)} className={`ag-week-head ${toYYYYMMDD(day)===todayStr?'today':''}`}><span>{day.toLocaleDateString('es-CO',{weekday:'short'})}</span><b>{day.getDate()}</b></div>)}<div className="ag-all-day label">Todo el día</div>{weekDays.map(day=><div key={`all-${toYYYYMMDD(day)}`} className="ag-all-day">{(visibleAgenda[toYYYYMMDD(day)]||[]).filter(t=>t.allDay||!hasTaskTime(t)).slice(0,2).map(t=><button key={t.id} className="ag-month-event" onClick={()=>setSelectedTask(t)}><i className="ag-dot" style={{background:eventColor(t)}}/>{t.text}</button>)}</div>)}<div className="ag-time-col">{HOURS.slice(0,17).map(h=><span key={h} className="ag-time-label" style={{top:`${timelinePercent(h*60)}%`}}>{String(h).padStart(2,'0')}:00</span>)}</div>{weekDays.map(day=>{const ds=toYYYYMMDD(day);return <div key={ds} className="ag-day-col" data-agenda-date={ds} onDoubleClick={()=>openNew({dueDate:ds})}>{(visibleAgenda[ds]||[]).filter(hasTaskTime).map(t=><EventBlock key={`${t.id}-${ds}`} task={t}/>)}</div>})}<WeekCurrentTimeLine/></div></div>;
-  const renderMonth = () => <div className="ag-month-shell"><div className="ag-month">{['Lun','Mar','Mié','Jue','Vie','Sáb','Dom'].map(name=><div className="ag-month-name" key={name}>{name}</div>)}{monthDays.map(day=>{const ds=toYYYYMMDD(day),tasks=visibleAgenda[ds]||[];return <div key={ds} className={`ag-month-day ${day.getMonth()!==currentDate.getMonth()?'out':''} ${ds===dateStr?'selected':''}`} onClick={()=>setCurrentDate(day)} onDoubleClick={()=>openNew({dueDate:ds})}><span className={`ag-day-number ${ds===todayStr?'today':''}`}>{day.getDate()}</span>{tasks.slice(0,3).map(t=>{const Icon=categoryIcon(t.category,t.text);return <button key={`${t.id}-${ds}`} className="ag-month-event" onClick={e=>{e.stopPropagation();setSelectedTask(t)}}><Icon size={12} style={{color:eventColor(t),flex:'none'}}/><span style={{overflow:'hidden',textOverflow:'ellipsis'}}>{hasTaskTime(t)?`${getTaskStartTime(t)} `:''}{t.text}</span></button>})}{tasks.length>3&&<button className="ag-link ag-more" onClick={()=>{setCurrentDate(day);setViewMode('day')}}>+{tasks.length-3} más</button>}</div>})}</div></div>;
+  const renderDay = () => <div className="ag-day-shell"><div className="ag-day-all"><div>Todo el día</div><div>{selectedTasks.filter(t=>t.allDay||!hasTaskTime(t)).map(t=><button key={t.id} className="ag-month-event" onClick={()=>setSelectedTask(t)}><i className="ag-dot" style={{background:eventColor(t)}}/>{t.text}</button>)}</div></div><div className="ag-day-grid"><div className="ag-time-col">{HOURS.slice(0,17).map(h=><span key={h} className="ag-time-label" style={{top:`${timelinePercent(h*60)}%`}}>{formatAgendaClock(`${String(h).padStart(2,'0')}:00`)}</span>)}</div><div className="ag-day-events" onDoubleClick={()=>openNew({dueDate:dateStr})}><CurrentTimeLine/>{selectedTasks.filter(hasTaskTime).map(t=><EventBlock key={`${t.id}-${t.dueDate}`} task={t}/>)}</div></div></div>;
+  const renderWeek = () => <div className="ag-week-shell"><div className="ag-week"><div className="ag-week-head"/>{weekDays.map(day=><div key={toYYYYMMDD(day)} className={`ag-week-head ${toYYYYMMDD(day)===todayStr?'today':''}`}><span>{day.toLocaleDateString('es-CO',{weekday:'short'})}</span><b>{day.getDate()}</b></div>)}<div className="ag-all-day label">Todo el día</div>{weekDays.map(day=><div key={`all-${toYYYYMMDD(day)}`} className="ag-all-day">{(visibleAgenda[toYYYYMMDD(day)]||[]).filter(t=>t.allDay||!hasTaskTime(t)).slice(0,2).map(t=><button key={t.id} className="ag-month-event" onClick={()=>setSelectedTask(t)}><i className="ag-dot" style={{background:eventColor(t)}}/>{t.text}</button>)}</div>)}<div className="ag-time-col">{HOURS.slice(0,17).map(h=><span key={h} className="ag-time-label" style={{top:`${timelinePercent(h*60)}%`}}>{formatAgendaClock(`${String(h).padStart(2,'0')}:00`)}</span>)}</div>{weekDays.map(day=>{const ds=toYYYYMMDD(day);return <div key={ds} className="ag-day-col" data-agenda-date={ds} onDoubleClick={()=>openNew({dueDate:ds})}>{(visibleAgenda[ds]||[]).filter(hasTaskTime).map(t=><EventBlock key={`${t.id}-${ds}`} task={t}/>)}</div>})}<WeekCurrentTimeLine/></div></div>;
+  const renderMonth = () => <div className="ag-month-shell"><div className="ag-month">{['Lun','Mar','Mié','Jue','Vie','Sáb','Dom'].map(name=><div className="ag-month-name" key={name}>{name}</div>)}{monthDays.map(day=>{const ds=toYYYYMMDD(day),tasks=visibleAgenda[ds]||[];return <div key={ds} className={`ag-month-day ${day.getMonth()!==currentDate.getMonth()?'out':''} ${ds===dateStr?'selected':''}`} onClick={()=>setCurrentDate(day)} onDoubleClick={()=>openNew({dueDate:ds})}><span className={`ag-day-number ${ds===todayStr?'today':''}`}>{day.getDate()}</span>{tasks.slice(0,3).map(t=>{const Icon=categoryIcon(t.category,t.text);return <button key={`${t.id}-${ds}`} className="ag-month-event" onClick={e=>{e.stopPropagation();setSelectedTask(t)}}><Icon size={12} style={{color:eventColor(t),flex:'none'}}/><span style={{overflow:'hidden',textOverflow:'ellipsis'}}>{hasTaskTime(t)?`${formatAgendaClock(getTaskStartTime(t))} `:''}{t.text}</span></button>})}{tasks.length>3&&<button className="ag-link ag-more" onClick={()=>{setCurrentDate(day);setViewMode('day')}}>+{tasks.length-3} más</button>}</div>})}</div></div>;
   const groupLabel = date => date===todayStr?'Hoy':date===toYYYYMMDD(addDays(new Date(),1))?'Mañana':new Date(`${date}T12:00:00`).toLocaleDateString('es-CO',{weekday:'long',day:'numeric',month:'long'});
   const renderList = () => { const groups=Object.entries(visibleAgenda).filter(([date,tasks])=>date>=todayStr&&tasks.length).sort(([a],[b])=>a.localeCompare(b)); return <div className="ag-list-shell"><div className="ag-quick"><Search size={18}/><input className="ag-input" value={search} onChange={e=>setSearch(e.target.value)} placeholder="Buscar evento o añadir rápido…"/><span style={{fontSize:11,color:'var(--ag-muted)',whiteSpace:'nowrap'}}>{groups.reduce((n,[,items])=>n+items.length,0)} eventos</span></div><div className="ag-list-groups">{!groups.length?<div style={{padding:54,textAlign:'center',color:'var(--ag-muted)'}}><CalendarDays size={28} style={{marginBottom:10}}/><div>No hay resultados.</div><button className="ag-link" style={{marginTop:8}} onClick={resetFilters}>Limpiar filtros</button></div>:groups.slice(0,12).map(([date,tasks])=><section className="ag-list-group" key={date}><h3>{groupLabel(date)} <span style={{color:'var(--ag-muted)',fontWeight:400}}>· {tasks.length} eventos</span></h3>{tasks.sort(compareTaskTime).map(task=>{const Icon=categoryIcon(task.category,task.text);return <div className="ag-row" key={`${task.id}-${date}`} onClick={()=>setSelectedTask(task)}><span><Clock size={13} style={{marginRight:6,verticalAlign:'middle'}}/>{eventTime(task)}</span><span className="title"><Icon size={15} style={{color:eventColor(task),marginRight:8,verticalAlign:'middle'}}/>{task.text}</span><span className="category">{task.category}</span><span className="location">{task.location?<><MapPin size={12} style={{marginRight:5,verticalAlign:'middle'}}/>{task.location}</>:<span style={{opacity:.45}}>—</span>}</span>{isCompletableAgendaItem(task)?<button className={`ag-status ${task.completed?'done':''}`} onClick={e=>{e.stopPropagation();toggleComplete(task)}} aria-label={task.completed?'Marcar pendiente':'Completar tarea'} aria-pressed={Boolean(task.completed)} title={task.completed?'Marcar pendiente':'Completar tarea'}>{task.completed?<Check size={17}/>:<Circle size={17}/>}</button>:<span className="ag-status-placeholder" title={task.type==='reminder'?'Recordatorio':'Evento'}>{task.type==='reminder'?<Bell size={16}/>:<Calendar size={16}/>}</span>}<button className="ag-row-action" aria-label={`Más acciones para ${task.text}`} title="Más acciones" onClick={e=>{e.stopPropagation();setSelectedTask(task)}}><MoreVertical size={17}/></button></div>})}</section>)}</div></div>; };
 
@@ -22655,10 +22672,104 @@ const AgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAgendaTa
     };
     input.click();
   };
-  const explainCalendarSync = () => alert('No hay un proveedor externo conectado. Tus calendarios locales sí se guardan con HabitFlow; conecta Google Calendar cuando el backend OAuth esté disponible.');
+  const loadGoogleIdentityServices = () => new Promise((resolve, reject) => {
+    if (window.google?.accounts?.oauth2) { resolve(window.google); return; }
+    const existing = document.getElementById('habitflow-google-identity');
+    if (existing) {
+      existing.addEventListener('load', () => resolve(window.google), { once:true });
+      existing.addEventListener('error', () => reject(new Error('No se pudo cargar Google Identity Services.')), { once:true });
+      return;
+    }
+    const script = document.createElement('script');
+    script.id = 'habitflow-google-identity';
+    script.src = 'https://accounts.google.com/gsi/client';
+    script.async = true;
+    script.defer = true;
+    script.onload = () => resolve(window.google);
+    script.onerror = () => reject(new Error('No se pudo cargar Google Identity Services.'));
+    document.head.appendChild(script);
+  });
+  const googleRequest = async (path, accessToken) => {
+    const response = await fetch(`https://www.googleapis.com/calendar/v3${path}`, { headers:{ Authorization:`Bearer ${accessToken}` } });
+    if (response.status === 401) throw new Error('La sesión de Google expiró. Vuelve a conectar tu cuenta.');
+    if (!response.ok) { const detail = await response.json().catch(() => ({})); throw new Error(detail?.error?.message || `Google Calendar respondió ${response.status}.`); }
+    return response.json();
+  };
+  const syncGoogleCalendar = async (accessToken = googleSession?.accessToken) => {
+    if (!accessToken) { setGoogleMessage('Conecta Google Calendar antes de sincronizar.'); setShowCalendars(true); return; }
+    setGoogleSyncing(true); setGoogleMessage('Sincronizando eventos…');
+    try {
+      const timeMin = new Date(); timeMin.setFullYear(timeMin.getFullYear() - 1);
+      const timeMax = new Date(); timeMax.setFullYear(timeMax.getFullYear() + 2);
+      let pageToken = '';
+      const googleEvents = [];
+      do {
+        const query = new URLSearchParams({ singleEvents:'true', orderBy:'startTime', showDeleted:'false', maxResults:'2500', timeMin:timeMin.toISOString(), timeMax:timeMax.toISOString() });
+        if (pageToken) query.set('pageToken', pageToken);
+        const payload = await googleRequest(`/calendars/primary/events?${query}`, accessToken);
+        googleEvents.push(...(payload.items || []));
+        pageToken = payload.nextPageToken || '';
+      } while (pageToken);
+      const grouped = {};
+      googleEvents.forEach((event, index) => {
+        if (!event?.id || event.status === 'cancelled' || !event.start) return;
+        const allDay = Boolean(event.start.date);
+        const startDate = allDay ? event.start.date : new Date(event.start.dateTime);
+        const dueDate = allDay ? startDate : toYYYYMMDD(startDate);
+        const endDate = !allDay && event.end?.dateTime ? new Date(event.end.dateTime) : null;
+        const startTime = allDay ? '' : `${String(startDate.getHours()).padStart(2,'0')}:${String(startDate.getMinutes()).padStart(2,'0')}`;
+        const endTime = endDate && toYYYYMMDD(endDate) === dueDate ? `${String(endDate.getHours()).padStart(2,'0')}:${String(endDate.getMinutes()).padStart(2,'0')}` : '';
+        const item = normalizeTaskTimes({ id:`google_${event.id}`, googleEventId:event.id, provider:'google', text:event.summary || 'Evento de Google Calendar', description:event.description || '', location:event.location || '', dueDate, startTime, endTime, allDay, category:'Personal', type:'event', status:event.status === 'confirmed' ? 'confirmed' : 'pending', completed:false, htmlLink:event.htmlLink || '', createdAt:event.created || new Date().toISOString(), order:index }, dueDate);
+        (grouped[dueDate] ||= []).push(item);
+      });
+      Object.entries(grouped).forEach(([day, imported]) => onUpdateAgenda(day, previous => {
+        const importedIds = new Set(imported.map(item => item.googleEventId));
+        const local = (previous || []).filter(item => item.provider !== 'google' || !importedIds.has(item.googleEventId));
+        return [...local, ...imported];
+      }));
+      setGoogleMessage(`${googleEvents.length} eventos sincronizados desde Google Calendar.`);
+    } catch (error) {
+      setGoogleMessage(error.message || 'No se pudo sincronizar Google Calendar.');
+      if (/expiró|401/.test(String(error.message))) { sessionStorage.removeItem('habitflow_google_calendar_session'); setGoogleSession(null); }
+    } finally { setGoogleSyncing(false); }
+  };
+  const connectGoogleCalendar = async () => {
+    const clientId = googleClientId.trim();
+    if (!clientId) { setGoogleMessage('Pega primero el Client ID OAuth de tu proyecto de Google Cloud.'); setShowCalendars(true); return; }
+    localStorage.setItem('habitflow_google_calendar_client_id', clientId);
+    setGoogleMessage('Abriendo Google…');
+    try {
+      await loadGoogleIdentityServices();
+      const client = window.google.accounts.oauth2.initTokenClient({
+        client_id:clientId,
+        scope:'https://www.googleapis.com/auth/calendar.readonly',
+        callback:async response => {
+          if (response?.error || !response?.access_token) { setGoogleMessage(response?.error_description || 'Google no autorizó la conexión.'); return; }
+          const session = { accessToken:response.access_token, expiresAt:Date.now() + (Number(response.expires_in || 3600) * 1000), scope:response.scope || '' };
+          try {
+            const list = await googleRequest('/users/me/calendarList?maxResults=250', response.access_token);
+            const primary = (list.items || []).find(item => item.primary);
+            session.account = primary?.summary || primary?.id || 'Cuenta de Google';
+          } catch { session.account = 'Cuenta de Google'; }
+          sessionStorage.setItem('habitflow_google_calendar_session', JSON.stringify(session));
+          setGoogleSession(session);
+          setGoogleMessage(`Conectado con ${session.account}.`);
+          await syncGoogleCalendar(response.access_token);
+        }
+      });
+      client.requestAccessToken({ prompt:googleSession ? '' : 'consent' });
+    } catch (error) { setGoogleMessage(error.message || 'No se pudo iniciar la conexión con Google.'); }
+  };
+  const disconnectGoogleCalendar = () => {
+    const token = googleSession?.accessToken;
+    if (token && window.google?.accounts?.oauth2) window.google.accounts.oauth2.revoke(token, () => {});
+    sessionStorage.removeItem('habitflow_google_calendar_session');
+    setGoogleSession(null);
+    setGoogleMessage('Google Calendar fue desconectado de este dispositivo.');
+  };
 
   return <div className="agenda-pro">
-    <header className="ag-header"><div><div className="ag-eyebrow">{new Date().toLocaleDateString('es-CO',{weekday:'long',day:'numeric',month:'long',year:'numeric'})}</div><h1 className="ag-title"><CalendarDays size={30} style={{color:'var(--ag-red)',verticalAlign:'-3px',marginRight:10}}/>Agenda</h1><p className="ag-subtitle">Organiza tu tiempo, cumple tus compromisos y alcanza tus objetivos.</p></div><div className="ag-header-actions"><button className="ag-btn" onClick={()=>alert('Google Calendar aún no está conectado. Tus eventos locales están guardados y sincronizados con HabitFlow.')}><RefreshCw size={16}/>Sincronizar</button><button className="ag-btn primary" onClick={()=>openNew()}><Plus size={17}/>Nuevo evento</button></div></header>
+    <header className="ag-header"><div><div className="ag-eyebrow">{new Date().toLocaleDateString('es-CO',{weekday:'long',day:'numeric',month:'long',year:'numeric'})}</div><h1 className="ag-title"><CalendarDays size={30} style={{color:'var(--ag-red)',verticalAlign:'-3px',marginRight:10}}/>Agenda</h1><p className="ag-subtitle">Organiza tu tiempo, cumple tus compromisos y alcanza tus objetivos.</p></div><div className="ag-header-actions"><button className="ag-btn" disabled={googleSyncing} onClick={()=>googleSession ? syncGoogleCalendar() : connectGoogleCalendar()}><RefreshCw className={googleSyncing?'spin':''} size={16}/>{googleSyncing?'Sincronizando…':googleSession?'Sincronizar Google':'Conectar Google'}</button><button className="ag-btn primary" onClick={()=>openNew()}><Plus size={17}/>Nuevo evento</button></div></header>
     {!showUpcoming&&<><div className="ag-toolbar"><nav className="ag-view-nav" aria-label="Vista de agenda">{[['day','Día',Calendar],['week','Semana',Columns3],['month','Mes',CalendarRange],['agenda','Agenda',List]].map(([id,label,Icon])=><button key={id} className={viewMode===id?'active':''} onClick={()=>setViewMode(id)}><Icon size={15}/>{label}</button>)}</nav><div className="ag-date-nav"><button className="ag-btn icon" onClick={()=>navigate(-1)} aria-label="Periodo anterior"><ChevronLeft size={18}/></button><button className="ag-btn small" onClick={()=>setCurrentDate(new Date())}><CalendarCheck size={15}/>Hoy</button><strong className="ag-date-label">{periodLabel}</strong><button className="ag-btn icon" onClick={()=>navigate(1)} aria-label="Periodo siguiente"><ChevronRight size={18}/></button><button className="ag-btn" onClick={()=>setShowFilters(true)}><ListFilter size={16}/>Filtros{filterActiveCount>0&&<span className="ag-filter-badge">{filterActiveCount}</span>}</button></div></div><div className="ag-layout"><main className="ag-main">{['day','week'].includes(viewMode)&&<div className="ag-card ag-quick"><Plus size={17}/><input className="ag-input" value={quickText} onChange={e=>setQuickText(e.target.value)} onKeyDown={e=>e.key==='Enter'&&quickAdd()} placeholder="Agregar evento rápido… prueba: reunión mañana 14:00 @trabajo"/><button className="ag-btn small" onClick={quickAdd}>Añadir</button></div>}{viewMode==='day'?renderDay():viewMode==='week'?renderWeek():viewMode==='month'?renderMonth():renderList()}</main><RightRail/></div></>}
     {showUpcoming&&<div><header className="ag-header"><div><h2 className="ag-title">Próximos eventos</h2><p className="ag-subtitle">Todos tus próximos compromisos en un solo lugar.</p></div><button className="ag-btn" onClick={()=>setShowUpcoming(false)}><ChevronLeft size={14}/>Volver a Agenda</button></header><div className="ag-upcoming-controls">{[['today','Hoy'],['week','Esta semana'],['month','Este mes'],['all','Todos']].map(([id,label])=><button className={`ag-btn small ${upcomingRange===id?'primary':''}`} onClick={()=>setUpcomingRange(id)} key={id}>{label}</button>)}<input className="ag-input" style={{maxWidth:260}} value={search} onChange={e=>setSearch(e.target.value)} placeholder="Buscar eventos…"/><select className="ag-select" style={{maxWidth:150}} value={upcomingSort} onChange={e=>setUpcomingSort(e.target.value)}><option value="date">Ordenar por fecha</option><option value="priority">Prioridad</option><option value="name">Nombre</option></select></div><div className="ag-upcoming-page"><div className="ag-card" style={{padding:14}}>{Object.entries(upcomingVisible.reduce((acc,t)=>{(acc[t.dueDate] ||= []).push(t);return acc},{})).map(([date,tasks])=><div className="ag-date-group" key={date}><div className="ag-date-badge"><span>{new Date(`${date}T12:00:00`).toLocaleDateString('es-CO',{weekday:'short'}).toUpperCase()}</span><b>{new Date(`${date}T12:00:00`).getDate()}</b></div><div>{tasks.map(task=><div className="ag-row" style={{gridTemplateColumns:'70px 1fr 120px 28px'}} onClick={()=>setSelectedTask(task)} key={`${task.id}-${date}`}><span>{eventTime(task)}</span><span className="title">{task.text}</span><span className="category">{task.category}</span><ChevronRight size={14}/></div>)}</div></div>)}</div><aside className="ag-side"><section className="ag-card ag-side-card"><div className="ag-side-head"><strong>Días más ocupados</strong></div>{Object.entries(upcomingVisible.reduce((a,t)=>(a[t.dueDate]=(a[t.dueDate]||0)+1,a),{})).sort((a,b)=>b[1]-a[1]).slice(0,5).map(([date,count])=><div key={date} style={{marginBottom:10,fontSize:9}}><div style={{display:'flex',justifyContent:'space-between'}}><span>{groupLabel(date)}</span><b>{count}</b></div><div style={{height:3,background:'var(--ag-line)',marginTop:5}}><div style={{height:'100%',width:`${Math.min(100,count*18)}%`,background:'var(--ag-red)'}}/></div></div>)}</section><section className="ag-card ag-side-card"><strong>Resumen</strong><div className="ag-kpis">{categories.slice(0,6).map(cat=><div className="ag-kpi" key={cat.id}><b>{upcomingVisible.filter(t=>t.category===cat.name).length}</b><span>{cat.name}</span></div>)}</div></section></aside></div></div>}
     {showEditor&&ReactDOM.createPortal(<div className="ag-overlay" onMouseDown={e=>e.target===e.currentTarget&&setShowEditor(false)}><section className="ag-modal" role="dialog" aria-modal="true" aria-label={form.id?'Editar evento':'Nuevo evento'}><header className="ag-modal-head"><div><h2>{form.id?'Editar evento':'Nuevo evento'}</h2><p>Programa tu compromiso con todos sus detalles.</p></div><button className="ag-btn icon" onClick={()=>setShowEditor(false)} aria-label="Cerrar"><X size={16}/></button></header><div className="ag-modal-body"><div className="ag-form-grid"><label className="ag-field full">Título<input className="ag-input" value={form.text} onChange={e=>setForm({...form,text:e.target.value})} autoFocus/></label><label className="ag-field full">Descripción<textarea className="ag-textarea" value={form.description||''} onChange={e=>setForm({...form,description:e.target.value})}/></label><label className="ag-field">Fecha<input type="date" className="ag-input" value={form.dueDate} onChange={e=>setForm({...form,dueDate:e.target.value})}/></label><label className="ag-check"><input type="checkbox" checked={form.allDay} onChange={e=>setForm({...form,allDay:e.target.checked})}/>Todo el día</label>{!form.allDay&&<><label className="ag-field">Hora de inicio<input type="time" className="ag-input" value={form.startTime||''} onChange={e=>setForm({...form,startTime:e.target.value})}/></label><label className="ag-field">Hora final<input type="time" className="ag-input" value={form.endTime||''} onChange={e=>setForm({...form,endTime:e.target.value})}/></label></>}<label className="ag-field">Calendario<select className="ag-select" value={form.category} onChange={e=>setForm({...form,category:e.target.value})}>{categories.map(cat=><option key={cat.id}>{cat.name}</option>)}</select></label><label className="ag-field">Ubicación<input className="ag-input" value={form.location||''} onChange={e=>setForm({...form,location:e.target.value})}/></label><label className="ag-field">Prioridad<select className="ag-select" value={form.priority} onChange={e=>setForm({...form,priority:Number(e.target.value)})}><option value="1">Alta</option><option value="2">Media</option><option value="3">Normal</option><option value="4">Baja</option></select></label><label className="ag-field">Estado<select className="ag-select" value={form.status||'pending'} onChange={e=>setForm({...form,status:e.target.value})}><option value="pending">Pendiente</option><option value="confirmed">Confirmado</option><option value="completed">Completado</option><option value="cancelled">Cancelado</option></select></label><label className="ag-field">Recurrencia<select className="ag-select" value={form.recurrence||'none'} onChange={e=>setForm({...form,recurrence:e.target.value})}>{RECURRENCE_TYPES.filter(r=>!['weekdays','weekends','biweekly','yearly'].includes(r.id)).map(r=><option value={r.id} key={r.id}>{r.label}</option>)}</select></label><label className="ag-field">Recordatorio<select className="ag-select" value={form.reminders?.[0]||'15min'} onChange={e=>setForm({...form,alarm:true,reminders:[e.target.value]})}>{REMINDER_OPTIONS.map(r=><option value={r.id} key={r.id}>{r.label}</option>)}</select></label><label className="ag-field full">Notas<textarea className="ag-textarea" value={form.notes||''} onChange={e=>setForm({...form,notes:e.target.value})}/></label></div></div><footer className="ag-modal-actions"><button className="ag-btn" onClick={()=>setShowEditor(false)}>Cancelar</button><button className="ag-btn primary" onClick={saveEvent}>{form.id?'Guardar cambios':'Crear evento'}</button></footer></section></div>,document.body)}
@@ -22667,7 +22778,23 @@ const AgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAgendaTa
 <section className="ag-filter-section"><h4>Fecha</h4><div className="ag-filter-grid">{[['today','Hoy'],['tomorrow','Mañana'],['week','Esta semana'],['month','Este mes'],['custom','Personalizado']].map(([id,label])=><button type="button" className={`ag-btn small ${filters.datePreset===id?'primary':''}`} key={id} onClick={()=>setFilters({...filters,datePreset:id})}>{label}</button>)}</div>{filters.datePreset==='custom'&&<div className="ag-filter-dates"><label className="ag-field">Fecha inicial<input className="ag-input" type="date" value={filters.fromDate} onChange={e=>setFilters({...filters,fromDate:e.target.value})}/></label><span>—</span><label className="ag-field">Fecha final<input className="ag-input" type="date" min={filters.fromDate} value={filters.toDate} onChange={e=>setFilters({...filters,toDate:e.target.value})}/></label></div>}</section>
 <section className="ag-filter-section"><h4>Prioridad</h4><div className="ag-filter-grid">{[[1,'Alta'],[2,'Media'],[4,'Baja']].map(([id,label])=><label className="ag-pill-check" key={id}><input type="checkbox" checked={filters.priorities.includes(id)} onChange={()=>toggleFilter('priorities',id)}/>{label}</label>)}</div></section>
 <section className="ag-filter-section"><h4>Estado</h4><div className="ag-filter-grid">{[['confirmed','Confirmados'],['pending','Pendientes'],['completed','Completados'],['cancelled','Cancelados']].map(([id,label])=><label className="ag-pill-check" key={id}><input type="checkbox" checked={filters.statuses.includes(id)} onChange={()=>toggleFilter('statuses',id)}/>{label}</label>)}</div></section><section className="ag-filter-section"><h4>Tipo de evento</h4><div className="ag-filter-grid">{[['event','Eventos'],['task','Tareas'],['reminder','Recordatorios']].map(([id,label])=><label className="ag-pill-check" key={id}><input type="checkbox" checked={filters.types.includes(id)} onChange={()=>toggleFilter('types',id)}/>{label}</label>)}</div></section><section className="ag-filter-section"><h4>Rango horario</h4><label className="ag-field">Desde {filters.startHour}:00<input type="range" min="0" max="23" value={filters.startHour} onChange={e=>setFilters({...filters,startHour:Number(e.target.value)})}/></label><label className="ag-field">Hasta {filters.endHour}:00<input type="range" min="1" max="24" value={filters.endHour} onChange={e=>setFilters({...filters,endHour:Number(e.target.value)})}/></label></section><footer className="ag-filter-actions"><button className="ag-btn" style={{flex:1}} onClick={resetFilters}>Limpiar</button><button className="ag-btn primary" style={{flex:1}} onClick={()=>setShowFilters(false)}>Aplicar filtros</button></footer></aside></div>,document.body)}
-    {showCalendars&&ReactDOM.createPortal(<div className="ag-overlay" onMouseDown={e=>e.target===e.currentTarget&&setShowCalendars(false)}><section className="ag-modal wide" role="dialog" aria-modal="true" aria-label="Gestionar calendarios"><header className="ag-modal-head"><div><h2>Gestionar calendarios</h2><p>Administra calendarios, colores y preferencias de sincronización.</p></div><button className="ag-btn icon" onClick={()=>setShowCalendars(false)} aria-label="Cerrar"><X size={16}/></button></header><div className="ag-modal-body"><div className="ag-manage-actions"><input className="ag-input" value={calendarDraft.name} onChange={e=>setCalendarDraft({...calendarDraft,name:e.target.value})} placeholder="Nombre del nuevo calendario"/><input className="ag-color-input" aria-label="Color del nuevo calendario" type="color" value={calendarDraft.color} onChange={e=>setCalendarDraft({...calendarDraft,color:e.target.value})}/><button className="ag-btn primary" onClick={addCalendar}><Plus size={14}/>Nuevo calendario</button><button className="ag-btn" onClick={importCalendars}><Upload size={14}/>Importar</button><button className="ag-btn" onClick={explainCalendarSync}><RefreshCw size={14}/>Sincronizar</button></div><div className="ag-calendar-table">{categories.map(cat=><div className="ag-calendar-row" key={cat.id}><span><b>{cat.name}</b><small>{cat.description||'Eventos y actividades'}</small></span><input className="ag-color-input" aria-label={`Color de ${cat.name}`} type="color" value={cat.color} onChange={event=>updateCalendarColor(cat.id,event.target.value)}/><label><input type="checkbox" checked={activeCalendarNames.has(cat.name)} onChange={()=>setVisibleCalendars(prev=>{const n=new Set(Array.isArray(prev)?prev:categories.map(c=>c.name));n.has(cat.name)?n.delete(cat.name):n.add(cat.name);return[...n]})}/> Visible</label><span className="edit-col">Local</span><span className="sync">No conectado</span></div>)}</div><div className="ag-sync-box"><span><b>Google Calendar</b><small style={{display:'block',color:'var(--ag-muted)'}}>No conectado. HabitFlow no simula proveedores.</small></span><button className="ag-btn" onClick={explainCalendarSync}>Conectar proveedor</button></div></div></section></div>,document.body)}
+    {showCalendars&&ReactDOM.createPortal(
+      <div className="ag-overlay" onMouseDown={e=>e.target===e.currentTarget&&setShowCalendars(false)}>
+        <section className="ag-modal wide" role="dialog" aria-modal="true" aria-label="Gestionar calendarios">
+          <header className="ag-modal-head"><div><h2>Gestionar calendarios</h2><p>Administra calendarios, colores y preferencias de sincronización.</p></div><button className="ag-btn icon" onClick={()=>setShowCalendars(false)} aria-label="Cerrar"><X size={16}/></button></header>
+          <div className="ag-modal-body">
+            <div className="ag-manage-actions"><input className="ag-input" value={calendarDraft.name} onChange={e=>setCalendarDraft({...calendarDraft,name:e.target.value})} placeholder="Nombre del nuevo calendario"/><input className="ag-color-input" aria-label="Color del nuevo calendario" type="color" value={calendarDraft.color} onChange={e=>setCalendarDraft({...calendarDraft,color:e.target.value})}/><button className="ag-btn primary" onClick={addCalendar}><Plus size={14}/>Nuevo calendario</button><button className="ag-btn" onClick={importCalendars}><Upload size={14}/>Importar</button><button className="ag-btn" disabled={googleSyncing} onClick={()=>googleSession?syncGoogleCalendar():connectGoogleCalendar()}><RefreshCw size={14}/>{googleSyncing?'Sincronizando…':'Sincronizar'}</button></div>
+            <div className="ag-calendar-table">{categories.map(cat=><div className="ag-calendar-row" key={cat.id}><span><b>{cat.name}</b><small>{cat.description||'Eventos y actividades'}</small></span><input className="ag-color-input" aria-label={`Color de ${cat.name}`} type="color" value={cat.color} onChange={event=>updateCalendarColor(cat.id,event.target.value)}/><label><input type="checkbox" checked={activeCalendarNames.has(cat.name)} onChange={()=>setVisibleCalendars(prev=>{const n=new Set(Array.isArray(prev)?prev:categories.map(c=>c.name));n.has(cat.name)?n.delete(cat.name):n.add(cat.name);return[...n]})}/> Visible</label><span className="edit-col">Local</span><span className="sync">{cat.name==='Personal'&&googleSession?'Google + local':'Local'}</span></div>)}</div>
+            <div className="ag-sync-box">
+              <span><b>Google Calendar</b><small style={{display:'block',color:'var(--ag-muted)'}}>{googleSession?`Conectado: ${googleSession.account||'Cuenta de Google'}`:'Conecta tu cuenta para importar eventos reales.'}</small>{googleMessage&&<small className="ag-google-message">{googleMessage}</small>}</span>
+              <div>
+                {!googleSession&&<div className="ag-google-config"><input className="ag-input" aria-label="Client ID de Google Calendar" value={googleClientId} onChange={e=>setGoogleClientId(e.target.value)} placeholder="Client ID OAuth de Google Cloud"/><button className="ag-btn primary" onClick={connectGoogleCalendar}>Conectar Google</button></div>}
+                {googleSession&&<div className="ag-google-config"><button className="ag-btn primary" disabled={googleSyncing} onClick={()=>syncGoogleCalendar()}><RefreshCw size={14}/>Sincronizar ahora</button><button className="ag-btn danger" onClick={disconnectGoogleCalendar}>Desconectar</button></div>}
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>,document.body)}
   </div>;
 };
 
