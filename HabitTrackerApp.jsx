@@ -22320,7 +22320,88 @@ const AgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAgendaTa
       @keyframes agSlide{from{transform:translateX(100%)}to{transform:translateX(0)}}
       @media(prefers-reduced-motion:reduce){.agenda-pro *{animation:none!important;transition:none!important}}
       @media(max-width:1180px){.agenda-pro{padding:20px}.ag-layout,.ag-upcoming-page{grid-template-columns:1fr}.ag-side{grid-template-columns:repeat(3,1fr)}.ag-side-card{min-width:0}}
-      @media(max-width:700px){.agenda-pro{padding:14px 12px 110px}.ag-header{align-items:flex-start}.ag-title{font-size:32px}.ag-subtitle{font-size:13px;max-width:250px}.ag-header-actions .ag-btn:first-child{display:none}.ag-btn{min-height:44px}.ag-toolbar{align-items:flex-start;flex-direction:column}.ag-view-nav{width:100%;overflow-x:auto}.ag-view-nav button{flex:1;min-width:88px}.ag-date-nav{width:100%;justify-content:space-between;flex-wrap:wrap}.ag-date-label{min-width:150px;flex:1}.ag-layout{display:block}.ag-side{grid-template-columns:1fr;margin-top:12px}.ag-side .ag-side-card:nth-child(n+3){display:none}.ag-week{grid-template-columns:54px repeat(7,minmax(135px,1fr))}.ag-week-shell{max-width:100%}.ag-day-grid{min-width:0;grid-template-columns:58px 1fr}.ag-month{min-width:720px}.ag-row{grid-template-columns:68px minmax(150px,1fr) 30px;min-height:64px}.ag-row .category,.ag-row .location{display:none}.ag-form-grid{grid-template-columns:1fr}.ag-field.full{grid-column:auto}.ag-modal{width:100%;max-height:calc(100dvh - 12px);border-radius:18px 18px 0 0;align-self:end}.ag-overlay{padding:6px;align-items:end}.ag-drawer{width:100%}.ag-calendar-row{grid-template-columns:1fr 52px 52px}.ag-calendar-row .sync,.ag-calendar-row .edit-col{display:none}.ag-upcoming-controls{overflow-x:auto}.ag-upcoming-page{display:block}}
+      @media(max-width:700px){.agenda-pro{padding:14px 12px 110px}.ag-header{align-items:flex-start}.ag-title{font-size:32px}.ag-subtitle{font-size:13px;max-width:250px}.ag-header-actions .ag-btn:first-child{display:none}.ag-btn{min-height:44px}.ag-toolbar{align-items:flex-start;flex-direction:column}.ag-view-nav{width:100%}.ag-view-nav button{flex:1}.ag-date-nav{width:100%;justify-content:space-between;flex-wrap:wrap}.ag-date-label{min-width:150px;flex:1}.ag-layout{display:block}.ag-side{grid-template-columns:1fr;margin-top:12px}.ag-form-grid{grid-template-columns:1fr}.ag-field.full{grid-column:auto}.ag-modal{width:100%;max-height:calc(100dvh - 12px);border-radius:18px 18px 0 0;align-self:end}.ag-overlay{padding:6px;align-items:end}.ag-drawer{width:100%}.ag-upcoming-page{display:block}}
+
+      /* Final Agenda responsive pass: fluid grids, no horizontal scrolling. */
+      .agenda-pro,.agenda-pro *{min-width:0;box-sizing:border-box}
+      .ag-week-shell,.ag-day-shell,.ag-month-shell,.ag-list-shell{overflow:hidden;width:100%;max-width:100%}
+      .ag-week{width:100%;min-width:0;grid-template-columns:56px repeat(7,minmax(0,1fr))}
+      .ag-day-grid{width:100%;min-width:0;grid-template-columns:64px minmax(0,1fr)}
+      .ag-day-all{grid-template-columns:64px minmax(0,1fr)}
+      .ag-month{width:100%;min-width:0;grid-template-columns:repeat(7,minmax(0,1fr))}
+      .ag-week-head,.ag-all-day,.ag-day-col,.ag-month-name,.ag-month-day{min-width:0;overflow:hidden}
+      .ag-event{left:3px;right:3px;padding:6px 5px}
+      .ag-event strong{font-size:11px;gap:4px}
+      .ag-event small{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:9px}
+      .ag-month-day{padding:8px;min-height:118px}
+      .ag-month-event{min-width:0}.ag-month-event span{min-width:0;overflow:hidden;text-overflow:ellipsis}
+      .ag-row{grid-template-columns:76px minmax(0,1.45fr) minmax(90px,.7fr) minmax(90px,.9fr) 32px;gap:12px}
+      .ag-layout,.ag-upcoming-page{grid-template-columns:minmax(0,1fr) minmax(260px,280px)}
+      .ag-modal.wide{width:min(1100px,calc(100vw - 32px))}
+      .ag-drawer{width:min(480px,100vw)}
+      .ag-calendar-row{grid-template-columns:minmax(180px,1fr) 64px 76px 64px minmax(110px,140px)}
+      .ag-header,.ag-toolbar,.ag-date-nav,.ag-header-actions{min-width:0;flex-wrap:wrap}
+      .ag-date-label{min-width:0;width:clamp(150px,18vw,230px)}
+
+      @media(min-width:1600px){
+        .agenda-pro{padding:28px 32px 52px}
+        .ag-layout{grid-template-columns:minmax(0,1fr) minmax(300px,320px);gap:20px}
+        .ag-upcoming-page{grid-template-columns:minmax(0,1fr) 300px;gap:20px}
+        .ag-event{left:5px;right:5px;padding:7px 8px}.ag-event strong{font-size:12px}.ag-event small{font-size:10px}
+        .ag-month-day{padding:10px;min-height:130px}
+      }
+      @media(min-width:1280px) and (max-width:1599px){
+        .agenda-pro{padding:22px 24px 44px}
+        .ag-layout{grid-template-columns:minmax(0,1fr) minmax(260px,280px);gap:16px}
+        .ag-side-card{padding:15px}
+        .ag-view-nav button{min-width:78px;padding:0 10px}
+        .ag-date-nav{gap:6px}.ag-date-label{font-size:12px}
+      }
+      @media(max-width:1279px){
+        .agenda-pro{padding:20px 18px 44px}
+        .ag-layout,.ag-upcoming-page{grid-template-columns:minmax(0,1fr)}
+        .ag-side{grid-template-columns:repeat(3,minmax(0,1fr));margin-top:16px}
+        .ag-upcoming-page>aside{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+        .ag-upcoming-page>aside>.ag-card:first-child{grid-column:1/-1}
+        .ag-calendar-row{grid-template-columns:minmax(170px,1fr) 58px 70px 58px minmax(100px,120px)}
+      }
+      @media(max-width:1023px){
+        .agenda-pro{padding:18px 16px 96px}
+        .ag-header{align-items:flex-start}.ag-title{font-size:36px}
+        .ag-toolbar{align-items:stretch;flex-direction:column}.ag-view-nav{width:100%;display:grid;grid-template-columns:repeat(4,minmax(0,1fr))}.ag-view-nav button{min-width:0;width:100%}
+        .ag-date-nav{width:100%;justify-content:flex-start}.ag-date-label{flex:1;width:auto}
+        .ag-side{grid-template-columns:repeat(2,minmax(0,1fr))}
+        .ag-side>.ag-card:last-child{grid-column:1/-1}
+        .ag-week{grid-template-columns:48px repeat(7,minmax(0,1fr))}
+        .ag-week-head{height:56px}.ag-week-head span{font-size:9px}.ag-week-head b{font-size:15px}
+        .ag-time-label{right:6px;font-size:9px}.ag-all-day{padding:4px}.ag-all-day.label{font-size:8px}
+        .ag-event{border-left-width:2px;padding:5px 3px}.ag-event strong{font-size:10px}.ag-event-icon{display:none}.ag-event small{font-size:8px}
+        .ag-month-day{min-height:104px;padding:6px}.ag-month-event{font-size:9px;gap:4px}
+        .ag-row{grid-template-columns:66px minmax(0,1fr) 92px 30px;gap:9px;padding:0 12px}.ag-row .location{display:none}
+        .ag-calendar-row{grid-template-columns:minmax(0,1fr) 52px 52px}.ag-calendar-row .sync,.ag-calendar-row .edit-col{display:none}
+      }
+      @media(max-width:700px){
+        .agenda-pro{padding:14px 12px 110px}
+        .ag-header{gap:14px;margin-bottom:18px}.ag-header>div:first-child{flex:1 1 220px}.ag-title{font-size:32px}.ag-header-actions{width:auto;margin-left:auto}.ag-header-actions .ag-btn.primary{padding:0 13px}
+        .ag-view-nav button{height:44px;padding:0 4px;font-size:11px;gap:4px}.ag-view-nav button svg{width:13px;height:13px}
+        .ag-date-nav{display:grid;grid-template-columns:44px 58px minmax(0,1fr) 44px 86px;gap:6px}.ag-date-nav>.ag-btn{padding:0 8px}.ag-date-label{width:auto;min-width:0;font-size:11px;line-height:1.25}.ag-date-nav>.ag-btn:last-child{font-size:0;gap:0}.ag-date-nav>.ag-btn:last-child svg{width:17px;height:17px}
+        .ag-quick{padding:8px;gap:6px}.ag-quick .ag-input{font-size:11px}.ag-quick .ag-btn{padding:0 9px}
+        .ag-list-shell>.ag-quick{display:grid;grid-template-columns:auto minmax(0,1fr) auto;width:auto}
+        .ag-list-shell>.ag-quick>span{width:max-content;max-width:none;overflow:visible}
+        .ag-side{grid-template-columns:1fr}.ag-side>.ag-card:last-child{grid-column:auto}
+        .ag-week{grid-template-columns:38px repeat(7,minmax(0,1fr))}.ag-week-head{height:50px}.ag-week-head span{font-size:8px}.ag-week-head b{font-size:13px}.ag-week-head.today b{width:24px;height:24px}
+        .ag-time-label{font-size:8px;right:4px}
+        .ag-event{left:2px;right:2px;min-height:22px;border-radius:4px;padding:3px 2px}.ag-event strong{font-size:8px;line-height:1.1}.ag-event small{display:none}
+        .ag-day-grid,.ag-day-all{grid-template-columns:48px minmax(0,1fr)}.ag-day-events .ag-event{left:6px;right:6px;padding:7px 9px}.ag-day-events .ag-event strong{font-size:12px}.ag-day-events .ag-event small{display:block;font-size:10px}
+        .ag-month-name{height:34px;font-size:8px}.ag-month-day{min-height:72px;padding:4px}.ag-day-number{width:22px;height:22px;font-size:10px}.ag-month-event{margin-top:3px;font-size:0}.ag-month-event svg{width:8px;height:8px}.ag-month-event:nth-of-type(n+3){display:none}.ag-more{font-size:8px;margin-top:2px}
+        .ag-row{grid-template-columns:54px minmax(0,1fr) 28px;min-height:72px;gap:8px;padding:8px 10px;align-items:center}.ag-row .category,.ag-row .location{display:none}.ag-row .title{white-space:normal;line-height:1.25;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}.ag-row .ag-status{width:28px;height:28px}
+        .ag-upcoming-controls{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));overflow:visible}.ag-date-group{grid-template-columns:46px minmax(0,1fr)}
+        .ag-upcoming-page>aside{display:grid;grid-template-columns:1fr}
+        .ag-modal.wide{width:100%}.ag-calendar-table{border:0;display:grid;gap:10px}.ag-calendar-row{border:1px solid var(--ag-line);border-radius:10px;grid-template-columns:minmax(0,1fr) 48px 48px;padding:12px}.ag-calendar-row:last-child{border-bottom:1px solid var(--ag-line)}
+        .ag-manage-actions{display:grid;grid-template-columns:1fr 1fr}.ag-manage-actions .ag-btn:first-child{grid-column:1/-1}
+        .ag-filter-grid{grid-template-columns:1fr 1fr}.ag-filter-dates{grid-template-columns:1fr}.ag-filter-dates>span{display:none}
+        .ag-date-nav>.ag-btn:last-child{font-size:10px;gap:5px}.ag-date-nav>.ag-btn:last-child svg{width:15px;height:15px}
+      }
     `;
     document.head.appendChild(style);
   }, []);
@@ -22463,7 +22544,7 @@ const AgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAgendaTa
   }, [currentDate]);
 
   const EventBlock = ({ task, day = false }) => { const start = hasTaskTime(task) ? timeToMinutes(getTaskStartTime(task)) : 360; const end = getTaskEndTime(task) ? timeToMinutes(getTaskEndTime(task)) : start + 45; const Icon=categoryIcon(task.category,task.text); return <button className="ag-event" style={{ '--event-color':eventColor(task), top:`${Math.max(0,start-360)}px`, height:`${Math.max(32,end-start)}px` }} onClick={() => setSelectedTask(task)} title={`${task.text} · ${eventTime(task)}`}><strong><Icon className="ag-event-icon" size={14}/><span style={{overflow:'hidden',textOverflow:'ellipsis'}}>{task.text}</span></strong><small>{eventTime(task)}{task.location ? ` · ${task.location}` : ''}</small></button>; };
-  const CurrentTimeLine = ({ targetDate = dateStr }) => { const now=new Date(); if (targetDate!==todayStr) return null; const top=now.getHours()*60+now.getMinutes()-360; return top>=0&&top<=960?<div className="ag-now" style={{top}}><span style={{position:'absolute',right:'100%',top:-6,color:'var(--ag-red)',fontSize:8,marginRight:6}}>{now.toLocaleTimeString('es-CO',{hour:'2-digit',minute:'2-digit'})}</span></div>:null; };
+  const CurrentTimeLine = ({ targetDate = dateStr }) => { const now=new Date(); if (targetDate!==todayStr) return null; const top=now.getHours()*60+now.getMinutes()-360; return top>=0&&top<=960?<div className="ag-now" style={{top}}><span style={{position:'absolute',right:'100%',top:-7,color:'var(--ag-red)',fontSize:8,marginRight:6,whiteSpace:'nowrap',width:'max-content',lineHeight:1}}>{now.toLocaleTimeString('es-CO',{hour:'2-digit',minute:'2-digit'})}</span></div>:null; };
 
   const renderDay = () => <div className="ag-day-shell"><div className="ag-day-all"><div>Todo el día</div><div>{selectedTasks.filter(t=>t.allDay||!hasTaskTime(t)).map(t=><button key={t.id} className="ag-month-event" onClick={()=>setSelectedTask(t)}><i className="ag-dot" style={{background:eventColor(t)}}/>{t.text}</button>)}</div></div><div className="ag-day-grid"><div className="ag-time-col">{HOURS.slice(0,17).map((h,i)=><span key={h} className="ag-time-label" style={{top:i*60}}>{String(h).padStart(2,'0')}:00</span>)}</div><div className="ag-day-events" onDoubleClick={()=>openNew({dueDate:dateStr})}><CurrentTimeLine/>{selectedTasks.filter(hasTaskTime).map(t=><EventBlock key={`${t.id}-${t.dueDate}`} task={t} day/>)}</div></div></div>;
   const renderWeek = () => <div className="ag-week-shell"><div className="ag-week"><div className="ag-week-head"/>{weekDays.map(day=><div key={toYYYYMMDD(day)} className={`ag-week-head ${toYYYYMMDD(day)===todayStr?'today':''}`}><span>{day.toLocaleDateString('es-CO',{weekday:'short'})}</span><b>{day.getDate()}</b></div>)}<div className="ag-all-day label">Todo el día</div>{weekDays.map(day=><div key={`all-${toYYYYMMDD(day)}`} className="ag-all-day">{(visibleAgenda[toYYYYMMDD(day)]||[]).filter(t=>t.allDay||!hasTaskTime(t)).slice(0,2).map(t=><button key={t.id} className="ag-month-event" onClick={()=>setSelectedTask(t)}><i className="ag-dot" style={{background:eventColor(t)}}/>{t.text}</button>)}</div>)}<div className="ag-time-col">{HOURS.slice(0,17).map((h,i)=><span key={h} className="ag-time-label" style={{top:i*60}}>{String(h).padStart(2,'0')}:00</span>)}</div>{weekDays.map(day=>{const ds=toYYYYMMDD(day);return <div key={ds} className="ag-day-col" onDoubleClick={()=>openNew({dueDate:ds})}><CurrentTimeLine targetDate={ds}/>{(visibleAgenda[ds]||[]).filter(hasTaskTime).map(t=><EventBlock key={`${t.id}-${ds}`} task={t}/>)}</div>})}</div></div>;
@@ -22489,6 +22570,34 @@ const AgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAgendaTa
   const resetFilters = () => setFilters({ category:'',datePreset:'all',fromDate:'',toDate:'',priorities:[],statuses:[],types:[],startHour:0,endHour:24 });
   const toggleFilter = (key,value) => setFilters(prev=>({...prev,[key]:prev[key].includes(value)?prev[key].filter(item=>item!==value):[...prev[key],value]}));
   const addCalendar = () => { const name=calendarDraft.name.trim(); if(!name)return; if(categories.some(c=>c.name.toLowerCase()===name.toLowerCase())){alert('Ese calendario ya existe.');return;} onUpdateAgendaTaskCategories?.(prev=>[...(prev||[]),{id:`agenda_cat_${Date.now()}`,name,color:calendarDraft.color,description:'Calendario personalizado',createdAt:new Date().toISOString()}]); setCalendarDraft({name:'',color:'#e00000'}); };
+  const updateCalendarColor = (id, color) => onUpdateAgendaTaskCategories?.(prev => normalizeAgendaTaskCategories(prev).map(category => category.id === id ? { ...category, color } : category));
+  const importCalendars = () => {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'application/json,.json';
+    input.onchange = async () => {
+      const file = input.files?.[0];
+      if (!file) return;
+      try {
+        const parsed = JSON.parse(await file.text());
+        const imported = Array.isArray(parsed) ? parsed : parsed.calendars;
+        if (!Array.isArray(imported)) throw new Error('Formato no compatible');
+        onUpdateAgendaTaskCategories?.(prev => {
+          const existing = normalizeAgendaTaskCategories(prev);
+          const names = new Set(existing.map(item => item.name.toLowerCase()));
+          const additions = imported.flatMap((item, index) => {
+            const name = String(item?.name || '').trim();
+            if (!name || names.has(name.toLowerCase())) return [];
+            names.add(name.toLowerCase());
+            return [{ id: item.id || `agenda_import_${Date.now()}_${index}`, name, color: item.color || '#e00000', description: item.description || 'Calendario importado', createdAt: new Date().toISOString() }];
+          });
+          return [...existing, ...additions];
+        });
+      } catch { alert('No pude importar el archivo. Usa un JSON con una lista "calendars" válida.'); }
+    };
+    input.click();
+  };
+  const explainCalendarSync = () => alert('No hay un proveedor externo conectado. Tus calendarios locales sí se guardan con HabitFlow; conecta Google Calendar cuando el backend OAuth esté disponible.');
 
   return <div className="agenda-pro">
     <header className="ag-header"><div><div className="ag-eyebrow">{new Date().toLocaleDateString('es-CO',{weekday:'long',day:'numeric',month:'long',year:'numeric'})}</div><h1 className="ag-title"><CalendarDays size={30} style={{color:'var(--ag-red)',verticalAlign:'-3px',marginRight:10}}/>Agenda</h1><p className="ag-subtitle">Organiza tu tiempo, cumple tus compromisos y alcanza tus objetivos.</p></div><div className="ag-header-actions"><button className="ag-btn" onClick={()=>alert('Google Calendar aún no está conectado. Tus eventos locales están guardados y sincronizados con HabitFlow.')}><RefreshCw size={16}/>Sincronizar</button><button className="ag-btn primary" onClick={()=>openNew()}><Plus size={17}/>Nuevo evento</button></div></header>
@@ -22500,7 +22609,7 @@ const AgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAgendaTa
 <section className="ag-filter-section"><h4>Fecha</h4><div className="ag-filter-grid">{[['today','Hoy'],['tomorrow','Mañana'],['week','Esta semana'],['month','Este mes'],['custom','Personalizado']].map(([id,label])=><button type="button" className={`ag-btn small ${filters.datePreset===id?'primary':''}`} key={id} onClick={()=>setFilters({...filters,datePreset:id})}>{label}</button>)}</div>{filters.datePreset==='custom'&&<div className="ag-filter-dates"><label className="ag-field">Fecha inicial<input className="ag-input" type="date" value={filters.fromDate} onChange={e=>setFilters({...filters,fromDate:e.target.value})}/></label><span>—</span><label className="ag-field">Fecha final<input className="ag-input" type="date" min={filters.fromDate} value={filters.toDate} onChange={e=>setFilters({...filters,toDate:e.target.value})}/></label></div>}</section>
 <section className="ag-filter-section"><h4>Prioridad</h4><div className="ag-filter-grid">{[[1,'Alta'],[2,'Media'],[4,'Baja']].map(([id,label])=><label className="ag-pill-check" key={id}><input type="checkbox" checked={filters.priorities.includes(id)} onChange={()=>toggleFilter('priorities',id)}/>{label}</label>)}</div></section>
 <section className="ag-filter-section"><h4>Estado</h4><div className="ag-filter-grid">{[['confirmed','Confirmados'],['pending','Pendientes'],['completed','Completados'],['cancelled','Cancelados']].map(([id,label])=><label className="ag-pill-check" key={id}><input type="checkbox" checked={filters.statuses.includes(id)} onChange={()=>toggleFilter('statuses',id)}/>{label}</label>)}</div></section><section className="ag-filter-section"><h4>Tipo de evento</h4><div className="ag-filter-grid">{[['event','Eventos'],['task','Tareas'],['reminder','Recordatorios']].map(([id,label])=><label className="ag-pill-check" key={id}><input type="checkbox" checked={filters.types.includes(id)} onChange={()=>toggleFilter('types',id)}/>{label}</label>)}</div></section><section className="ag-filter-section"><h4>Rango horario</h4><label className="ag-field">Desde {filters.startHour}:00<input type="range" min="0" max="23" value={filters.startHour} onChange={e=>setFilters({...filters,startHour:Number(e.target.value)})}/></label><label className="ag-field">Hasta {filters.endHour}:00<input type="range" min="1" max="24" value={filters.endHour} onChange={e=>setFilters({...filters,endHour:Number(e.target.value)})}/></label></section><footer className="ag-filter-actions"><button className="ag-btn" style={{flex:1}} onClick={resetFilters}>Limpiar</button><button className="ag-btn primary" style={{flex:1}} onClick={()=>setShowFilters(false)}>Aplicar filtros</button></footer></aside></div>,document.body)}
-    {showCalendars&&ReactDOM.createPortal(<div className="ag-overlay" onMouseDown={e=>e.target===e.currentTarget&&setShowCalendars(false)}><section className="ag-modal wide" role="dialog" aria-modal="true" aria-label="Gestionar calendarios"><header className="ag-modal-head"><div><h2>Gestionar calendarios</h2><p>Administra calendarios, colores y preferencias de sincronización.</p></div><button className="ag-btn icon" onClick={()=>setShowCalendars(false)}><X size={16}/></button></header><div className="ag-modal-body"><div className="ag-manage-actions"><input className="ag-input" value={calendarDraft.name} onChange={e=>setCalendarDraft({...calendarDraft,name:e.target.value})} placeholder="Nombre del nuevo calendario"/><input className="ag-color-input" type="color" value={calendarDraft.color} onChange={e=>setCalendarDraft({...calendarDraft,color:e.target.value})}/><button className="ag-btn primary" onClick={addCalendar}><Plus size={14}/>Nuevo calendario</button></div><div className="ag-calendar-table">{categories.map(cat=><div className="ag-calendar-row" key={cat.id}><span><b>{cat.name}</b><small>{cat.description||'Eventos y actividades'}</small></span><input className="ag-color-input" type="color" value={cat.color}/><label><input type="checkbox" checked={activeCalendarNames.has(cat.name)} onChange={()=>setVisibleCalendars(prev=>{const n=new Set(Array.isArray(prev)?prev:categories.map(c=>c.name));n.has(cat.name)?n.delete(cat.name):n.add(cat.name);return[...n]})}/> Visible</label><span className="edit-col">Local</span><span className="sync">No conectado</span></div>)}</div><div className="ag-sync-box"><span><b>Google Calendar</b><small style={{display:'block',color:'var(--ag-muted)'}}>No conectado. HabitFlow no simula proveedores.</small></span><button className="ag-btn" onClick={()=>alert('La integración con Google Calendar está preparada visualmente, pero aún requiere OAuth y backend.')}>Conectar proveedor</button></div></div></section></div>,document.body)}
+    {showCalendars&&ReactDOM.createPortal(<div className="ag-overlay" onMouseDown={e=>e.target===e.currentTarget&&setShowCalendars(false)}><section className="ag-modal wide" role="dialog" aria-modal="true" aria-label="Gestionar calendarios"><header className="ag-modal-head"><div><h2>Gestionar calendarios</h2><p>Administra calendarios, colores y preferencias de sincronización.</p></div><button className="ag-btn icon" onClick={()=>setShowCalendars(false)} aria-label="Cerrar"><X size={16}/></button></header><div className="ag-modal-body"><div className="ag-manage-actions"><input className="ag-input" value={calendarDraft.name} onChange={e=>setCalendarDraft({...calendarDraft,name:e.target.value})} placeholder="Nombre del nuevo calendario"/><input className="ag-color-input" aria-label="Color del nuevo calendario" type="color" value={calendarDraft.color} onChange={e=>setCalendarDraft({...calendarDraft,color:e.target.value})}/><button className="ag-btn primary" onClick={addCalendar}><Plus size={14}/>Nuevo calendario</button><button className="ag-btn" onClick={importCalendars}><Upload size={14}/>Importar</button><button className="ag-btn" onClick={explainCalendarSync}><RefreshCw size={14}/>Sincronizar</button></div><div className="ag-calendar-table">{categories.map(cat=><div className="ag-calendar-row" key={cat.id}><span><b>{cat.name}</b><small>{cat.description||'Eventos y actividades'}</small></span><input className="ag-color-input" aria-label={`Color de ${cat.name}`} type="color" value={cat.color} onChange={event=>updateCalendarColor(cat.id,event.target.value)}/><label><input type="checkbox" checked={activeCalendarNames.has(cat.name)} onChange={()=>setVisibleCalendars(prev=>{const n=new Set(Array.isArray(prev)?prev:categories.map(c=>c.name));n.has(cat.name)?n.delete(cat.name):n.add(cat.name);return[...n]})}/> Visible</label><span className="edit-col">Local</span><span className="sync">No conectado</span></div>)}</div><div className="ag-sync-box"><span><b>Google Calendar</b><small style={{display:'block',color:'var(--ag-muted)'}}>No conectado. HabitFlow no simula proveedores.</small></span><button className="ag-btn" onClick={explainCalendarSync}>Conectar proveedor</button></div></div></section></div>,document.body)}
   </div>;
 };
 
