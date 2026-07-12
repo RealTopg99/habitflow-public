@@ -22354,6 +22354,8 @@ const AgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAgendaTa
       @media(max-width:700px){.agenda-pro{padding:14px 12px 110px}.ag-header{align-items:flex-start}.ag-title{font-size:32px}.ag-subtitle{font-size:13px;max-width:250px}.ag-header-actions .ag-btn:first-child{display:none}.ag-btn{min-height:44px}.ag-toolbar{align-items:flex-start;flex-direction:column}.ag-view-nav{width:100%}.ag-view-nav button{flex:1}.ag-date-nav{width:100%;justify-content:space-between;flex-wrap:wrap}.ag-date-label{min-width:150px;flex:1}.ag-layout{display:block}.ag-side{grid-template-columns:1fr;margin-top:12px}.ag-form-grid{grid-template-columns:1fr}.ag-field.full{grid-column:auto}.ag-modal{width:100%;max-height:calc(100dvh - 12px);border-radius:18px 18px 0 0;align-self:end}.ag-overlay{padding:6px;align-items:end}.ag-drawer{width:100%}.ag-upcoming-page{display:block}}
 
       /* Final Agenda responsive pass: fluid grids, no horizontal scrolling. */
+      body:has(.agenda-pro) .app-main{width:100%;max-width:none!important;margin:0!important;padding:0!important}
+      body:has(.agenda-pro) .app-main>.view-enter{width:100%;max-width:none}
       .agenda-pro,.agenda-pro *{min-width:0;box-sizing:border-box}
       .ag-week-shell,.ag-day-shell,.ag-month-shell,.ag-list-shell{overflow:hidden;width:100%;max-width:100%}
       .ag-week{width:100%;min-width:0;grid-template-columns:56px repeat(7,minmax(0,1fr))}
