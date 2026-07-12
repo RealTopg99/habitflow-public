@@ -5472,7 +5472,9 @@ const injectStyles = () => {
       opacity: 0.55;
     }
     .app-main {
-      max-width: 1440px;
+      width: 100%;
+      max-width: none;
+      margin-inline: 0;
       min-width: 0;
       padding-inline: clamp(18px, 2.2vw, 34px);
     }
@@ -6495,6 +6497,11 @@ const injectStyles = () => {
     }
     .finance-wallet-column {
       min-width: 0;
+    }
+    .app-main > .view-enter,
+    .app-main > .view-enter > div {
+      width: 100%;
+      max-width: none;
     }
     .finance-wallet-label {
       color: var(--hf-muted);
