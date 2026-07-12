@@ -22445,6 +22445,9 @@ const AgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAgendaTa
       .ag-time-col,.ag-day-col,.ag-day-events{height:var(--ag-timeline-height)}
       .ag-time-col,.ag-day-col,.ag-day-events{background-size:100% calc(var(--ag-timeline-height) / 16)}
       .ag-day-col,.ag-day-events{background-image:repeating-linear-gradient(to bottom,transparent 0,transparent calc((var(--ag-timeline-height) / 16) - 1px),var(--ag-line) calc(var(--ag-timeline-height) / 16))}
+      .ag-week .ag-event strong{align-items:flex-start;white-space:normal;overflow:visible;line-height:1.25}
+      .ag-week .ag-event strong span{white-space:normal;overflow-wrap:anywhere;text-overflow:clip}
+      .ag-week .ag-event small{margin-top:2px}
       .ag-now{height:2px;background:var(--ag-red);z-index:8;pointer-events:none}
       .ag-now:before{width:10px;height:10px;top:-4px;left:-5px}
       .ag-now-label{position:absolute;left:calc((var(--ag-time-width) * -1) + 3px);top:-10px;width:calc(var(--ag-time-width) - 7px);box-sizing:border-box;padding:3px 2px;border-radius:5px;background:var(--ag-red);color:#fff;font-size:9px;font-weight:800;line-height:1;text-align:center;white-space:nowrap}
@@ -22611,7 +22614,8 @@ const AgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAgendaTa
     const Icon = categoryIcon(task.category, task.text);
     const top = timelinePercent(start);
     const height = Math.max(2.9, (Math.max(30, end - start) / AGENDA_TOTAL_MINUTES) * 100);
-    return <button className="ag-event" style={{ '--event-color':eventColor(task), top:`${top}%`, height:`${height}%` }} onClick={() => setSelectedTask(task)} title={`${task.text} · ${eventTime(task)}`}><strong><Icon className="ag-event-icon" size={14}/><span style={{overflow:'hidden',textOverflow:'ellipsis'}}>{task.text}</span></strong><small>{eventTime(task)}{task.location ? ` · ${task.location}` : ''}</small></button>;
+    const adaptiveMinHeight = Math.max(40, 42 + Math.ceil(String(task.text || '').length / 14) * 15);
+    return <button className="ag-event" style={{ '--event-color':eventColor(task), top:`${top}%`, height:`${height}%`, minHeight:`${adaptiveMinHeight}px` }} onClick={() => setSelectedTask(task)} title={`${task.text} · ${eventTime(task)}`}><strong><Icon className="ag-event-icon" size={14}/><span>{task.text}</span></strong><small>{eventTime(task)}{task.location ? ` · ${task.location}` : ''}</small></button>;
   };
   const nowMinutes = agendaNow.getHours() * 60 + agendaNow.getMinutes();
   const nowInTimeline = nowMinutes >= AGENDA_START_MINUTES && nowMinutes <= AGENDA_END_MINUTES;
