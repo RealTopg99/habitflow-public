@@ -16,6 +16,7 @@ const {
   Rocket, Laptop, FileText, AlarmClock, Lightbulb, Music,
   Palette, Camera, Leaf, Zap, Trophy, Medal, Star, Gift, Bookmark,
   Flower2, ChevronDown, RefreshCw, Users, Send, Shield, Mic, MicOff,
+  Phone, ShoppingCart, Cake, Stethoscope, ListChecks,
 } = lucideReact;
 
 // Keep Agenda compatible with the pinned Lucide build used by the single-file app.
@@ -22474,6 +22475,74 @@ const AgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAgendaTa
       @media(min-width:1600px){.agenda-pro{--ag-timeline-height:clamp(700px,calc(100dvh - 330px),920px)}}
       @media(max-width:1279px){.agenda-pro{--ag-timeline-height:clamp(600px,calc(100dvh - 310px),820px);--ag-time-width:48px;--ag-week-head-height:56px}.ag-row{grid-template-columns:72px minmax(0,1fr) minmax(90px,.7fr) 40px 36px}.ag-row .location{display:none}}
       @media(max-width:700px){.agenda-pro{--ag-timeline-height:clamp(560px,calc(100dvh - 300px),760px);--ag-time-width:38px;--ag-week-head-height:50px}.ag-row{grid-template-columns:54px minmax(0,1fr) 38px 34px}.ag-row .category,.ag-row .location{display:none}.ag-status,.ag-row-action{width:34px;height:34px}.ag-week-now-label,.ag-now-label{font-size:9px}}
+
+      /* Surgical Agenda geometry: one authoritative responsive layer. */
+      .agenda-pro{
+        --ag-time-width:54px;
+        --ag-week-head-height:66px;
+        --ag-all-day-height:50px;
+        --ag-timeline-height:960px;
+        width:100%;max-width:none;min-width:0;
+        padding:clamp(22px,1.65vw,32px);
+      }
+      .ag-header{margin-bottom:26px}.ag-title{font-size:clamp(38px,2.35vw,46px)}
+      .ag-toolbar{margin-bottom:18px}.ag-view-nav button{height:46px;min-width:96px}
+      .ag-layout{grid-template-columns:minmax(0,1fr) 310px;gap:18px;width:100%;align-items:start}
+      .ag-main,.ag-side,.ag-week-shell,.ag-day-shell,.ag-month-shell,.ag-list-shell{min-width:0;max-width:100%}
+      .ag-side{width:310px;gap:16px}.ag-side-card{padding:18px 19px}.ag-side-head strong{font-size:16px}
+      .ag-week-shell,.ag-day-shell{max-height:calc(100dvh - 265px);min-height:610px;overflow-y:auto;overflow-x:clip}
+      .ag-week{position:relative;display:grid;width:100%;min-width:0;grid-template-columns:var(--ag-time-width) repeat(7,minmax(0,1fr))}
+      .ag-week-head{height:var(--ag-week-head-height)}
+      .ag-all-day{height:var(--ag-all-day-height);min-height:var(--ag-all-day-height)}
+      .ag-time-col,.ag-day-col,.ag-day-events{height:var(--ag-timeline-height)}
+      .ag-time-col,.ag-day-col,.ag-day-events{background-size:100% calc(var(--ag-timeline-height) / 24)}
+      .ag-day-col,.ag-day-events{background-image:repeating-linear-gradient(to bottom,transparent 0,transparent calc((var(--ag-timeline-height) / 24) - 1px),var(--ag-line) calc(var(--ag-timeline-height) / 24))}
+      .ag-time-label{right:6px;font-size:10px;font-variant-numeric:tabular-nums}
+      .ag-week-now-layer{left:var(--ag-time-width);right:0;top:calc(var(--ag-week-head-height) + var(--ag-all-day-height));height:var(--ag-timeline-height)}
+      .ag-week-now-line{left:0;right:0;width:auto}
+      .ag-event{left:4px;right:4px;min-height:38px;padding:7px 8px;border-radius:7px}
+      .ag-event strong{font-size:12px;line-height:1.25;display:flex;align-items:flex-start}
+      .ag-event strong span{display:block;white-space:normal;overflow:visible;overflow-wrap:anywhere;text-overflow:clip}
+      .ag-event small{font-size:10px;line-height:1.25}
+      .ag-event-icon{display:block;min-width:15px;width:15px;height:15px}
+      .ag-month{width:100%;min-width:0;grid-template-columns:repeat(7,minmax(0,1fr))}
+      .ag-month-day{min-height:clamp(118px,13.5vh,158px);padding:10px}
+      .ag-list-group h3{font-size:14px;padding:15px 18px}
+      .ag-row{grid-template-columns:92px minmax(180px,1.5fr) minmax(100px,.75fr) minmax(90px,.9fr) 40px 38px;min-height:58px;padding:0 18px;font-size:13px;gap:12px}
+      .ag-status{width:28px;height:28px;border-radius:50%;justify-self:center}.ag-status svg{width:15px;height:15px}
+      .ag-status.done{color:#fff;background:#168b5e;border-color:#168b5e}
+      .ag-status-placeholder{width:28px;height:28px}.ag-row-action{width:36px;height:36px;border-radius:9px}
+      .ag-modal.wide{width:min(1100px,calc(100vw - 32px))}.ag-modal{width:min(640px,calc(100vw - 32px))}
+      .ag-modal-head h2{font-size:25px}.ag-modal-head p,.ag-field,.ag-check{font-size:11px}
+      .ag-calendar-row{font-size:12px}.ag-calendar-row small{font-size:10px}
+      @media(max-width:1599px){
+        .agenda-pro{padding:22px 24px 46px}
+        .ag-layout{grid-template-columns:minmax(0,1fr) 270px;gap:14px}
+        .ag-side{width:270px}.ag-side-card{padding:16px}
+        .ag-view-nav button{min-width:82px}
+        .ag-event{left:3px;right:3px;padding:6px}.ag-event strong{font-size:11px}.ag-event small{font-size:9px}
+      }
+      @media(max-width:1199px){
+        .ag-layout,.ag-upcoming-page{grid-template-columns:minmax(0,1fr)}
+        .ag-side{width:100%;grid-template-columns:repeat(3,minmax(0,1fr));margin-top:16px}
+        .ag-week-shell,.ag-day-shell{max-height:680px}
+      }
+      @media(max-width:1023px){
+        .agenda-pro{padding:18px 16px 96px;--ag-time-width:48px}
+        .ag-side{grid-template-columns:repeat(2,minmax(0,1fr))}
+        .ag-side>.ag-card:last-child{grid-column:1/-1}
+        .ag-event-icon{display:none}.ag-event strong{font-size:10px}.ag-event small{font-size:8px}
+        .ag-row{grid-template-columns:76px minmax(0,1fr) 40px 36px}.ag-row .category,.ag-row .location{display:none}
+      }
+      @media(max-width:700px){
+        .agenda-pro{padding:14px 12px 110px;--ag-time-width:42px;--ag-week-head-height:52px;--ag-all-day-height:44px;--ag-timeline-height:900px}
+        .ag-title{font-size:34px}.ag-side{grid-template-columns:1fr}
+        .ag-week-shell,.ag-day-shell{min-height:540px;max-height:calc(100dvh - 250px)}
+        .ag-week-head span{font-size:8px}.ag-week-head b{font-size:13px}
+        .ag-event{left:2px;right:2px;min-height:28px;padding:4px 3px}.ag-event strong{font-size:8px}.ag-event small{display:none}
+        .ag-month-day{min-height:82px;padding:5px}
+        .ag-row{grid-template-columns:60px minmax(0,1fr) 34px 34px;min-height:68px;padding:7px 10px;font-size:12px}
+      }
     `;
     document.head.appendChild(style);
   }, []);
@@ -22518,6 +22587,37 @@ const AgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAgendaTa
     if (/recordatorio|aviso/.test(value)) return Bell;
     if (/personal/.test(value)) return User;
     return Circle;
+  }, []);
+  const agendaIcon = useCallback((task = {}) => {
+    const explicit = String(task.icon || '').toLowerCase();
+    const value = `${task.subtype || ''} ${task.category || ''} ${task.text || ''}`.toLowerCase();
+    const explicitIcons = {
+      phone: Phone, call: Phone, report: FileText, file: FileText, book: BookOpen,
+      wallet: WalletCards, card: CreditCard, cart: ShoppingCart, health: HeartPulse,
+      doctor: Stethoscope, pill: Pill, workout: Dumbbell, meditation: Flower2,
+      food: Utensils, plane: Plane, users: Users, cake: Cake, bell: Bell,
+      task: ListChecks, calendar: CalendarDays
+    };
+    if (explicit && explicitIcons[explicit]) return explicitIcons[explicit];
+    if (/llamad|tel[eé]fon|call/.test(value)) return Phone;
+    if (/reporte|informe|documento|presentaci[oó]n/.test(value)) return FileText;
+    if (/estudi|curso|leer|lectura|educaci[oó]n/.test(value)) return BookOpen;
+    if (/comprar|supermercado|mercado|tienda/.test(value)) return ShoppingCart;
+    if (/pagar|tarjeta|banco|finanza|presupuesto/.test(value)) return CreditCard;
+    if (/m[eé]dic|doctor|consulta|dentista/.test(value)) return Stethoscope;
+    if (/medicamento|pastilla|dosis/.test(value)) return Pill;
+    if (/entreno|ejercicio|gym/.test(value)) return Dumbbell;
+    if (/medita|respira/.test(value)) return Flower2;
+    if (/comida|almuerzo|cena|desayuno/.test(value)) return Utensils;
+    if (/viaje|vuelo|medell[ií]n/.test(value)) return Plane;
+    if (/cumplea[nñ]os|cumple/.test(value)) return Cake;
+    if (/reuni[oó]n|equipo|social|amig|familia|cliente/.test(value)) return Users;
+    if (/recordatorio|aviso/.test(value) || task.type === 'reminder') return Bell;
+    if (/trabajo|laboral|proyecto/.test(value)) return BriefcaseBusiness;
+    if (/salud|agua/.test(value)) return HeartPulse;
+    if (task.type === 'task') return ListChecks;
+    if (/personal/.test(value)) return User;
+    return CalendarDays;
   }, []);
   const allTasks = useMemo(() => Object.entries(expandedAgenda).flatMap(([date, tasks]) => tasks.map(task => ({ ...task, dueDate: date }))), [expandedAgenda]);
   const filterActiveCount = Number(Boolean(filters.category)) + filters.priorities.length + filters.statuses.length + filters.types.length + Number(filters.datePreset !== 'all' || filters.fromDate || filters.toDate) + Number(filters.startHour !== 0 || filters.endHour !== 24);
@@ -22616,11 +22716,11 @@ const AgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAgendaTa
   }, [currentDate]);
 
   const timelinePercent = minutes => Math.max(0, Math.min(100, ((minutes - AGENDA_START_MINUTES) / AGENDA_TOTAL_MINUTES) * 100));
-  const isCompletableAgendaItem = task => !task?.type || task.type === 'task';
+  const isCompletableAgendaItem = task => task?.type === 'task';
   const EventBlock = ({ task }) => {
     const start = hasTaskTime(task) ? timeToMinutes(getTaskStartTime(task)) : AGENDA_START_MINUTES;
     const end = getTaskEndTime(task) ? timeToMinutes(getTaskEndTime(task)) : start + 45;
-    const Icon = categoryIcon(task.category, task.text);
+    const Icon = agendaIcon(task);
     const top = timelinePercent(start);
     const height = Math.max(2.9, (Math.max(30, end - start) / AGENDA_TOTAL_MINUTES) * 100);
     const adaptiveMinHeight = Math.max(40, 42 + Math.ceil(String(task.text || '').length / 14) * 15);
@@ -22641,11 +22741,11 @@ const AgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAgendaTa
 
   const renderDay = () => <div className="ag-day-shell"><div className="ag-day-all"><div>Todo el día</div><div>{selectedTasks.filter(t=>t.allDay||!hasTaskTime(t)).map(t=><button key={t.id} className="ag-month-event" onClick={()=>setSelectedTask(t)}><i className="ag-dot" style={{background:eventColor(t)}}/>{t.text}</button>)}</div></div><div className="ag-day-grid"><div className="ag-time-col">{HOURS.map(h=><span key={h} className="ag-time-label" style={{top:`${timelinePercent(h*60)}%`}}>{formatAgendaClock(`${String(h).padStart(2,'0')}:00`)}</span>)}</div><div className="ag-day-events" onDoubleClick={()=>openNew({dueDate:dateStr})}><CurrentTimeLine/>{selectedTasks.filter(hasTaskTime).map(t=><EventBlock key={`${t.id}-${t.dueDate}`} task={t}/>)}</div></div></div>;
   const renderWeek = () => <div className="ag-week-shell"><div className="ag-week"><div className="ag-week-head"/>{weekDays.map(day=><div key={toYYYYMMDD(day)} className={`ag-week-head ${toYYYYMMDD(day)===todayStr?'today':''}`}><span>{day.toLocaleDateString('es-CO',{weekday:'short'})}</span><b>{day.getDate()}</b></div>)}<div className="ag-all-day label">Todo el día</div>{weekDays.map(day=><div key={`all-${toYYYYMMDD(day)}`} className="ag-all-day">{(visibleAgenda[toYYYYMMDD(day)]||[]).filter(t=>t.allDay||!hasTaskTime(t)).slice(0,2).map(t=><button key={t.id} className="ag-month-event" onClick={()=>setSelectedTask(t)}><i className="ag-dot" style={{background:eventColor(t)}}/>{t.text}</button>)}</div>)}<div className="ag-time-col">{HOURS.map(h=><span key={h} className="ag-time-label" style={{top:`${timelinePercent(h*60)}%`}}>{formatAgendaClock(`${String(h).padStart(2,'0')}:00`)}</span>)}</div>{weekDays.map(day=>{const ds=toYYYYMMDD(day);return <div key={ds} className="ag-day-col" data-agenda-date={ds} onDoubleClick={()=>openNew({dueDate:ds})}>{(visibleAgenda[ds]||[]).filter(hasTaskTime).map(t=><EventBlock key={`${t.id}-${ds}`} task={t}/>)}</div>})}<WeekCurrentTimeLine/></div></div>;
-  const renderMonth = () => <div className="ag-month-shell"><div className="ag-month">{['Lun','Mar','Mié','Jue','Vie','Sáb','Dom'].map(name=><div className="ag-month-name" key={name}>{name}</div>)}{monthDays.map(day=>{const ds=toYYYYMMDD(day),tasks=visibleAgenda[ds]||[];return <div key={ds} className={`ag-month-day ${day.getMonth()!==currentDate.getMonth()?'out':''} ${ds===dateStr?'selected':''}`} onClick={()=>setCurrentDate(day)} onDoubleClick={()=>openNew({dueDate:ds})}><span className={`ag-day-number ${ds===todayStr?'today':''}`}>{day.getDate()}</span>{tasks.slice(0,3).map(t=>{const Icon=categoryIcon(t.category,t.text);return <button key={`${t.id}-${ds}`} className="ag-month-event" onClick={e=>{e.stopPropagation();setSelectedTask(t)}}><Icon size={12} style={{color:eventColor(t),flex:'none'}}/><span style={{overflow:'hidden',textOverflow:'ellipsis'}}>{hasTaskTime(t)?`${formatAgendaClock(getTaskStartTime(t))} `:''}{t.text}</span></button>})}{tasks.length>3&&<button className="ag-link ag-more" onClick={()=>{setCurrentDate(day);setViewMode('day')}}>+{tasks.length-3} más</button>}</div>})}</div></div>;
+  const renderMonth = () => <div className="ag-month-shell"><div className="ag-month">{['Lun','Mar','Mié','Jue','Vie','Sáb','Dom'].map(name=><div className="ag-month-name" key={name}>{name}</div>)}{monthDays.map(day=>{const ds=toYYYYMMDD(day),tasks=visibleAgenda[ds]||[];return <div key={ds} className={`ag-month-day ${day.getMonth()!==currentDate.getMonth()?'out':''} ${ds===dateStr?'selected':''}`} onClick={()=>setCurrentDate(day)} onDoubleClick={()=>openNew({dueDate:ds})}><span className={`ag-day-number ${ds===todayStr?'today':''}`}>{day.getDate()}</span>{tasks.slice(0,3).map(t=>{const Icon=agendaIcon(t);return <button key={`${t.id}-${ds}`} className="ag-month-event" onClick={e=>{e.stopPropagation();setSelectedTask(t)}}><Icon size={12} style={{color:eventColor(t),flex:'none'}}/><span style={{overflow:'hidden',textOverflow:'ellipsis'}}>{hasTaskTime(t)?`${formatAgendaClock(getTaskStartTime(t))} `:''}{t.text}</span></button>})}{tasks.length>3&&<button className="ag-link ag-more" onClick={()=>{setCurrentDate(day);setViewMode('day')}}>+{tasks.length-3} más</button>}</div>})}</div></div>;
   const groupLabel = date => date===todayStr?'Hoy':date===toYYYYMMDD(addDays(new Date(),1))?'Mañana':new Date(`${date}T12:00:00`).toLocaleDateString('es-CO',{weekday:'long',day:'numeric',month:'long'});
   const renderList = () => { const groups=Object.entries(visibleAgenda).filter(([date,tasks])=>date>=todayStr&&tasks.length).sort(([a],[b])=>a.localeCompare(b)); return <div className="ag-list-shell"><div className="ag-quick"><Search size={18}/><input className="ag-input" value={search} onChange={e=>setSearch(e.target.value)} placeholder="Buscar evento o añadir rápido…"/><span style={{fontSize:11,color:'var(--ag-muted)',whiteSpace:'nowrap'}}>{groups.reduce((n,[,items])=>n+items.length,0)} eventos</span></div><div className="ag-list-groups">{!groups.length?<div style={{padding:54,textAlign:'center',color:'var(--ag-muted)'}}><CalendarDays size={28} style={{marginBottom:10}}/><div>No hay resultados.</div><button className="ag-link" style={{marginTop:8}} onClick={resetFilters}>Limpiar filtros</button></div>:groups.slice(0,12).map(([date,tasks])=><section className="ag-list-group" key={date}><h3>{groupLabel(date)} <span style={{color:'var(--ag-muted)',fontWeight:400}}>· {tasks.length} eventos</span></h3>{tasks.sort(compareTaskTime).map(task=>{const Icon=categoryIcon(task.category,task.text);return <div className="ag-row" key={`${task.id}-${date}`} onClick={()=>setSelectedTask(task)}><span><Clock size={13} style={{marginRight:6,verticalAlign:'middle'}}/>{eventTime(task)}</span><span className="title"><Icon size={15} style={{color:eventColor(task),marginRight:8,verticalAlign:'middle'}}/>{task.text}</span><span className="category">{task.category}</span><span className="location">{task.location?<><MapPin size={12} style={{marginRight:5,verticalAlign:'middle'}}/>{task.location}</>:<span style={{opacity:.45}}>—</span>}</span>{isCompletableAgendaItem(task)?<button className={`ag-status ${task.completed?'done':''}`} onClick={e=>{e.stopPropagation();toggleComplete(task)}} aria-label={task.completed?'Marcar pendiente':'Completar tarea'} aria-pressed={Boolean(task.completed)} title={task.completed?'Marcar pendiente':'Completar tarea'}>{task.completed?<Check size={17}/>:<Circle size={17}/>}</button>:<span className="ag-status-placeholder" title={task.type==='reminder'?'Recordatorio':'Evento'}>{task.type==='reminder'?<Bell size={16}/>:<Calendar size={16}/>}</span>}<button className="ag-row-action" aria-label={`Más acciones para ${task.text}`} title="Más acciones" onClick={e=>{e.stopPropagation();setSelectedTask(task)}}><MoreVertical size={17}/></button></div>})}</section>)}</div></div>; };
 
-  const UpcomingList = ({limit=5}) => <div>{upcoming.slice(0,limit).map(task=><button className="ag-upcoming-item" key={`${task.id}-${task.dueDate}`} onClick={()=>setSelectedTask(task)}><i className="ag-dot" style={{background:eventColor(task)}}/><span><strong>{task.text}</strong><small>{task.dueDate===todayStr?'Hoy':new Date(`${task.dueDate}T12:00:00`).toLocaleDateString('es-CO',{weekday:'short',day:'numeric',month:'short'})}, {eventTime(task)}</small></span></button>)}</div>;
+  const UpcomingList = ({limit=5}) => <div>{upcoming.slice(0,limit).map(task=>{const Icon=agendaIcon(task);return <button className="ag-upcoming-item" key={`${task.id}-${task.dueDate}`} onClick={()=>setSelectedTask(task)}><Icon size={16} style={{color:eventColor(task),marginTop:2}}/><span><strong>{task.text}</strong><small>{task.dueDate===todayStr?'Hoy':new Date(`${task.dueDate}T12:00:00`).toLocaleDateString('es-CO',{weekday:'short',day:'numeric',month:'short'})}, {eventTime(task)}</small></span></button>})}</div>;
   const CalendarControls = () => <section className="ag-card ag-side-card"><div className="ag-side-head"><strong><CalendarDays size={17} style={{verticalAlign:'-3px',marginRight:7,color:'var(--ag-red)'}}/>Calendarios</strong><button className="ag-link" onClick={()=>setShowCalendars(true)}>Gestionar</button></div><div className="ag-cal-list">{categories.slice(0,7).map(cat=><label className="ag-cal-toggle" key={cat.id}><input type="checkbox" checked={activeCalendarNames.has(cat.name)} onChange={()=>setVisibleCalendars(prev=>{const next=new Set(Array.isArray(prev)?prev:categories.map(c=>c.name));next.has(cat.name)?next.delete(cat.name):next.add(cat.name);return [...next]})}/><i className="ag-dot" style={{background:cat.color,margin:0}}/>{cat.name}</label>)}</div></section>;
   const ProductivityCard = ({ label = 'Esta semana', percent = productivity, completed = completedThisWeek, total = weekTotal }) => <section className="ag-card ag-side-card"><div className="ag-side-head"><strong><TrendingUp size={17} style={{verticalAlign:'-3px',marginRight:7,color:'var(--ag-red)'}}/>Tu productividad</strong><span style={{fontSize:10,color:'var(--ag-muted)'}}>{label}</span></div><div className="ag-productivity"><div className="ag-ring" style={{'--value':`${percent}%`}}><b>{percent}%</b></div><div><b style={{fontSize:13}}>¡Vas muy bien!</b><p style={{fontSize:10,color:'var(--ag-muted)'}}>Mantén el ritmo y protege tu tiempo.</p></div></div><div className="ag-kpis"><div className="ag-kpi"><b>{completed} de {total}</b><span>Eventos completados</span></div><div className="ag-kpi"><b>{Math.round(weekDays.flatMap(d=>visibleAgenda[toYYYYMMDD(d)]||[]).reduce((n,t)=>n+(getTaskDurationMinutes(t)||0),0)/60)}h</b><span>Tiempo planificado</span></div></div></section>;
   const RightRail = () => {
