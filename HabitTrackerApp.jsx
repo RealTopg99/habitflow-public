@@ -22437,6 +22437,11 @@ const AgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAgendaTa
       /* Timeline geometry and semantic Agenda controls. */
       .agenda-pro{--ag-timeline-height:clamp(620px,calc(100dvh - 330px),900px);--ag-time-width:56px;--ag-week-head-height:62px;--ag-all-day-height:46px}
       .ag-week{grid-template-columns:var(--ag-time-width) repeat(7,minmax(0,1fr));min-width:0}.ag-day-grid,.ag-day-all{grid-template-columns:var(--ag-time-width) minmax(0,1fr);min-width:0}.ag-time-label{right:4px;font-size:9px;white-space:nowrap}
+      .ag-week-shell,.ag-day-shell{max-height:clamp(500px,calc(100dvh - 300px),760px);overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;scrollbar-width:none;-ms-overflow-style:none;touch-action:pan-y}
+      .ag-week-shell::-webkit-scrollbar,.ag-day-shell::-webkit-scrollbar{width:0;height:0;display:none}
+      .ag-week-head{position:sticky;top:0;z-index:12;background:var(--ag-card)}
+      .ag-all-day{position:sticky;top:var(--ag-week-head-height);z-index:11;background:var(--ag-card)}
+      .ag-day-all{position:sticky;top:0;z-index:12;background:var(--ag-card)}
       .ag-time-col,.ag-day-col,.ag-day-events{height:var(--ag-timeline-height)}
       .ag-time-col,.ag-day-col,.ag-day-events{background-size:100% calc(var(--ag-timeline-height) / 16)}
       .ag-day-col,.ag-day-events{background-image:repeating-linear-gradient(to bottom,transparent 0,transparent calc((var(--ag-timeline-height) / 16) - 1px),var(--ag-line) calc(var(--ag-timeline-height) / 16))}
