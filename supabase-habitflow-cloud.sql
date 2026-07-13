@@ -157,7 +157,7 @@ begin
   ) values (
     p_mutation_id, v_user_id, p_widget_key, p_device_id, p_updated_at
   )
-  on conflict (mutation_id) do nothing;
+  on conflict on constraint habitflow_widget_mutations_pkey do nothing;
   get diagnostics v_inserted = row_count;
 
   if v_inserted > 0 then
@@ -166,7 +166,7 @@ begin
     ) values (
       v_user_id, p_widget_key, p_state, p_mutation_id, p_device_id, p_updated_at
     )
-    on conflict (user_id, widget_key) do update
+    on conflict on constraint habitflow_widget_state_user_id_widget_key_key do update
     set state = excluded.state,
         mutation_id = excluded.mutation_id,
         device_id = excluded.device_id,
