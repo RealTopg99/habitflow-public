@@ -5,9 +5,15 @@
   "scripts": {
     "dev": "node server.js",
     "start": "node server.js",
-    "check:text": "node scripts/check-text-encoding.js"
+    "build": "node scripts/build-check.js",
+    "check:text": "node scripts/check-text-encoding.js",
+    "test:widgets": "node scripts/test-widget-sync.js",
+    "test": "node scripts/test-widget-sync.js && node scripts/check-text-encoding.js"
   },
   "dependencies": {
     "web-push": "^3.6.7"
+  },
+  "devDependencies": {
+    "@babel/parser": "^7.28.0"
   }
 }

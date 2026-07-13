@@ -1,9 +1,63 @@
+const CACHE_VERSION = 'habitflow-pwa-v2026-07-13-widgets-b';
+const APP_SHELL = [
+  './',
+  './index.html',
+  './HabitTrackerApp.jsx',
+  './widget-sync-core.js',
+  './manifest.webmanifest',
+  './brand-logo.svg',
+  './icon-192.png',
+  './icon-512.png'
+];
+
 self.addEventListener('install', (event) => {
-  self.skipWaiting();
+  event.waitUntil(caches.open(CACHE_VERSION).then(cache => cache.addAll(APP_SHELL)).then(() => self.skipWaiting()));
 });
 
 self.addEventListener('activate', (event) => {
-  event.waitUntil(self.clients.claim());
+  event.waitUntil(
+    caches.keys()
+      .then(keys => Promise.all(keys.filter(key => key.startsWith('habitflow-pwa-') && key !== CACHE_VERSION).map(key => caches.delete(key))))
+      .then(() => self.clients.claim())
+  );
+});
+
+self.addEventListener('fetch', (event) => {
+  const request = event.request;
+  if (request.method !== 'GET') return;
+  const url = new URL(request.url);
+  const isNavigation = request.mode === 'navigate';
+  const isLocalAsset = url.origin === self.location.origin;
+  const isRuntimeAsset = ['script', 'style', 'font', 'image'].includes(request.destination)
+    && ['unpkg.com', 'cdn.jsdelivr.net', 'esm.sh', 'fonts.googleapis.com', 'fonts.gstatic.com'].includes(url.hostname);
+  if (!isNavigation && !isLocalAsset && !isRuntimeAsset) return;
+
+  event.respondWith((async () => {
+    const cache = await caches.open(CACHE_VERSION);
+    if (!isNavigation) {
+      const cached = await cache.match(request, { ignoreSearch: isLocalAsset });
+      const refresh = fetch(request).then(response => {
+        if (response.ok) cache.put(request, response.clone());
+        return response;
+      }).catch(() => null);
+      if (cached) {
+        event.waitUntil(refresh);
+        return cached;
+      }
+      const response = await refresh;
+      if (response) return response;
+    } else {
+      try {
+        const response = await fetch(request);
+        if (response.ok) cache.put('./index.html', response.clone());
+        return response;
+      } catch {}
+    }
+    const cached = await cache.match(request, { ignoreSearch: isLocalAsset });
+    if (cached) return cached;
+    if (isNavigation) return (await cache.match('./index.html')) || Response.error();
+    return Response.error();
+  })());
 });
 
 self.addEventListener('message', (event) => {
@@ -45,7 +99,11 @@ self.addEventListener('push', (event) => {
 
 self.addEventListener('notificationclick', (event) => {
   event.notification.close();
-  const targetUrl = './index.html';
+  const data = event.notification.data || {};
+  const params = new URLSearchParams();
+  if (data.view) params.set('view', data.view);
+  if (data.section) params.set('section', data.section);
+  const targetUrl = `./index.html${params.toString() ? `?${params}` : ''}`;
   event.waitUntil((async () => {
     const windowClients = await self.clients.matchAll({ type: 'window', includeUncontrolled: true });
     for (const client of windowClients) {

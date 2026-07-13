@@ -232,9 +232,16 @@ const sendCreatorNotification = async (input: any, creatorUserId: string) => {
     ? input.targetView
     : "dashboard";
   const filter = audience === "all"
-    ? "enabled=eq.true"
-    : `enabled=eq.true&user_id=in.(${requestedUserIds.map(id => `"${id.replaceAll('"', "")}"`).join(",")})`;
-  const subscriptions = await supabaseFetch(`habitflow_push_subscriptions?select=user_id,endpoint,subscription&${filter}`);
+    ? "enabled=eq.true&active=eq.true"
+    : `enabled=eq.true&active=eq.true&user_id=in.(${requestedUserIds.map(id => `"${id.replaceAll('"', "")}"`).join(",")})`;
+  const rawSubscriptions = await supabaseFetch(`habitflow_push_subscriptions?select=user_id,endpoint,subscription,device_id&${filter}`);
+  const seenDevices = new Set<string>();
+  const subscriptions = (rawSubscriptions || []).filter((subscription: any) => {
+    const key = `${subscription.user_id}:${subscription.device_id || subscription.endpoint}`;
+    if (seenDevices.has(key)) return false;
+    seenDevices.add(key);
+    return true;
+  });
   const recipientIds = [...new Set((subscriptions || []).map((item: any) => item.user_id))];
 
   webpush.setVapidDetails(VAPID_SUBJECT, VAPID_PUBLIC_KEY, VAPID_PRIVATE_KEY);

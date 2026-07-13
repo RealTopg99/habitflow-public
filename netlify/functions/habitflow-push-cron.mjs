@@ -227,6 +227,49 @@ const dueHabitRemindersForUser = (row, now) => {
   return items;
 };
 
+const dueDailyWidgetNotificationsForUser = (row, widgets, now) => {
+  const hydration = widgets.get('hydration')?.state || {};
+  const brushing = widgets.get('brushing')?.state || {};
+  const timeZone = hydration.timezone || brushing.timezone || row.data?.user?.timezone || DEFAULT_TIME_ZONE;
+  const localNow = getZonedNow(now, timeZone);
+  const items = [];
+  const hydrationAmount = hydration.date === localNow.date ? Math.max(0, Number(hydration.amount || 0)) : 0;
+  const hydrationGoal = Math.max(250, Number(hydration.goal || 2500));
+  if (hydration.remindersEnabled && hydrationAmount < hydrationGoal) {
+    ['08:00', '10:00', '12:00', '14:00', '16:00', '18:00', '20:00', '22:00']
+      .filter(slot => isDueMinute(localNow, slot))
+      .forEach(slot => items.push({
+        type: 'widget-hydration',
+        date: localNow.date,
+        deliveryKey: `${row.user_id}:widget:hydration:${localNow.date}:${slot}`,
+        payload: {
+          title: 'HabitFlow - Hidratacion',
+          body: `Es hora de tomar agua. Te faltan ${((hydrationGoal - hydrationAmount) / 1000).toFixed(2)} L para tu meta de hoy.`,
+          data: { view: 'dashboard', section: 'hydration', date: localNow.date }
+        }
+      }));
+  }
+  const brushingCount = brushing.date === localNow.date ? Math.max(0, Number(brushing.count || 0)) : 0;
+  const brushingGoal = Math.max(1, Number(brushing.goal || 2));
+  const brushingTimes = Array.isArray(brushing.reminderTimes)
+    ? [...new Set(brushing.reminderTimes.filter(time => parseTimeToMinutes(time) !== null))]
+    : [];
+  if (brushing.remindersEnabled && brushingCount < brushingGoal) {
+    brushingTimes.filter(slot => isDueMinute(localNow, slot)).forEach(slot => items.push({
+      type: 'widget-brushing',
+      date: localNow.date,
+      deliveryKey: `${row.user_id}:widget:brushing:${localNow.date}:${slot}`,
+      payload: {
+        title: 'HabitFlow - Cepillado dental',
+        body: `Es hora de cepillarte. Llevas ${brushingCount} de ${brushingGoal} cepillados hoy.`,
+        requireInteraction: true,
+        data: { view: 'dashboard', section: 'brushing', date: localNow.date }
+      }
+    }));
+  }
+  return items;
+};
+
 const dueTasksForUser = (row, now) => {
   const timeZone = row.data?.user?.timezone || DEFAULT_TIME_ZONE;
   const localNow = getZonedNow(now, timeZone);
@@ -439,14 +482,25 @@ export default async () => {
   webpush.setVapidDetails(VAPID_SUBJECT, VAPID_PUBLIC_KEY, VAPID_PRIVATE_KEY);
 
   const now = new Date();
-  const [users, subscriptions] = await Promise.all([
+  const [users, subscriptions, widgetRows] = await Promise.all([
     supabaseFetch('habitflow_user_data?select=user_id,data'),
-    supabaseFetch('habitflow_push_subscriptions?select=user_id,endpoint,subscription&enabled=eq.true')
+    supabaseFetch('habitflow_push_subscriptions?select=user_id,endpoint,subscription,device_id&enabled=eq.true&active=eq.true'),
+    supabaseFetch('habitflow_widget_state?select=user_id,widget_key,state,updated_at')
   ]);
   const subscriptionsByUser = new Map();
+  const subscriptionKeysByUser = new Map();
   (subscriptions || []).forEach((subscription) => {
     if (!subscriptionsByUser.has(subscription.user_id)) subscriptionsByUser.set(subscription.user_id, []);
+    if (!subscriptionKeysByUser.has(subscription.user_id)) subscriptionKeysByUser.set(subscription.user_id, new Set());
+    const deviceKey = subscription.device_id || subscription.endpoint;
+    if (subscriptionKeysByUser.get(subscription.user_id).has(deviceKey)) return;
+    subscriptionKeysByUser.get(subscription.user_id).add(deviceKey);
     subscriptionsByUser.get(subscription.user_id).push(subscription);
+  });
+  const widgetsByUser = new Map();
+  (widgetRows || []).forEach((widget) => {
+    if (!widgetsByUser.has(widget.user_id)) widgetsByUser.set(widget.user_id, new Map());
+    widgetsByUser.get(widget.user_id).set(widget.widget_key, widget);
   });
 
   let sent = 0;
@@ -459,7 +513,8 @@ export default async () => {
       ...dueTasksForUser(user, now),
       ...dueMedicationNotificationsForUser(user, now),
       ...dueDebtNotificationsForUser(user, now),
-      ...dueHabitRemindersForUser(user, now)
+      ...dueHabitRemindersForUser(user, now),
+      ...dueDailyWidgetNotificationsForUser(user, widgetsByUser.get(user.user_id) || new Map(), now)
     ];
     for (const item of dueItems) {
       dueCount += 1;
