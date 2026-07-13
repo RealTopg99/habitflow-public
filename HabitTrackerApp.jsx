@@ -1686,6 +1686,7 @@ const savePushSubscription = async (subscription) => {
       }, { onConflict: 'endpoint' });
     if (error) return { ok: false, reason: error.message };
     localStorage.setItem('habitflow_push_registered_user', userId);
+    localStorage.setItem('habitflow_push_vapid_public_key', String(window.HABITFLOW_VAPID_PUBLIC_KEY || ''));
     return { ok: true };
   } catch (error) {
     return { ok: false, reason: error?.message || 'No se pudo guardar la suscripción push.' };
@@ -1712,6 +1713,7 @@ const hasActiveServerPush = () => {
   try {
     return !!getClerkUserId()
       && localStorage.getItem('habitflow_push_registered_user') === getClerkUserId()
+      && localStorage.getItem('habitflow_push_vapid_public_key') === String(window.HABITFLOW_VAPID_PUBLIC_KEY || '')
       && areGlobalNotificationsEnabled();
   } catch {
     return false;
@@ -1740,10 +1742,18 @@ const requestHabitFlowNotifications = async () => {
     if (permission === 'granted' && registration && 'PushManager' in window && window.HABITFLOW_VAPID_PUBLIC_KEY) {
       try {
         let subscription = await registration.pushManager.getSubscription();
+        const desiredVapidKey = String(window.HABITFLOW_VAPID_PUBLIC_KEY || '');
+        const registeredVapidKey = localStorage.getItem('habitflow_push_vapid_public_key') || '';
+        if (subscription && registeredVapidKey !== desiredVapidKey) {
+          const removed = await subscription.unsubscribe();
+          if (!removed) throw new Error('No se pudo renovar la suscripción push anterior.');
+          subscription = null;
+          localStorage.removeItem('habitflow_push_registered_user');
+        }
         if (!subscription) {
           subscription = await registration.pushManager.subscribe({
             userVisibleOnly: true,
-            applicationServerKey: urlBase64ToUint8Array(window.HABITFLOW_VAPID_PUBLIC_KEY)
+            applicationServerKey: urlBase64ToUint8Array(desiredVapidKey)
           });
         }
         const saved = await savePushSubscription(subscription);

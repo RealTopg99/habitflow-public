@@ -124,6 +124,15 @@ const makeClient = () => {
   assert.match(sql, /habitflow_apply_widget_mutation/);
   assert.match(sql, /unique \(user_id, widget_key\)/i);
 
+  const html = fs.readFileSync(path.join(__dirname, '..', 'index.html'), 'utf8');
+  const publicKey = html.match(/HABITFLOW_VAPID_PUBLIC_KEY\s*=\s*'([^']+)'/)?.[1] || '';
+  assert.equal(publicKey.length, 87, 'la clave pública VAPID debe tener longitud P-256 válida');
+  assert.match(publicKey, /^[A-Za-z0-9_-]+$/, 'la clave pública VAPID debe ser Base64 URL-safe');
+
+  const app = fs.readFileSync(path.join(__dirname, '..', 'HabitTrackerApp.jsx'), 'utf8');
+  assert.match(app, /habitflow_push_vapid_public_key/);
+  assert.match(app, /subscription\.unsubscribe\(\)/, 'una rotación VAPID debe renovar suscripciones antiguas');
+
   console.log('Widget sync tests ok');
 })().catch(error => {
   console.error(error);
