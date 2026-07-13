@@ -1883,6 +1883,32 @@ const injectStyles = () => {
 
     * { margin: 0; padding: 0; box-sizing: border-box; }
     :root {
+      --font-size-2xs: 0.6875rem;
+      --font-size-xs: 0.75rem;
+      --font-size-sm: 0.8125rem;
+      --font-size-base: 0.875rem;
+      --font-size-md: 0.9375rem;
+      --font-size-lg: 1rem;
+      --font-size-xl: 1.125rem;
+      --font-size-2xl: 1.25rem;
+      --font-size-3xl: 1.5rem;
+      --font-size-4xl: 1.875rem;
+      --page-title-size: clamp(2rem, 2.2vw, 2.625rem);
+      --section-title-size: clamp(1.375rem, 1.5vw, 1.75rem);
+      --metric-size: clamp(1.5rem, 2vw, 2rem);
+      --text-metadata: var(--font-size-2xs);
+      --text-secondary: var(--font-size-sm);
+      --text-body: var(--font-size-base);
+      --text-label: var(--font-size-sm);
+      --text-button: var(--font-size-sm);
+      --text-card-title: var(--font-size-lg);
+      --control-height-compact: 2.25rem;
+      --control-height: 2.625rem;
+      --control-height-mobile: 2.75rem;
+      --line-height-heading: 1.16;
+      --line-height-body: 1.52;
+      --line-height-secondary: 1.48;
+      --line-height-control: 1.25;
       --motion-fast: 150ms;
       --motion-base: 220ms;
       --motion-page: 360ms;
@@ -1891,16 +1917,87 @@ const injectStyles = () => {
       --motion-ease-soft: cubic-bezier(0.16, 1, 0.3, 1);
       --motion-ease-out: cubic-bezier(0.2, 0.8, 0.2, 1);
     }
-    input, select, textarea { font-size: 14px; }
+    html { font-size: 16px; text-size-adjust: 100%; -webkit-text-size-adjust: 100%; }
+    input, select, textarea {
+      font-family: 'Inter', sans-serif;
+      font-size: var(--font-size-base);
+      line-height: var(--line-height-body);
+    }
+    input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]),
+    select,
+    textarea {
+      min-height: var(--control-height) !important;
+    }
+    button {
+      font-family: 'Inter', sans-serif;
+      font-size: max(var(--text-button), 1em);
+      line-height: var(--line-height-control);
+    }
+    label { font-size: var(--text-label); line-height: 1.35; }
     button:focus-visible { outline: 2px solid var(--primary, #ff0000); outline-offset: 2px; }
     button:active { transform: scale(0.97); }
     button:not(:disabled):hover { filter: brightness(1.035); }
     button.flash-green { animation: flashScale 0.5s ease-out; }
     @keyframes flashScale { 0% { transform: scale(1.05); box-shadow: 0 0 20px rgba(0,204,122,0.4); } 100% { transform: scale(1); box-shadow: none; } }
     [style*="cursor: pointer"]:hover { filter: brightness(1.025); transition: filter 0.2s; }
-    body { font-family: 'Inter', sans-serif; background: var(--app-bg, #0a0a0f); color: var(--app-text, #e8e8f0); overflow-x: hidden; }
+    body {
+      font-family: 'Inter', sans-serif;
+      font-size: var(--text-body);
+      line-height: var(--line-height-body);
+      background: var(--app-bg, #0a0a0f);
+      color: var(--app-text, #e8e8f0);
+      overflow-x: hidden;
+    }
     body::before { content: none !important; display: none !important; }
-    h1, h2, h3, h4 { font-family: 'DM Serif Display', serif; font-weight: 400; }
+    h1, h2, h3, h4 { font-family: 'DM Serif Display', serif; font-weight: 400; line-height: var(--line-height-heading); }
+    .text-page-title,
+    .app-main > .view-enter > div:first-child h2,
+    .app-main > .view-enter > h2 { font-size: var(--page-title-size) !important; font-weight: 700; line-height: var(--line-height-heading); }
+    .text-section-title { font-size: var(--section-title-size) !important; font-weight: 650; line-height: 1.2; }
+    .text-card-title,
+    .hf-card-title { font-size: var(--text-card-title) !important; font-weight: 650; line-height: 1.28; }
+    .text-body { font-size: var(--text-body) !important; line-height: var(--line-height-body); }
+    .text-secondary { font-size: var(--text-secondary) !important; line-height: var(--line-height-secondary); }
+    .text-metadata { font-size: var(--text-metadata) !important; line-height: 1.45; }
+    .text-metric,
+    .dashboard-counter { font-size: var(--metric-size); line-height: 1.12; }
+    .hf-modal-panel { font-size: var(--text-body); line-height: var(--line-height-body); }
+    .hf-modal-header h2 { font-size: clamp(1.375rem, 1.8vw, 1.75rem) !important; font-weight: 650; line-height: 1.18; }
+    .hf-modal-header button { width: 2.25rem; height: 2.25rem; align-items: center; justify-content: center; }
+    .lab-pill,
+    .ag-btn,
+    .ag-link { font-size: var(--text-button) !important; line-height: var(--line-height-control); }
+    .ag-btn { min-height: var(--control-height-compact); }
+    .ag-card,
+    .kpi-card,
+    .habit-card { font-size: var(--text-body); line-height: var(--line-height-body); }
+    .ag-row { min-height: 48px; font-size: var(--text-body) !important; }
+    .ag-list-group h3 { font-size: var(--text-card-title) !important; }
+    .ag-calendar-row { min-height: 44px; font-size: var(--text-secondary) !important; }
+    .ag-calendar-row small { font-size: var(--text-metadata) !important; }
+    [role="tooltip"],
+    [class*="tooltip"] { font-size: var(--font-size-xs) !important; line-height: 1.45; }
+    [class*="badge"] { font-size: var(--font-size-2xs); line-height: 1.3; }
+
+    @media (min-width: 1600px) {
+      :root {
+        --font-size-base: 0.9375rem;
+        --font-size-md: 1rem;
+        --font-size-lg: 1.0625rem;
+        --text-card-title: var(--font-size-lg);
+      }
+    }
+    @media (max-width: 700px) {
+      :root {
+        --page-title-size: clamp(1.5rem, 7vw, 1.875rem);
+        --section-title-size: clamp(1.25rem, 5.5vw, 1.5rem);
+        --metric-size: clamp(1.5rem, 8vw, 1.875rem);
+      }
+      input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]),
+      select,
+      textarea { min-height: var(--control-height-mobile) !important; font-size: 1rem !important; }
+      button:not(.ag-event):not(.ag-month-event):not(.ag-switch) { min-height: var(--control-height-mobile); }
+    }
 
     ::-webkit-scrollbar { width: 6px; }
     ::-webkit-scrollbar-track { background: #12121a; }
@@ -2053,7 +2150,7 @@ const injectStyles = () => {
     }
     .sidebar-collapsed .user-info:last-child .streak-compact-count {
       display: inline-flex !important;
-      font-size: 11px;
+      font-size: var(--font-size-xs);
       line-height: 1;
       font-weight: 700;
       font-family: 'Inter', sans-serif;
@@ -2183,7 +2280,7 @@ const injectStyles = () => {
       border: 1px solid rgba(var(--icon-rgb,225,29,72),0.22);
       background: rgba(var(--icon-rgb,225,29,72),0.08);
       color: #f2f2f4;
-      font-size: 12px;
+      font-size: var(--font-size-sm);
       font-family: 'Inter', sans-serif;
     }
     .auth-form-card .cl-rootBox, .auth-form-card .cl-card {
@@ -2304,8 +2401,8 @@ const injectStyles = () => {
     .health-med-row { grid-template-columns: 1fr !important; align-items: stretch !important; }
     .health-med-meta { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; min-width: 0; }
     .health-med-chip { min-width: 0; padding: 9px 10px; border-radius: 11px; background: rgba(255,255,255,0.035); border: 1px solid var(--border); }
-    .health-med-chip-label { color: var(--text-dim); font-size: 9px; letter-spacing: 0.08em; text-transform: uppercase; font-weight: 800; margin-bottom: 3px; }
-    .health-med-chip-value { color: var(--text); font-size: 12px; line-height: 1.25; overflow-wrap: anywhere; }
+    .health-med-chip-label { color: var(--text-dim); font-size: var(--font-size-2xs); letter-spacing: 0.08em; text-transform: uppercase; font-weight: 800; margin-bottom: 3px; }
+    .health-med-chip-value { color: var(--text); font-size: var(--font-size-sm); line-height: 1.25; overflow-wrap: anywhere; }
     .health-med-actions { justify-content: flex-start !important; flex-wrap: wrap; }
     .health-med-take { min-width: 128px; }
     @media (max-width: 1450px) {
@@ -2708,7 +2805,7 @@ const injectStyles = () => {
     }
     .habits-week-heading small {
       color: var(--habits-muted);
-      font-size: 12px;
+      font-size: var(--font-size-sm);
       font-weight: 500;
     }
     .habits-minimal-row {
@@ -2754,7 +2851,7 @@ const injectStyles = () => {
       gap: 9px;
       margin-top: 7px;
       color: var(--habits-muted);
-      font-size: 12px;
+      font-size: var(--font-size-sm);
     }
     .habit-row-main span i,
     .habit-detail-minimal > p i {
@@ -2769,7 +2866,7 @@ const injectStyles = () => {
       display: block;
       margin-top: 5px;
       color: var(--habits-subtle);
-      font-size: 10px;
+      font-size: var(--font-size-xs);
     }
     .habit-week-dots button {
       width: 14px;
@@ -2905,7 +3002,7 @@ const injectStyles = () => {
       border-radius: 8px;
       color: var(--habits-text);
       background: transparent;
-      font: 500 12px/1 'Inter', sans-serif;
+      font: 500 var(--font-size-sm)/1 'Inter', sans-serif;
       cursor: pointer;
       text-align: left;
     }
@@ -2932,7 +3029,7 @@ const injectStyles = () => {
       color: var(--habits-text);
       font-size: 15px;
     }
-    .habits-minimal-empty span { font-size: 12px; }
+    .habits-minimal-empty span { font-size: var(--font-size-sm); }
     .habits-minimal-empty button,
     .habit-detail-minimal > button {
       margin-top: 10px;
@@ -2970,7 +3067,7 @@ const injectStyles = () => {
       gap: 8px;
       margin: 8px 0 24px;
       color: var(--habits-muted);
-      font-size: 12px;
+      font-size: var(--font-size-sm);
     }
     .habit-detail-minimal dl {
       width: 100%;
@@ -2984,7 +3081,7 @@ const injectStyles = () => {
       gap: 20px;
       border-bottom: 1px solid var(--habits-divider);
     }
-    .habit-detail-minimal dt { color: var(--habits-muted); font-size: 12px; }
+    .habit-detail-minimal dt { color: var(--habits-muted); font-size: var(--font-size-sm); }
     .habit-detail-minimal dd { margin: 0; color: var(--habits-text); font-size: 13px; }
     @media (max-width: 1200px) and (min-width: 861px) {
       .habits-minimal-table-header,
@@ -3103,7 +3200,7 @@ const injectStyles = () => {
       .mobile-field-label {
         display: block;
         color: var(--habits-subtle);
-        font-size: 9px;
+        font-size: var(--font-size-2xs);
         text-transform: uppercase;
         letter-spacing: 0.08em;
       }
@@ -3140,7 +3237,7 @@ const injectStyles = () => {
       .habits-date-picker {
         padding: 0 12px;
         gap: 9px;
-        font-size: 12px;
+        font-size: var(--font-size-sm);
       }
       .habits-nav-button { width: 44px; }
       .habits-minimal-row { padding-left: 0; padding-right: 0; }
@@ -3170,7 +3267,7 @@ const injectStyles = () => {
       border-radius: 8px;
       color: var(--habits-muted);
       background: transparent;
-      font: 700 12px/1 'Inter', sans-serif;
+      font: 700 var(--font-size-sm)/1 'Inter', sans-serif;
       cursor: pointer;
       transition: color 160ms ease, background-color 160ms ease;
     }
@@ -3220,7 +3317,7 @@ const injectStyles = () => {
     }
     .habit-period-control span {
       color: var(--habits-text);
-      font: 650 12px/1 'Inter', sans-serif;
+      font: 650 var(--font-size-sm)/1 'Inter', sans-serif;
       text-transform: capitalize;
     }
     .habit-period-nav {
@@ -3234,7 +3331,7 @@ const injectStyles = () => {
       color: var(--habits-on-accent);
       border-color: var(--habits-accent);
       background: var(--habits-accent);
-      font: 800 12px/1 'Inter', sans-serif;
+      font: 800 var(--font-size-sm)/1 'Inter', sans-serif;
     }
     .habit-matrix-new:hover { background: var(--habits-accent-soft); }
     .habit-matrix-summary {
@@ -3272,7 +3369,7 @@ const injectStyles = () => {
     }
     .habit-matrix-stat small {
       color: var(--habits-muted);
-      font-size: 12px;
+      font-size: var(--font-size-sm);
       line-height: 1.3;
     }
     .habit-matrix-stat strong {
@@ -3330,7 +3427,7 @@ const injectStyles = () => {
     .habit-matrix-head .habit-matrix-meta {
       z-index: 6;
       background: var(--habits-surface);
-      font-size: 11px;
+      font-size: var(--font-size-xs);
       font-weight: 650;
     }
     .habit-matrix-days-head {
@@ -3355,14 +3452,14 @@ const injectStyles = () => {
       justify-content: center;
       color: var(--habits-muted);
       border-left: 1px solid var(--habits-divider);
-      font-size: 10px;
+      font-size: var(--font-size-xs);
       font-weight: 650;
     }
     .habit-matrix-week-groups span:first-child { border-left: 0; }
     .habit-matrix-day-numbers span {
       min-width: 0;
       color: var(--habits-muted);
-      font-size: 10px;
+      font-size: var(--font-size-xs);
       text-align: center;
     }
     .habit-matrix-day-numbers span.is-today {
@@ -3420,20 +3517,20 @@ const injectStyles = () => {
     }
     .habit-matrix-identity strong {
       color: var(--habits-text);
-      font-size: 12px;
+      font-size: var(--font-size-sm);
       line-height: 1.35;
     }
     .habit-matrix-identity small {
       margin-top: 3px;
       color: var(--habits-subtle);
-      font-size: 9px;
+      font-size: var(--font-size-2xs);
     }
     .habit-matrix-category,
     .habit-matrix-streak {
       min-width: 0;
       overflow: hidden;
       color: var(--habits-muted);
-      font-size: 10px;
+      font-size: var(--font-size-xs);
       text-overflow: ellipsis;
       white-space: nowrap;
     }
@@ -3512,7 +3609,7 @@ const injectStyles = () => {
       align-items: center;
       gap: 28px;
       color: var(--habits-muted);
-      font-size: 11px;
+      font-size: var(--font-size-xs);
     }
     .habit-matrix-legend span {
       display: inline-flex;
@@ -3560,7 +3657,7 @@ const injectStyles = () => {
       border: 1px solid var(--habits-border);
       border-radius: 9px;
       background: transparent;
-      font: 700 12px/1 'Inter', sans-serif;
+      font: 700 var(--font-size-sm)/1 'Inter', sans-serif;
       cursor: pointer;
     }
     .habit-detail-actions button:hover { background: var(--habits-surface-hover); }
@@ -3634,14 +3731,14 @@ const injectStyles = () => {
       .habit-period-nav { width: 40px; }
       .habit-matrix-new { width: 44px; min-width: 44px; }
       .habit-period-control { padding: 0 10px; }
-      .habit-period-control span { font-size: 11px; }
+      .habit-period-control span { font-size: var(--font-size-xs); }
       .habit-matrix-table {
         --habit-meta-width: 202px;
         --habit-day-width: 32px;
       }
       .habit-matrix-meta { grid-template-columns: minmax(0, 1fr) 48px; }
-      .habit-matrix-streak { font-size: 9px; }
-      .habit-matrix-identity strong { font-size: 11px; }
+      .habit-matrix-streak { font-size: var(--font-size-2xs); }
+      .habit-matrix-identity strong { font-size: var(--font-size-xs); }
     }
 
     /* Nuevo hábito: modal editorial con iconografía Lucide y controles táctiles. */
@@ -3729,7 +3826,7 @@ const injectStyles = () => {
       display: block;
       margin-bottom: 9px;
       color: var(--habit-modal-muted);
-      font-size: 12px;
+      font-size: var(--font-size-sm);
       font-weight: 650;
       letter-spacing: 0.075em;
       text-transform: uppercase;
@@ -3815,7 +3912,7 @@ const injectStyles = () => {
     }
     .habit-category-creator span {
       color: var(--habit-modal-muted);
-      font-size: 11px;
+      font-size: var(--font-size-xs);
     }
     .habit-category-creator-controls {
       display: grid;
@@ -3892,21 +3989,21 @@ const injectStyles = () => {
     .habit-mark-color-heading label {
       margin-bottom: 5px;
       color: var(--habit-modal-muted);
-      font-size: 12px;
+      font-size: var(--font-size-sm);
       font-weight: 650;
       letter-spacing: 0.075em;
       text-transform: uppercase;
     }
     .habit-mark-color-heading > div:first-child > span {
       color: var(--habit-modal-muted);
-      font-size: 12px;
+      font-size: var(--font-size-sm);
     }
     .habit-mark-color-preview {
       display: inline-flex;
       align-items: center;
       gap: 8px;
       color: var(--habit-modal-muted);
-      font-size: 11px;
+      font-size: var(--font-size-xs);
       white-space: nowrap;
     }
     .habit-mark-color-preview i {
@@ -3980,7 +4077,7 @@ const injectStyles = () => {
     }
     .habit-icon-heading span {
       color: var(--habit-modal-muted);
-      font-size: 12px;
+      font-size: var(--font-size-sm);
     }
     .habit-icon-grid {
       max-height: min(28vh, 220px);
@@ -4075,7 +4172,7 @@ const injectStyles = () => {
     .habit-reminder-header span {
       margin-top: 3px;
       color: var(--habit-modal-muted);
-      font-size: 11px;
+      font-size: var(--font-size-xs);
       line-height: 1.45;
     }
     .habit-switch {
@@ -4122,7 +4219,7 @@ const injectStyles = () => {
       border: 1px solid rgba(224,0,0,0.32);
       border-radius: 10px;
       background: rgba(224,0,0,0.08);
-      font-size: 12px;
+      font-size: var(--font-size-sm);
     }
     html[data-theme-mode="pinkLight"] .habit-form-error {
       color: #a9344c;
@@ -4334,9 +4431,9 @@ const injectStyles = () => {
         overflow: hidden !important;
         text-overflow: ellipsis !important;
         white-space: nowrap !important;
-        font-size: 9.5px !important;
+        font-size: var(--font-size-2xs) !important;
       }
-      .top-identity > div:last-child > div:nth-child(3) { font-size: 8px !important; }
+      .top-identity > div:last-child > div:nth-child(3) { font-size: var(--font-size-2xs) !important; }
       .top-actions { gap: 7px !important; min-width: 0 !important; }
       .top-random, .top-xp { display: none !important; }
       .top-sync {
@@ -4344,9 +4441,9 @@ const injectStyles = () => {
         max-width: 116px !important;
         overflow: hidden !important;
         text-overflow: ellipsis !important;
-        font-size: 9px !important;
+        font-size: var(--font-size-2xs) !important;
       }
-      .top-streak { gap: 3px !important; font-size: 11px !important; }
+      .top-streak { gap: 3px !important; font-size: var(--font-size-xs) !important; }
       .top-streak svg { width: 14px !important; height: 14px !important; }
       .top-user { transform: scale(0.88); transform-origin: right center; width: 31px; height: 31px; overflow: visible; }
       .mobile-bottom-nav {
@@ -4371,7 +4468,7 @@ const injectStyles = () => {
         overflow: hidden !important;
         text-overflow: ellipsis !important;
         white-space: nowrap !important;
-        font-size: 9px !important;
+        font-size: var(--font-size-2xs) !important;
         line-height: 1.1 !important;
       }
       .mobile-bottom-nav [style*="bottom: 100%"] {
@@ -4405,7 +4502,7 @@ const injectStyles = () => {
       }
       .mobile-more-popover button span {
         max-width: 112px !important;
-        font-size: 12px !important;
+        font-size: var(--font-size-sm) !important;
         text-align: left !important;
       }
       .app-main h1 {
@@ -4422,7 +4519,7 @@ const injectStyles = () => {
         border-radius: 16px !important;
       }
       .kpi-card [style*="font-size: 28"] { font-size: 23px !important; }
-      .kpi-card [style*="font-size: 10"] { font-size: 9px !important; }
+      .kpi-card [style*="--font-size-xs"] { font-size: var(--font-size-2xs) !important; }
       .habit-card { border-radius: 15px !important; padding: 10px !important; }
       .lab-shell-card, .auth-form-card, .auth-hero-card {
         border-radius: 20px !important;
@@ -4593,7 +4690,7 @@ const injectStyles = () => {
         border-radius: 16px !important;
       }
       .finance-kpis .kpi-card > div:first-child {
-        font-size: 8.5px !important;
+        font-size: var(--font-size-2xs) !important;
         line-height: 1.25 !important;
       }
       .finance-kpis .kpi-card > div:last-child {
@@ -4820,7 +4917,7 @@ const injectStyles = () => {
         white-space: nowrap !important;
       }
       .finance-transaction-item > div:nth-child(3) {
-        font-size: 12px !important;
+        font-size: var(--font-size-sm) !important;
         max-width: 92px !important;
         text-align: right !important;
         overflow: hidden !important;
@@ -4914,7 +5011,7 @@ const injectStyles = () => {
         min-height: 22px !important;
         padding: 0 !important;
         border-radius: 6px !important;
-        font-size: 9px !important;
+        font-size: var(--font-size-2xs) !important;
       }
       .habits-mobile-view .habit-card > div:first-child > div:last-child button:first-child {
         width: auto !important;
@@ -5130,7 +5227,7 @@ const injectStyles = () => {
       .workout-tabs button {
         padding: 10px 12px !important;
         border-radius: 16px !important;
-        font-size: 12px !important;
+        font-size: var(--font-size-sm) !important;
         gap: 4px !important;
       }
       .workout-routine-header {
@@ -5244,7 +5341,7 @@ const injectStyles = () => {
         min-height: 38px !important;
         border-radius: 13px !important;
         padding: 0 12px !important;
-        font-size: 12px !important;
+        font-size: var(--font-size-sm) !important;
       }
       .agenda-plan-card {
         min-height: 0 !important;
@@ -5265,7 +5362,7 @@ const injectStyles = () => {
         line-height: 1.1 !important;
       }
       .agenda-plan-head > div:first-child > div:last-child {
-        font-size: 12px !important;
+        font-size: var(--font-size-sm) !important;
         line-height: 1.35 !important;
         margin-top: 4px !important;
       }
@@ -5285,10 +5382,10 @@ const injectStyles = () => {
         align-items: center !important;
       }
       .agenda-plan-section > div:first-child span:first-child {
-        font-size: 12px !important;
+        font-size: var(--font-size-sm) !important;
       }
       .agenda-plan-section > div:first-child span:last-child {
-        font-size: 10px !important;
+        font-size: var(--font-size-xs) !important;
       }
       .agenda-clean-task-row {
         display: grid !important;
@@ -5368,7 +5465,7 @@ const injectStyles = () => {
       }
       .agenda-clean-task-row > div:nth-child(2) {
         width: auto !important;
-        font-size: 11px !important;
+        font-size: var(--font-size-xs) !important;
         text-align: left !important;
       }
       .agenda-clean-task-row > div:nth-child(3) > div:first-child {
@@ -5380,7 +5477,7 @@ const injectStyles = () => {
         gap: 5px !important;
       }
       .agenda-clean-task-row > div:nth-child(3) > div:last-child span {
-        font-size: 10px !important;
+        font-size: var(--font-size-xs) !important;
       }
       .agenda-clean-task-row > button:last-child {
         width: 32px !important;
@@ -5440,7 +5537,7 @@ const injectStyles = () => {
         min-height: 0 !important;
         padding: 3px 7px !important;
         border-radius: 999px !important;
-        font-size: 10px !important;
+        font-size: var(--font-size-xs) !important;
         line-height: 1 !important;
       }
       .agenda-todo-delete {
@@ -5464,7 +5561,7 @@ const injectStyles = () => {
         min-height: 44px !important;
         padding: 0 6px !important;
         border-radius: 10px !important;
-        font-size: 11px !important;
+        font-size: var(--font-size-xs) !important;
       }
       .agenda-side-panel textarea {
         min-height: 138px !important;
@@ -5479,7 +5576,7 @@ const injectStyles = () => {
       }
       .mobile-bottom-nav [style*="bottom: 100%"] button span {
         max-width: none !important;
-        font-size: 11px !important;
+        font-size: var(--font-size-xs) !important;
       }
       .mobile-bottom-nav .mobile-more-popover {
         min-width: 178px !important;
@@ -5489,7 +5586,7 @@ const injectStyles = () => {
       }
       .mobile-bottom-nav .mobile-more-popover button span {
         max-width: 112px !important;
-        font-size: 12px !important;
+        font-size: var(--font-size-sm) !important;
       }
       textarea { min-height: 96px; }
       input[type="date"], input[type="month"], select, button {
@@ -5902,7 +5999,7 @@ const injectStyles = () => {
       .kpi-grid { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
       .kpi-card { padding: 14px !important; }
       .agenda-view-tabs > button {
-        font-size: 10px !important;
+        font-size: var(--font-size-xs) !important;
         padding-inline: 5px !important;
       }
       .settings-clerk-row {
@@ -5923,7 +6020,7 @@ const injectStyles = () => {
         padding: 10px 5px !important;
       }
       .settings-usage-grid > div > div:last-child {
-        font-size: 9px !important;
+        font-size: var(--font-size-2xs) !important;
         line-height: 1.25 !important;
         overflow-wrap: anywhere !important;
       }
@@ -6532,7 +6629,7 @@ const injectStyles = () => {
       border-radius: 11px;
       background: transparent;
       color: var(--hf-muted);
-      font-size: 12px;
+      font-size: var(--font-size-sm);
       font-weight: 900;
       letter-spacing: .04em;
       cursor: pointer;
@@ -7076,7 +7173,7 @@ const injectStyles = () => {
         font-size: 15px !important;
       }
       .finance-ref-row-meta {
-        font-size: 11px !important;
+        font-size: var(--font-size-xs) !important;
       }
       .finance-ref-amount {
         grid-column: 2 !important;
@@ -7468,7 +7565,7 @@ const injectStyles = () => {
     }
     .cc-eyebrow {
       color: var(--hf-muted);
-      font-size: 11px;
+      font-size: var(--font-size-xs);
       letter-spacing: .03em;
       margin-bottom: 7px;
     }
@@ -7483,7 +7580,7 @@ const injectStyles = () => {
     .cc-header p {
       margin: 7px 0 0;
       color: var(--hf-muted);
-      font-size: 12px;
+      font-size: var(--font-size-sm);
       line-height: 1.5;
     }
     .cc-day-summary {
@@ -7496,7 +7593,7 @@ const injectStyles = () => {
       border-radius: 11px;
       background: var(--hf-input-bg);
       color: var(--hf-text);
-      font-size: 11px;
+      font-size: var(--font-size-xs);
       white-space: nowrap;
     }
     .cc-capture-row {
@@ -7538,7 +7635,7 @@ const injectStyles = () => {
       box-shadow: none !important;
       color: var(--hf-text);
       font: inherit;
-      font-size: 12px;
+      font-size: var(--font-size-sm);
     }
     .cc-capture input:hover,
     .cc-capture input:focus {
@@ -7590,7 +7687,7 @@ const injectStyles = () => {
     }
     .cc-finance-account span {
       color: var(--hf-muted);
-      font-size: 9px;
+      font-size: var(--font-size-2xs);
       font-weight: 700;
       letter-spacing: .06em;
       text-transform: uppercase;
@@ -7606,7 +7703,7 @@ const injectStyles = () => {
       background: var(--hf-input-bg);
       color: var(--hf-text);
       font: inherit;
-      font-size: 11px;
+      font-size: var(--font-size-xs);
       cursor: pointer;
     }
     .cc-finance-account select:focus {
@@ -7623,7 +7720,7 @@ const injectStyles = () => {
     .cc-finance-hint {
       grid-column: 1 / -1;
       color: var(--hf-subtle);
-      font-size: 9px;
+      font-size: var(--font-size-2xs);
       line-height: 1.35;
     }
     @keyframes cc-context-in {
@@ -7634,7 +7731,7 @@ const injectStyles = () => {
       min-height: 14px;
       margin: -7px 0 12px 2px;
       color: var(--hf-muted);
-      font-size: 10px;
+      font-size: var(--font-size-xs);
     }
     .cc-quick-actions {
       display: grid;
@@ -7654,7 +7751,7 @@ const injectStyles = () => {
       align-items: center;
       text-align: left;
       cursor: pointer;
-      font-size: 10px;
+      font-size: var(--font-size-xs);
       line-height: 1.25;
       transition: transform 160ms ease, border-color 160ms ease, background 160ms ease;
     }
@@ -7719,13 +7816,13 @@ const injectStyles = () => {
     .cc-card-head p {
       margin: 3px 0 0;
       color: var(--hf-muted);
-      font-size: 9px;
+      font-size: var(--font-size-2xs);
     }
     .cc-link-button {
       border: 0;
       background: transparent;
       color: var(--hf-muted);
-      font-size: 9px;
+      font-size: var(--font-size-2xs);
       cursor: pointer;
       padding: 2px;
       white-space: nowrap;
@@ -7796,7 +7893,7 @@ const injectStyles = () => {
     .cc-row-title {
       min-width: 0;
       color: var(--hf-text);
-      font-size: 10px;
+      font-size: var(--font-size-xs);
       font-weight: 700;
       white-space: nowrap;
       overflow: hidden;
@@ -7805,7 +7902,7 @@ const injectStyles = () => {
     .cc-row-meta {
       margin-top: 2px;
       color: var(--hf-muted);
-      font-size: 8px;
+      font-size: var(--font-size-2xs);
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
@@ -7815,12 +7912,12 @@ const injectStyles = () => {
       border-radius: 999px;
       color: var(--hf-text);
       background: color-mix(in srgb, var(--app-primary) 11%, transparent);
-      font-size: 8px;
+      font-size: var(--font-size-2xs);
       font-weight: 800;
     }
     .cc-time {
       color: var(--hf-muted);
-      font-size: 9px;
+      font-size: var(--font-size-2xs);
       font-variant-numeric: tabular-nums;
     }
     .cc-habit-icon {
@@ -7838,7 +7935,7 @@ const injectStyles = () => {
       place-items: center;
       text-align: center;
       color: var(--hf-muted);
-      font-size: 10px;
+      font-size: var(--font-size-xs);
       line-height: 1.5;
     }
     .cc-pomodoro-body {
@@ -7868,7 +7965,7 @@ const injectStyles = () => {
     }
     .cc-pomodoro-label {
       color: var(--hf-muted);
-      font-size: 9px;
+      font-size: var(--font-size-2xs);
       text-align: center;
       margin-top: 4px;
     }
@@ -7883,7 +7980,7 @@ const injectStyles = () => {
       gap: 7px;
       color: white;
       background: var(--hf-action-primary);
-      font-size: 10px;
+      font-size: var(--font-size-xs);
       font-weight: 800;
       cursor: pointer;
     }
@@ -7902,7 +7999,7 @@ const injectStyles = () => {
     .cc-finance-metric span {
       display: block;
       color: var(--hf-muted);
-      font-size: 8px;
+      font-size: var(--font-size-2xs);
       margin-bottom: 5px;
     }
     .cc-finance-metric strong {
@@ -7917,7 +8014,7 @@ const injectStyles = () => {
     .cc-finance-metric[data-tone="expense"] strong { color: var(--app-primary); }
     .cc-agenda-time {
       color: var(--hf-text);
-      font-size: 9px;
+      font-size: var(--font-size-2xs);
       font-variant-numeric: tabular-nums;
     }
     .cc-agenda-dot {
@@ -7954,12 +8051,12 @@ const injectStyles = () => {
     .cc-goal-stats span {
       display: block;
       color: var(--hf-muted);
-      font-size: 8px;
+      font-size: var(--font-size-2xs);
       margin-bottom: 3px;
     }
     .cc-goal-stats strong {
       color: var(--hf-text);
-      font-size: 10px;
+      font-size: var(--font-size-xs);
     }
     .cc-recommendation {
       display: grid;
@@ -7983,7 +8080,7 @@ const injectStyles = () => {
     .cc-recommendation p {
       margin: 0;
       color: var(--hf-text);
-      font-size: 9px;
+      font-size: var(--font-size-2xs);
       line-height: 1.45;
     }
     .cc-rail {
@@ -8001,7 +8098,7 @@ const injectStyles = () => {
     }
     .cc-rail-title {
       color: var(--hf-text);
-      font-size: 12px;
+      font-size: var(--font-size-sm);
       font-weight: 800;
       margin-bottom: 12px;
     }
@@ -8022,7 +8119,7 @@ const injectStyles = () => {
       background: color-mix(in srgb, var(--app-primary) 9%, transparent);
       color: var(--app-primary);
       font-weight: 900;
-      font-size: 11px;
+      font-size: var(--font-size-xs);
     }
     .cc-achievements {
       display: grid;
@@ -8041,12 +8138,12 @@ const injectStyles = () => {
     .cc-achievement strong {
       display: block;
       color: var(--hf-text);
-      font-size: 9px;
+      font-size: var(--font-size-2xs);
     }
     .cc-achievement span {
       display: block;
       color: var(--hf-muted);
-      font-size: 8px;
+      font-size: var(--font-size-2xs);
       margin-top: 2px;
     }
     .cc-ecosystem {
@@ -8065,7 +8162,7 @@ const injectStyles = () => {
       place-items: center;
       gap: 4px;
       cursor: pointer;
-      font-size: 8px;
+      font-size: var(--font-size-2xs);
     }
     .cc-module-button svg {
       color: var(--app-primary);
@@ -8088,7 +8185,7 @@ const injectStyles = () => {
     .cc-coach p {
       margin: 0;
       color: var(--hf-muted);
-      font-size: 9px;
+      font-size: var(--font-size-2xs);
       line-height: 1.5;
     }
     @media (hover: hover) and (pointer: fine) {
@@ -8201,7 +8298,7 @@ const injectStyles = () => {
         grid-template-columns: 28px 1fr;
         min-height: 48px;
         padding: 8px 10px;
-        font-size: 10px;
+        font-size: var(--font-size-xs);
       }
       .cc-grid {
         grid-template-columns: 1fr;
@@ -8285,7 +8382,7 @@ const injectStyles = () => {
       align-items: center;
       gap: 7px;
       color: var(--primary);
-      font: 700 11px/1 "Inter", sans-serif;
+      font: 700 var(--font-size-xs)/1 "Inter", sans-serif;
       letter-spacing: .08em;
       text-transform: uppercase;
     }
@@ -8315,7 +8412,7 @@ const injectStyles = () => {
     }
     .creator-metrics span {
       color: var(--app-text-dim);
-      font: 600 11px/1.2 "Inter", sans-serif;
+      font: 600 var(--font-size-xs)/1.2 "Inter", sans-serif;
       letter-spacing: .06em;
       text-transform: uppercase;
     }
@@ -8399,14 +8496,14 @@ const injectStyles = () => {
       gap: 12px;
       padding: 13px 2px 9px;
       color: var(--app-text-dim);
-      font: 500 11px "Inter", sans-serif;
+      font: 500 var(--font-size-xs) "Inter", sans-serif;
     }
     .creator-list-toolbar button {
       border: 0;
       background: transparent;
       color: var(--primary);
       cursor: pointer;
-      font: 700 11px "Inter", sans-serif;
+      font: 700 var(--font-size-xs) "Inter", sans-serif;
     }
     .creator-client-list {
       display: grid;
@@ -8466,7 +8563,7 @@ const injectStyles = () => {
       place-items: center;
       background: color-mix(in srgb, var(--primary) 15%, var(--app-surface));
       color: var(--primary);
-      font: 800 12px "Inter", sans-serif;
+      font: 800 var(--font-size-sm) "Inter", sans-serif;
     }
     .creator-client-copy {
       display: grid;
@@ -8485,7 +8582,7 @@ const injectStyles = () => {
     }
     .creator-client-copy small {
       color: var(--app-text-dim);
-      font: 400 11px "Inter", sans-serif;
+      font: 400 var(--font-size-xs) "Inter", sans-serif;
     }
     .creator-device-badge {
       display: inline-flex;
@@ -8495,7 +8592,7 @@ const injectStyles = () => {
       border: 1px solid var(--app-border);
       border-radius: 999px;
       color: var(--app-text-dim);
-      font: 700 10px "Inter", sans-serif;
+      font: 700 var(--font-size-2xs) "Inter", sans-serif;
       white-space: nowrap;
     }
     .creator-device-badge.is-active {
@@ -8507,7 +8604,7 @@ const injectStyles = () => {
       padding: 34px 16px;
       color: var(--app-text-dim);
       text-align: center;
-      font: 400 12px/1.5 "Inter", sans-serif;
+      font: 400 var(--font-size-sm)/1.5 "Inter", sans-serif;
     }
     .creator-audience-switch {
       display: grid;
@@ -8526,7 +8623,7 @@ const injectStyles = () => {
       background: transparent;
       color: var(--app-text-dim);
       cursor: pointer;
-      font: 700 12px "Inter", sans-serif;
+      font: 700 var(--font-size-sm) "Inter", sans-serif;
     }
     .creator-audience-switch button.is-active {
       background: var(--primary);
@@ -8540,7 +8637,7 @@ const injectStyles = () => {
     }
     .creator-field > span {
       color: var(--app-text-dim);
-      font: 700 10px "Inter", sans-serif;
+      font: 700 var(--font-size-2xs) "Inter", sans-serif;
       letter-spacing: .06em;
       text-transform: uppercase;
     }
@@ -8572,7 +8669,7 @@ const injectStyles = () => {
       border-radius: 5px;
       background: var(--app-bg);
       color: var(--app-text-dim);
-      font: 500 9px "Inter", sans-serif;
+      font: 500 var(--font-size-2xs) "Inter", sans-serif;
     }
     .creator-toggle-row {
       display: flex;
@@ -8597,11 +8694,11 @@ const injectStyles = () => {
     }
     .creator-toggle-row strong {
       color: var(--app-text);
-      font: 700 12px "Inter", sans-serif;
+      font: 700 var(--font-size-sm) "Inter", sans-serif;
     }
     .creator-toggle-row small {
       color: var(--app-text-dim);
-      font: 400 10px/1.4 "Inter", sans-serif;
+      font: 400 var(--font-size-2xs)/1.4 "Inter", sans-serif;
     }
     .creator-recipient-summary,
     .creator-feedback {
@@ -8614,7 +8711,7 @@ const injectStyles = () => {
       border-radius: 12px;
       background: var(--app-surface);
       color: var(--app-text-dim);
-      font: 600 11px/1.4 "Inter", sans-serif;
+      font: 600 var(--font-size-xs)/1.4 "Inter", sans-serif;
     }
     .creator-feedback.is-error {
       border-color: color-mix(in srgb, var(--hf-danger, #ff6b6b) 30%, var(--app-border));
@@ -8773,7 +8870,7 @@ const injectStyles = () => {
       background: transparent;
       color: var(--pomo-muted);
       cursor: pointer;
-      font-size: 11px;
+      font-size: var(--font-size-xs);
       font-weight: 700;
       transition: color 160ms ease, background-color 160ms ease;
     }
@@ -8886,7 +8983,7 @@ const injectStyles = () => {
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
-      font-size: 12px;
+      font-size: var(--font-size-sm);
       font-weight: 700;
     }
     .pomodoro-pro-controls {
@@ -8944,7 +9041,7 @@ const injectStyles = () => {
       display: block;
       margin-bottom: 5px;
       color: var(--pomo-muted);
-      font-size: 10px;
+      font-size: var(--font-size-xs);
     }
     .pomodoro-pro-stats strong {
       color: var(--pomo-text);
@@ -8967,7 +9064,7 @@ const injectStyles = () => {
       background: transparent;
       color: var(--pomo-muted);
       cursor: pointer;
-      font-size: 11px;
+      font-size: var(--font-size-xs);
       font-weight: 700;
     }
     .pomodoro-pro-utility button:hover {
@@ -9013,7 +9110,7 @@ const injectStyles = () => {
     .pomodoro-pro-panel > header > span {
       flex: 0 0 auto;
       color: var(--pomo-muted);
-      font-size: 10px;
+      font-size: var(--font-size-xs);
       font-variant-numeric: tabular-nums;
     }
     .pomodoro-pro-notes textarea {
@@ -9029,7 +9126,7 @@ const injectStyles = () => {
         linear-gradient(90deg, transparent 20px, rgba(255, 21, 31, .8) 20px, rgba(255, 21, 31, .8) 21px, transparent 21px),
         repeating-linear-gradient(to bottom, #08090a 0, #08090a 28px, #24272c 29px);
       color: var(--pomo-text);
-      font-size: 12px;
+      font-size: var(--font-size-sm);
       line-height: 29px;
     }
     .pomodoro-pro-notes textarea:focus,
@@ -9052,7 +9149,7 @@ const injectStyles = () => {
     }
     .pomodoro-pro-note-actions > span {
       color: var(--pomo-muted);
-      font-size: 10px;
+      font-size: var(--font-size-xs);
     }
     .pomodoro-pro-note-actions button {
       min-height: 38px;
@@ -9065,7 +9162,7 @@ const injectStyles = () => {
       background: transparent;
       color: var(--pomo-red-soft);
       cursor: pointer;
-      font-size: 11px;
+      font-size: var(--font-size-xs);
       font-weight: 800;
     }
     .pomodoro-pro-note-actions button:hover {
@@ -9087,7 +9184,7 @@ const injectStyles = () => {
       outline: none;
       background: #08090a;
       color: var(--pomo-text);
-      font-size: 12px;
+      font-size: var(--font-size-sm);
     }
     .pomodoro-pro-task-composer select {
       color-scheme: dark;
@@ -9160,7 +9257,7 @@ const injectStyles = () => {
       text-align: left;
       text-overflow: ellipsis;
       white-space: nowrap;
-      font-size: 12px;
+      font-size: var(--font-size-sm);
       font-weight: 650;
     }
     .pomodoro-pro-task-row.is-complete .pomodoro-pro-task-name {
@@ -9174,7 +9271,7 @@ const injectStyles = () => {
       border: 1px solid currentColor;
       border-radius: 999px;
       text-align: center;
-      font-size: 10px;
+      font-size: var(--font-size-xs);
       font-weight: 800;
     }
     .pomodoro-pro-priority.is-high { color: var(--pomo-red-soft); }
@@ -9215,7 +9312,7 @@ const injectStyles = () => {
     }
     .pomodoro-pro-empty span {
       max-width: 280px;
-      font-size: 11px;
+      font-size: var(--font-size-xs);
       line-height: 1.45;
     }
     .pomodoro-pro-settings,
@@ -9227,7 +9324,7 @@ const injectStyles = () => {
       display: block;
       margin-bottom: 7px;
       color: var(--hf-muted);
-      font-size: 12px;
+      font-size: var(--font-size-sm);
       font-weight: 700;
     }
     .pomodoro-pro-settings label > div {
@@ -9248,7 +9345,7 @@ const injectStyles = () => {
       border-radius: 9px;
       background: var(--hf-input-bg);
       color: var(--hf-text);
-      font-size: 12px;
+      font-size: var(--font-size-sm);
       text-align: right;
     }
     .pomodoro-pro-save-settings {
@@ -9308,7 +9405,7 @@ const injectStyles = () => {
     }
     .pomodoro-pro-alert > span {
       color: var(--pomo-red);
-      font-size: 11px;
+      font-size: var(--font-size-xs);
       font-weight: 800;
       letter-spacing: .14em;
       text-transform: uppercase;
@@ -9591,7 +9688,7 @@ const injectStyles = () => {
       outline-offset: 2px;
     }
     .voice-assistant-launcher > span:first-child {
-      font-size: 12px;
+      font-size: var(--font-size-sm);
       font-weight: 750;
       letter-spacing: .01em;
     }
@@ -9651,7 +9748,7 @@ const injectStyles = () => {
     .voice-assistant-header p {
       margin: 5px 0 0;
       color: #989898;
-      font-size: 12px;
+      font-size: var(--font-size-sm);
       line-height: 1.5;
     }
     .voice-icon-button {
@@ -9718,7 +9815,7 @@ const injectStyles = () => {
     }
     .voice-listening-hero span {
       color: #a2a2a2;
-      font-size: 12px;
+      font-size: var(--font-size-sm);
     }
     .voice-transcript {
       width: 100%;
@@ -9736,7 +9833,7 @@ const injectStyles = () => {
       margin-top: 10px;
       padding: 10px 12px;
       border-radius: 10px;
-      font-size: 11px;
+      font-size: var(--font-size-xs);
       line-height: 1.45;
     }
     .voice-support-note {
@@ -9814,7 +9911,7 @@ const injectStyles = () => {
       border-radius: 999px;
       background: rgba(229, 9, 20, .1);
       color: #ff646b;
-      font-size: 10px;
+      font-size: var(--font-size-xs);
       font-weight: 800;
       text-transform: uppercase;
       letter-spacing: .05em;
@@ -9834,7 +9931,7 @@ const injectStyles = () => {
     }
     .voice-field > span {
       color: #8f8f8f;
-      font-size: 10px;
+      font-size: var(--font-size-xs);
       font-weight: 750;
       letter-spacing: .05em;
       text-transform: uppercase;
@@ -9850,7 +9947,7 @@ const injectStyles = () => {
       background: #121212;
       color: #f5f5f5;
       color-scheme: dark;
-      font: 500 12px 'Inter', sans-serif;
+      font: 500 var(--font-size-sm) 'Inter', sans-serif;
     }
     .voice-missing {
       display: flex;
@@ -9862,7 +9959,7 @@ const injectStyles = () => {
       border-radius: 10px;
       background: rgba(229, 9, 20, .08);
       color: #ff989d;
-      font-size: 11px;
+      font-size: var(--font-size-xs);
       line-height: 1.45;
     }
     .voice-correction {
@@ -9885,7 +9982,7 @@ const injectStyles = () => {
     .voice-help {
       grid-column: 1 / -1;
       color: #858585;
-      font-size: 10px;
+      font-size: var(--font-size-xs);
       line-height: 1.5;
     }
     .voice-success {
@@ -9915,7 +10012,7 @@ const injectStyles = () => {
       max-width: 420px;
       margin: 0;
       color: #aaa;
-      font-size: 12px;
+      font-size: var(--font-size-sm);
       line-height: 1.6;
     }
     @keyframes voiceFadeIn {
@@ -10042,12 +10139,12 @@ const injectStyles = () => {
       font-weight: 700;
       color: var(--hf-text);
     }
-    .hydration-widget-title strong { font-size: 12px; }
+    .hydration-widget-title strong { font-size: var(--font-size-sm); }
     .hydration-widget-title small,
     .hydration-widget small,
     .hydration-popover small {
       color: var(--hf-muted);
-      font-size: 9px;
+      font-size: var(--font-size-2xs);
       line-height: 1.35;
     }
     .hydration-widget-settings,
@@ -10118,7 +10215,7 @@ const injectStyles = () => {
     }
     .hydration-widget-value span {
       color: var(--hf-muted);
-      font-size: 10px;
+      font-size: var(--font-size-xs);
     }
     .hydration-progress-badge {
       display: inline-flex;
@@ -10131,19 +10228,19 @@ const injectStyles = () => {
       color: var(--primary);
       background: color-mix(in srgb, var(--primary) 14%, transparent);
       border: 1px solid color-mix(in srgb, var(--primary) 34%, transparent);
-      font-size: 10px;
+      font-size: var(--font-size-xs);
       font-weight: 800;
     }
     .hydration-meta-copy {
       display: grid;
       gap: 2px;
       margin-top: 6px;
-      font-size: 9px;
+      font-size: var(--font-size-2xs);
       color: var(--hf-muted);
     }
     .hydration-meta-copy strong {
       color: var(--hf-text);
-      font-size: 10px;
+      font-size: var(--font-size-xs);
       font-weight: 650;
     }
     .hydration-quick-actions {
@@ -10160,7 +10257,7 @@ const injectStyles = () => {
       background: var(--hf-input-bg);
       color: var(--hf-text);
       cursor: pointer;
-      font: 650 10px/1 'Inter', sans-serif;
+      font: 650 var(--font-size-2xs)/1 'Inter', sans-serif;
       transition: border-color 160ms ease, background-color 160ms ease, color 160ms ease;
     }
     .hydration-quick-actions button:hover,
@@ -10176,7 +10273,7 @@ const injectStyles = () => {
       border-top: 1px solid var(--hf-card-border);
       justify-content: center;
       color: var(--hf-muted);
-      font-size: 9px;
+      font-size: var(--font-size-2xs);
     }
     .hydration-widget.is-complete .hydration-meta-copy strong,
     .hydration-widget.is-complete .hydration-widget-footer {
@@ -10206,7 +10303,7 @@ const injectStyles = () => {
       border-radius: 999px;
       background: var(--primary);
       color: #fff;
-      font-size: 8px;
+      font-size: var(--font-size-2xs);
       font-weight: 800;
       display: flex;
       align-items: center;
@@ -10282,7 +10379,7 @@ const injectStyles = () => {
       display: grid;
       gap: 6px;
       color: var(--hf-muted);
-      font-size: 10px;
+      font-size: var(--font-size-xs);
       font-weight: 650;
     }
     .hydration-input-wrap {
@@ -10306,7 +10403,7 @@ const injectStyles = () => {
     .hydration-input-wrap span {
       padding-right: 11px;
       color: var(--hf-muted);
-      font-size: 11px;
+      font-size: var(--font-size-xs);
     }
     .hydration-popover-goal,
     .hydration-popover-reminder {
@@ -10317,7 +10414,7 @@ const injectStyles = () => {
     .hydration-goal-copy {
       display: grid;
       gap: 3px;
-      font-size: 10px;
+      font-size: var(--font-size-xs);
       color: var(--hf-muted);
     }
     .hydration-goal-copy strong {
@@ -10338,7 +10435,7 @@ const injectStyles = () => {
       display: grid;
       gap: 3px;
       color: var(--hf-text);
-      font-size: 11px;
+      font-size: var(--font-size-xs);
       font-weight: 650;
     }
     .hydration-toggle {
@@ -10370,7 +10467,7 @@ const injectStyles = () => {
     }
     .hydration-popover-actions button {
       min-height: 40px;
-      font-size: 11px;
+      font-size: var(--font-size-xs);
     }
     .hydration-popover-actions .is-primary {
       background: var(--primary);
@@ -10415,7 +10512,7 @@ const injectStyles = () => {
     .hydration-visibility-copy strong { font-size: 13px; }
     .hydration-visibility-copy small {
       color: var(--habits-muted);
-      font-size: 11px;
+      font-size: var(--font-size-xs);
       line-height: 1.4;
     }
     .hydration-visibility-action {
@@ -10426,7 +10523,7 @@ const injectStyles = () => {
     }
     .hydration-visibility-action > span {
       color: var(--habits-muted);
-      font-size: 11px;
+      font-size: var(--font-size-xs);
       font-weight: 650;
     }
     html[data-theme-mode="pinkLight"] .hydration-widget,
@@ -10442,12 +10539,12 @@ const injectStyles = () => {
     }
     .cc-widgets-heading strong {
       color: var(--hf-text);
-      font-size: 12px;
+      font-size: var(--font-size-sm);
       letter-spacing: .01em;
     }
     .cc-widgets-heading span {
       color: var(--hf-muted);
-      font-size: 9px;
+      font-size: var(--font-size-2xs);
     }
     .hydration-panel-slot,
     .brushing-widget-slot {
@@ -10491,8 +10588,8 @@ const injectStyles = () => {
     .brushing-progress-row { justify-content: space-between; gap: 10px; }
     .brushing-widget-title { gap: 8px; min-width: 0; }
     .brushing-widget-title > span:last-child { display: grid; gap: 2px; min-width: 0; }
-    .brushing-widget-title strong { color: var(--hf-text); font-size: 12px; }
-    .brushing-widget-title small { color: var(--hf-muted); font-size: 9px; }
+    .brushing-widget-title strong { color: var(--hf-text); font-size: var(--font-size-sm); }
+    .brushing-widget-title small { color: var(--hf-muted); font-size: var(--font-size-2xs); }
     .brushing-icon {
       width: 31px;
       height: 31px;
@@ -10506,7 +10603,7 @@ const injectStyles = () => {
     .brushing-progress-row { margin: 14px 0 9px; }
     .brushing-count { display: flex; align-items: baseline; gap: 7px; }
     .brushing-count strong { color: var(--hf-text); font-size: 28px; line-height: 1; }
-    .brushing-count span { color: var(--hf-muted); font-size: 10px; }
+    .brushing-count span { color: var(--hf-muted); font-size: var(--font-size-xs); }
     .brushing-actions { gap: 7px; margin-top: 11px; }
     .brushing-actions button {
       min-height: 36px;
@@ -10519,7 +10616,7 @@ const injectStyles = () => {
       align-items: center;
       justify-content: center;
       gap: 6px;
-      font: 700 10px/1 'Inter', sans-serif;
+      font: 700 var(--font-size-2xs)/1 'Inter', sans-serif;
     }
     .brushing-actions .is-primary { flex: 1; color: #fff; border-color: var(--primary); background: var(--primary); }
     .brushing-actions button:last-child { width: 38px; }
@@ -10527,7 +10624,7 @@ const injectStyles = () => {
     .brushing-widget.is-complete .brushing-icon,
     .brushing-widget.is-complete .hydration-widget-footer { color: var(--hf-success, #16c784); }
     .brushing-time-list { display: grid; gap: 7px; margin-top: 14px; }
-    .brushing-time-list > span { color: var(--hf-muted); font-size: 10px; }
+    .brushing-time-list > span { color: var(--hf-muted); font-size: var(--font-size-xs); }
     .brushing-time-list input {
       width: 100%;
       min-height: 39px;
@@ -11041,7 +11138,7 @@ const KPICard = ({ icon, title, value, subtitle, accent, suffix = '', delay = 0,
         transform="rotate(-90 19 19)"
         style={{ transition: 'stroke-dashoffset 1.5s ease-out' }} />
       <text x="19" y="19" textAnchor="middle" dominantBaseline="central"
-        fill={COLORS.textDim} fontSize="8.5" fontWeight="700" fontFamily="'Inter', sans-serif">
+        fill={COLORS.textDim} fontSize="var(--font-size-2xs)" fontWeight="700" fontFamily="'Inter', sans-serif">
         {Math.round(progress * 100)}
       </text>
     </svg>
@@ -11054,7 +11151,7 @@ const KPICard = ({ icon, title, value, subtitle, accent, suffix = '', delay = 0,
     }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 8 }}>
         <div>
-          <div style={{ fontSize: 10, color: COLORS.textDim, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 2 }}>
+          <div style={{ fontSize: 'var(--font-size-xs)', color: COLORS.textDim, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 2 }}>
             <span className="fire-emoji dashboard-kpi-icon">{icon}</span> {title}
           </div>
           <div style={{ fontSize: 24, fontWeight: 500, color: COLORS.text, fontFamily: "'Inter', sans-serif", lineHeight: 1.2, minHeight: '1.2em' }}>
@@ -11063,7 +11160,7 @@ const KPICard = ({ icon, title, value, subtitle, accent, suffix = '', delay = 0,
         </div>
         {progressCircle}
       </div>
-      <div style={{ fontSize: 11, color: COLORS.textDim }}>{subtitle}</div>
+      <div style={{ fontSize: 'var(--font-size-xs)', color: COLORS.textDim }}>{subtitle}</div>
     </GlowCard>
   );
 };
@@ -11111,7 +11208,7 @@ const ClerkSetupScreen = ({ initialKey = '', error = '', loading = false, onSave
       <div className="auth-form-card" style={{ width: '100%', maxWidth: 460, padding: 28 }}>
         <div style={{ marginBottom: 12 }}><BrandLogo size="md" /></div>
         <div style={{ color: COLORS.text, fontSize: 20, fontFamily: "'DM Serif Display', serif", marginBottom: 6 }}>Conectar login con Clerk</div>
-        <div style={{ color: COLORS.textDim, fontSize: 12, lineHeight: 1.6, marginBottom: 18 }}>
+        <div style={{ color: COLORS.textDim, fontSize: 'var(--font-size-sm)', lineHeight: 1.6, marginBottom: 18 }}>
           Pega tu Publishable Key de Clerk. La encuentras en Clerk Dashboard, sección API keys, y empieza por pk_test_ o pk_live_.
         </div>
         <input value={key} onChange={e => setKey(e.target.value)} placeholder="pk_test_..." style={{
@@ -11119,7 +11216,7 @@ const ClerkSetupScreen = ({ initialKey = '', error = '', loading = false, onSave
           border: `1px solid ${error  ? COLORS.alert : COLORS.border}`, background: COLORS.bg,
           color: COLORS.text, outline: 'none', fontSize: 13, fontFamily: "'Inter', sans-serif", marginBottom: 10
         }} />
-        {error && <div style={{ color: COLORS.alert, fontSize: 11, lineHeight: 1.45, marginBottom: 12 }}>{error}</div>}
+        {error && <div style={{ color: COLORS.alert, fontSize: 'var(--font-size-xs)', lineHeight: 1.45, marginBottom: 12 }}>{error}</div>}
         <button disabled={loading || !key.trim()} onClick={() => onSave(key.trim())} style={{
           width: '100%', padding: '12px 16px', borderRadius: 10, border: 'none',
           background: loading || !key.trim()  ? COLORS.border : `linear-gradient(135deg, ${COLORS.primary}, #7f1028)`,
@@ -11189,7 +11286,7 @@ const ClerkSignInScreen = ({ clerk }) => {
 const ClerkUserButtonMount = () => {
   if (isHabitFlowLocalDev()) {
     return (
-      <div title="Vista local de prueba" style={{ width: 34, height: 34, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: `linear-gradient(135deg, ${COLORS.primary}, ${COLORS.alert})`, color: '#fff', fontSize: 10, fontWeight: 900, fontFamily: "'Inter', sans-serif", boxShadow: `0 0 0 1px ${COLORS.border}` }}>
+      <div title="Vista local de prueba" style={{ width: 34, height: 34, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: `linear-gradient(135deg, ${COLORS.primary}, ${COLORS.alert})`, color: '#fff', fontSize: 'var(--font-size-xs)', fontWeight: 900, fontFamily: "'Inter', sans-serif", boxShadow: `0 0 0 1px ${COLORS.border}` }}>
         DEV
       </div>
     );
@@ -12066,7 +12163,7 @@ const AchievementsSection = ({ habits, records }) => {
             <span className="fire-emoji dashboard-achievement-icon" style={{ fontSize: 24 }}>{a.icon}</span>
             <div>
               <div style={{ fontSize: 14, color: COLORS.text, fontWeight: 500 }}>{a.label}</div>
-              <div style={{ fontSize: 11, color: COLORS.textDim }}>{a.desc}</div>
+              <div style={{ fontSize: 'var(--font-size-xs)', color: COLORS.textDim }}>{a.desc}</div>
             </div>
           </div>
         ))}
@@ -12082,7 +12179,7 @@ const CustomTooltip = ({ active, payload, label }) => {
       background: COLORS.surface, border: `1px solid ${COLORS.border}`,
       borderRadius: 12, padding: '12px 16px', boxShadow: '0 8px 32px rgba(0,0,0,0.4)'
     }}>
-      <div style={{ fontSize: 12, color: COLORS.textDim, marginBottom: 4 }}>{label}</div>
+      <div style={{ fontSize: 'var(--font-size-sm)', color: COLORS.textDim, marginBottom: 4 }}>{label}</div>
       {payload.map((p, i) => (
         <div key={i} style={{ fontSize: 13, color: p.color, marginBottom: 2 }}>
           {p.name}: {p.value}
@@ -12099,7 +12196,7 @@ const StatsTooltip = ({ active, payload, label }) => {
       background: COLORS.surface, border: `1px solid ${COLORS.border}`,
       borderRadius: 12, padding: '12px 16px', boxShadow: '0 8px 32px rgba(0,0,0,0.4)'
     }}>
-      <div style={{ fontSize: 12, color: COLORS.textDim, marginBottom: 4 }}>{label}</div>
+      <div style={{ fontSize: 'var(--font-size-sm)', color: COLORS.textDim, marginBottom: 4 }}>{label}</div>
       {payload.map((p, i) => (
         <div key={i} style={{ fontSize: 13, color: p.color, marginBottom: 2 }}>
           {p.name}: {p.value}%
@@ -12168,7 +12265,7 @@ const LegacyDashboardView = ({ data, onCompleteHabit, workoutData, onNavigate, o
         <div style={{
           display: 'inline-flex', alignItems: 'center', gap: 8, marginTop: 12,
           padding: '9px 13px', borderRadius: 999, border: `1px solid ${COLORS.border}`,
-          background: `${COLORS.primary}0d`, color: COLORS.text, fontSize: 12,
+          background: `${COLORS.primary}0d`, color: COLORS.text, fontSize: 'var(--font-size-sm)',
           fontFamily: "'Inter', sans-serif", maxWidth: 620
         }}>
           <Sparkles size={14} color={COLORS.primary} />
@@ -12186,11 +12283,11 @@ const LegacyDashboardView = ({ data, onCompleteHabit, workoutData, onNavigate, o
             }}>
               <div>
                 <div style={{ color: COLORS.text, fontSize: 17, fontWeight: 800, marginBottom: 4 }}>Empieza con una guía rápida</div>
-                <div style={{ color: COLORS.textDim, fontSize: 12, lineHeight: 1.6 }}>Te muestro en 3 pasos cómo crear hábitos, organizar tareas y medir tu progreso.</div>
+                <div style={{ color: COLORS.textDim, fontSize: 'var(--font-size-sm)', lineHeight: 1.6 }}>Te muestro en 3 pasos cómo crear hábitos, organizar tareas y medir tu progreso.</div>
               </div>
               <button className="lab-cta" onClick={() => setTourStep(0)} style={{
                 borderRadius: 999, padding: '11px 18px', cursor: 'pointer',
-                fontSize: 12, fontFamily: "'Inter', sans-serif", fontWeight: 700
+                fontSize: 'var(--font-size-sm)', fontFamily: "'Inter', sans-serif", fontWeight: 700
               }}>
                 <span>Activar mis hábitos ahora</span>
               </button>
@@ -12239,10 +12336,10 @@ const LegacyDashboardView = ({ data, onCompleteHabit, workoutData, onNavigate, o
               <div style={{ background: `linear-gradient(135deg, ${COLORS.card}, ${COLORS.surface})`, borderRadius: 16, border: `1px solid ${COLORS.border}`, padding: 20, marginBottom: 24 }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
                   <div style={{ fontSize: 13, color: COLORS.textDim }}>{'\u{1F3CB}\u{FE0F}'} Último Entreno</div>
-                  <div style={{ fontSize: 11, color: COLORS.textDim, fontFamily: "'Inter', sans-serif" }}>{last.date}</div>
+                  <div style={{ fontSize: 'var(--font-size-xs)', color: COLORS.textDim, fontFamily: "'Inter', sans-serif" }}>{last.date}</div>
                 </div>
                 <div style={{ fontSize: 16, color: COLORS.text, fontFamily: "'DM Serif Display', serif", marginBottom: 8 }}>{last.routineName || 'Entreno Libre'}</div>
-                <div style={{ display: 'flex', gap: 24, fontSize: 12, color: COLORS.textDim }}>
+                <div style={{ display: 'flex', gap: 24, fontSize: 'var(--font-size-sm)', color: COLORS.textDim }}>
                   <span><span style={{ color: COLORS.success }}>{(last.totalVolume || 0) > 999  ? `${(last.totalVolume / 1000).toFixed(1)}k` : last.totalVolume || 0}</span> kg</span>
                   <span><span style={{ color: COLORS.primary }}>{last.exercises?.length || 0}</span> ejercicios</span>
                   <span><span style={{ color: COLORS.alert }}>{last.duration  ? `${Math.floor(last.duration / 60)}m` : '--'}</span></span>
@@ -12261,16 +12358,16 @@ const LegacyDashboardView = ({ data, onCompleteHabit, workoutData, onNavigate, o
                 <ResponsiveContainer width="100%" height={210}>
                   <AreaChart data={dailyData} margin={{ top: 8, right: 10, bottom: 5, left: -18 }}>
                     <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.04)" vertical={false} />
-                    <XAxis dataKey="label" tick={{ fill: '#8888a0', fontSize: 11 }} axisLine={false} tickLine={false} />
-                    <YAxis tick={{ fill: '#8888a0', fontSize: 10 }} axisLine={false} tickLine={false} allowDecimals={false} domain={[0, 100]} tickFormatter={v => `${v}%`} />
+                    <XAxis dataKey="label" tick={{ fill: '#8888a0', fontSize: 'var(--font-size-xs)' }} axisLine={false} tickLine={false} />
+                    <YAxis tick={{ fill: '#8888a0', fontSize: 'var(--font-size-xs)' }} axisLine={false} tickLine={false} allowDecimals={false} domain={[0, 100]} tickFormatter={v => `${v}%`} />
                     <Tooltip content={({ active, payload }) => {
                       if (!active || !payload || !payload[0]) return null;
                       const d = payload[0].payload;
                       return (
                         <div style={{ background: '#1a1a26', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 10, padding: '10px 14px', boxShadow: '0 8px 32px rgba(0,0,0,0.4)' }}>
                           <div style={{ fontSize: 13, color: COLORS.text, marginBottom: 4 }}>{d.label}</div>
-                          <div style={{ fontSize: 12, color: COLORS.textDim }}><span style={{ color: COLORS.primary }}>{'\u{2705}'}</span> {d.completed}/{d.total} hábitos</div>
-                          <div style={{ fontSize: 12, color: COLORS.textDim }}>Tasa: <span style={{ color: d.pct >= 80  ? COLORS.success : d.pct >= 50  ? COLORS.primary : COLORS.alert }}>{d.pct}%</span></div>
+                          <div style={{ fontSize: 'var(--font-size-sm)', color: COLORS.textDim }}><span style={{ color: COLORS.primary }}>{'\u{2705}'}</span> {d.completed}/{d.total} hábitos</div>
+                          <div style={{ fontSize: 'var(--font-size-sm)', color: COLORS.textDim }}>Tasa: <span style={{ color: d.pct >= 80  ? COLORS.success : d.pct >= 50  ? COLORS.primary : COLORS.alert }}>{d.pct}%</span></div>
                         </div>
                       );
                     }} />
@@ -12321,7 +12418,7 @@ const LegacyDashboardView = ({ data, onCompleteHabit, workoutData, onNavigate, o
           </h3>
           <div className="today-habits-grid" style={{ display: 'grid', gridTemplateColumns: habitsToday.length > 8  ? 'repeat(2, minmax(0, 1fr))' : '1fr', gap: 7 }}>
             {habitsToday.length === 0 && (
-              <div style={{ fontSize: 12, color: COLORS.textDim, textAlign: 'center', padding: 16 }}>
+              <div style={{ fontSize: 'var(--font-size-sm)', color: COLORS.textDim, textAlign: 'center', padding: 16 }}>
                 No hay hábitos activos
               </div>
             )}
@@ -12343,11 +12440,11 @@ const LegacyDashboardView = ({ data, onCompleteHabit, workoutData, onNavigate, o
                     opacity: h.completed  ? 0.5 : 1
                   }}>{h.name}</div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 1 }}>
-                    <span style={{ fontSize: 10, color: h.categoryInfo.color, background: `${h.categoryInfo.color}12`, padding: '1px 6px', borderRadius: 3 }}>
+                    <span style={{ fontSize: 'var(--font-size-xs)', color: h.categoryInfo.color, background: `${h.categoryInfo.color}12`, padding: '1px 6px', borderRadius: 3 }}>
                       {h.categoryInfo.label}
                     </span>
                     {h.streak > 0 && (
-                      <span style={{ fontSize: 10, color: COLORS.alert }}>{'\u{1F525}'} {h.streak}</span>
+                      <span style={{ fontSize: 'var(--font-size-xs)', color: COLORS.alert }}>{'\u{1F525}'} {h.streak}</span>
                     )}
                   </div>
                 </div>
@@ -12363,7 +12460,7 @@ const LegacyDashboardView = ({ data, onCompleteHabit, workoutData, onNavigate, o
               </div>
             ))}
           </div>
-          <div style={{ marginTop: 12, paddingTop: 12, borderTop: `1px solid ${COLORS.border}`, display: 'flex', justifyContent: 'space-between', fontSize: 11, color: COLORS.textDim }}>
+          <div style={{ marginTop: 12, paddingTop: 12, borderTop: `1px solid ${COLORS.border}`, display: 'flex', justifyContent: 'space-between', fontSize: 'var(--font-size-xs)', color: COLORS.textDim }}>
             <span>{kpis.completed}/{kpis.total} completados</span>
             <span style={{ color: kpis.total > 0 && kpis.completed === kpis.total  ? COLORS.success : COLORS.textDim }}>
               {kpis.total > 0  ? `${Math.round((kpis.completed / kpis.total) * 100)}%` : '--'}
@@ -13054,10 +13151,10 @@ const ChallengesView = ({ data, onCompleteChallenge, onJoinChallenge, records })
                 <span className="fire-emoji" style={{ fontSize: 28 }}>{pc.icon}</span>
                 <div style={{ flex: 1 }}>
                   <div style={{ fontSize: 14, color: COLORS.text, fontWeight: 500 }}>{pc.name}</div>
-                  <span style={{ fontSize: 11, color: pc.diffColor }}>{pc.difficulty}  {pc.duration} días</span>
+                  <span style={{ fontSize: 'var(--font-size-xs)', color: pc.diffColor }}>{pc.difficulty}  {pc.duration} días</span>
                 </div>
               </div>
-              <div style={{ fontSize: 12, color: COLORS.textDim, marginBottom: 12 }}>{pc.desc}</div>
+              <div style={{ fontSize: 'var(--font-size-sm)', color: COLORS.textDim, marginBottom: 12 }}>{pc.desc}</div>
               <button onClick={() => handleJoinChallenge(pc)} style={{
                 width: '100%', padding: '8px 16px', borderRadius: 8, border: 'none',
                 background: `linear-gradient(135deg, ${COLORS.primary}, #7f1028)`, color: '#fff',
@@ -13072,7 +13169,7 @@ const ChallengesView = ({ data, onCompleteChallenge, onJoinChallenge, records })
         <div style={{ textAlign: 'center', padding: 40, color: COLORS.textDim }}>
           <div className="fire-emoji" style={{ fontSize: 48, marginBottom: 12 }}>{'\u{1F3AF}'}</div>
           <div style={{ fontSize: 14, marginBottom: 4 }}>No tienes retos activos</div>
-          <div style={{ fontSize: 12, color: COLORS.textDim }}>Explora retos y acepta uno nuevo</div>
+          <div style={{ fontSize: 'var(--font-size-sm)', color: COLORS.textDim }}>Explora retos y acepta uno nuevo</div>
         </div>
       )}
 
@@ -13089,7 +13186,7 @@ const ChallengesView = ({ data, onCompleteChallenge, onJoinChallenge, records })
                     <span className="fire-emoji" style={{ fontSize: 28 }}>{c.icon}</span>
                     <div style={{ flex: 1 }}>
                       <div style={{ fontSize: 14, color: COLORS.text, fontWeight: 500 }}>{c.name}</div>
-                      <span style={{ fontSize: 11, color: c.diffColor || COLORS.textDim }}>{c.difficulty}  día {Math.min(c.duration, diff + 1)} de {c.duration}</span>
+                      <span style={{ fontSize: 'var(--font-size-xs)', color: c.diffColor || COLORS.textDim }}>{c.difficulty}  día {Math.min(c.duration, diff + 1)} de {c.duration}</span>
                     </div>
                     <span style={{ fontSize: 13, color: COLORS.primary, fontFamily: "'Inter', sans-serif" }}>{Math.round(progress * 100)}%</span>
                   </div>
@@ -13119,7 +13216,7 @@ const ChallengesView = ({ data, onCompleteChallenge, onJoinChallenge, records })
                 <span className="fire-emoji" style={{ fontSize: 24 }}>{c.icon}</span>
                 <div style={{ flex: 1 }}>
                   <div style={{ fontSize: 14, color: COLORS.text }}>{c.name}</div>
-                  <div style={{ fontSize: 11, color: COLORS.success }}>{'\u{2705}'} Completado {c.completedDate || ''}</div>
+                  <div style={{ fontSize: 'var(--font-size-xs)', color: COLORS.success }}>{'\u{2705}'} Completado {c.completedDate || ''}</div>
                 </div>
                 <Award size={20} color={COLORS.success} />
               </div>
@@ -13304,7 +13401,7 @@ const LegacyHabitsView = ({ data, onAddHabit, onUpdateHabit, onDeleteHabit, onTo
         <div style={{ marginBottom: 12 }}>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: 2, marginBottom: 8 }}>
             {dayNames.map(d => (
-              <div key={d} style={{ fontSize: 9, color: COLORS.textDim + '80', textAlign: 'center', padding: '2px 0', textTransform: 'uppercase', letterSpacing: '0.1em', fontWeight: 500 }}>{d}</div>
+              <div key={d} style={{ fontSize: 'var(--font-size-2xs)', color: COLORS.textDim + '80', textAlign: 'center', padding: '2px 0', textTransform: 'uppercase', letterSpacing: '0.1em', fontWeight: 500 }}>{d}</div>
             ))}
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: 6 }}>
@@ -13328,10 +13425,10 @@ const LegacyHabitsView = ({ data, onAddHabit, onUpdateHabit, onDeleteHabit, onTo
                     cursor: canToggle  ? 'pointer' : 'default',
                     opacity: isScheduled  ? (isPast || isToday  ? 1 : 0.55) : 0.22
                   }}>
-                    {done  ? <Check size={13} color="#0a0a0f" strokeWidth={3.5} /> : isSkipped  ? <span style={{ fontSize: 11, color: COLORS.textDim }}>-</span> : !isScheduled  ? <span style={{ fontSize: 11, color: COLORS.textDim }}>-</span> : null}
+                    {done  ? <Check size={13} color="#0a0a0f" strokeWidth={3.5} /> : isSkipped  ? <span style={{ fontSize: 'var(--font-size-xs)', color: COLORS.textDim }}>-</span> : !isScheduled  ? <span style={{ fontSize: 'var(--font-size-xs)', color: COLORS.textDim }}>-</span> : null}
                   </div>
                   <div style={{
-                    fontSize: 10, color: isToday  ? COLORS.primary : COLORS.textDim + '99',
+                    fontSize: 'var(--font-size-xs)', color: isToday  ? COLORS.primary : COLORS.textDim + '99',
                     fontWeight: isToday  ? 700 : 400,
                     fontFamily: "'Inter', sans-serif"
                   }}>{wd.dayNum}</div>
@@ -13350,7 +13447,7 @@ const LegacyHabitsView = ({ data, onAddHabit, onUpdateHabit, onDeleteHabit, onTo
         <div style={{ marginBottom: 12 }}>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: 1, marginBottom: 6 }}>
             {dayNames.map(d => (
-              <div key={d} style={{ fontSize: 8, color: COLORS.textDim + '80', textAlign: 'center', padding: '2px 0', textTransform: 'uppercase', fontWeight: 600, letterSpacing: '0.08em' }}>{d}</div>
+              <div key={d} style={{ fontSize: 'var(--font-size-2xs)', color: COLORS.textDim + '80', textAlign: 'center', padding: '2px 0', textTransform: 'uppercase', fontWeight: 600, letterSpacing: '0.08em' }}>{d}</div>
             ))}
           </div>
           {monthWeeks.map((week, wi) => (
@@ -13366,7 +13463,7 @@ const LegacyHabitsView = ({ data, onAddHabit, onUpdateHabit, onDeleteHabit, onTo
                     position: 'relative'
                   }}>
                     <div style={{
-                      fontSize: 11, color: wd.isToday  ? COLORS.primary : COLORS.textDim + 'cc',
+                      fontSize: 'var(--font-size-xs)', color: wd.isToday  ? COLORS.primary : COLORS.textDim + 'cc',
                       fontWeight: wd.isToday  ? 700 : 400,
                       fontFamily: "'Inter', sans-serif", marginBottom: 4
                     }}>{wd.dayNum}</div>
@@ -13397,7 +13494,7 @@ const LegacyHabitsView = ({ data, onAddHabit, onUpdateHabit, onDeleteHabit, onTo
       </div>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: 2, marginBottom: 6 }}>
         {calDayNames.map(d => (
-          <div key={d} style={{ fontSize: 9, color: COLORS.textDim, textAlign: 'center', padding: '4px 0', textTransform: 'uppercase', fontWeight: 500 }}>{d}</div>
+          <div key={d} style={{ fontSize: 'var(--font-size-2xs)', color: COLORS.textDim, textAlign: 'center', padding: '4px 0', textTransform: 'uppercase', fontWeight: 500 }}>{d}</div>
         ))}
       </div>
       {calWeeks.map((week, wi) => (
@@ -13411,7 +13508,7 @@ const LegacyHabitsView = ({ data, onAddHabit, onUpdateHabit, onDeleteHabit, onTo
                 textAlign: 'center', padding: '6px 0', borderRadius: 6, border: 'none', cursor: wd.isCurrentMonth  ? 'pointer' : 'default',
                 background: isStart || isEnd  ? `linear-gradient(135deg, ${COLORS.primary}, #7f1028)` : inRange  ? `${COLORS.primary}25` : 'transparent',
                 color: (isStart || isEnd)  ? '#fff' : wd.isToday  ? COLORS.primary : wd.isCurrentMonth  ? COLORS.text : COLORS.textDim,
-                fontWeight: (isStart || isEnd || wd.isToday)  ? 600 : 400, fontSize: 12,
+                fontWeight: (isStart || isEnd || wd.isToday)  ? 600 : 400, fontSize: 'var(--font-size-sm)',
                 opacity: wd.isCurrentMonth  ? 1 : 0.2, transition: 'all 0.15s', fontFamily: "'Inter', sans-serif"
               }}>
                 {wd.dayNum}
@@ -13421,7 +13518,7 @@ const LegacyHabitsView = ({ data, onAddHabit, onUpdateHabit, onDeleteHabit, onTo
         </div>
       ))}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 10, paddingTop: 10, borderTop: `1px solid ${COLORS.border}` }}>
-        <span style={{ fontSize: 11, color: COLORS.textDim }}>
+        <span style={{ fontSize: 'var(--font-size-xs)', color: COLORS.textDim }}>
           {calSelect  ? 'Selecciona el día final' : `${formatRangeLabel()} - ${Math.ceil((new Date(dateRange.end + 'T00:00:00') - new Date(dateRange.start + 'T00:00:00')) / 86400000) + 1} días`}
         </span>
         <div style={{ display: 'flex', gap: 4 }}>
@@ -13430,7 +13527,7 @@ const LegacyHabitsView = ({ data, onAddHabit, onUpdateHabit, onDeleteHabit, onTo
               padding: '2px 10px', borderRadius: 6, border: `1px solid ${isRangeActive(n)  ? COLORS.primary : COLORS.border}`,
               background: isRangeActive(n)  ? `${COLORS.primary}20` : 'transparent',
               color: isRangeActive(n)  ? COLORS.primary : COLORS.textDim, cursor: 'pointer',
-              fontSize: 10, fontFamily: "'Inter', sans-serif", transition: 'all 0.2s'
+              fontSize: 'var(--font-size-xs)', fontFamily: "'Inter', sans-serif", transition: 'all 0.2s'
             }}>{n}d</button>
           ))}
         </div>
@@ -14212,7 +14309,7 @@ const HealthView = ({ data, onUpdateHealth }) => {
     outline: 'none',
     fontFamily: "'Inter', sans-serif"
   };
-  const labelStyle = { display: 'block', fontSize: 10, color: COLORS.textDim, marginBottom: 6, letterSpacing: '0.05em', textTransform: 'uppercase' };
+  const labelStyle = { display: 'block', fontSize: 'var(--font-size-xs)', color: COLORS.textDim, marginBottom: 6, letterSpacing: '0.05em', textTransform: 'uppercase' };
   const cardStyle = { background: COLORS.card, borderRadius: 18, border: `1px solid ${COLORS.border}`, padding: 18 };
 
   const updateForm = (key, value) => {
@@ -14322,7 +14419,7 @@ const HealthView = ({ data, onUpdateHealth }) => {
         <div style={{ position: 'absolute', inset: 0, background: `radial-gradient(circle at 72% 45%, ${COLORS.primary}80, transparent 20%), radial-gradient(circle at 76% 48%, ${COLORS.primary}22, transparent 36%)`, opacity: 0.55 }} />
         <div style={{ position: 'absolute', right: '9%', top: '18%', width: 150, height: 46, borderRadius: 999, background: `linear-gradient(135deg, #ffedf2, ${COLORS.primary})`, boxShadow: `0 0 55px ${COLORS.primary}90`, transform: 'rotate(-28deg)' }} />
         <div style={{ position: 'relative', zIndex: 1, maxWidth: 620 }}>
-          <div className="lab-pill" style={{ display: 'inline-flex', padding: '7px 12px', fontSize: 11, fontWeight: 900, marginBottom: 14 }}>SALUD PRO</div>
+          <div className="lab-pill" style={{ display: 'inline-flex', padding: '7px 12px', fontSize: 'var(--font-size-xs)', fontWeight: 900, marginBottom: 14 }}>SALUD PRO</div>
           <h2 className="lab-hero-title" style={{ fontSize: 38, lineHeight: 1.04, marginBottom: 10 }}>Tu centro de salud personal.</h2>
           <p style={{ color: COLORS.textDim, fontSize: 16, maxWidth: 620, lineHeight: 1.5 }}>
             Controla tus medicamentos, recordatorios, tratamientos y adherencia para cuidar lo más importante: tú.
@@ -14335,9 +14432,9 @@ const HealthView = ({ data, onUpdateHealth }) => {
           <div key={stat.label} className="kpi-card" style={{ ...cardStyle, display: 'flex', gap: 13, alignItems: 'center', minHeight: 94 }}>
             <div style={{ width: 48, height: 48, borderRadius: 999, background: `${stat.color}16`, border: `1px solid ${stat.color}40`, color: stat.color, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>{stat.icon}</div>
             <div>
-              <div style={{ fontSize: 10, color: COLORS.textDim, letterSpacing: '0.08em', textTransform: 'uppercase', fontWeight: 800 }}>{stat.label}</div>
+              <div style={{ fontSize: 'var(--font-size-xs)', color: COLORS.textDim, letterSpacing: '0.08em', textTransform: 'uppercase', fontWeight: 800 }}>{stat.label}</div>
               <div style={{ color: COLORS.text, fontSize: 25, fontWeight: 900, marginTop: 4 }}>{stat.value}</div>
-              <div style={{ color: COLORS.textDim, fontSize: 12 }}>{stat.sub}</div>
+              <div style={{ color: COLORS.textDim, fontSize: 'var(--font-size-sm)' }}>{stat.sub}</div>
             </div>
           </div>
         ))}
@@ -14346,7 +14443,7 @@ const HealthView = ({ data, onUpdateHealth }) => {
       <div className="health-layout" style={{ display: 'grid', gridTemplateColumns: '350px minmax(0, 1fr) 330px', gap: 14, alignItems: 'start' }}>
         <div className="health-card" style={cardStyle}>
           <h3 style={{ color: COLORS.text, fontSize: 18, marginBottom: 4, display: 'flex', alignItems: 'center', gap: 8 }}><Plus size={17} color={COLORS.primary} /> Agregar medicamento</h3>
-          <p style={{ color: COLORS.textDim, fontSize: 12, marginBottom: 16 }}>Crea un nuevo medicamento o tratamiento.</p>
+          <p style={{ color: COLORS.textDim, fontSize: 'var(--font-size-sm)', marginBottom: 16 }}>Crea un nuevo medicamento o tratamiento.</p>
 
           <div className="health-form-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 0.72fr', gap: 10 }}>
             <div>
@@ -14389,7 +14486,7 @@ const HealthView = ({ data, onUpdateHealth }) => {
 
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginTop: 9 }}>
             {(form.times || []).map(time => (
-              <button key={time} onClick={() => removeTime(time)} className="lab-pill" style={{ padding: '6px 9px', fontSize: 11, cursor: 'pointer', color: COLORS.text }}>
+              <button key={time} onClick={() => removeTime(time)} className="lab-pill" style={{ padding: '6px 9px', fontSize: 'var(--font-size-xs)', cursor: 'pointer', color: COLORS.text }}>
                 {time} <X size={11} style={{ verticalAlign: 'middle', marginLeft: 4 }} />
               </button>
             ))}
@@ -14426,7 +14523,7 @@ const HealthView = ({ data, onUpdateHealth }) => {
             <label style={labelStyle}>Notas</label>
             <textarea value={form.notes} onChange={e => updateForm('notes', e.target.value)} placeholder="Ej. Para seguimiento personal." rows={2} style={{ ...inputStyle, resize: 'vertical' }} />
           </div>
-          {error && <div style={{ color: COLORS.alert, fontSize: 12, marginTop: 10 }}>{error}</div>}
+          {error && <div style={{ color: COLORS.alert, fontSize: 'var(--font-size-sm)', marginTop: 10 }}>{error}</div>}
           <div style={{ display: 'grid', gridTemplateColumns: editingId  ? '1fr 1fr' : '1fr', gap: 8, marginTop: 14 }}>
             {editingId && <button onClick={resetForm} style={{ border: `1px solid ${COLORS.border}`, borderRadius: 12, background: 'transparent', color: COLORS.textDim, padding: '12px 14px', cursor: 'pointer', fontWeight: 800 }}>Cancelar</button>}
             <button onClick={saveMedication} style={{ border: 'none', borderRadius: 12, background: `linear-gradient(135deg, ${COLORS.primary}, #9f1239)`, color: '#fff', padding: '12px 14px', cursor: 'pointer', fontWeight: 900 }}>
@@ -14439,9 +14536,9 @@ const HealthView = ({ data, onUpdateHealth }) => {
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 10, marginBottom: 14 }}>
             <div>
               <h3 style={{ color: COLORS.text, fontSize: 18, display: 'flex', alignItems: 'center', gap: 8 }}><Pill size={17} color={COLORS.primary} /> Medicamentos activos</h3>
-              <div style={{ color: COLORS.textDim, fontSize: 12 }}>{activeMeds.length} activos</div>
+              <div style={{ color: COLORS.textDim, fontSize: 'var(--font-size-sm)' }}>{activeMeds.length} activos</div>
             </div>
-            <button onClick={() => requestHabitFlowNotifications()} className="lab-pill" style={{ padding: '8px 11px', cursor: 'pointer', fontSize: 11 }}>Activar avisos</button>
+            <button onClick={() => requestHabitFlowNotifications()} className="lab-pill" style={{ padding: '8px 11px', cursor: 'pointer', fontSize: 'var(--font-size-xs)' }}>Activar avisos</button>
           </div>
 
           <div className="health-med-list" style={{ display: 'grid', gap: 9 }}>
@@ -14457,10 +14554,10 @@ const HealthView = ({ data, onUpdateHealth }) => {
                       <div style={{ width: 38, height: 38, flex: '0 0 38px', borderRadius: 999, background: `${color.color}22`, color: color.color, display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: `0 0 18px ${color.color}30` }}>{color.icon}</div>
                       <div style={{ minWidth: 0 }}>
                         <div style={{ color: COLORS.text, fontWeight: 900, fontSize: 14, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{med.name}</div>
-                        <div style={{ color: COLORS.textDim, fontSize: 11, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{med.notes || med.form}</div>
+                        <div style={{ color: COLORS.textDim, fontSize: 'var(--font-size-xs)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{med.notes || med.form}</div>
                       </div>
                     </div>
-                    <div style={{ color: COLORS.textDim, fontSize: 11, fontWeight: 800, whiteSpace: 'nowrap', paddingTop: 3 }}>
+                    <div style={{ color: COLORS.textDim, fontSize: 'var(--font-size-xs)', fontWeight: 800, whiteSpace: 'nowrap', paddingTop: 3 }}>
                       {nextLabel}
                     </div>
                   </div>
@@ -14483,7 +14580,7 @@ const HealthView = ({ data, onUpdateHealth }) => {
                     </div>
                   </div>
                   <div className="health-med-actions" style={{ display: 'flex', gap: 7 }}>
-                    <button className="health-med-take" onClick={() => markDoseTaken(med, upcoming?.time || (med.times || [])[0])} style={{ border: `1px solid ${COLORS.primary}40`, background: `${COLORS.primary}16`, color: COLORS.primary, borderRadius: 10, padding: '9px 11px', cursor: 'pointer', fontSize: 11, fontWeight: 900 }}>Tomar ahora</button>
+                    <button className="health-med-take" onClick={() => markDoseTaken(med, upcoming?.time || (med.times || [])[0])} style={{ border: `1px solid ${COLORS.primary}40`, background: `${COLORS.primary}16`, color: COLORS.primary, borderRadius: 10, padding: '9px 11px', cursor: 'pointer', fontSize: 'var(--font-size-xs)', fontWeight: 900 }}>Tomar ahora</button>
                     <button aria-label={`Editar ${med.name}`} onClick={() => editMedication(med)} style={{ width: 34, height: 34, borderRadius: 10, border: `1px solid ${COLORS.border}`, background: 'transparent', color: COLORS.textDim, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}><Edit size={13} /></button>
                     <button aria-label={`Eliminar ${med.name}`} onClick={() => deleteMedication(med.id)} style={{ width: 34, height: 34, borderRadius: 10, border: `1px solid ${COLORS.border}`, background: 'transparent', color: COLORS.primary, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}><Trash2 size={13} /></button>
                   </div>
@@ -14491,7 +14588,7 @@ const HealthView = ({ data, onUpdateHealth }) => {
               );
             })}
           </div>
-          <div style={{ marginTop: 14, color: COLORS.textDim, fontSize: 11, display: 'flex', gap: 8, alignItems: 'center' }}>
+          <div style={{ marginTop: 14, color: COLORS.textDim, fontSize: 'var(--font-size-xs)', display: 'flex', gap: 8, alignItems: 'center' }}>
             <AlertTriangle size={14} /> Esta herramienta es solo para seguimiento personal y no reemplaza la indicación de un profesional de salud.
           </div>
         </div>
@@ -14500,7 +14597,7 @@ const HealthView = ({ data, onUpdateHealth }) => {
           <div className="health-card" style={cardStyle}>
             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 12 }}>
               <h3 style={{ color: COLORS.text, fontSize: 17, display: 'flex', gap: 8, alignItems: 'center' }}><Calendar size={16} color={COLORS.primary} /> Horario de tomas</h3>
-              <span style={{ color: COLORS.primary, fontSize: 12, fontWeight: 800 }}>Plan del día</span>
+              <span style={{ color: COLORS.primary, fontSize: 'var(--font-size-sm)', fontWeight: 800 }}>Plan del día</span>
             </div>
             <div style={{ display: 'grid', gap: 9 }}>
               {groupedDoses.map(group => (
@@ -14510,11 +14607,11 @@ const HealthView = ({ data, onUpdateHealth }) => {
                     <span style={{ color: COLORS.textDim }}>{group.items.length}</span>
                   </div>
                   <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
-                    {group.items.length === 0 && <span style={{ color: COLORS.textDim, fontSize: 11 }}>Sin tomas</span>}
+                    {group.items.length === 0 && <span style={{ color: COLORS.textDim, fontSize: 'var(--font-size-xs)' }}>Sin tomas</span>}
                     {group.items.map(dose => {
                       const taken = isMedicationDoseTaken(health, dose.medication.id, today, dose.time);
                       return (
-                        <button key={`${dose.medication.id}-${dose.time}`} onClick={() => markDoseTaken(dose.medication, dose.time)} style={{ border: `1px solid ${taken  ? COLORS.success : COLORS.primary}30`, borderRadius: 999, background: taken  ? `${COLORS.success}14` : `${COLORS.primary}10`, color: taken  ? COLORS.success : COLORS.text, padding: '6px 8px', fontSize: 11, cursor: 'pointer' }}>
+                        <button key={`${dose.medication.id}-${dose.time}`} onClick={() => markDoseTaken(dose.medication, dose.time)} style={{ border: `1px solid ${taken  ? COLORS.success : COLORS.primary}30`, borderRadius: 999, background: taken  ? `${COLORS.success}14` : `${COLORS.primary}10`, color: taken  ? COLORS.success : COLORS.text, padding: '6px 8px', fontSize: 'var(--font-size-xs)', cursor: 'pointer' }}>
                           {taken  ? <Check size={11} style={{ verticalAlign: 'middle', marginRight: 4 }} /> : null}{dose.time} - {dose.medication.name} {dose.medication.dose}
                         </button>
                       );
@@ -14523,40 +14620,40 @@ const HealthView = ({ data, onUpdateHealth }) => {
                 </div>
               ))}
             </div>
-            <div style={{ color: COLORS.textDim, fontSize: 12, textAlign: 'right', marginTop: 10 }}>Total de tomas hoy: {todayDoses.length}</div>
+            <div style={{ color: COLORS.textDim, fontSize: 'var(--font-size-sm)', textAlign: 'right', marginTop: 10 }}>Total de tomas hoy: {todayDoses.length}</div>
           </div>
 
           <div className="health-card" style={cardStyle}>
             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 12 }}>
               <h3 style={{ color: COLORS.text, fontSize: 17, display: 'flex', gap: 8, alignItems: 'center' }}><Heart size={16} color={COLORS.primary} /> Resumen de salud</h3>
-              <span style={{ color: COLORS.primary, fontSize: 12, fontWeight: 800 }}>Insights</span>
+              <span style={{ color: COLORS.primary, fontSize: 'var(--font-size-sm)', fontWeight: 800 }}>Insights</span>
             </div>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
               <div style={{ padding: 12, borderRadius: 13, background: 'rgba(255,255,255,0.035)', border: `1px solid ${COLORS.border}` }}>
-                <div style={{ color: COLORS.textDim, fontSize: 11 }}>Adherencia semanal</div>
+                <div style={{ color: COLORS.textDim, fontSize: 'var(--font-size-xs)' }}>Adherencia semanal</div>
                 <div style={{ color: COLORS.text, fontSize: 26 }}>{weekly.pct}%</div>
-                <div style={{ color: COLORS.success, fontSize: 11 }}>{weekly.pct >= 80  ? 'Excelente' : 'En seguimiento'}</div>
+                <div style={{ color: COLORS.success, fontSize: 'var(--font-size-xs)' }}>{weekly.pct >= 80  ? 'Excelente' : 'En seguimiento'}</div>
               </div>
               <div style={{ padding: 12, borderRadius: 13, background: 'rgba(255,255,255,0.035)', border: `1px solid ${COLORS.border}` }}>
-                <div style={{ color: COLORS.textDim, fontSize: 11 }}>Dosis tomadas</div>
+                <div style={{ color: COLORS.textDim, fontSize: 'var(--font-size-xs)' }}>Dosis tomadas</div>
                 <div style={{ color: COLORS.text, fontSize: 26 }}>{weekly.taken} / {weekly.total}</div>
-                <div style={{ color: COLORS.textDim, fontSize: 11 }}>Esta semana</div>
+                <div style={{ color: COLORS.textDim, fontSize: 'var(--font-size-xs)' }}>Esta semana</div>
               </div>
               <div style={{ padding: 12, borderRadius: 13, background: 'rgba(255,255,255,0.035)', border: `1px solid ${COLORS.border}` }}>
-                <div style={{ color: COLORS.textDim, fontSize: 11 }}>Hoy</div>
+                <div style={{ color: COLORS.textDim, fontSize: 'var(--font-size-xs)' }}>Hoy</div>
                 <div style={{ color: COLORS.text, fontSize: 22 }}>{takenToday} / {todayDoses.length}</div>
-                <div style={{ color: COLORS.textDim, fontSize: 11 }}>Tomas completadas</div>
+                <div style={{ color: COLORS.textDim, fontSize: 'var(--font-size-xs)' }}>Tomas completadas</div>
               </div>
               <div style={{ padding: 12, borderRadius: 13, background: 'rgba(255,255,255,0.035)', border: `1px solid ${COLORS.border}` }}>
-                <div style={{ color: COLORS.textDim, fontSize: 11 }}>Tratamientos</div>
+                <div style={{ color: COLORS.textDim, fontSize: 'var(--font-size-xs)' }}>Tratamientos</div>
                 <div style={{ color: COLORS.text, fontSize: 22 }}>{activeTreatments}</div>
-                <div style={{ color: COLORS.textDim, fontSize: 11 }}>En curso</div>
+                <div style={{ color: COLORS.textDim, fontSize: 'var(--font-size-xs)' }}>En curso</div>
               </div>
             </div>
-            <div style={{ marginTop: 12, padding: 11, borderRadius: 12, background: `${COLORS.primary}0c`, color: COLORS.textDim, fontSize: 12, lineHeight: 1.45 }}>
+            <div style={{ marginTop: 12, padding: 11, borderRadius: 12, background: `${COLORS.primary}0c`, color: COLORS.textDim, fontSize: 'var(--font-size-sm)', lineHeight: 1.45 }}>
               Consejo seguro del día: bebe suficiente agua, descansa bien y sigue siempre las indicaciones de tu profesional de salud.
             </div>
-            <div style={{ marginTop: 10, color: COLORS.textDim, fontSize: 11, lineHeight: 1.45 }}>
+            <div style={{ marginTop: 10, color: COLORS.textDim, fontSize: 'var(--font-size-xs)', lineHeight: 1.45 }}>
               Importante: si tienes síntomas fuertes, reacciones adversas o dudas sobre un medicamento, consulta con un profesional.
             </div>
           </div>
@@ -15458,7 +15555,7 @@ const FinanceView = ({ data, onUpdateFinance, quickAction, onQuickActionHandled 
           </button>
         );
       })}
-      <select value={selectedMonth} onChange={e => setSelectedMonth(e.target.value)} style={{ ...inputStyle, marginLeft: 'auto', minWidth: 118, height: 34, padding: '0 9px', borderRadius: 10, fontSize: 12 }}>
+      <select value={selectedMonth} onChange={e => setSelectedMonth(e.target.value)} style={{ ...inputStyle, marginLeft: 'auto', minWidth: 118, height: 34, padding: '0 9px', borderRadius: 10, fontSize: 'var(--font-size-sm)' }}>
         {monthPickerOptions.slice(0, 6).map(item => <option key={item.key} value={item.key}>{item.label}</option>)}
       </select>
     </div>
@@ -15495,13 +15592,13 @@ const FinanceView = ({ data, onUpdateFinance, quickAction, onQuickActionHandled 
               >
                 {balanceCenterLabel}
               </div>
-              <div style={{ color: COLORS.textDim, fontSize: 11, lineHeight: 1.1, ...s }}>Balance neto</div>
+              <div style={{ color: COLORS.textDim, fontSize: 'var(--font-size-xs)', lineHeight: 1.1, ...s }}>Balance neto</div>
             </div>
           </div>
         </div>
         <div style={{ display: 'grid', gap: 8 }}>
           {moneyFlowData.map(item => (
-            <div key={item.name} style={{ display: 'grid', gridTemplateColumns: '1fr auto auto', gap: 10, alignItems: 'center', color: COLORS.textDim, fontSize: 12, ...s }}>
+            <div key={item.name} style={{ display: 'grid', gridTemplateColumns: '1fr auto auto', gap: 10, alignItems: 'center', color: COLORS.textDim, fontSize: 'var(--font-size-sm)', ...s }}>
               <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}><span style={{ width: 8, height: 8, borderRadius: 999, background: item.color }} />{item.name}</span>
               <strong style={{ color: COLORS.text }}>{money(item.value)}</strong>
               <span>{Math.round((item.value / moneyFlowTotal) * 100)}%</span>
@@ -15512,7 +15609,7 @@ const FinanceView = ({ data, onUpdateFinance, quickAction, onQuickActionHandled 
       <div style={{ minWidth: 0 }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
           <h4 style={{ margin: 0, color: COLORS.text, fontSize: 15, ...s }}>Gastos por categoría</h4>
-          <span style={{ color: COLORS.textDim, fontSize: 12, ...s }}>Este mes</span>
+          <span style={{ color: COLORS.textDim, fontSize: 'var(--font-size-sm)', ...s }}>Este mes</span>
         </div>
         <div
           className="finance-category-scroll"
@@ -15523,8 +15620,8 @@ const FinanceView = ({ data, onUpdateFinance, quickAction, onQuickActionHandled 
         >
           {(categorySpendData.length ? categorySpendData : expenseCategories.slice(0, 5).map(cat => ({ ...cat, value: 0, share: 0 }))).map(item => (
             <div key={item.id}>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr auto auto', gap: 10, alignItems: 'center', marginBottom: 7, color: COLORS.textDim, fontSize: 12, ...s }}>
-                <strong style={{ color: COLORS.text, fontSize: 12 }}>{item.name}</strong>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr auto auto', gap: 10, alignItems: 'center', marginBottom: 7, color: COLORS.textDim, fontSize: 'var(--font-size-sm)', ...s }}>
+                <strong style={{ color: COLORS.text, fontSize: 'var(--font-size-sm)' }}>{item.name}</strong>
                 <span>{money(item.value || 0)}</span>
                 <span>{item.share || 0}%</span>
               </div>
@@ -15581,7 +15678,7 @@ const FinanceView = ({ data, onUpdateFinance, quickAction, onQuickActionHandled 
                   <span style={{ width: 36, height: 36, borderRadius: 13, display: 'grid', placeItems: 'center', background: `${COLORS.primary}14`, color: COLORS.primary }}><Icon size={16} /></span>
                   <span style={{ minWidth: 0 }}>
                     <strong style={{ display: 'block', fontSize: 13, color: COLORS.text }}>{item.label}</strong>
-                    <span style={{ display: 'block', color: COLORS.textDim, fontSize: 11, marginTop: 3, lineHeight: 1.35 }}>{item.hint}</span>
+                    <span style={{ display: 'block', color: COLORS.textDim, fontSize: 'var(--font-size-xs)', marginTop: 3, lineHeight: 1.35 }}>{item.hint}</span>
                   </span>
                   <ChevronRight size={15} style={{ color: COLORS.textDim }} />
                 </button>
@@ -15686,7 +15783,7 @@ const FinanceView = ({ data, onUpdateFinance, quickAction, onQuickActionHandled 
                     <span style={{ width: 44, height: 44, borderRadius: 14, display: 'grid', placeItems: 'center', background: `${card.color}18`, color: card.color }}><Icon size={19} /></span>
                     <span>
                       <strong style={{ display: 'block', fontSize: 14 }}>{card.title}</strong>
-                      <span style={{ color: COLORS.textDim, fontSize: 12 }}>{card.subtitle}</span>
+                      <span style={{ color: COLORS.textDim, fontSize: 'var(--font-size-sm)' }}>{card.subtitle}</span>
                     </span>
                   </button>
                 );
@@ -15712,13 +15809,13 @@ const FinanceView = ({ data, onUpdateFinance, quickAction, onQuickActionHandled 
                 ))}
               </div>
 
-              <label style={{ display: 'grid', gap: 6, color: COLORS.textDim, fontSize: 11, ...s }}>
+              <label style={{ display: 'grid', gap: 6, color: COLORS.textDim, fontSize: 'var(--font-size-xs)', ...s }}>
                 Monto
                 <FinanceMoneyInput value={form.amount} onValueChange={value => setForm(f => ({ ...f, amount: value }))} style={modalInputStyle} placeholder={`$ 0 (${transactionCurrency})`} />
               </label>
 
               <div className="finance-modal-two" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
-                <label style={{ display: 'grid', gap: 6, color: COLORS.textDim, fontSize: 11, ...s }}>
+                <label style={{ display: 'grid', gap: 6, color: COLORS.textDim, fontSize: 'var(--font-size-xs)', ...s }}>
                   {isTransfer ? 'Cuenta origen' : 'Cuenta'}
                   <select value={form.accountId} onChange={e => {
                     const nextAccountId = e.target.value;
@@ -15728,14 +15825,14 @@ const FinanceView = ({ data, onUpdateFinance, quickAction, onQuickActionHandled 
                   </select>
                 </label>
                 {isTransfer ? (
-                  <label style={{ display: 'grid', gap: 6, color: COLORS.textDim, fontSize: 11, ...s }}>
+                  <label style={{ display: 'grid', gap: 6, color: COLORS.textDim, fontSize: 'var(--font-size-xs)', ...s }}>
                     Cuenta destino
                     <select value={form.toAccountId} onChange={e => setForm(f => ({ ...f, toAccountId: e.target.value }))} style={modalInputStyle}>
                       {selectableAccounts.map(account => <option key={account.id} value={account.id}>{account.name}</option>)}
                     </select>
                   </label>
                 ) : (
-                  <label style={{ display: 'grid', gap: 6, color: COLORS.textDim, fontSize: 11, ...s }}>
+                  <label style={{ display: 'grid', gap: 6, color: COLORS.textDim, fontSize: 'var(--font-size-xs)', ...s }}>
                     Categoria
                     <select value={form.category} disabled={form.type === 'income'} onChange={e => setForm(f => ({ ...f, category: e.target.value }))} style={{ ...modalInputStyle, opacity: form.type === 'income' ? 0.65 : 1 }}>
                       {(form.type === 'income' ? categories.filter(c => c.id === 'income') : expenseCategories).map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
@@ -15744,22 +15841,22 @@ const FinanceView = ({ data, onUpdateFinance, quickAction, onQuickActionHandled 
                 )}
               </div>
 
-              <label style={{ display: 'grid', gap: 6, color: COLORS.textDim, fontSize: 11, ...s }}>
+              <label style={{ display: 'grid', gap: 6, color: COLORS.textDim, fontSize: 'var(--font-size-xs)', ...s }}>
                 Fecha
                 <input type="date" value={form.date} onClick={e => openNativeDatePicker(e.currentTarget)} onFocus={e => openNativeDatePicker(e.currentTarget)} onChange={e => setForm(f => ({ ...f, date: e.target.value }))} style={modalInputStyle} />
               </label>
 
-              <label style={{ display: 'grid', gap: 6, color: COLORS.textDim, fontSize: 11, ...s }}>
+              <label style={{ display: 'grid', gap: 6, color: COLORS.textDim, fontSize: 'var(--font-size-xs)', ...s }}>
                 Descripción opcional
                 <input value={form.payee} onChange={e => setForm(f => ({ ...f, payee: e.target.value }))} placeholder={isTransfer ? 'Ej: Movimiento entre cuentas' : 'Ej: Supermercado, salario, factura'} style={modalInputStyle} />
               </label>
 
-              <label style={{ display: 'grid', gap: 6, color: COLORS.textDim, fontSize: 11, ...s }}>
+              <label style={{ display: 'grid', gap: 6, color: COLORS.textDim, fontSize: 'var(--font-size-xs)', ...s }}>
                 Nota opcional
                 <input value={form.note} onChange={e => setForm(f => ({ ...f, note: e.target.value }))} placeholder="Detalle interno" style={modalInputStyle} />
               </label>
 
-              {!validTransfer && <div style={{ color: COLORS.primary, fontSize: 12, ...s }}>La cuenta origen y destino deben ser diferentes.</div>}
+              {!validTransfer && <div style={{ color: COLORS.primary, fontSize: 'var(--font-size-sm)', ...s }}>La cuenta origen y destino deben ser diferentes.</div>}
 
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1.1fr', gap: 10, paddingTop: 10 }}>
                 <button onClick={() => setTransactionModalStep('type')} style={ghostButtonStyle}>Atras</button>
@@ -15826,20 +15923,20 @@ const FinanceView = ({ data, onUpdateFinance, quickAction, onQuickActionHandled 
               { label: 'Pendiente', value: accountMoney(selectedDebt.pending, selectedDebt.currency) }
             ].map(item => (
               <div key={item.label} style={{ padding: 12, borderRadius: 14, border: `1px solid ${COLORS.border}`, background: 'rgba(255,255,255,0.035)' }}>
-                <div style={{ color: COLORS.textDim, fontSize: 10, textTransform: 'uppercase', ...s }}>{item.label}</div>
+                <div style={{ color: COLORS.textDim, fontSize: 'var(--font-size-xs)', textTransform: 'uppercase', ...s }}>{item.label}</div>
                 <strong style={{ display: 'block', color: COLORS.text, marginTop: 5, ...s }}>{item.value}</strong>
               </div>
             ))}
           </div>
           <div style={{ marginBottom: 16 }}>
             {progressBar(selectedDebt.pct, COLORS.primary)}
-            <div style={{ color: COLORS.primary, fontSize: 12, textAlign: 'right', marginTop: 7, ...s }}>{selectedDebt.pct}% pagado</div>
+            <div style={{ color: COLORS.primary, fontSize: 'var(--font-size-sm)', textAlign: 'right', marginTop: 7, ...s }}>{selectedDebt.pct}% pagado</div>
           </div>
-          <label style={{ display: 'grid', gap: 6, color: COLORS.textDim, fontSize: 11, ...s }}>
+          <label style={{ display: 'grid', gap: 6, color: COLORS.textDim, fontSize: 'var(--font-size-xs)', ...s }}>
             Monto del pago
             <FinanceMoneyInput value={debtPaymentAmount} onValueChange={setDebtPaymentAmount} style={modalInputStyle} placeholder={`$ 0 (${paymentCurrency})`} />
           </label>
-          <label style={{ display: 'grid', gap: 6, color: COLORS.textDim, fontSize: 11, marginTop: 12, ...s }}>
+          <label style={{ display: 'grid', gap: 6, color: COLORS.textDim, fontSize: 'var(--font-size-xs)', marginTop: 12, ...s }}>
             Pagar desde
             <select value={debtPaymentAccountId} onChange={event => setDebtPaymentAccountId(event.target.value)} style={modalInputStyle}>
               <option value="">Sin descontar de una cuenta</option>
@@ -15849,7 +15946,7 @@ const FinanceView = ({ data, onUpdateFinance, quickAction, onQuickActionHandled 
             </select>
           </label>
           {typedAmount > selectedDebt.pending && (
-            <div style={{ color: COLORS.alert, fontSize: 11, marginTop: 8, ...s }}>
+            <div style={{ color: COLORS.alert, fontSize: 'var(--font-size-xs)', marginTop: 8, ...s }}>
               El pago no puede superar el saldo pendiente.
             </div>
           )}
@@ -15903,17 +16000,17 @@ const FinanceView = ({ data, onUpdateFinance, quickAction, onQuickActionHandled 
           </div>
 
           <div style={{ display: 'grid', gap: 13 }}>
-            <label style={{ display: 'grid', gap: 6, color: COLORS.textDim, fontSize: 11, ...s }}>
+            <label style={{ display: 'grid', gap: 6, color: COLORS.textDim, fontSize: 'var(--font-size-xs)', ...s }}>
               Nombre de la deuda
               <input value={debtForm.name} onChange={e => setDebtForm(f => ({ ...f, name: e.target.value }))} placeholder="Ej: Tarjeta Bancolombia, prestamo personal" style={modalInputStyle} />
             </label>
 
             <div className="finance-modal-two" style={{ display: 'grid', gridTemplateColumns: '1fr 130px', gap: 10 }}>
-              <label style={{ display: 'grid', gap: 6, color: COLORS.textDim, fontSize: 11, ...s }}>
+              <label style={{ display: 'grid', gap: 6, color: COLORS.textDim, fontSize: 'var(--font-size-xs)', ...s }}>
                 Saldo total pendiente
                 <FinanceMoneyInput value={debtForm.total} onValueChange={value => setDebtForm(f => ({ ...f, total: value }))} placeholder={`$ 0 (${debtCurrency})`} style={modalInputStyle} />
               </label>
-              <label style={{ display: 'grid', gap: 6, color: COLORS.textDim, fontSize: 11, ...s }}>
+              <label style={{ display: 'grid', gap: 6, color: COLORS.textDim, fontSize: 'var(--font-size-xs)', ...s }}>
                 Moneda
                 <select value={debtForm.currency} onChange={e => setDebtForm(f => ({ ...f, currency: e.target.value, total: switchDraftCurrency(f.total, f.currency, e.target.value), minimumPayment: switchDraftCurrency(f.minimumPayment, f.currency, e.target.value) }))} style={modalInputStyle}>
                   <option value="COP">COP</option>
@@ -15922,7 +16019,7 @@ const FinanceView = ({ data, onUpdateFinance, quickAction, onQuickActionHandled 
               </label>
             </div>
 
-            <label style={{ display: 'grid', gap: 6, color: COLORS.textDim, fontSize: 11, ...s }}>
+            <label style={{ display: 'grid', gap: 6, color: COLORS.textDim, fontSize: 'var(--font-size-xs)', ...s }}>
               Número total de cuotas
               <input
                 type="number"
@@ -15940,17 +16037,17 @@ const FinanceView = ({ data, onUpdateFinance, quickAction, onQuickActionHandled 
                 placeholder="Ej: 12"
                 style={modalInputStyle}
               />
-              <span style={{ color: COLORS.textDim, fontSize: 10, lineHeight: 1.4, ...s }}>
+              <span style={{ color: COLORS.textDim, fontSize: 'var(--font-size-xs)', lineHeight: 1.4, ...s }}>
                 Escríbelo manualmente. Usa 1 si la deuda se paga en una sola cuota.
               </span>
             </label>
 
             <div className="finance-modal-two" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
-              <label style={{ display: 'grid', gap: 6, color: COLORS.textDim, fontSize: 11, ...s }}>
+              <label style={{ display: 'grid', gap: 6, color: COLORS.textDim, fontSize: 'var(--font-size-xs)', ...s }}>
                 Fecha de pago oportuno
                 <input type="date" value={debtForm.dueDate} onClick={e => openNativeDatePicker(e.currentTarget)} onFocus={e => openNativeDatePicker(e.currentTarget)} onChange={e => setDebtForm(f => ({ ...f, dueDate: e.target.value }))} style={modalInputStyle} />
               </label>
-              <label style={{ display: 'grid', gap: 6, color: COLORS.textDim, fontSize: 11, ...s }}>
+              <label style={{ display: 'grid', gap: 6, color: COLORS.textDim, fontSize: 'var(--font-size-xs)', ...s }}>
                 Cuota mínima a pagar
                 <FinanceMoneyInput value={debtForm.minimumPayment} onValueChange={value => setDebtForm(f => ({ ...f, minimumPayment: value }))} placeholder={`Manual, opcional (${debtCurrency})`} style={modalInputStyle} />
               </label>
@@ -15962,7 +16059,7 @@ const FinanceView = ({ data, onUpdateFinance, quickAction, onQuickActionHandled 
                 Activar aviso de pago
               </label>
               {debtForm.reminderEnabled && (
-                <label style={{ display: 'grid', gap: 6, color: COLORS.textDim, fontSize: 11, ...s }}>
+                <label style={{ display: 'grid', gap: 6, color: COLORS.textDim, fontSize: 'var(--font-size-xs)', ...s }}>
                   Avisarme antes de la fecha
                   <select value={debtForm.reminderDaysBefore} onChange={e => setDebtForm(f => ({ ...f, reminderDaysBefore: e.target.value }))} style={modalInputStyle}>
                     <option value="0">El mismo dia</option>
@@ -15973,7 +16070,7 @@ const FinanceView = ({ data, onUpdateFinance, quickAction, onQuickActionHandled 
                   </select>
                 </label>
               )}
-              <div style={{ color: COLORS.textDim, fontSize: 11, lineHeight: 1.45, ...s }}>El aviso se guarda con la deuda y te recordará pagar la cuota mínima en tus dispositivos con notificaciones activas.</div>
+              <div style={{ color: COLORS.textDim, fontSize: 'var(--font-size-xs)', lineHeight: 1.45, ...s }}>El aviso se guarda con la deuda y te recordará pagar la cuota mínima en tus dispositivos con notificaciones activas.</div>
             </div>
 
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1.2fr', gap: 10, paddingTop: 10 }}>
@@ -16052,7 +16149,7 @@ const FinanceView = ({ data, onUpdateFinance, quickAction, onQuickActionHandled 
               </span>
               <div style={{ minWidth: 0 }}>
                 <div style={{ color: COLORS.text, fontWeight: 850, fontSize: 13, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', ...s }}>{t.payee || (isDebtPayment ? 'Pago de deuda' : category.name)}</div>
-                <div style={{ color: COLORS.textDim, fontSize: 11, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', ...s }}>
+                <div style={{ color: COLORS.textDim, fontSize: 'var(--font-size-xs)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', ...s }}>
                   {isDebtPayment
                     ? `Pago de deuda - ${debtAccount?.name || 'Deuda'}${t.accountId ? ` - ${account.name}` : ''}`
                     : `${isTransfer ? 'Transferencia' : (isIncome ? 'Ingreso' : 'Gasto')} - ${category.name} - ${account.name}`}
@@ -16078,7 +16175,7 @@ const FinanceView = ({ data, onUpdateFinance, quickAction, onQuickActionHandled 
               <span style={{ width: 34, height: 34, borderRadius: 12, display: 'grid', placeItems: 'center', background: 'rgba(255,63,120,0.12)', color: COLORS.primary }}><CreditCard size={16} /></span>
               <div style={{ minWidth: 0 }}>
                 <div style={{ color: COLORS.text, fontWeight: 850, fontSize: 13, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', ...s }}>{account.name}</div>
-                <div style={{ color: COLORS.textDim, fontSize: 11, ...s }}>{account.tag?.name || groupLabel(account.group)}</div>
+                <div style={{ color: COLORS.textDim, fontSize: 'var(--font-size-xs)', ...s }}>{account.tag?.name || groupLabel(account.group)}</div>
               </div>
             </div>
             <strong style={{ color: account.current < 0 ? COLORS.primary : COLORS.text, ...s }}>{accountMoney(account.current, account.currency)}</strong>
@@ -16097,30 +16194,30 @@ const FinanceView = ({ data, onUpdateFinance, quickAction, onQuickActionHandled 
       </div>)}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr auto', gap: 10, alignItems: 'end', marginBottom: 12 }}>
         <div>
-          <div style={{ color: COLORS.textDim, fontSize: 12, ...s }}>Pendiente total</div>
+          <div style={{ color: COLORS.textDim, fontSize: 'var(--font-size-sm)', ...s }}>Pendiente total</div>
           <div style={{ color: COLORS.text, fontSize: 28, fontFamily: "'DM Serif Display', serif" }}>{money(totalDebt)}</div>
         </div>
-        <div style={{ color: COLORS.textDim, fontSize: 12, ...s }}>{debtItems.length ? `En ${debtItems.length} deudas` : 'Sin deudas'}</div>
+        <div style={{ color: COLORS.textDim, fontSize: 'var(--font-size-sm)', ...s }}>{debtItems.length ? `En ${debtItems.length} deudas` : 'Sin deudas'}</div>
       </div>
       {progressBar(debtPaidPct, COLORS.primary)}
-      <div style={{ color: COLORS.textDim, fontSize: 12, marginTop: 8, marginBottom: 14, ...s }}>{debtPaidPct}% del total pagado</div>
+      <div style={{ color: COLORS.textDim, fontSize: 'var(--font-size-sm)', marginTop: 8, marginBottom: 14, ...s }}>{debtPaidPct}% del total pagado</div>
       <div style={{ display: 'grid', gap: 10 }}>
         {(debtItems.length ? debtItems : []).slice(0, 3).map(item => (
           <div key={item.id} style={{ padding: 12, borderRadius: 14, background: 'rgba(255,255,255,0.035)', border: `1px solid ${COLORS.border}` }}>
             <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0,1fr) auto', gap: 12, marginBottom: 8 }}>
               <div style={{ minWidth: 0 }}>
                 <strong style={{ color: COLORS.text, fontSize: 13, ...s }}>{item.name}</strong>
-                <div style={{ color: COLORS.textDim, fontSize: 11, ...s }}>Vence {item.dueDate.toLocaleDateString('es-CO', { day: '2-digit', month: 'short', year: 'numeric' })}</div>
+                <div style={{ color: COLORS.textDim, fontSize: 'var(--font-size-xs)', ...s }}>Vence {item.dueDate.toLocaleDateString('es-CO', { day: '2-digit', month: 'short', year: 'numeric' })}</div>
               </div>
-              <div style={{ textAlign: 'right', color: COLORS.text, fontWeight: 850, fontSize: 12, ...s }}>{accountMoney(item.pending, item.currency)}<div style={{ color: COLORS.textDim, fontWeight: 600 }}>de {accountMoney(item.total, item.currency)}</div></div>
+              <div style={{ textAlign: 'right', color: COLORS.text, fontWeight: 850, fontSize: 'var(--font-size-sm)', ...s }}>{accountMoney(item.pending, item.currency)}<div style={{ color: COLORS.textDim, fontWeight: 600 }}>de {accountMoney(item.total, item.currency)}</div></div>
             </div>
             {progressBar(item.pct, COLORS.primary)}
             <div style={{ display: 'flex', justifyContent: 'space-between', gap: 8, alignItems: 'center', marginTop: 6 }}>
-              <span style={{ color: COLORS.textDim, fontSize: 11, ...s }}>
+              <span style={{ color: COLORS.textDim, fontSize: 'var(--font-size-xs)', ...s }}>
                 {item.installmentCount ? `${item.installmentCount} cuotas` : 'Cuotas sin definir'}
                 {item.minimumPayment > 0 ? ` · Mín. ${accountMoney(item.minimumPayment, item.currency)}` : ''}
               </span>
-              <span style={{ color: COLORS.primary, fontSize: 11, ...s }}>{item.pct}%</span>
+              <span style={{ color: COLORS.primary, fontSize: 'var(--font-size-xs)', ...s }}>{item.pct}%</span>
             </div>
           </div>
         ))}
@@ -16143,13 +16240,13 @@ const FinanceView = ({ data, onUpdateFinance, quickAction, onQuickActionHandled 
             <div key={item.id} style={{ display: 'grid', gridTemplateColumns: '48px minmax(0,1fr) auto', gap: 12, alignItems: 'center', padding: '10px 0', borderBottom: `1px solid ${COLORS.border}` }}>
               <div style={{ border: `1px solid ${COLORS.border}`, borderRadius: 12, padding: '6px 0', textAlign: 'center', color: COLORS.text }}>
                 <div style={{ fontSize: 18, fontWeight: 900, lineHeight: 1, ...s }}>{badge.day}</div>
-                <div style={{ fontSize: 9, color: COLORS.textDim, ...s }}>{badge.month}</div>
+                <div style={{ fontSize: 'var(--font-size-2xs)', color: COLORS.textDim, ...s }}>{badge.month}</div>
               </div>
               <div style={{ minWidth: 0 }}>
                 <div style={{ color: COLORS.text, fontWeight: 850, fontSize: 13, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', ...s }}>{item.name}</div>
-                <div style={{ color: COLORS.textDim, fontSize: 11, ...s }}>{item.subtitle}</div>
+                <div style={{ color: COLORS.textDim, fontSize: 'var(--font-size-xs)', ...s }}>{item.subtitle}</div>
               </div>
-              <div style={{ textAlign: 'right', color: item.type === 'income' ? '#35C46A' : COLORS.text, fontWeight: 850, fontSize: 12, ...s }}>
+              <div style={{ textAlign: 'right', color: item.type === 'income' ? '#35C46A' : COLORS.text, fontWeight: 850, fontSize: 'var(--font-size-sm)', ...s }}>
                 {money(item.amount)}
                 <div style={{ color: COLORS.primary, fontWeight: 650 }}>En {daysUntil(item.date)} días</div>
               </div>
@@ -16208,8 +16305,8 @@ const FinanceView = ({ data, onUpdateFinance, quickAction, onQuickActionHandled 
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={accountChartData}>
                 <CartesianGrid strokeDasharray="3 3" stroke={COLORS.border} />
-                <XAxis dataKey="name" stroke={COLORS.textDim} tick={{ fontSize: 11 }} />
-                <YAxis stroke={COLORS.textDim} tickFormatter={(v) => money(v).replace(',00', '')} tick={{ fontSize: 11 }} />
+                <XAxis dataKey="name" stroke={COLORS.textDim} tick={{ fontSize: 'var(--font-size-xs)' }} />
+                <YAxis stroke={COLORS.textDim} tickFormatter={(v) => money(v).replace(',00', '')} tick={{ fontSize: 'var(--font-size-xs)' }} />
                 <Tooltip contentStyle={tooltipStyle} formatter={(value) => money(Number(value || 0))} />
                 <Bar dataKey="balance" fill={COLORS.primary} radius={[8, 8, 0, 0]} animationDuration={700} />
               </BarChart>
@@ -16218,13 +16315,13 @@ const FinanceView = ({ data, onUpdateFinance, quickAction, onQuickActionHandled 
           <div style={{ display: 'grid', gap: 14 }}>
             {groupedAccountBalances.map(group => (
               <div key={group.id}>
-                <div style={{ color: COLORS.textDim, fontSize: 11, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 8, ...s }}>{group.label}</div>
+                <div style={{ color: COLORS.textDim, fontSize: 'var(--font-size-xs)', letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 8, ...s }}>{group.label}</div>
                 <div style={{ display: 'grid', gap: 8 }}>
                   {group.accounts.map(account => (
                     <div key={account.id} style={{ display: 'grid', gridTemplateColumns: 'minmax(0,1fr) auto auto auto', gap: 10, alignItems: 'center', padding: 12, borderRadius: 14, background: 'rgba(255,255,255,0.035)', border: `1px solid ${COLORS.border}` }}>
                       <div style={{ minWidth: 0 }}>
                         <strong style={{ color: COLORS.text, ...s }}>{account.name}</strong>
-                        <div style={{ color: COLORS.textDim, fontSize: 11, ...s }}>{account.tag?.name || group.label}</div>
+                        <div style={{ color: COLORS.textDim, fontSize: 'var(--font-size-xs)', ...s }}>{account.tag?.name || group.label}</div>
                       </div>
                       <select value={normalizeCurrency(account.currency)} onChange={e => updateAccountCurrency(account.id, e.target.value)} style={{ ...inputStyle, width: 86, minHeight: 34, padding: '4px 8px' }}>
                         <option value="USD">USD</option>
@@ -16247,7 +16344,7 @@ const FinanceView = ({ data, onUpdateFinance, quickAction, onQuickActionHandled 
           <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0,1fr) auto', gap: 12, alignItems: 'center' }}>
             <div>
               <h3 style={{ margin: 0, color: COLORS.text, fontFamily: "'DM Serif Display', serif", fontSize: 24 }}>Deudas</h3>
-              <p style={{ margin: '4px 0 0', color: COLORS.textDim, fontSize: 12, ...s }}>Controla pagos, progreso y saldo pendiente.</p>
+              <p style={{ margin: '4px 0 0', color: COLORS.textDim, fontSize: 'var(--font-size-sm)', ...s }}>Controla pagos, progreso y saldo pendiente.</p>
             </div>
             <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', justifyContent: 'flex-end' }}>
               <button onClick={() => setShowDebtHelp(true)} style={ghostButtonStyle}>Cómo usar</button>
@@ -16261,7 +16358,7 @@ const FinanceView = ({ data, onUpdateFinance, quickAction, onQuickActionHandled 
               { label: 'Total pagado', value: `${debtPaidPct}%` }
             ].map(item => (
               <div key={item.label} className="finance-card" style={{ ...financeCardStyle, padding: 14 }}>
-                <div style={{ color: COLORS.textDim, fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.08em', ...s }}>{item.label}</div>
+                <div style={{ color: COLORS.textDim, fontSize: 'var(--font-size-xs)', textTransform: 'uppercase', letterSpacing: '0.08em', ...s }}>{item.label}</div>
                 <div style={{ color: COLORS.text, marginTop: 7, fontSize: 22, fontFamily: "'DM Serif Display', serif" }}>{item.value}</div>
               </div>
             ))}
@@ -16275,11 +16372,11 @@ const FinanceView = ({ data, onUpdateFinance, quickAction, onQuickActionHandled 
                 <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0,1fr) auto', gap: 12, alignItems: 'start' }}>
                   <div style={{ minWidth: 0 }}>
                     <strong style={{ color: COLORS.text, fontSize: 14, ...s }}>{item.name}</strong>
-                    <div style={{ color: COLORS.textDim, fontSize: 11, marginTop: 2, ...s }}>Vence {item.dueDate.toLocaleDateString('es-CO', { day: '2-digit', month: 'short', year: 'numeric' })}</div>
+                    <div style={{ color: COLORS.textDim, fontSize: 'var(--font-size-xs)', marginTop: 2, ...s }}>Vence {item.dueDate.toLocaleDateString('es-CO', { day: '2-digit', month: 'short', year: 'numeric' })}</div>
                   </div>
                   <div style={{ textAlign: 'right' }}>
                     <strong style={{ color: COLORS.text, fontSize: 15, ...s }}>{accountMoney(item.pending, item.currency)}</strong>
-                    <div style={{ color: COLORS.textDim, fontSize: 11, ...s }}>de {accountMoney(item.total, item.currency)}</div>
+                    <div style={{ color: COLORS.textDim, fontSize: 'var(--font-size-xs)', ...s }}>de {accountMoney(item.total, item.currency)}</div>
                   </div>
                 </div>
                 <div style={{ marginTop: 12 }}>{progressBar(item.pct, COLORS.primary)}</div>
@@ -16291,13 +16388,13 @@ const FinanceView = ({ data, onUpdateFinance, quickAction, onQuickActionHandled 
                     { label: hasReminder ? 'Aviso' : 'Aviso', value: hasReminder ? `${Number(item.debtReminderDaysBefore || 0)} días antes` : 'Desactivado' }
                   ].map(meta => (
                     <div key={meta.label} style={{ padding: '9px 10px', borderRadius: 12, background: 'rgba(255,255,255,0.03)', border: `1px solid ${COLORS.border}` }}>
-                      <div style={{ color: COLORS.textDim, fontSize: 9, letterSpacing: '0.08em', textTransform: 'uppercase', ...s }}>{meta.label}</div>
-                      <div style={{ color: COLORS.text, fontSize: 12, fontWeight: 850, marginTop: 4, ...s }}>{meta.value}</div>
+                      <div style={{ color: COLORS.textDim, fontSize: 'var(--font-size-2xs)', letterSpacing: '0.08em', textTransform: 'uppercase', ...s }}>{meta.label}</div>
+                      <div style={{ color: COLORS.text, fontSize: 'var(--font-size-sm)', fontWeight: 850, marginTop: 4, ...s }}>{meta.value}</div>
                     </div>
                   ))}
                 </div>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr auto auto', gap: 10, alignItems: 'center', marginTop: 12 }}>
-                  <span style={{ color: COLORS.primary, fontSize: 12, fontWeight: 850, ...s }}>{item.pct}% pagado - faltan {daysLeft} días</span>
+                  <span style={{ color: COLORS.primary, fontSize: 'var(--font-size-sm)', fontWeight: 850, ...s }}>{item.pct}% pagado - faltan {daysLeft} días</span>
                   <button onClick={() => openDebtPayment(item)} style={{ ...ghostButtonStyle, minHeight: 36, padding: '8px 12px' }}>Registrar pago</button>
                   <button onClick={() => removeDebt(item.id)} className="finance-icon-button" title="Eliminar deuda" style={{ width: 36, height: 36, borderRadius: 11, border: `1px solid ${COLORS.border}`, background: `${COLORS.alert}10`, color: COLORS.alert, cursor: 'pointer' }}><Trash2 size={14} /></button>
                 </div>
@@ -16328,7 +16425,7 @@ const FinanceView = ({ data, onUpdateFinance, quickAction, onQuickActionHandled 
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 150px auto', gap: 10, alignItems: 'center', marginBottom: 9 }}>
                 <div>
                   <strong style={{ color: COLORS.text, ...s }}>{item.name}</strong>
-                  <div style={{ color: COLORS.textDim, fontSize: 12, ...s }}>{money(item.value || 0)} usados de {money(item.limit || 0)}</div>
+                  <div style={{ color: COLORS.textDim, fontSize: 'var(--font-size-sm)', ...s }}>{money(item.value || 0)} usados de {money(item.limit || 0)}</div>
                 </div>
                 <FinanceMoneyInput value={cleanDisplayValue(item.limit || 0)} onValueChange={value => updateBudget(item.id, value)} style={inputStyle} />
                 <button onClick={() => removeBudgetCategory(item.id)} className="finance-icon-button" style={{ width: 36, height: 36, borderRadius: 11, border: `1px solid ${COLORS.border}`, background: COLORS.bg, color: COLORS.primary, cursor: 'pointer' }}><Trash2 size={14} /></button>
@@ -16358,7 +16455,7 @@ const FinanceView = ({ data, onUpdateFinance, quickAction, onQuickActionHandled 
                 <div style={{ display: 'flex', justifyContent: 'space-between', gap: 10 }}>
                   <div>
                     <strong style={{ color: COLORS.text, ...s }}>{item.name}</strong>
-                    <div style={{ color: COLORS.textDim, fontSize: 12, ...s }}>Dia {item.day} - {catById(item.category).name}</div>
+                    <div style={{ color: COLORS.textDim, fontSize: 'var(--font-size-sm)', ...s }}>Dia {item.day} - {catById(item.category).name}</div>
                   </div>
                   <strong style={{ color: item.type === 'income' ? '#35C46A' : COLORS.primary, ...s }}>{item.type === 'income' ? '+' : '-'}{money(item.amount)}</strong>
                 </div>
@@ -16394,7 +16491,7 @@ const FinanceView = ({ data, onUpdateFinance, quickAction, onQuickActionHandled 
                 {renderSubscriptionLogo(item, 42)}
                 <div style={{ minWidth: 0 }}>
                   <strong style={{ color: COLORS.text, ...s }}>{item.name}</strong>
-                  <div style={{ color: COLORS.textDim, fontSize: 12, ...s }}>{item.category} - Dia {item.day}</div>
+                  <div style={{ color: COLORS.textDim, fontSize: 'var(--font-size-sm)', ...s }}>{item.category} - Dia {item.day}</div>
                 </div>
                 <div style={{ textAlign: 'right' }}>
                   <strong style={{ color: COLORS.primary, ...s }}>{money(item.amount)}</strong>
@@ -16462,7 +16559,7 @@ const FinanceView = ({ data, onUpdateFinance, quickAction, onQuickActionHandled 
                       background: active ? COLORS.primary : 'transparent',
                       color: active ? '#fff' : COLORS.textDim,
                       cursor: 'pointer',
-                      fontSize: 12,
+                      fontSize: 'var(--font-size-sm)',
                       fontWeight: 900,
                       letterSpacing: '0.04em',
                       transition: 'background 180ms ease, color 180ms ease, transform 180ms ease',
@@ -16484,12 +16581,12 @@ const FinanceView = ({ data, onUpdateFinance, quickAction, onQuickActionHandled 
         <div className="finance-kpis" style={{ display: 'grid', gridTemplateColumns: 'repeat(5, minmax(160px, 1fr))', gap: 12, marginBottom: 14 }}>
           {financeMetrics.map((card, index) => (
             <div key={card.label} className="kpi-card finance-pro-kpi" style={{ ...financeCardStyle, minHeight: 118, position: 'relative', animation: `fadeInUp 0.32s ease ${index * 0.04}s both` }}>
-              <div style={{ color: COLORS.textDim, fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 8, ...s }}>{card.label}</div>
+              <div style={{ color: COLORS.textDim, fontSize: 'var(--font-size-xs)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 8, ...s }}>{card.label}</div>
               <div style={{ color: COLORS.text, fontSize: 24, fontFamily: "'DM Serif Display', serif", lineHeight: 1.05, wordBreak: 'break-word' }}>{card.value}</div>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8, marginTop: 8 }}>
-                <span style={{ color: COLORS.textDim, fontSize: 11, ...s }}>{card.hint}</span>
+                <span style={{ color: COLORS.textDim, fontSize: 'var(--font-size-xs)', ...s }}>{card.hint}</span>
                 {card.trend !== null && (
-                  <span style={{ color: card.trend >= 0 ? '#35C46A' : COLORS.primary, fontSize: 11, fontWeight: 850, ...s }}>
+                  <span style={{ color: card.trend >= 0 ? '#35C46A' : COLORS.primary, fontSize: 'var(--font-size-xs)', fontWeight: 850, ...s }}>
                     {card.trend >= 0 ? '↑' : '↓'} {Math.abs(card.trend)}%
                   </span>
                 )}
@@ -16605,7 +16702,7 @@ const ReadingView = ({ data, onUpdateReading }) => {
   return (
     <div className="reading-view" style={{ animation: 'fadeIn 0.3s ease-out' }}>
       <div className="lab-shell-card" style={{ borderRadius: 28, padding: 30, marginBottom: 20 }}>
-        <div className="lab-pill" style={{ display: 'inline-flex', padding: '7px 11px', fontSize: 11, marginBottom: 12 }}><BookOpen size={14} /> Biblioteca personal</div>
+        <div className="lab-pill" style={{ display: 'inline-flex', padding: '7px 11px', fontSize: 'var(--font-size-xs)', marginBottom: 12 }}><BookOpen size={14} /> Biblioteca personal</div>
         <h2 className="lab-hero-title" style={{ fontSize: 40, lineHeight: 1.05, marginBottom: 8 }}>Lectura con marcadores y notas.</h2>
         <div style={{ color: COLORS.textDim, fontSize: 13, lineHeight: 1.7, maxWidth: 680 }}>Sube tus PDFs, guarda tu avance, marca páginas importantes y deja notas rápidas mientras estudias o lees.</div>
       </div>
@@ -16617,7 +16714,7 @@ const ReadingView = ({ data, onUpdateReading }) => {
             <button onClick={() => fileRef.current?.click()} className="lab-cta" style={{ width: '100%', justifyContent: 'center', borderRadius: 14, padding: '13px 16px', cursor: 'pointer' }}>
               <Upload size={16} /> <span>Subir libro PDF</span>
             </button>
-            <div style={{ color: COLORS.textDim, fontSize: 11, marginTop: 10, lineHeight: 1.5, ...s }}>Los PDFs quedan guardados en tu cuenta como parte de tus datos. Para libros muy pesados puede tardar un poco.</div>
+            <div style={{ color: COLORS.textDim, fontSize: 'var(--font-size-xs)', marginTop: 10, lineHeight: 1.5, ...s }}>Los PDFs quedan guardados en tu cuenta como parte de tus datos. Para libros muy pesados puede tardar un poco.</div>
           </div>
 
           <div style={cardStyle}>
@@ -16630,7 +16727,7 @@ const ReadingView = ({ data, onUpdateReading }) => {
                   borderRadius: 14, padding: 12, cursor: 'pointer', color: COLORS.text
                 }}>
                   <div style={{ fontWeight: 800, fontSize: 13, marginBottom: 4 }}>{book.title}</div>
-                  <div style={{ color: COLORS.textDim, fontSize: 11 }}>Pág. {book.currentPage || 1}{book.totalPages  ? ` de ${book.totalPages}` : ''}  ? {(book.notes || []).length} notas</div>
+                  <div style={{ color: COLORS.textDim, fontSize: 'var(--font-size-xs)' }}>Pág. {book.currentPage || 1}{book.totalPages  ? ` de ${book.totalPages}` : ''}  ? {(book.notes || []).length} notas</div>
                 </button>
               ))}
               {!books.length && <div style={{ color: COLORS.textDim, fontSize: 13, textAlign: 'center', padding: 18 }}>Sube tu primer PDF para empezar.</div>}
@@ -16645,7 +16742,7 @@ const ReadingView = ({ data, onUpdateReading }) => {
                 <div className="reading-toolbar" style={{ display: 'flex', justifyContent: 'space-between', gap: 12, alignItems: 'flex-start', marginBottom: 14, flexWrap: 'wrap' }}>
                   <div>
                     <h3 style={{ color: COLORS.text, fontSize: 22, margin: 0 }}>{activeBook.title}</h3>
-                    <div style={{ color: COLORS.textDim, fontSize: 12, marginTop: 4 }}>{activeBook.fileName}</div>
+                    <div style={{ color: COLORS.textDim, fontSize: 'var(--font-size-sm)', marginTop: 4 }}>{activeBook.fileName}</div>
                   </div>
                   <button onClick={() => removeBook(activeBook.id)} style={{ border: `1px solid ${COLORS.border}`, background: COLORS.bg, color: COLORS.alert, borderRadius: 12, padding: '9px 11px', cursor: 'pointer' }}><Trash2 size={15} /></button>
                 </div>
@@ -16653,7 +16750,7 @@ const ReadingView = ({ data, onUpdateReading }) => {
                 <div className="reading-progress-row" style={{ display: 'grid', gridTemplateColumns: '1fr 120px 120px', gap: 10, alignItems: 'center', marginBottom: 14 }}>
                   <div>
                     <div style={{ height: 8, background: COLORS.bg, borderRadius: 99, overflow: 'hidden' }}><div style={{ width: `${progress}%`, height: '100%', background: `linear-gradient(90deg, ${COLORS.primary}, ${COLORS.secondary})` }} /></div>
-                    <div style={{ color: COLORS.textDim, fontSize: 11, marginTop: 6 }}>{progress  ? `${progress}% leído` : 'Agrega total de páginas para ver progreso'}</div>
+                    <div style={{ color: COLORS.textDim, fontSize: 'var(--font-size-xs)', marginTop: 6 }}>{progress  ? `${progress}% leído` : 'Agrega total de páginas para ver progreso'}</div>
                   </div>
                   <input type="number" min="1" value={activeBook.currentPage || ''} onChange={e => updateBook(activeBook.id, book => ({ ...book, currentPage: Math.max(1, Number(e.target.value || 1)) }))} placeholder="Página actual" style={inputStyle} />
                   <input type="number" min="1" value={activeBook.totalPages || ''} onChange={e => updateBook(activeBook.id, book => ({ ...book, totalPages: e.target.value }))} placeholder="Total páginas" style={inputStyle} />
@@ -16673,11 +16770,11 @@ const ReadingView = ({ data, onUpdateReading }) => {
                   <div style={{ display: 'grid', gap: 8 }}>
                     {(activeBook.bookmarks || []).map(b => (
                       <div key={b.id} style={{ display: 'flex', justifyContent: 'space-between', gap: 10, padding: 10, borderRadius: 12, background: COLORS.bg, border: `1px solid ${COLORS.border}` }}>
-                        <span style={{ color: COLORS.text, fontSize: 12 }}><strong style={{ color: COLORS.primary }}>Pág. {b.page}</strong>  ? {b.label}</span>
+                        <span style={{ color: COLORS.text, fontSize: 'var(--font-size-sm)' }}><strong style={{ color: COLORS.primary }}>Pág. {b.page}</strong>  ? {b.label}</span>
                         <button onClick={() => removeBookmark(b.id)} style={{ border: 'none', background: 'transparent', color: COLORS.textDim, cursor: 'pointer' }}><X size={13} /></button>
                       </div>
                     ))}
-                    {!activeBook.bookmarks?.length && <div style={{ color: COLORS.textDim, fontSize: 12 }}>Aún no tienes marcadores.</div>}
+                    {!activeBook.bookmarks?.length && <div style={{ color: COLORS.textDim, fontSize: 'var(--font-size-sm)' }}>Aún no tienes marcadores.</div>}
                   </div>
                 </div>
 
@@ -16692,13 +16789,13 @@ const ReadingView = ({ data, onUpdateReading }) => {
                     {(activeBook.notes || []).map(n => (
                       <div key={n.id} style={{ padding: 10, borderRadius: 12, background: COLORS.bg, border: `1px solid ${COLORS.border}` }}>
                         <div style={{ display: 'flex', justifyContent: 'space-between', gap: 8, marginBottom: 5 }}>
-                          <strong style={{ color: COLORS.primary, fontSize: 12 }}>Pág. {n.page}</strong>
+                          <strong style={{ color: COLORS.primary, fontSize: 'var(--font-size-sm)' }}>Pág. {n.page}</strong>
                           <button onClick={() => removeNote(n.id)} style={{ border: 'none', background: 'transparent', color: COLORS.textDim, cursor: 'pointer' }}><X size={13} /></button>
                         </div>
-                        <div style={{ color: COLORS.text, fontSize: 12, lineHeight: 1.5 }}>{n.text}</div>
+                        <div style={{ color: COLORS.text, fontSize: 'var(--font-size-sm)', lineHeight: 1.5 }}>{n.text}</div>
                       </div>
                     ))}
-                    {!activeBook.notes?.length && <div style={{ color: COLORS.textDim, fontSize: 12 }}>Aún no tienes notas.</div>}
+                    {!activeBook.notes?.length && <div style={{ color: COLORS.textDim, fontSize: 'var(--font-size-sm)' }}>Aún no tienes notas.</div>}
                   </div>
                 </div>
               </div>
@@ -16794,7 +16891,7 @@ const DreamGoalsView = ({ data, onUpdateDreamGoals }) => {
   return (
     <div className="dreams-mobile-view" style={{ animation: 'fadeIn 0.3s ease-out', maxWidth: 1160, margin: '0 auto' }}>
       <div style={{ textAlign: 'center', marginBottom: 54, paddingTop: 6 }}>
-        <div className="lab-pill" style={{ display: 'inline-flex', gap: 8, alignItems: 'center', padding: '8px 14px', fontSize: 12, color: COLORS.text, borderColor: `${COLORS.primary}44`, background: `${COLORS.primary}10`, marginBottom: 22 }}>
+        <div className="lab-pill" style={{ display: 'inline-flex', gap: 8, alignItems: 'center', padding: '8px 14px', fontSize: 'var(--font-size-sm)', color: COLORS.text, borderColor: `${COLORS.primary}44`, background: `${COLORS.primary}10`, marginBottom: 22 }}>
           <Target size={13} /> Ecosistema de Metas
         </div>
         <h1 style={{ margin: 0, color: COLORS.text, fontSize: 'clamp(44px, 7vw, 74px)', lineHeight: 0.95, letterSpacing: '-0.07em', fontWeight: 500, ...s }}>
@@ -16840,14 +16937,14 @@ const DreamGoalsView = ({ data, onUpdateDreamGoals }) => {
                 <div style={{ transform: 'translateY(-20px)', marginLeft: 18, width: 40, height: 40, borderRadius: 10, background: `${goal.accent || COLORS.primary}14`, border: `1px solid ${COLORS.border}`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 17, marginBottom: -8 }}>{goal.icon || '\u{1F3AF}'}</div>
                 <div style={{ padding: '0 20px' }}>
                   <div style={{ color: COLORS.text, fontSize: 18, fontWeight: 800, letterSpacing: '-0.03em', marginBottom: 3, ...s }}>{goal.title}</div>
-                  <div style={{ color: COLORS.textDim, fontSize: 12, marginBottom: 22, ...s }}>Objetivo: {money(target)}</div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', color: COLORS.text, fontSize: 11, fontWeight: 800, textTransform: 'uppercase', marginBottom: 7, ...s }}>
+                  <div style={{ color: COLORS.textDim, fontSize: 'var(--font-size-sm)', marginBottom: 22, ...s }}>Objetivo: {money(target)}</div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', color: COLORS.text, fontSize: 'var(--font-size-xs)', fontWeight: 800, textTransform: 'uppercase', marginBottom: 7, ...s }}>
                     <span>Progreso</span><span>{pct}%</span>
                   </div>
                   <div style={{ height: 8, background: dreamProgressBg, borderRadius: 99, overflow: 'hidden', marginBottom: 13 }}>
                     <div style={{ width: `${pct}%`, height: '100%', background: goal.accent || COLORS.primary, borderRadius: 99, boxShadow: `0 0 18px ${(goal.accent || COLORS.primary)}66` }} />
                   </div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 9, padding: '10px 13px', borderRadius: 14, background: `${goal.accent || COLORS.primary}12`, border: `1px solid ${goal.accent || COLORS.primary}2f`, color: COLORS.text, fontSize: 12, ...s }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 9, padding: '10px 13px', borderRadius: 14, background: `${goal.accent || COLORS.primary}12`, border: `1px solid ${goal.accent || COLORS.primary}2f`, color: COLORS.text, fontSize: 'var(--font-size-sm)', ...s }}>
                     <span style={{ color: goal.accent || COLORS.primary, fontWeight: 900 }}>{missing === 0  ? '¿' : '$'}</span>
                     <span style={{ color: COLORS.textDim }}>Faltan</span>
                     <strong style={{ color: goal.accent || COLORS.primary }}>{money(missing)}</strong>
@@ -16856,11 +16953,11 @@ const DreamGoalsView = ({ data, onUpdateDreamGoals }) => {
                   <div style={{ display: 'grid', gridTemplateColumns: missing === 0  ? '1fr auto' : '1fr auto auto', gap: 8, marginTop: 12 }}>
                     {missing > 0  ? (
                       <>
-                        <input type="number" value={adds[goal.id] || ''} onChange={e => setAdds(prev => ({ ...prev, [goal.id]: e.target.value }))} placeholder="Aportar" style={{ ...inputStyle, padding: '8px 10px', fontSize: 11 }} />
+                        <input type="number" value={adds[goal.id] || ''} onChange={e => setAdds(prev => ({ ...prev, [goal.id]: e.target.value }))} placeholder="Aportar" style={{ ...inputStyle, padding: '8px 10px', fontSize: 'var(--font-size-xs)' }} />
                         <button onClick={() => contributeGoal(goal.id)} style={{ border: 'none', borderRadius: 10, background: goal.accent || COLORS.primary, color: '#fff', padding: '0 14px', cursor: 'pointer', fontWeight: 800 }}>+ Aportar</button>
                       </>
                     ) : (
-                      <div style={{ ...inputStyle, padding: '8px 10px', fontSize: 11, color: COLORS.success, fontWeight: 800 }}>Meta completada</div>
+                      <div style={{ ...inputStyle, padding: '8px 10px', fontSize: 'var(--font-size-xs)', color: COLORS.success, fontWeight: 800 }}>Meta completada</div>
                     )}
                     <button onClick={() => removeGoal(goal.id)} style={{ border: `1px solid ${COLORS.border}`, borderRadius: 10, background: 'transparent', color: COLORS.textDim, padding: '0 10px', cursor: 'pointer' }}><Trash2 size={13} /></button>
                   </div>
@@ -16880,7 +16977,7 @@ const DreamGoalsView = ({ data, onUpdateDreamGoals }) => {
           <input type="color" value={form.accent} onChange={e => setForm(f => ({ ...f, accent: e.target.value }))} style={{ ...inputStyle, padding: 6, height: 42 }} />
         </div>
         <div style={{ position: 'relative' }}>
-          <div style={{ color: COLORS.textDim, fontSize: 11, marginBottom: 8, ...s }}>Icono</div>
+          <div style={{ color: COLORS.textDim, fontSize: 'var(--font-size-xs)', marginBottom: 8, ...s }}>Icono</div>
           <button onClick={() => setShowIconPicker(value => !value)} style={{
             width: '100%',
             padding: '10px 12px',
@@ -16898,7 +16995,7 @@ const DreamGoalsView = ({ data, onUpdateDreamGoals }) => {
               <span style={{ width: 30, height: 30, borderRadius: 9, background: `${form.accent}22`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 17 }}>{form.icon}</span>
               Elegir icono
             </span>
-            <span style={{ color: COLORS.textDim, fontSize: 11 }}>{dreamIcons.length} disponibles</span>
+            <span style={{ color: COLORS.textDim, fontSize: 'var(--font-size-xs)' }}>{dreamIcons.length} disponibles</span>
           </button>
           {showIconPicker && (
             <div style={{
@@ -16934,7 +17031,7 @@ const DreamGoalsView = ({ data, onUpdateDreamGoals }) => {
           <input value={form.image} onChange={e => setForm(f => ({ ...f, image: e.target.value }))} placeholder="URL de imagen opcional (no se almacena la foto)" style={inputStyle} />
           <button className="lab-cta" onClick={addGoal} style={{ borderRadius: 999, padding: '10px 18px', cursor: 'pointer', fontWeight: 800 }}><span>Crear meta</span></button>
         </div>
-        <div style={{ color: COLORS.textDim, fontSize: 11, ...s }}>HabitFlow solo guarda el enlace. La imagen queda alojada en donde pegues la URL.</div>
+        <div style={{ color: COLORS.textDim, fontSize: 'var(--font-size-xs)', ...s }}>HabitFlow solo guarda el enlace. La imagen queda alojada en donde pegues la URL.</div>
         {form.image && (
           <div style={{
             width: 'min(100%, 360px)',
@@ -17016,7 +17113,7 @@ const StudyView = ({ data, onUpdateStudy }) => {
     <div className="study-mobile-view" style={{ animation: 'fadeIn 0.3s ease-out' }}>
       <div className="lab-shell-card" style={{ borderRadius: 26, padding: 28, marginBottom: 20 }}>
         <div style={{ position: 'relative', zIndex: 1 }}>
-          <div className="lab-pill" style={{ display: 'inline-flex', padding: '7px 11px', fontSize: 11, marginBottom: 12 }}>ESTUDIOS REALES</div>
+          <div className="lab-pill" style={{ display: 'inline-flex', padding: '7px 11px', fontSize: 'var(--font-size-xs)', marginBottom: 12 }}>ESTUDIOS REALES</div>
           <h2 className="lab-hero-title" style={{ fontSize: 36, lineHeight: 1.05, marginBottom: 8 }}>Materias, temas y horas bajo control.</h2>
           <div style={{ color: COLORS.textDim, fontSize: 13, lineHeight: 1.7, maxWidth: 620 }}>Crea materias, divide temas, marca avances y registra sesiones de estudio para ver tu progreso real.</div>
         </div>
@@ -17030,7 +17127,7 @@ const StudyView = ({ data, onUpdateStudy }) => {
           { label: 'Sesiones', value: sessions.length, color: '#7c85f5' }
         ].map(k => (
           <div key={k.label} className="kpi-card" style={{ background: COLORS.card, border: `1px solid ${COLORS.border}`, borderRadius: 16, padding: 18 }}>
-            <div style={{ fontSize: 10, color: COLORS.textDim, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 8 }}>{k.label}</div>
+            <div style={{ fontSize: 'var(--font-size-xs)', color: COLORS.textDim, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 8 }}>{k.label}</div>
             <div style={{ fontSize: 22, color: k.color, fontWeight: 700 }}>{k.value}</div>
           </div>
         ))}
@@ -17054,14 +17151,14 @@ const StudyView = ({ data, onUpdateStudy }) => {
             return (
               <div key={subject.id} style={{ background: COLORS.card, borderRadius: 18, border: `1px solid ${COLORS.border}`, padding: 20 }}>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, marginBottom: 12 }}>
-                  <div><div style={{ color: COLORS.text, fontSize: 17, fontWeight: 800 }}><span style={{ color: subject.color }}>?</span> {subject.name}</div><div style={{ color: COLORS.textDim, fontSize: 11 }}>Meta: {subject.goalHours || 0}h  Estudiado: {fmtTime(studied)}</div></div>
+                  <div><div style={{ color: COLORS.text, fontSize: 17, fontWeight: 800 }}><span style={{ color: subject.color }}>?</span> {subject.name}</div><div style={{ color: COLORS.textDim, fontSize: 'var(--font-size-xs)' }}>Meta: {subject.goalHours || 0}h  Estudiado: {fmtTime(studied)}</div></div>
                   <button onClick={() => removeSubject(subject.id)} style={{ border: 'none', background: 'transparent', color: COLORS.textDim, cursor: 'pointer' }}><Trash2 size={15} /></button>
                 </div>
                 <div style={{ height: 7, background: COLORS.bg, borderRadius: 99, overflow: 'hidden', marginBottom: 14 }}><div style={{ height: '100%', width: `${pct}%`, background: `linear-gradient(90deg, ${subject.color}, ${COLORS.primary})`, borderRadius: 99 }} /></div>
                 <div style={{ display: 'grid', gap: 7, marginBottom: 12 }}>
                   {(subject.topics || []).map(topic => (
                     <button key={topic.id} onClick={() => toggleTopic(subject.id, topic.id)} style={{ display: 'flex', alignItems: 'center', gap: 9, padding: '8px 10px', borderRadius: 10, border: `1px solid ${COLORS.border}`, background: topic.completed  ? 'rgba(239,239,239,0.08)' : 'rgba(239,239,239,0.025)', color: COLORS.text, cursor: 'pointer', textAlign: 'left' }}>
-                      <span style={{ width: 17, height: 17, borderRadius: 5, border: `1px solid ${topic.completed  ? COLORS.success : COLORS.border}`, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontSize: 11 }}>{topic.completed  ? '¿' : ''}</span>
+                      <span style={{ width: 17, height: 17, borderRadius: 5, border: `1px solid ${topic.completed  ? COLORS.success : COLORS.border}`, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontSize: 'var(--font-size-xs)' }}>{topic.completed  ? '¿' : ''}</span>
                       <span style={{ textDecoration: topic.completed  ? 'line-through' : 'none', opacity: topic.completed  ? 0.55 : 1 }}>{topic.name}</span>
                     </button>
                   ))}
@@ -17090,14 +17187,14 @@ const StudyView = ({ data, onUpdateStudy }) => {
           </div>
           <div style={{ background: COLORS.card, borderRadius: 18, border: `1px solid ${COLORS.border}`, padding: 20 }}>
             <h3 style={{ fontSize: 16, color: COLORS.text, marginBottom: 12 }}>Horas por materia</h3>
-            <ResponsiveContainer width="100%" height={210}><BarChart data={chartData}><XAxis dataKey="name" tick={{ fill: COLORS.textDim, fontSize: 10 }} axisLine={false} tickLine={false} /><YAxis tick={{ fill: COLORS.textDim, fontSize: 10 }} axisLine={false} tickLine={false} /><Tooltip /><Bar dataKey="horas" radius={[6, 6, 0, 0]}>{chartData.map((c, i) => <Cell key={i} fill={c.color} />)}</Bar></BarChart></ResponsiveContainer>
+            <ResponsiveContainer width="100%" height={210}><BarChart data={chartData}><XAxis dataKey="name" tick={{ fill: COLORS.textDim, fontSize: 'var(--font-size-xs)' }} axisLine={false} tickLine={false} /><YAxis tick={{ fill: COLORS.textDim, fontSize: 'var(--font-size-xs)' }} axisLine={false} tickLine={false} /><Tooltip /><Bar dataKey="horas" radius={[6, 6, 0, 0]}>{chartData.map((c, i) => <Cell key={i} fill={c.color} />)}</Bar></BarChart></ResponsiveContainer>
           </div>
           <div style={{ background: COLORS.card, borderRadius: 18, border: `1px solid ${COLORS.border}`, padding: 20 }}>
             <h3 style={{ fontSize: 16, color: COLORS.text, marginBottom: 12 }}>Sesiones recientes</h3>
             <div style={{ display: 'grid', gap: 8 }}>
               {sessions.slice(0, 8).map(s => {
                 const subject = subjectById(s.subjectId);
-                return <div key={s.id} style={{ display: 'flex', gap: 10, alignItems: 'center', padding: 10, borderRadius: 12, background: 'rgba(239,239,239,0.035)', border: `1px solid ${COLORS.border}` }}><span style={{ color: subject.color }}>?</span><div style={{ flex: 1 }}><div style={{ color: COLORS.text, fontSize: 12, fontWeight: 700 }}>{subject.name}  {fmtTime(Number(s.minutes || 0))}</div><div style={{ color: COLORS.textDim, fontSize: 10 }}>{s.date} {s.note  ? ` ${s.note}` : ''}</div></div><button onClick={() => removeSession(s.id)} style={{ border: 'none', background: 'transparent', color: COLORS.textDim, cursor: 'pointer' }}><Trash2 size={13} /></button></div>;
+                return <div key={s.id} style={{ display: 'flex', gap: 10, alignItems: 'center', padding: 10, borderRadius: 12, background: 'rgba(239,239,239,0.035)', border: `1px solid ${COLORS.border}` }}><span style={{ color: subject.color }}>?</span><div style={{ flex: 1 }}><div style={{ color: COLORS.text, fontSize: 'var(--font-size-sm)', fontWeight: 700 }}>{subject.name}  {fmtTime(Number(s.minutes || 0))}</div><div style={{ color: COLORS.textDim, fontSize: 'var(--font-size-xs)' }}>{s.date} {s.note  ? ` ${s.note}` : ''}</div></div><button onClick={() => removeSession(s.id)} style={{ border: 'none', background: 'transparent', color: COLORS.textDim, cursor: 'pointer' }}><Trash2 size={13} /></button></div>;
               })}
             </div>
           </div>
@@ -17175,9 +17272,9 @@ const StatisticsView = ({ data }) => {
             ['Mejor hábito', statsUseful.best?.name || '--', `${statsUseful.best?.rate || 0}% cumplimiento`, COLORS.success]
           ].map(([label, value, sub, color]) => (
             <div key={label} style={{ background: COLORS.card, border: `1px solid ${COLORS.border}`, borderRadius: 16, padding: 18 }}>
-              <div style={{ color: COLORS.textDim, fontSize: 10, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 8 }}>{label}</div>
+              <div style={{ color: COLORS.textDim, fontSize: 'var(--font-size-xs)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 8 }}>{label}</div>
               <div style={{ color, fontSize: 22, fontWeight: 900, lineHeight: 1.15 }}>{value}</div>
-              <div style={{ color: COLORS.textDim, fontSize: 11, marginTop: 6 }}>{sub}</div>
+              <div style={{ color: COLORS.textDim, fontSize: 'var(--font-size-xs)', marginTop: 6 }}>{sub}</div>
             </div>
           ))}
         </div>
@@ -17189,7 +17286,7 @@ const StatisticsView = ({ data }) => {
                 <span className="fire-emoji"><HabitIconGlyph habit={h} size={20} strokeWidth={1.75} /></span>
                 <div style={{ flex: 1 }}>
                   <div style={{ color: COLORS.text, fontWeight: 900, fontSize: 13 }}>{h.name}</div>
-                  <div style={{ color: COLORS.textDim, fontSize: 11 }}>{h.rate < 55  ? 'Está flojo: reduce dificultad, cambia horario o pon recordatorio.' : 'No hay hábitos críticos en este periodo.'}</div>
+                  <div style={{ color: COLORS.textDim, fontSize: 'var(--font-size-xs)' }}>{h.rate < 55  ? 'Está flojo: reduce dificultad, cambia horario o pon recordatorio.' : 'No hay hábitos críticos en este periodo.'}</div>
                 </div>
                 <div style={{ color: h.rate < 55  ? COLORS.alert : COLORS.success, fontWeight: 900 }}>{h.rate}%</div>
               </div>
@@ -17235,7 +17332,7 @@ const StatisticsView = ({ data }) => {
                   <XAxis dataKey="date" stroke={COLORS.textDim} fontSize={11} />
                   <YAxis stroke={COLORS.textDim} fontSize={11} />
                   <Tooltip content={<CustomTooltip />} />
-                  <Legend wrapperStyle={{ fontSize: 11, color: COLORS.textDim }} />
+                  <Legend wrapperStyle={{ fontSize: 'var(--font-size-xs)', color: COLORS.textDim }} />
                   {stackedHabits.map((h, i) => (
                     <Bar key={h.id} dataKey={h.name} stackId="a" fill={h.color || CATEGORIES[i % CATEGORIES.length].color} />
                   ))}
@@ -17282,7 +17379,7 @@ const StatisticsView = ({ data }) => {
                   ))}
                 </Pie>
                 <Tooltip />
-                <Legend wrapperStyle={{ fontSize: 11, color: COLORS.textDim }} />
+                <Legend wrapperStyle={{ fontSize: 'var(--font-size-xs)', color: COLORS.textDim }} />
               </PieChart>
             </ResponsiveContainer>
           </div>
@@ -17294,7 +17391,7 @@ const StatisticsView = ({ data }) => {
             </h3>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: 2, marginBottom: 8 }}>
               {dayLabels.map((d, i) => (
-                <div key={i} style={{ fontSize: 10, color: COLORS.textDim, textAlign: 'center', padding: '4px 0' }}>{d}</div>
+                <div key={i} style={{ fontSize: 'var(--font-size-xs)', color: COLORS.textDim, textAlign: 'center', padding: '4px 0' }}>{d}</div>
               ))}
             </div>
             {calendar.map((week, wi) => (
@@ -17307,7 +17404,7 @@ const StatisticsView = ({ data }) => {
                       aspectRatio: '1', borderRadius: 4,
                       background: hd  ? getHeatMapIntensity(hd.pct) : COLORS.card,
                       display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      fontSize: 10, color: hd && hd.pct > 0.5  ? '#000' : COLORS.textDim,
+                      fontSize: 'var(--font-size-xs)', color: hd && hd.pct > 0.5  ? '#000' : COLORS.textDim,
                       cursor: 'pointer', transition: 'all 0.2s',
                       position: 'relative'
                     }} title={hd  ? `${hd.label}: ${hd.completed}/${hd.total}` : ''}>
@@ -17318,11 +17415,11 @@ const StatisticsView = ({ data }) => {
               </div>
             ))}
             <div style={{ display: 'flex', justifyContent: 'center', gap: 4, marginTop: 12, alignItems: 'center' }}>
-              <span style={{ fontSize: 10, color: COLORS.textDim }}>Menos</span>
+              <span style={{ fontSize: 'var(--font-size-xs)', color: COLORS.textDim }}>Menos</span>
               {[COLORS.card, '#006633', '#009955', '#9f1239', COLORS.success].map((c, i) => (
                 <div key={i} style={{ width: 14, height: 14, borderRadius: 3, background: c }} />
               ))}
-              <span style={{ fontSize: 10, color: COLORS.textDim }}>Más</span>
+              <span style={{ fontSize: 'var(--font-size-xs)', color: COLORS.textDim }}>Más</span>
             </div>
           </div>
         </div>
@@ -17336,11 +17433,11 @@ const StatisticsView = ({ data }) => {
             <table style={{ width: '100%', borderCollapse: 'collapse' }}>
               <thead>
                 <tr style={{ borderBottom: `1px solid ${COLORS.border}` }}>
-                  <th style={{ textAlign: 'left', padding: '10px 12px', fontSize: 11, color: COLORS.textDim, letterSpacing: '0.05em' }}>HBITO</th>
-                  <th style={{ textAlign: 'center', padding: '10px 12px', fontSize: 11, color: COLORS.textDim, letterSpacing: '0.05em' }}>RACHA</th>
-                  <th style={{ textAlign: 'center', padding: '10px 12px', fontSize: 11, color: COLORS.textDim, letterSpacing: '0.05em' }}>MEJOR</th>
-                  <th style={{ textAlign: 'center', padding: '10px 12px', fontSize: 11, color: COLORS.textDim, letterSpacing: '0.05em' }}>META</th>
-                  <th style={{ textAlign: 'center', padding: '10px 12px', fontSize: 11, color: COLORS.textDim, letterSpacing: '0.05em' }}>PROGRESO</th>
+                  <th style={{ textAlign: 'left', padding: '10px 12px', fontSize: 'var(--font-size-xs)', color: COLORS.textDim, letterSpacing: '0.05em' }}>HBITO</th>
+                  <th style={{ textAlign: 'center', padding: '10px 12px', fontSize: 'var(--font-size-xs)', color: COLORS.textDim, letterSpacing: '0.05em' }}>RACHA</th>
+                  <th style={{ textAlign: 'center', padding: '10px 12px', fontSize: 'var(--font-size-xs)', color: COLORS.textDim, letterSpacing: '0.05em' }}>MEJOR</th>
+                  <th style={{ textAlign: 'center', padding: '10px 12px', fontSize: 'var(--font-size-xs)', color: COLORS.textDim, letterSpacing: '0.05em' }}>META</th>
+                  <th style={{ textAlign: 'center', padding: '10px 12px', fontSize: 'var(--font-size-xs)', color: COLORS.textDim, letterSpacing: '0.05em' }}>PROGRESO</th>
                 </tr>
               </thead>
               <tbody>
@@ -17815,14 +17912,14 @@ const SettingsView = ({ data, onUpdateUser, onResetData, cloudSync, onGenerateRa
                 />
                 {cloudStatusLabel}
               </div>
-              <div style={{ color: COLORS.textDim, fontSize: 11, lineHeight: 1.45 }}>
+              <div style={{ color: COLORS.textDim, fontSize: 'var(--font-size-xs)', lineHeight: 1.45 }}>
                 {cloudSync?.reason || cloudSync?.label || 'Estado de guardado de HabitFlow.'}
               </div>
             </div>
             <button onClick={onGenerateRandomData} style={{
               padding: '10px 14px', borderRadius: 999, border: `1px solid ${COLORS.border}`,
               background: `${COLORS.primary}12`, color: COLORS.primary, cursor: 'pointer',
-              fontSize: 12, fontWeight: 900, ...s
+              fontSize: 'var(--font-size-sm)', fontWeight: 900, ...s
             }}>
               <Sparkles size={14} style={{ verticalAlign: 'middle', marginRight: 6 }} />
               Datos aleatorios
@@ -17846,12 +17943,12 @@ const SettingsView = ({ data, onUpdateUser, onResetData, cloudSync, onGenerateRa
             </div>
             <div>
               <div style={{ fontSize: 18, color: COLORS.text, fontFamily: "'DM Serif Display', serif" }}>{editName || 'Usuario'}</div>
-              <div style={{ fontSize: 12, color: COLORS.textDim }}>Miembro desde {new Date(user.createdAt).toLocaleDateString('es-ES')}</div>
+              <div style={{ fontSize: 'var(--font-size-sm)', color: COLORS.textDim }}>Miembro desde {new Date(user.createdAt).toLocaleDateString('es-ES')}</div>
             </div>
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
             <div>
-              <label style={{ fontSize: 12, color: COLORS.textDim, marginBottom: 4, display: 'block' }}>NOMBRE</label>
+              <label style={{ fontSize: 'var(--font-size-sm)', color: COLORS.textDim, marginBottom: 4, display: 'block' }}>NOMBRE</label>
               <input value={editName} onChange={e => setEditName(e.target.value)}
                 style={{
                   width: '100%', padding: '10px 14px', background: COLORS.bg, border: `1px solid ${COLORS.border}`,
@@ -17859,7 +17956,7 @@ const SettingsView = ({ data, onUpdateUser, onResetData, cloudSync, onGenerateRa
                 }} />
             </div>
             <div>
-              <label style={{ fontSize: 12, color: COLORS.textDim, marginBottom: 4, display: 'block' }}>FRASE DE MOTIVACIÓN</label>
+              <label style={{ fontSize: 'var(--font-size-sm)', color: COLORS.textDim, marginBottom: 4, display: 'block' }}>FRASE DE MOTIVACIÓN</label>
               <input value={editMotto} onChange={e => setEditMotto(e.target.value)}
                 style={{
                   width: '100%', padding: '10px 14px', background: COLORS.bg, border: `1px solid ${COLORS.border}`,
@@ -17879,7 +17976,7 @@ const SettingsView = ({ data, onUpdateUser, onResetData, cloudSync, onGenerateRa
             <Clock size={16} style={{ verticalAlign: 'middle', marginRight: 6, color: COLORS.primary }} />
             Notificaciones
           </h3>
-          <div style={{ fontSize: 11, color: COLORS.textDim, marginBottom: 14, lineHeight: 1.55 }}>
+          <div style={{ fontSize: 'var(--font-size-xs)', color: COLORS.textDim, marginBottom: 14, lineHeight: 1.55 }}>
             Recibe alarmas de agenda, recordatorios de hábitos pendientes y mensajes de disciplina en todos los dispositivos de tu cuenta.
             En Mac revisa también Ajustes del sistema {'>'} Notificaciones {'>'} tu navegador y activa sonidos/banners.
           </div>
@@ -17891,7 +17988,7 @@ const SettingsView = ({ data, onUpdateUser, onResetData, cloudSync, onGenerateRa
           }}>
             <div style={{ minWidth: 0 }}>
               <div style={{ color: COLORS.text, fontSize: 13, fontWeight: 850, ...s }}>Notificaciones globales</div>
-              <div style={{ color: COLORS.textDim, fontSize: 11, marginTop: 3, lineHeight: 1.4, ...s }}>
+              <div style={{ color: COLORS.textDim, fontSize: 'var(--font-size-xs)', marginTop: 3, lineHeight: 1.4, ...s }}>
                 {globalNotificationsEnabled ? 'HabitFlow puede enviar avisos desde todas sus secciones.' : 'Agenda, hábitos, salud, finanzas y Pomodoro no enviarán avisos.'}
               </div>
             </div>
@@ -17927,7 +18024,7 @@ const SettingsView = ({ data, onUpdateUser, onResetData, cloudSync, onGenerateRa
               border: `1px solid ${notificationPermission === 'granted'  ? COLORS.success : notificationPermission === 'denied'  ? COLORS.alert : COLORS.border}`,
               background: notificationPermission === 'granted'  ? `${COLORS.success}12` : notificationPermission === 'denied'  ? `${COLORS.alert}10` : COLORS.bg,
               color: notificationPermission === 'granted'  ? COLORS.success : notificationPermission === 'denied'  ? COLORS.alert : COLORS.textDim,
-              fontSize: 12, fontWeight: 800, ...s
+              fontSize: 'var(--font-size-sm)', fontWeight: 800, ...s
             }}>
               🔔 {getNotificationStatusLabel(notificationPermission)}
             </span>
@@ -17935,15 +18032,15 @@ const SettingsView = ({ data, onUpdateUser, onResetData, cloudSync, onGenerateRa
               padding: '10px 14px', borderRadius: 10, border: 'none',
               background: notificationPermission === 'granted'  ? COLORS.bg : COLORS.primary,
               color: notificationPermission === 'granted'  ? COLORS.text : '#fff', cursor: 'pointer',
-              fontSize: 12, fontWeight: 800, opacity: globalNotificationsEnabled ? 1 : 0.45, ...s
+              fontSize: 'var(--font-size-sm)', fontWeight: 800, opacity: globalNotificationsEnabled ? 1 : 0.45, ...s
             }}>{notificationPermission === 'granted'  ? 'Revisar permiso' : 'Activar notificaciones'}</button>
             <button onClick={handleTestNotification} disabled={!globalNotificationsEnabled} style={{
               padding: '10px 14px', borderRadius: 10, border: `1px solid ${COLORS.border}`,
               background: COLORS.bg, color: COLORS.text, cursor: 'pointer',
-              fontSize: 12, fontWeight: 800, opacity: globalNotificationsEnabled ? 1 : 0.45, ...s
+              fontSize: 'var(--font-size-sm)', fontWeight: 800, opacity: globalNotificationsEnabled ? 1 : 0.45, ...s
             }}>Enviar prueba</button>
           </div>
-          {notificationMsg && <div style={{ marginTop: 10, color: notificationPermission === 'denied'  ? COLORS.alert : COLORS.textDim, fontSize: 11, lineHeight: 1.45 }}>{notificationMsg}</div>}
+          {notificationMsg && <div style={{ marginTop: 10, color: notificationPermission === 'denied'  ? COLORS.alert : COLORS.textDim, fontSize: 'var(--font-size-xs)', lineHeight: 1.45 }}>{notificationMsg}</div>}
         </div>
 
         <div style={{ background: COLORS.card, borderRadius: 16, border: `1px solid ${COLORS.border}`, padding: 22 }}>
@@ -17972,7 +18069,7 @@ const SettingsView = ({ data, onUpdateUser, onResetData, cloudSync, onGenerateRa
                     ))}
                   </div>
                   <div style={{ fontSize: 13, color: selected  ? COLORS.text : mode.colors.text, fontWeight: 700, fontFamily: "'Inter', sans-serif" }}>{mode.name}</div>
-                  <div style={{ fontSize: 10, color: selected  ? COLORS.textDim : mode.colors.textDim, marginTop: 4, lineHeight: 1.45 }}>{mode.desc}</div>
+                  <div style={{ fontSize: 'var(--font-size-xs)', color: selected  ? COLORS.textDim : mode.colors.textDim, marginTop: 4, lineHeight: 1.45 }}>{mode.desc}</div>
                 </button>
               );
             })}
@@ -17984,27 +18081,27 @@ const SettingsView = ({ data, onUpdateUser, onResetData, cloudSync, onGenerateRa
             <User size={16} style={{ verticalAlign: 'middle', marginRight: 6, color: COLORS.primary }} />
             Login con Clerk
           </h3>
-          <div style={{ fontSize: 11, color: COLORS.textDim, marginBottom: 12, lineHeight: 1.45 }}>
+          <div style={{ fontSize: 'var(--font-size-xs)', color: COLORS.textDim, marginBottom: 12, lineHeight: 1.45 }}>
             Actualiza la Publishable Key si cambias de proyecto en Clerk.
           </div>
           <div className="settings-clerk-row" style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
             <input value={clerkKey} onChange={e => setClerkKey(e.target.value)} placeholder="pk_test_..." style={{
               flex: 1, minWidth: 0, padding: '10px 12px', background: COLORS.bg,
               border: `1px solid ${COLORS.border}`, borderRadius: 8, color: COLORS.text,
-              fontSize: 12, outline: 'none', fontFamily: "'Inter', sans-serif"
+              fontSize: 'var(--font-size-sm)', outline: 'none', fontFamily: "'Inter', sans-serif"
             }} />
             <button onClick={handleSaveClerkKey} style={{
               padding: '10px 14px', borderRadius: 8, border: 'none',
               background: COLORS.primary, color: '#fff', cursor: 'pointer',
-              fontSize: 12, fontFamily: "'Inter', sans-serif", fontWeight: 700
+              fontSize: 'var(--font-size-sm)', fontFamily: "'Inter', sans-serif", fontWeight: 700
             }}>Guardar</button>
             <button onClick={handleRemoveClerkKey} style={{
               padding: '10px 12px', borderRadius: 8, border: `1px solid ${COLORS.alert}55`,
               background: `${COLORS.alert}10`, color: COLORS.alert, cursor: 'pointer',
-              fontSize: 12, fontFamily: "'Inter', sans-serif"
+              fontSize: 'var(--font-size-sm)', fontFamily: "'Inter', sans-serif"
             }}>Quitar</button>
           </div>
-          {clerkMsg && <div style={{ marginTop: 8, fontSize: 11, color: clerkMsg.includes('debe')  ? COLORS.alert : COLORS.success }}>{clerkMsg}</div>}
+          {clerkMsg && <div style={{ marginTop: 8, fontSize: 'var(--font-size-xs)', color: clerkMsg.includes('debe')  ? COLORS.alert : COLORS.success }}>{clerkMsg}</div>}
         </div>
 
           <div className="stats-chart-card" style={{ background: COLORS.card, borderRadius: 16, border: `1px solid ${COLORS.border}`, padding: 24 }}>
@@ -18015,15 +18112,15 @@ const SettingsView = ({ data, onUpdateUser, onResetData, cloudSync, onGenerateRa
           <div className="settings-usage-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12 }}>
             <div style={{ background: COLORS.bg, borderRadius: 8, padding: '12px 16px', textAlign: 'center' }}>
               <div style={{ fontSize: 24, color: COLORS.secondary, fontFamily: "'Inter', sans-serif" }}>{daysRegistered}</div>
-              <div style={{ fontSize: 11, color: COLORS.textDim }}>días Registrando</div>
+              <div style={{ fontSize: 'var(--font-size-xs)', color: COLORS.textDim }}>días Registrando</div>
             </div>
             <div style={{ background: COLORS.bg, borderRadius: 8, padding: '12px 16px', textAlign: 'center' }}>
               <div style={{ fontSize: 24, color: COLORS.primary, fontFamily: "'Inter', sans-serif" }}>{totalHabitsCreated}</div>
-              <div style={{ fontSize: 11, color: COLORS.textDim }}>Hábitos Creados</div>
+              <div style={{ fontSize: 'var(--font-size-xs)', color: COLORS.textDim }}>Hábitos Creados</div>
             </div>
             <div style={{ background: COLORS.bg, borderRadius: 8, padding: '12px 16px', textAlign: 'center' }}>
               <div style={{ fontSize: 24, color: COLORS.success, fontFamily: "'Inter', sans-serif" }}>{totalCompletions}</div>
-              <div style={{ fontSize: 11, color: COLORS.textDim }}>Completados</div>
+              <div style={{ fontSize: 'var(--font-size-xs)', color: COLORS.textDim }}>Completados</div>
             </div>
           </div>
         </div>
@@ -18042,7 +18139,7 @@ const SettingsView = ({ data, onUpdateUser, onResetData, cloudSync, onGenerateRa
             }}>{user.level || 1}</div>
             <div style={{ flex: 1 }}>
               <div style={{ fontSize: 14, color: COLORS.text }}>Nivel {user.level || 1}</div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, color: COLORS.textDim, marginBottom: 4, marginTop: 4 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 'var(--font-size-xs)', color: COLORS.textDim, marginBottom: 4, marginTop: 4 }}>
                 <span>{user.xp || 0} XP</span>
                 <span>{getXpForLevel((user.level || 1) + 1)} XP</span>
               </div>
@@ -18054,15 +18151,15 @@ const SettingsView = ({ data, onUpdateUser, onResetData, cloudSync, onGenerateRa
           <div style={{ display: 'flex', gap: 12 }}>
             <div style={{ background: COLORS.bg, borderRadius: 8, padding: '8px 12px', textAlign: 'center', flex: 1 }}>
               <div style={{ fontSize: 18, color: COLORS.secondary, fontFamily: "'Inter', sans-serif" }}>{getLevel(user.xp || 0)}</div>
-              <div style={{ fontSize: 10, color: COLORS.textDim }}>Nivel Actual</div>
+              <div style={{ fontSize: 'var(--font-size-xs)', color: COLORS.textDim }}>Nivel Actual</div>
             </div>
             <div style={{ background: COLORS.bg, borderRadius: 8, padding: '8px 12px', textAlign: 'center', flex: 1 }}>
               <div style={{ fontSize: 18, color: COLORS.primary, fontFamily: "'Inter', sans-serif" }}>{getXpForLevel(getLevel(user.xp || 0) + 1)}</div>
-              <div style={{ fontSize: 10, color: COLORS.textDim }}>XP para Nv.{getLevel(user.xp || 0) + 1}</div>
+              <div style={{ fontSize: 'var(--font-size-xs)', color: COLORS.textDim }}>XP para Nv.{getLevel(user.xp || 0) + 1}</div>
             </div>
             <div style={{ background: COLORS.bg, borderRadius: 8, padding: '8px 12px', textAlign: 'center', flex: 1 }}>
               <div style={{ fontSize: 18, color: COLORS.success, fontFamily: "'Inter', sans-serif" }}>{getAvgHabitStrength(habits, records)}</div>
-              <div style={{ fontSize: 10, color: COLORS.textDim }}>Fuerza</div>
+              <div style={{ fontSize: 'var(--font-size-xs)', color: COLORS.textDim }}>Fuerza</div>
             </div>
           </div>
         </div>
@@ -18093,7 +18190,7 @@ const SettingsView = ({ data, onUpdateUser, onResetData, cloudSync, onGenerateRa
             <Search size={16} style={{ verticalAlign: 'middle', marginRight: 6, color: COLORS.primary }} />
             YouTube API Key
           </h3>
-          <div style={{ fontSize: 11, color: COLORS.textDim, marginBottom: 12, lineHeight: 1.5 }}>
+          <div style={{ fontSize: 'var(--font-size-xs)', color: COLORS.textDim, marginBottom: 12, lineHeight: 1.5 }}>
             Necesits una API Key de YouTube Data API v3 para buscar videos. Es gratis y sin tarjeta de crédito.
             Obtenela en <span style={{ color: COLORS.primary, cursor: 'pointer' }} onClick={() => window.open('https://console.cloud.google.com/apis/credentials', '_blank')}>console.cloud.google.com</span>.
           </div>
@@ -18116,7 +18213,7 @@ const SettingsView = ({ data, onUpdateUser, onResetData, cloudSync, onGenerateRa
                 background: COLORS.primary,
                 color: '#fff',
                 cursor: 'pointer',
-                fontSize: 12,
+                fontSize: 'var(--font-size-sm)',
                 fontFamily: "'Inter', sans-serif",
                 fontWeight: 800,
                 whiteSpace: 'nowrap'
@@ -18133,7 +18230,7 @@ const SettingsView = ({ data, onUpdateUser, onResetData, cloudSync, onGenerateRa
                   if (showApiKey) { setShowApiKey(false); setApiPwd(''); setApiPwdError(''); }
                   else if (!user.youtubeKeyPassword) { setShowApiKey(true); }
                   else { setShowApiKey(true); }
-                }} style={{ background: 'none', border: 'none', color: COLORS.textDim, cursor: 'pointer', fontSize: 12, padding: 2 }}>
+                }} style={{ background: 'none', border: 'none', color: COLORS.textDim, cursor: 'pointer', fontSize: 'var(--font-size-sm)', padding: 2 }}>
                   {showApiKey  ? <EyeOff size={14} /> : <Eye size={14} />}
                 </button>
               </div>
@@ -18143,40 +18240,40 @@ const SettingsView = ({ data, onUpdateUser, onResetData, cloudSync, onGenerateRa
                   <input type="password" value={apiPwd} onChange={e => { setApiPwd(e.target.value); setApiPwdError(''); }}
                     placeholder="Contraseña para ver la key"
                     style={{ flex: 1, padding: '8px 12px', background: COLORS.bg, border: `1px solid ${apiPwdError  ? COLORS.alert : COLORS.border}`,
-                      borderRadius: 6, color: COLORS.text, fontSize: 12, outline: 'none', fontFamily: "'Inter', sans-serif" }} />
+                      borderRadius: 6, color: COLORS.text, fontSize: 'var(--font-size-sm)', outline: 'none', fontFamily: "'Inter', sans-serif" }} />
                   <button onClick={() => {
                     if (apiPwd === user.youtubeKeyPassword) { setShowApiKey(true); setApiPwdError(''); }
                     else { setApiPwdError('Contraseña incorrecta'); }
-                  }} style={{ padding: '8px 14px', borderRadius: 6, border: 'none', background: COLORS.primary, color: '#fff', cursor: 'pointer', fontSize: 12, fontFamily: "'Inter', sans-serif" }}>Ver</button>
+                  }} style={{ padding: '8px 14px', borderRadius: 6, border: 'none', background: COLORS.primary, color: '#fff', cursor: 'pointer', fontSize: 'var(--font-size-sm)', fontFamily: "'Inter', sans-serif" }}>Ver</button>
                 </div>
               )}
-              {apiPwdError && <div style={{ fontSize: 11, color: COLORS.alert }}>{apiPwdError}</div>}
+              {apiPwdError && <div style={{ fontSize: 'var(--font-size-xs)', color: COLORS.alert }}>{apiPwdError}</div>}
 
               {showApiKey && (
                 <div style={{ display: 'flex', gap: 8 }}>
                   <input type="text" value={user.youtubeApiKey} onChange={e => onUpdateUser({ youtubeApiKey: e.target.value })}
                     style={{ flex: 1, padding: '8px 12px', background: COLORS.bg, border: `1px solid ${COLORS.border}`,
-                      borderRadius: 6, color: COLORS.text, fontSize: 12, outline: 'none', fontFamily: "'Inter', sans-serif" }} />
+                      borderRadius: 6, color: COLORS.text, fontSize: 'var(--font-size-sm)', outline: 'none', fontFamily: "'Inter', sans-serif" }} />
                   {!user.youtubeKeyPassword && (
                     <div style={{ display: 'flex', gap: 8 }}>
                       <input type="password" value={newApiPwd} onChange={e => setNewApiPwd(e.target.value)}
                         placeholder="Crear contraseña" style={{ width: 120, padding: '8px 12px', background: COLORS.bg, border: `1px solid ${COLORS.border}`,
-                          borderRadius: 6, color: COLORS.text, fontSize: 12, outline: 'none', fontFamily: "'Inter', sans-serif" }} />
+                          borderRadius: 6, color: COLORS.text, fontSize: 'var(--font-size-sm)', outline: 'none', fontFamily: "'Inter', sans-serif" }} />
                       <button onClick={() => { if (newApiPwd) { onUpdateUser({ youtubeKeyPassword: newApiPwd }); setNewApiPwd(''); } }}
-                        style={{ padding: '8px 12px', borderRadius: 6, border: 'none', background: COLORS.success, color: '#000', cursor: 'pointer', fontSize: 11, fontFamily: "'Inter', sans-serif", whiteSpace: 'nowrap' }}>{'\u{1F512}'} Fijar</button>
+                        style={{ padding: '8px 12px', borderRadius: 6, border: 'none', background: COLORS.success, color: '#000', cursor: 'pointer', fontSize: 'var(--font-size-xs)', fontFamily: "'Inter', sans-serif", whiteSpace: 'nowrap' }}>{'\u{1F512}'} Fijar</button>
                     </div>
                   )}
                   {showDeleteConfirm  ? (
                     <div style={{ display: 'flex', gap: 4 }}>
                       <button onClick={() => { onUpdateUser({ youtubeApiKey: '', youtubeKeyPassword: '' }); setShowApiKey(false); setShowDeleteConfirm(false); }}
-                        style={{ padding: '8px 10px', borderRadius: 6, border: 'none', background: COLORS.alert, color: '#fff', cursor: 'pointer', fontSize: 11, fontFamily: "'Inter', sans-serif" }}>Confirmar</button>
+                        style={{ padding: '8px 10px', borderRadius: 6, border: 'none', background: COLORS.alert, color: '#fff', cursor: 'pointer', fontSize: 'var(--font-size-xs)', fontFamily: "'Inter', sans-serif" }}>Confirmar</button>
                       <button onClick={() => setShowDeleteConfirm(false)}
-                        style={{ padding: '8px 10px', borderRadius: 6, border: `1px solid ${COLORS.border}`, background: 'transparent', color: COLORS.textDim, cursor: 'pointer', fontSize: 11, fontFamily: "'Inter', sans-serif" }}>Cancelar</button>
+                        style={{ padding: '8px 10px', borderRadius: 6, border: `1px solid ${COLORS.border}`, background: 'transparent', color: COLORS.textDim, cursor: 'pointer', fontSize: 'var(--font-size-xs)', fontFamily: "'Inter', sans-serif" }}>Cancelar</button>
                     </div>
                   ) : (
                     <button onClick={() => setShowDeleteConfirm(true)} style={{
                       padding: '8px 12px', borderRadius: 6, border: `1px solid ${COLORS.alert}`,
-                      background: 'transparent', color: COLORS.alert, cursor: 'pointer', fontSize: 11, fontFamily: "'Inter', sans-serif"
+                      background: 'transparent', color: COLORS.alert, cursor: 'pointer', fontSize: 'var(--font-size-xs)', fontFamily: "'Inter', sans-serif"
                     }}><Trash2 size={12} style={{ verticalAlign: 'middle', marginRight: 4 }} /> Eliminar</button>
                   )}
                 </div>
@@ -18392,7 +18489,7 @@ class ErrorBoundary extends React.Component {
             Error en la visualizaci\u00f3n
           </h2>
           <p style={{ color: '#e8e8f0', marginBottom: 12 }}>{this.state.error.message}</p>
-          <pre style={{ background: '#1a1a26', padding: 16, borderRadius: 8, fontSize: 12, color: '#8888a0', overflowX: 'auto' }}>
+          <pre style={{ background: '#1a1a26', padding: 16, borderRadius: 8, fontSize: 'var(--font-size-sm)', color: '#8888a0', overflowX: 'auto' }}>
             {this.state.error.stack}
           </pre>
           <button onClick={() => this.setState({ error: null })}
@@ -19274,7 +19371,7 @@ const PomodoroView = ({ data, onUpdateUser, onUpdatePomodoro, quickAction, onQui
           <div style={{ fontSize: 22, color: COLORS.text, fontFamily: "'DM Serif Display', serif" }}>
             {'\u{1F345}'} Pomodoro
           </div>
-          <div style={{ fontSize: 12, color: COLORS.textDim, marginTop: 4 }}>
+          <div style={{ fontSize: 'var(--font-size-sm)', color: COLORS.textDim, marginTop: 4 }}>
             {todaySessions.length} sesión{String(todaySessions.length) !== '1'  ? 'es' : ''} completadas hoy
           </div>
         </div>
@@ -19284,7 +19381,7 @@ const PomodoroView = ({ data, onUpdateUser, onUpdatePomodoro, quickAction, onQui
               padding: '6px 14px', borderRadius: 8, border: 'none',
               background: mode === m  ? `${COLORS.primary}20` : 'transparent',
               color: mode === m  ? COLORS.primary : COLORS.textDim,
-              cursor: 'pointer', fontSize: 11, fontFamily: "'Inter', sans-serif",
+              cursor: 'pointer', fontSize: 'var(--font-size-xs)', fontFamily: "'Inter', sans-serif",
               borderBottom: mode === m  ? `2px solid ${COLORS.primary}` : '2px solid transparent',
               transition: 'all 0.2s'
             }}>
@@ -19296,24 +19393,24 @@ const PomodoroView = ({ data, onUpdateUser, onUpdatePomodoro, quickAction, onQui
 
       <div className="pomodoro-kpis" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', gap: 12, marginBottom: 24 }}>
         <div style={{ background: COLORS.card, borderRadius: 12, border: `1px solid ${COLORS.border}`, padding: 16, textAlign: 'center' }}>
-          <div style={{ fontSize: 11, color: COLORS.textDim, marginBottom: 4 }}>Sesiones hoy</div>
+          <div style={{ fontSize: 'var(--font-size-xs)', color: COLORS.textDim, marginBottom: 4 }}>Sesiones hoy</div>
           <div style={{ fontSize: 28, color: COLORS.alert, fontFamily: "'Inter', sans-serif", fontWeight: 600 }}>{todaySessions.length}</div>
-          <div style={{ fontSize: 10, color: COLORS.textDim, marginTop: 2 }}>{'\u{2705}'} completadas</div>
+          <div style={{ fontSize: 'var(--font-size-xs)', color: COLORS.textDim, marginTop: 2 }}>{'\u{2705}'} completadas</div>
         </div>
         <div style={{ background: COLORS.card, borderRadius: 12, border: `1px solid ${COLORS.border}`, padding: 16, textAlign: 'center' }}>
-          <div style={{ fontSize: 11, color: COLORS.textDim, marginBottom: 4 }}>Tiempo hoy</div>
+          <div style={{ fontSize: 'var(--font-size-xs)', color: COLORS.textDim, marginBottom: 4 }}>Tiempo hoy</div>
           <div style={{ fontSize: 28, color: COLORS.primary, fontFamily: "'Inter', sans-serif", fontWeight: 600 }}>{totalFocusToday}</div>
-          <div style={{ fontSize: 10, color: COLORS.textDim, marginTop: 2 }}>minutos enfocado</div>
+          <div style={{ fontSize: 'var(--font-size-xs)', color: COLORS.textDim, marginTop: 2 }}>minutos enfocado</div>
         </div>
         <div style={{ background: COLORS.card, borderRadius: 12, border: `1px solid ${COLORS.border}`, padding: 16, textAlign: 'center' }}>
-          <div style={{ fontSize: 11, color: COLORS.textDim, marginBottom: 4 }}>Total sesiones</div>
+          <div style={{ fontSize: 'var(--font-size-xs)', color: COLORS.textDim, marginBottom: 4 }}>Total sesiones</div>
           <div style={{ fontSize: 28, color: COLORS.success, fontFamily: "'Inter', sans-serif", fontWeight: 600 }}>{totalSessions}</div>
-          <div style={{ fontSize: 10, color: COLORS.textDim, marginTop: 2 }}>en total - ~{avgSession}m c/u</div>
+          <div style={{ fontSize: 'var(--font-size-xs)', color: COLORS.textDim, marginTop: 2 }}>en total - ~{avgSession}m c/u</div>
         </div>
         <div style={{ background: COLORS.card, borderRadius: 12, border: `1px solid ${COLORS.border}`, padding: 16, textAlign: 'center' }}>
-          <div style={{ fontSize: 11, color: COLORS.textDim, marginBottom: 4 }}>Mejor racha</div>
+          <div style={{ fontSize: 'var(--font-size-xs)', color: COLORS.textDim, marginBottom: 4 }}>Mejor racha</div>
           <div style={{ fontSize: 28, color: '#ffd93d', fontFamily: "'Inter', sans-serif", fontWeight: 600 }}>{bestStreak}</div>
-          <div style={{ fontSize: 10, color: COLORS.textDim, marginTop: 2 }}>días seguidos</div>
+          <div style={{ fontSize: 'var(--font-size-xs)', color: COLORS.textDim, marginTop: 2 }}>días seguidos</div>
         </div>
       </div>
 
@@ -19328,7 +19425,7 @@ const PomodoroView = ({ data, onUpdateUser, onUpdatePomodoro, quickAction, onQui
               <div style={{ fontSize: 56, color: COLORS.text, fontFamily: "'Inter', sans-serif", lineHeight: 1, fontWeight: 300 }}>
                 {String(minutes).padStart(2, '0')}:{String(seconds).padStart(2, '0')}
               </div>
-              <div style={{ fontSize: 11, color: COLORS.textDim, marginTop: 8, letterSpacing: '0.12em' }}>
+              <div style={{ fontSize: 'var(--font-size-xs)', color: COLORS.textDim, marginTop: 8, letterSpacing: '0.12em' }}>
                 {mode === 'focus'  ? 'ENFOQUE' : mode === 'shortBreak'  ? 'DESCANSO' : 'DESCANSO LARGO'}
               </div>
             </div>
@@ -19359,13 +19456,13 @@ const PomodoroView = ({ data, onUpdateUser, onUpdatePomodoro, quickAction, onQui
           <button onClick={() => setShowGuide(true)} style={{
             marginTop: 16, padding: '9px 14px', borderRadius: 999, border: `1px solid ${COLORS.border}`,
             background: `${COLORS.primary}10`, color: COLORS.text, cursor: 'pointer',
-            fontSize: 12, fontFamily: "'Inter', sans-serif", fontWeight: 800
+            fontSize: 'var(--font-size-sm)', fontFamily: "'Inter', sans-serif", fontWeight: 800
           }}>
             <Sparkles size={14} style={{ verticalAlign: 'middle', marginRight: 6, color: COLORS.primary }} />
             Cómo usar Pomodoro
           </button>
 
-          <div style={{ display: 'flex', gap: 20, marginTop: 20, fontSize: 12, color: COLORS.textDim }}>
+          <div style={{ display: 'flex', gap: 20, marginTop: 20, fontSize: 'var(--font-size-sm)', color: COLORS.textDim }}>
             <span>Enfoque: <span style={{ color: COLORS.text, fontFamily: "'Inter', sans-serif", fontWeight: 500 }}>{settings.focus}m</span></span>
             <span>Descanso: <span style={{ color: COLORS.text, fontFamily: "'Inter', sans-serif", fontWeight: 500 }}>{settings.shortBreak}m</span></span>
             <span>Largo: <span style={{ color: COLORS.text, fontFamily: "'Inter', sans-serif", fontWeight: 500 }}>{settings.longBreak}m</span></span>
@@ -19394,7 +19491,7 @@ const PomodoroView = ({ data, onUpdateUser, onUpdatePomodoro, quickAction, onQui
           <div style={{ background: COLORS.card, borderRadius: 16, border: `1px solid ${COLORS.border}`, padding: 20, flex: 1 }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
               <div style={{ fontSize: 13, color: COLORS.text, fontWeight: 500 }}>{'\u{1F4CA}'} Esta semana</div>
-              <div style={{ fontSize: 11, color: COLORS.textDim }}>
+              <div style={{ fontSize: 'var(--font-size-xs)', color: COLORS.textDim }}>
                 {weeklyData.reduce((s, d) => s + d.minutes, 0)} min total
               </div>
             </div>
@@ -19402,21 +19499,21 @@ const PomodoroView = ({ data, onUpdateUser, onUpdatePomodoro, quickAction, onQui
               <ResponsiveContainer width="100%" height={180}>
                 <BarChart data={weeklyData} margin={{ top: 5, right: 5, bottom: 0, left: -20 }}>
                   <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.04)" vertical={false} />
-                  <XAxis dataKey="label" tick={{ fill: '#8888a0', fontSize: 10 }} axisLine={false} tickLine={false} />
-                  <YAxis tick={{ fill: '#8888a0', fontSize: 9 }} axisLine={false} tickLine={false} />
+                  <XAxis dataKey="label" tick={{ fill: '#8888a0', fontSize: 'var(--font-size-xs)' }} axisLine={false} tickLine={false} />
+                  <YAxis tick={{ fill: '#8888a0', fontSize: 'var(--font-size-2xs)' }} axisLine={false} tickLine={false} />
                   <Tooltip content={({ active, payload }) => {
                     if (!active || !payload?.[0]) return null;
                     const d = payload[0].payload;
                     return <div style={{ background: '#1a1a26', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 8, padding: '8px 12px' }}>
-                      <div style={{ fontSize: 12, color: COLORS.text, marginBottom: 2 }}>{d.label}</div>
-                      <div style={{ fontSize: 11, color: COLORS.alert }}>{d.minutes} min - {d.sessions} sesión{String(d.sessions) !== '1'  ? 'es' : ''}</div>
+                      <div style={{ fontSize: 'var(--font-size-sm)', color: COLORS.text, marginBottom: 2 }}>{d.label}</div>
+                      <div style={{ fontSize: 'var(--font-size-xs)', color: COLORS.alert }}>{d.minutes} min - {d.sessions} sesión{String(d.sessions) !== '1'  ? 'es' : ''}</div>
                     </div>;
                   }} />
                   <Bar dataKey="minutes" name="Minutos" fill={COLORS.alert} radius={[4, 4, 0, 0]} maxBarSize={28} />
                 </BarChart>
               </ResponsiveContainer>
             ) : (
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: 180, color: COLORS.textDim, fontSize: 12 }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: 180, color: COLORS.textDim, fontSize: 'var(--font-size-sm)' }}>
                 Sin datos esta semana
               </div>
             )}
@@ -19426,19 +19523,19 @@ const PomodoroView = ({ data, onUpdateUser, onUpdatePomodoro, quickAction, onQui
             <div style={{ fontSize: 13, color: COLORS.text, fontWeight: 500, marginBottom: 12 }}>{'\u{1F4C8}'} Resumen total</div>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
               <div style={{ background: COLORS.bg, borderRadius: 8, padding: '10px 12px' }}>
-                <div style={{ fontSize: 10, color: COLORS.textDim }}>Horas enfocado</div>
+                <div style={{ fontSize: 'var(--font-size-xs)', color: COLORS.textDim }}>Horas enfocado</div>
                 <div style={{ fontSize: 20, color: COLORS.alert, fontFamily: "'Inter', sans-serif", fontWeight: 600 }}>{(monthlyTotal / 60).toFixed(1)}h</div>
               </div>
               <div style={{ background: COLORS.bg, borderRadius: 8, padding: '10px 12px' }}>
-                <div style={{ fontSize: 10, color: COLORS.textDim }}>Promedio/sesión</div>
+                <div style={{ fontSize: 'var(--font-size-xs)', color: COLORS.textDim }}>Promedio/sesión</div>
                 <div style={{ fontSize: 20, color: COLORS.primary, fontFamily: "'Inter', sans-serif", fontWeight: 600 }}>{avgSession}m</div>
               </div>
               <div style={{ background: COLORS.bg, borderRadius: 8, padding: '10px 12px' }}>
-                <div style={{ fontSize: 10, color: COLORS.textDim }}>días activos</div>
+                <div style={{ fontSize: 'var(--font-size-xs)', color: COLORS.textDim }}>días activos</div>
                 <div style={{ fontSize: 20, color: COLORS.success, fontFamily: "'Inter', sans-serif", fontWeight: 600 }}>{uniqueDates.length}</div>
               </div>
               <div style={{ background: COLORS.bg, borderRadius: 8, padding: '10px 12px' }}>
-                <div style={{ fontSize: 10, color: COLORS.textDim }}>Racha actual</div>
+                <div style={{ fontSize: 'var(--font-size-xs)', color: COLORS.textDim }}>Racha actual</div>
                 <div style={{ fontSize: 20, color: '#ffd93d', fontFamily: "'Inter', sans-serif", fontWeight: 600 }}>{currentStreak}</div>
               </div>
             </div>
@@ -19453,11 +19550,11 @@ const PomodoroView = ({ data, onUpdateUser, onUpdatePomodoro, quickAction, onQui
             {todaySessions.map((s, i) => (
               <div key={i} style={{
                 padding: '6px 12px', borderRadius: 6, background: `${COLORS.success}12`,
-                color: COLORS.success, fontSize: 12, fontFamily: "'Inter', sans-serif",
+                color: COLORS.success, fontSize: 'var(--font-size-sm)', fontFamily: "'Inter', sans-serif",
                 display: 'flex', alignItems: 'center', gap: 4
               }}>
                 {'\u{1F345}'} {s.focusTime}m
-                <span style={{ fontSize: 9, color: COLORS.textDim, opacity: 0.6 }}>
+                <span style={{ fontSize: 'var(--font-size-2xs)', color: COLORS.textDim, opacity: 0.6 }}>
                   {new Date(s.completedAt).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}
                 </span>
               </div>
@@ -19475,7 +19572,7 @@ const PomodoroView = ({ data, onUpdateUser, onUpdatePomodoro, quickAction, onQui
             {!youtubeUnmuted && (
               <button onClick={() => { if (youtubePlayerRef.current) { try { youtubePlayerRef.current.unMute(); setYoutubeUnmuted(true); } catch(ex) {} } }} style={{
                 padding: '4px 10px', borderRadius: 6, border: 'none', background: COLORS.alert, color: '#000',
-                cursor: 'pointer', fontSize: 10, fontFamily: "'Inter', sans-serif"
+                cursor: 'pointer', fontSize: 'var(--font-size-xs)', fontFamily: "'Inter', sans-serif"
               }}>{'\u{1F50A}'} Activar sonido</button>
             )}
             <button onClick={() => { stopYoutube(); }} style={{
@@ -19485,21 +19582,21 @@ const PomodoroView = ({ data, onUpdateUser, onUpdatePomodoro, quickAction, onQui
           <input type="range" min={0} max={duration || 100} value={currentTime || 0}
             onChange={e => { if (youtubePlayerRef.current) { try { youtubePlayerRef.current.seekTo(Number(e.target.value)); } catch(ex) {} } }}
             style={{ width: '100%', accentColor: COLORS.primary, height: 4, cursor: 'pointer' }} />
-          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 10, color: COLORS.textDim, marginTop: 4 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 'var(--font-size-xs)', color: COLORS.textDim, marginTop: 4 }}>
             <span>{formatDuration(Math.floor(currentTime))}</span>
             <span>{formatDuration(Math.floor(duration))}</span>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 6 }}>
-            <span style={{ fontSize: 10, color: COLORS.textDim }}>Vol</span>
+            <span style={{ fontSize: 'var(--font-size-xs)', color: COLORS.textDim }}>Vol</span>
             <input type="range" min={0} max={100} value={volume}
               onChange={e => { const v = Number(e.target.value); setVolume(v); if (youtubePlayerRef.current) { try { youtubePlayerRef.current.setVolume(v); } catch(ex) {} } }}
               style={{ flex: 1, accentColor: COLORS.primary, height: 4, cursor: 'pointer' }} />
-            <span style={{ fontSize: 10, color: COLORS.textDim }}>{volume}%</span>
+            <span style={{ fontSize: 'var(--font-size-xs)', color: COLORS.textDim }}>{volume}%</span>
           </div>
           {currentVideo && !favorites.find(f => f.videoId === currentVideo.videoId) && (
             <button onClick={() => addFavorite(currentVideo.videoId, currentVideo.playlist, currentVideo.label)} style={{
               marginTop: 6, padding: '4px 12px', borderRadius: 6, border: `1px solid ${COLORS.border}`,
-              background: 'transparent', color: COLORS.textDim, cursor: 'pointer', fontSize: 10, fontFamily: "'Inter', sans-serif"
+              background: 'transparent', color: COLORS.textDim, cursor: 'pointer', fontSize: 'var(--font-size-xs)', fontFamily: "'Inter', sans-serif"
             }}>{'\u{2B50}'} Agregar a Favoritos</button>
           )}
         </div>
@@ -19518,25 +19615,25 @@ const PomodoroView = ({ data, onUpdateUser, onUpdatePomodoro, quickAction, onQui
       </div>
 
       {searchLoading && (
-        <div style={{ textAlign: 'center', padding: 20, color: COLORS.textDim, fontSize: 12, marginBottom: 16 }}>
+        <div style={{ textAlign: 'center', padding: 20, color: COLORS.textDim, fontSize: 'var(--font-size-sm)', marginBottom: 16 }}>
           Buscando...
         </div>
       )}
 
       {searchError && (
-        <div style={{ textAlign: 'center', padding: 12, color: COLORS.alert, fontSize: 11, background: COLORS.card, borderRadius: 8, marginBottom: 16 }}>
+        <div style={{ textAlign: 'center', padding: 12, color: COLORS.alert, fontSize: 'var(--font-size-xs)', background: COLORS.card, borderRadius: 8, marginBottom: 16 }}>
           {searchError}
-          <button onClick={closeSearch} style={{ marginLeft: 8, background: 'none', border: 'none', color: COLORS.textDim, cursor: 'pointer', fontSize: 11 }}><X size={11} /></button>
+          <button onClick={closeSearch} style={{ marginLeft: 8, background: 'none', border: 'none', color: COLORS.textDim, cursor: 'pointer', fontSize: 'var(--font-size-xs)' }}><X size={11} /></button>
         </div>
       )}
 
       {searchResults.length > 0 && (
         <div style={{ marginBottom: 24 }}>
           <div style={{ display: 'flex', gap: 8, alignItems: 'center', marginBottom: 8 }}>
-            <div style={{ fontSize: 11, color: COLORS.textDim }}>Resultados ({searchResults.length})</div>
+            <div style={{ fontSize: 'var(--font-size-xs)', color: COLORS.textDim }}>Resultados ({searchResults.length})</div>
             <button onClick={closeSearch} style={{
               marginLeft: 'auto', padding: '4px 10px', borderRadius: 6, border: `1px solid ${COLORS.border}`, background: 'transparent',
-              color: COLORS.textDim, cursor: 'pointer', fontSize: 10, fontFamily: "'Inter', sans-serif"
+              color: COLORS.textDim, cursor: 'pointer', fontSize: 'var(--font-size-xs)', fontFamily: "'Inter', sans-serif"
             }}><X size={10} style={{ verticalAlign: 'middle', marginRight: 3 }} /> Cerrar</button>
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 6, maxHeight: 480, overflowY: 'auto' }}>
@@ -19550,8 +19647,8 @@ const PomodoroView = ({ data, onUpdateUser, onUpdatePomodoro, quickAction, onQui
                 onMouseLeave={e => e.currentTarget.style.borderColor = COLORS.border}>
                 <img src={getThumbnail(v.videoId)} alt="" style={{ width: 80, height: 45, borderRadius: 6, objectFit: 'cover', flexShrink: 0 }} />
                 <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ fontSize: 12, color: COLORS.text, lineHeight: 1.3, marginBottom: 2, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{v.title}</div>
-                  <div style={{ fontSize: 10, color: COLORS.textDim }}>{v.author || ''} {v.author  ? ' - ' : ''} {formatDuration(v.lengthSeconds)}</div>
+                  <div style={{ fontSize: 'var(--font-size-sm)', color: COLORS.text, lineHeight: 1.3, marginBottom: 2, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{v.title}</div>
+                  <div style={{ fontSize: 'var(--font-size-xs)', color: COLORS.textDim }}>{v.author || ''} {v.author  ? ' - ' : ''} {formatDuration(v.lengthSeconds)}</div>
                 </div>
                 <button onClick={(e) => { e.stopPropagation(); addFavorite(v.videoId, '', v.title || v.videoId); }} title="Agregar a favoritos" style={{
                   flexShrink: 0, background: 'none', border: 'none', color: COLORS.textDim, cursor: 'pointer', fontSize: 16, padding: 4
@@ -19564,7 +19661,7 @@ const PomodoroView = ({ data, onUpdateUser, onUpdatePomodoro, quickAction, onQui
 
       {favorites.length > 0 && (
         <div style={{ marginBottom: 24 }}>
-          <div style={{ fontSize: 11, color: COLORS.textDim, marginBottom: 8 }}>{'\u{2B50}'} Favoritos</div>
+          <div style={{ fontSize: 'var(--font-size-xs)', color: COLORS.textDim, marginBottom: 8 }}>{'\u{2B50}'} Favoritos</div>
           <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
             {favorites.map(f => (
               <div key={f.id} style={{
@@ -19575,10 +19672,10 @@ const PomodoroView = ({ data, onUpdateUser, onUpdatePomodoro, quickAction, onQui
               }}>
                 <button onClick={() => playYoutube(f.videoId, f.playlist, f.label)} style={{
                   background: 'none', border: 'none', color: currentVideo?.videoId === f.videoId  ? COLORS.primary : COLORS.text,
-                  cursor: 'pointer', fontSize: 11, fontFamily: "'Inter', sans-serif", padding: 0, whiteSpace: 'nowrap'
+                  cursor: 'pointer', fontSize: 'var(--font-size-xs)', fontFamily: "'Inter', sans-serif", padding: 0, whiteSpace: 'nowrap'
                 }}>{'\u{1F3B5}'} {f.label}</button>
                 <button onClick={() => removeFavorite(f.id)} style={{
-                  background: 'none', border: 'none', color: COLORS.textDim, cursor: 'pointer', fontSize: 12, padding: 0, lineHeight: 1
+                  background: 'none', border: 'none', color: COLORS.textDim, cursor: 'pointer', fontSize: 'var(--font-size-sm)', padding: 0, lineHeight: 1
                 }}><X size={12} /></button>
               </div>
             ))}
@@ -19595,7 +19692,7 @@ const PomodoroView = ({ data, onUpdateUser, onUpdatePomodoro, quickAction, onQui
               { key: 'longBreak', label: 'Descanso largo (min)', min: 5, max: 60 },
             ].map(({ key, label, min, max }) => (
               <div key={key}>
-                <div style={{ fontSize: 12, color: COLORS.textDim, marginBottom: 4 }}>{label}</div>
+                <div style={{ fontSize: 'var(--font-size-sm)', color: COLORS.textDim, marginBottom: 4 }}>{label}</div>
                 <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
                   <input type="range" min={min} max={max} value={localSettings[key]}
                     onChange={e => setLocalSettings(s => ({ ...s, [key]: Number(e.target.value) }))}
@@ -19606,14 +19703,14 @@ const PomodoroView = ({ data, onUpdateUser, onUpdatePomodoro, quickAction, onQui
             ))}
 
             <div style={{ borderTop: `1px solid ${COLORS.border}`, paddingTop: 12 }}>
-              <div style={{ fontSize: 12, color: COLORS.textDim, marginBottom: 8 }}>Sonido ambiental (solo enfoque)</div>
+              <div style={{ fontSize: 'var(--font-size-sm)', color: COLORS.textDim, marginBottom: 8 }}>Sonido ambiental (solo enfoque)</div>
               <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
                 {ambientTypes.map(t => (
                   <button key={t.id} onClick={() => setLocalSettings(s => ({ ...s, ambientSound: t.id }))} style={{
                     padding: '6px 10px', borderRadius: 6, border: `1px solid ${localSettings.ambientSound === t.id  ? COLORS.primary : COLORS.border}`,
                     background: localSettings.ambientSound === t.id  ? `${COLORS.primary}15` : 'transparent',
                     color: localSettings.ambientSound === t.id  ? COLORS.primary : COLORS.textDim,
-                    cursor: 'pointer', fontSize: 11, fontFamily: "'Inter', sans-serif",
+                    cursor: 'pointer', fontSize: 'var(--font-size-xs)', fontFamily: "'Inter', sans-serif",
                     display: 'flex', alignItems: 'center', gap: 4, transition: 'all 0.2s'
                   }}>
                     <span className="fire-emoji">{t.icon}</span> {t.label}
@@ -19622,7 +19719,7 @@ const PomodoroView = ({ data, onUpdateUser, onUpdatePomodoro, quickAction, onQui
               </div>
               {localSettings.ambientSound !== 'none' && (
                 <div style={{ marginTop: 10 }}>
-                  <div style={{ fontSize: 11, color: COLORS.textDim, marginBottom: 4 }}>Volumen: {Math.round((localSettings.ambientVolume ?? 0.3) * 100)}%</div>
+                  <div style={{ fontSize: 'var(--font-size-xs)', color: COLORS.textDim, marginBottom: 4 }}>Volumen: {Math.round((localSettings.ambientVolume ?? 0.3) * 100)}%</div>
                   <input type="range" min={0} max={1} step={0.05} value={localSettings.ambientVolume ?? 0.3}
                     onChange={e => setLocalSettings(s => ({ ...s, ambientVolume: Number(e.target.value) }))}
                     style={{ width: '100%', accentColor: COLORS.primary }} />
@@ -19751,9 +19848,9 @@ const WorkoutTrainTab = ({ workoutData, onUpdateData, setGymMode, awardXp, onCom
       <div className="workout-routine-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
         <h3 style={{ fontSize: 18, color: COLORS.text, fontFamily: "'DM Serif Display', serif" }}>Mis Rutinas</h3>
         <div style={{ display: 'flex', gap: 8 }}>
-          <button onClick={() => setShowAdvisor(true)} style={{ padding: '8px 14px', borderRadius: 8, border: 'none', background: `${COLORS.success}12`, color: COLORS.success, cursor: 'pointer', fontSize: 12, fontFamily: "'Inter', sans-serif", fontWeight: 800 }}><Sparkles size={14} style={{ verticalAlign: 'middle', marginRight: 5 }} /> Asesor IA</button>
-          <button onClick={() => setShowExManager(true)} style={{ padding: '8px 14px', borderRadius: 8, border: 'none', background: COLORS.card, color: COLORS.textDim, cursor: 'pointer', fontSize: 12, fontFamily: "'Inter', sans-serif" }}>Gestionar Ejercicios</button>
-          <button onClick={() => { setEditRoutine(null); setShowNewRoutine(true); }} style={{ padding: '8px 14px', borderRadius: 8, border: 'none', background: `${COLORS.primary}15`, color: COLORS.primary, cursor: 'pointer', fontSize: 12, fontFamily: "'Inter', sans-serif", display: 'flex', alignItems: 'center', gap: 4 }}><Plus size={14} /> Nueva Rutina</button>
+          <button onClick={() => setShowAdvisor(true)} style={{ padding: '8px 14px', borderRadius: 8, border: 'none', background: `${COLORS.success}12`, color: COLORS.success, cursor: 'pointer', fontSize: 'var(--font-size-sm)', fontFamily: "'Inter', sans-serif", fontWeight: 800 }}><Sparkles size={14} style={{ verticalAlign: 'middle', marginRight: 5 }} /> Asesor IA</button>
+          <button onClick={() => setShowExManager(true)} style={{ padding: '8px 14px', borderRadius: 8, border: 'none', background: COLORS.card, color: COLORS.textDim, cursor: 'pointer', fontSize: 'var(--font-size-sm)', fontFamily: "'Inter', sans-serif" }}>Gestionar Ejercicios</button>
+          <button onClick={() => { setEditRoutine(null); setShowNewRoutine(true); }} style={{ padding: '8px 14px', borderRadius: 8, border: 'none', background: `${COLORS.primary}15`, color: COLORS.primary, cursor: 'pointer', fontSize: 'var(--font-size-sm)', fontFamily: "'Inter', sans-serif", display: 'flex', alignItems: 'center', gap: 4 }}><Plus size={14} /> Nueva Rutina</button>
         </div>
       </div>
 
@@ -19769,10 +19866,10 @@ const WorkoutTrainTab = ({ workoutData, onUpdateData, setGymMode, awardXp, onCom
                 <button onClick={() => { setEditRoutine(r); setShowNewRoutine(true); }} style={{ background: 'none', border: 'none', color: COLORS.textDim, cursor: 'pointer', padding: 4 }}><Edit size={14} /></button>
               </div>
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4, marginBottom: 10 }}>
-                {r.muscleGroups.map(mg => <span key={mg} style={{ fontSize: 10, padding: '2px 8px', borderRadius: 4, background: `${MUSCLE_COLORS[mg] || COLORS.primary}20`, color: MUSCLE_COLORS[mg] || COLORS.text }}>{mg}</span>)}
+                {r.muscleGroups.map(mg => <span key={mg} style={{ fontSize: 'var(--font-size-xs)', padding: '2px 8px', borderRadius: 4, background: `${MUSCLE_COLORS[mg] || COLORS.primary}20`, color: MUSCLE_COLORS[mg] || COLORS.text }}>{mg}</span>)}
               </div>
-              <div style={{ fontSize: 12, color: COLORS.textDim, marginBottom: 4 }}>{r.exercises.length} ejercicios - {totalSets} series - ~{Math.floor(estDuration)} min</div>
-              <div style={{ fontSize: 11, color: COLORS.textDim, marginBottom: 16 }}>{last  ? `Última vez: ${daysAgo(last.date)} días` : 'Nunca realizada'}</div>
+              <div style={{ fontSize: 'var(--font-size-sm)', color: COLORS.textDim, marginBottom: 4 }}>{r.exercises.length} ejercicios - {totalSets} series - ~{Math.floor(estDuration)} min</div>
+              <div style={{ fontSize: 'var(--font-size-xs)', color: COLORS.textDim, marginBottom: 16 }}>{last  ? `Última vez: ${daysAgo(last.date)} días` : 'Nunca realizada'}</div>
               <button onClick={() => startRoutine(r)} style={{ width: '100%', padding: '10px', borderRadius: 8, border: 'none', background: `linear-gradient(135deg, ${COLORS.primary}, #7f1028)`, color: '#fff', cursor: 'pointer', fontSize: 14, fontFamily: "'Inter', sans-serif" }}><Play size={14} style={{ verticalAlign: 'middle', marginRight: 4 }} /> Iniciar</button>
             </div>
           );
@@ -19862,7 +19959,7 @@ const WorkoutAdvisorModal = ({ exercises, onSave, onClose }) => {
           <input type="number" min="2" max="6" value={profile.days} onChange={e => setProfile(p => ({ ...p, days: Number(e.target.value || 4) }))} placeholder="Días por semana" style={input} />
           <input type="number" min="25" max="100" value={profile.time} onChange={e => setProfile(p => ({ ...p, time: Number(e.target.value || 60) }))} placeholder="Minutos por sesión" style={input} />
         </div>
-        <div style={{ background: COLORS.bg, border: `1px solid ${COLORS.border}`, borderRadius: 14, padding: 14, color: COLORS.textDim, fontSize: 12, lineHeight: 1.6 }}>
+        <div style={{ background: COLORS.bg, border: `1px solid ${COLORS.border}`, borderRadius: 14, padding: 14, color: COLORS.textDim, fontSize: 'var(--font-size-sm)', lineHeight: 1.6 }}>
           Instrucciones: empieza con un peso que te deje 1-2 repeticiones en reserva. Si completas todas las series dos entrenos seguidos, sube 2.5 kg en tren superior o 5 kg en tren inferior. Descansa bien y no sacrifiques técnica.
         </div>
         <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end' }}>
@@ -19916,10 +20013,10 @@ const RoutineModal = ({ exercises, initial, onSave, onClose, onCreateExercise })
 
   return (
     <Modal isOpen={true} onClose={onClose} title={initial  ? 'Editar Rutina' : 'Nueva Rutina'} width={600}>
-      <div style={{ marginBottom: 16 }}><label style={{ fontSize: 12, color: COLORS.textDim, display: 'block', marginBottom: 4 }}>NOMBRE DE LA RUTINA</label><input value={name} onChange={e => setName(e.target.value)} style={{ width: '100%', padding: '10px 14px', background: COLORS.bg, border: `1px solid ${COLORS.border}`, borderRadius: 8, color: COLORS.text, fontSize: 14, outline: 'none', fontFamily: "'Inter', sans-serif" }} /></div>
+      <div style={{ marginBottom: 16 }}><label style={{ fontSize: 'var(--font-size-sm)', color: COLORS.textDim, display: 'block', marginBottom: 4 }}>NOMBRE DE LA RUTINA</label><input value={name} onChange={e => setName(e.target.value)} style={{ width: '100%', padding: '10px 14px', background: COLORS.bg, border: `1px solid ${COLORS.border}`, borderRadius: 8, color: COLORS.text, fontSize: 14, outline: 'none', fontFamily: "'Inter', sans-serif" }} /></div>
       <div style={{ marginBottom: 12, display: 'flex', gap: 6, flexWrap: 'wrap' }}>
-        <button onClick={() => setMgFilter('all')} style={{ padding: '4px 12px', borderRadius: 12, border: 'none', background: mgFilter === 'all'  ? COLORS.primary : COLORS.bg, color: mgFilter === 'all'  ? '#fff' : COLORS.textDim, cursor: 'pointer', fontSize: 11, fontFamily: "'Inter', sans-serif" }}>Todos</button>
-        {mgs.map(mg => <button key={mg} onClick={() => setMgFilter(mg)} style={{ padding: '4px 12px', borderRadius: 12, border: 'none', background: mgFilter === mg  ? MUSCLE_COLORS[mg] || COLORS.primary : COLORS.bg, color: mgFilter === mg  ? '#fff' : COLORS.textDim, cursor: 'pointer', fontSize: 11, fontFamily: "'Inter', sans-serif" }}>{mg}</button>)}
+        <button onClick={() => setMgFilter('all')} style={{ padding: '4px 12px', borderRadius: 12, border: 'none', background: mgFilter === 'all'  ? COLORS.primary : COLORS.bg, color: mgFilter === 'all'  ? '#fff' : COLORS.textDim, cursor: 'pointer', fontSize: 'var(--font-size-xs)', fontFamily: "'Inter', sans-serif" }}>Todos</button>
+        {mgs.map(mg => <button key={mg} onClick={() => setMgFilter(mg)} style={{ padding: '4px 12px', borderRadius: 12, border: 'none', background: mgFilter === mg  ? MUSCLE_COLORS[mg] || COLORS.primary : COLORS.bg, color: mgFilter === mg  ? '#fff' : COLORS.textDim, cursor: 'pointer', fontSize: 'var(--font-size-xs)', fontFamily: "'Inter', sans-serif" }}>{mg}</button>)}
       </div>
       <div style={{ marginBottom: 10 }}><input value={search} onChange={e => setSearch(e.target.value)} placeholder="Buscar ejercicio..." style={{ width: '100%', padding: '8px 12px', background: COLORS.bg, border: `1px solid ${COLORS.border}`, borderRadius: 8, color: COLORS.text, fontSize: 13, outline: 'none', fontFamily: "'Inter', sans-serif" }} /></div>
       <div style={{ marginBottom: 16, border: `1px solid ${showCustomExercise  ? COLORS.primary + '55' : COLORS.border}`, borderRadius: 12, background: showCustomExercise  ? `${COLORS.primary}08` : COLORS.bg, overflow: 'hidden' }}>
@@ -19928,40 +20025,40 @@ const RoutineModal = ({ exercises, initial, onSave, onClose, onCreateExercise })
             <Plus size={15} color={COLORS.primary} />
             Agregar ejercicio personalizado
           </span>
-          <span style={{ color: COLORS.textDim, fontSize: 11 }}>{showCustomExercise  ? 'Cerrar' : 'Crear'}</span>
+          <span style={{ color: COLORS.textDim, fontSize: 'var(--font-size-xs)' }}>{showCustomExercise  ? 'Cerrar' : 'Crear'}</span>
         </button>
         {showCustomExercise && (
           <div style={{ padding: '0 12px 12px', display: 'grid', gridTemplateColumns: 'minmax(0, 1.4fr) minmax(110px, 0.8fr)', gap: 8 }}>
             <input value={customExercise.name} onChange={e => setCustomExercise(prev => ({ ...prev, name: e.target.value }))} onKeyDown={e => { if (e.key === 'Enter') addCustomExercise(); }} placeholder="Nombre del ejercicio"
               style={{ gridColumn: '1 / -1', padding: '9px 12px', background: COLORS.card, border: `1px solid ${COLORS.border}`, borderRadius: 9, color: COLORS.text, fontSize: 13, outline: 'none', fontFamily: "'Inter', sans-serif" }} />
-            <select value={customExercise.mg} onChange={e => setCustomExercise(prev => ({ ...prev, mg: e.target.value }))} style={{ padding: '8px 10px', background: COLORS.card, border: `1px solid ${COLORS.border}`, borderRadius: 8, color: COLORS.text, fontSize: 12, fontFamily: "'Inter', sans-serif" }}>
+            <select value={customExercise.mg} onChange={e => setCustomExercise(prev => ({ ...prev, mg: e.target.value }))} style={{ padding: '8px 10px', background: COLORS.card, border: `1px solid ${COLORS.border}`, borderRadius: 8, color: COLORS.text, fontSize: 'var(--font-size-sm)', fontFamily: "'Inter', sans-serif" }}>
               {muscleOptions.map(mg => <option key={mg} value={mg}>{mg}</option>)}
             </select>
-            <select value={customExercise.type} onChange={e => setCustomExercise(prev => ({ ...prev, type: e.target.value }))} style={{ padding: '8px 10px', background: COLORS.card, border: `1px solid ${COLORS.border}`, borderRadius: 8, color: COLORS.text, fontSize: 12, fontFamily: "'Inter', sans-serif" }}>
+            <select value={customExercise.type} onChange={e => setCustomExercise(prev => ({ ...prev, type: e.target.value }))} style={{ padding: '8px 10px', background: COLORS.card, border: `1px solid ${COLORS.border}`, borderRadius: 8, color: COLORS.text, fontSize: 'var(--font-size-sm)', fontFamily: "'Inter', sans-serif" }}>
               <option value="fuerza">Fuerza</option>
               <option value="cardio">Cardio</option>
               <option value="peso_corporal">Peso corporal</option>
               <option value="movilidad">Movilidad</option>
             </select>
             <input value={customExercise.equip} onChange={e => setCustomExercise(prev => ({ ...prev, equip: e.target.value }))} placeholder="Equipo"
-              style={{ padding: '8px 10px', background: COLORS.card, border: `1px solid ${COLORS.border}`, borderRadius: 8, color: COLORS.text, fontSize: 12, outline: 'none', fontFamily: "'Inter', sans-serif" }} />
-            <button onClick={addCustomExercise} disabled={!customExercise.name.trim()} style={{ padding: '8px 12px', borderRadius: 8, border: 'none', background: customExercise.name.trim()  ? `linear-gradient(135deg, ${COLORS.primary}, #7f1028)` : COLORS.border, color: customExercise.name.trim()  ? '#fff' : COLORS.textDim, cursor: customExercise.name.trim()  ? 'pointer' : 'default', fontSize: 12, fontFamily: "'Inter', sans-serif", fontWeight: 800 }}>
+              style={{ padding: '8px 10px', background: COLORS.card, border: `1px solid ${COLORS.border}`, borderRadius: 8, color: COLORS.text, fontSize: 'var(--font-size-sm)', outline: 'none', fontFamily: "'Inter', sans-serif" }} />
+            <button onClick={addCustomExercise} disabled={!customExercise.name.trim()} style={{ padding: '8px 12px', borderRadius: 8, border: 'none', background: customExercise.name.trim()  ? `linear-gradient(135deg, ${COLORS.primary}, #7f1028)` : COLORS.border, color: customExercise.name.trim()  ? '#fff' : COLORS.textDim, cursor: customExercise.name.trim()  ? 'pointer' : 'default', fontSize: 'var(--font-size-sm)', fontFamily: "'Inter', sans-serif", fontWeight: 800 }}>
               Agregar
             </button>
           </div>
         )}
       </div>
       <div style={{ maxHeight: 200, overflowY: 'auto', marginBottom: 16, display: 'flex', flexDirection: 'column', gap: 4 }}>
-        {filtered.map(e => <button key={e.id} onClick={() => addEx(e.id)} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '8px 12px', background: 'none', border: 'none', cursor: 'pointer', borderRadius: 8, color: COLORS.text, fontSize: 13, fontFamily: "'Inter', sans-serif", textAlign: 'left' }}><Plus size={14} color={COLORS.primary} />{e.name} <span style={{ fontSize: 10, color: COLORS.textDim }}>- {e.mg}</span></button>)}
+        {filtered.map(e => <button key={e.id} onClick={() => addEx(e.id)} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '8px 12px', background: 'none', border: 'none', cursor: 'pointer', borderRadius: 8, color: COLORS.text, fontSize: 13, fontFamily: "'Inter', sans-serif", textAlign: 'left' }}><Plus size={14} color={COLORS.primary} />{e.name} <span style={{ fontSize: 'var(--font-size-xs)', color: COLORS.textDim }}>- {e.mg}</span></button>)}
       </div>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 16 }}>
         {exs.map((ex, i) => {
           const e = allExercises.find(x => x.id === ex.eid);
           return <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '8px 12px', background: COLORS.bg, borderRadius: 8, flexWrap: 'wrap' }}>
             <div style={{ fontSize: 13, color: COLORS.text, flex: 1, minWidth: 100 }}>{e?.name}</div>
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2 }}><span style={{ fontSize: 9, color: COLORS.textDim }}>Series</span><input type="number" value={ex.sets} onChange={e => updateEx(i, 'sets', Math.max(1, +e.target.value))} style={{ width: 40, padding: '4px 6px', background: COLORS.card, border: `1px solid ${COLORS.border}`, borderRadius: 4, color: COLORS.text, fontSize: 12, textAlign: 'center', fontFamily: "'Inter', sans-serif" }} /></div>
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2 }}><span style={{ fontSize: 9, color: COLORS.textDim }}>Reps</span><input type="number" value={ex.reps} onChange={e => updateEx(i, 'reps', Math.max(1, +e.target.value))} style={{ width: 40, padding: '4px 6px', background: COLORS.card, border: `1px solid ${COLORS.border}`, borderRadius: 4, color: COLORS.text, fontSize: 12, textAlign: 'center', fontFamily: "'Inter', sans-serif" }} /></div>
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2 }}><span style={{ fontSize: 9, color: COLORS.textDim }}>Peso (kg)</span><input type="number" value={ex.weight} onChange={e => updateEx(i, 'weight', Math.max(0, +e.target.value))} step="0.5" style={{ width: 50, padding: '4px 6px', background: COLORS.card, border: `1px solid ${COLORS.border}`, borderRadius: 4, color: COLORS.text, fontSize: 12, textAlign: 'center', fontFamily: "'Inter', sans-serif" }} /></div>
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2 }}><span style={{ fontSize: 'var(--font-size-2xs)', color: COLORS.textDim }}>Series</span><input type="number" value={ex.sets} onChange={e => updateEx(i, 'sets', Math.max(1, +e.target.value))} style={{ width: 40, padding: '4px 6px', background: COLORS.card, border: `1px solid ${COLORS.border}`, borderRadius: 4, color: COLORS.text, fontSize: 'var(--font-size-sm)', textAlign: 'center', fontFamily: "'Inter', sans-serif" }} /></div>
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2 }}><span style={{ fontSize: 'var(--font-size-2xs)', color: COLORS.textDim }}>Reps</span><input type="number" value={ex.reps} onChange={e => updateEx(i, 'reps', Math.max(1, +e.target.value))} style={{ width: 40, padding: '4px 6px', background: COLORS.card, border: `1px solid ${COLORS.border}`, borderRadius: 4, color: COLORS.text, fontSize: 'var(--font-size-sm)', textAlign: 'center', fontFamily: "'Inter', sans-serif" }} /></div>
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2 }}><span style={{ fontSize: 'var(--font-size-2xs)', color: COLORS.textDim }}>Peso (kg)</span><input type="number" value={ex.weight} onChange={e => updateEx(i, 'weight', Math.max(0, +e.target.value))} step="0.5" style={{ width: 50, padding: '4px 6px', background: COLORS.card, border: `1px solid ${COLORS.border}`, borderRadius: 4, color: COLORS.text, fontSize: 'var(--font-size-sm)', textAlign: 'center', fontFamily: "'Inter', sans-serif" }} /></div>
             <button onClick={() => moveEx(i, -1)} disabled={i === 0} style={{ background: 'none', border: 'none', color: COLORS.textDim, cursor: 'pointer', padding: 2 }}><ArrowUp size={14} /></button>
             <button onClick={() => moveEx(i, 1)} disabled={i === exs.length - 1} style={{ background: 'none', border: 'none', color: COLORS.textDim, cursor: 'pointer', padding: 2 }}><ArrowDown size={14} /></button>
             <button onClick={() => removeEx(i)} style={{ background: 'none', border: 'none', color: COLORS.alert, cursor: 'pointer', padding: 2 }}><X size={14} /></button>
@@ -19989,20 +20086,20 @@ const ExerciseManager = ({ exercises, workoutData, onUpdateData, onClose }) => {
   return (
     <Modal isOpen={true} onClose={onClose} title="Gestionar Ejercicios" width={600}>
       <div style={{ display: 'flex', gap: 6, marginBottom: 12, flexWrap: 'wrap' }}>
-        <button onClick={() => setMgFilter('all')} style={{ padding: '4px 12px', borderRadius: 12, border: 'none', background: mgFilter === 'all'  ? COLORS.primary : COLORS.bg, color: mgFilter === 'all'  ? '#fff' : COLORS.textDim, cursor: 'pointer', fontSize: 11, fontFamily: "'Inter', sans-serif" }}>Todos</button>
-        {mgs.map(mg => <button key={mg} onClick={() => setMgFilter(mg)} style={{ padding: '4px 12px', borderRadius: 12, border: 'none', background: mgFilter === mg  ? MUSCLE_COLORS[mg] || COLORS.primary : COLORS.bg, color: mgFilter === mg  ? '#fff' : COLORS.textDim, cursor: 'pointer', fontSize: 11, fontFamily: "'Inter', sans-serif" }}>{mg}</button>)}
+        <button onClick={() => setMgFilter('all')} style={{ padding: '4px 12px', borderRadius: 12, border: 'none', background: mgFilter === 'all'  ? COLORS.primary : COLORS.bg, color: mgFilter === 'all'  ? '#fff' : COLORS.textDim, cursor: 'pointer', fontSize: 'var(--font-size-xs)', fontFamily: "'Inter', sans-serif" }}>Todos</button>
+        {mgs.map(mg => <button key={mg} onClick={() => setMgFilter(mg)} style={{ padding: '4px 12px', borderRadius: 12, border: 'none', background: mgFilter === mg  ? MUSCLE_COLORS[mg] || COLORS.primary : COLORS.bg, color: mgFilter === mg  ? '#fff' : COLORS.textDim, cursor: 'pointer', fontSize: 'var(--font-size-xs)', fontFamily: "'Inter', sans-serif" }}>{mg}</button>)}
       </div>
       <div style={{ display: 'flex', gap: 8, marginBottom: 16 }}>
         <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Buscar..." style={{ flex: 1, padding: '8px 12px', background: COLORS.bg, border: `1px solid ${COLORS.border}`, borderRadius: 8, color: COLORS.text, fontSize: 13, outline: 'none', fontFamily: "'Inter', sans-serif" }} />
-        <button onClick={() => setShowForm(!showForm)} style={{ padding: '8px 16px', borderRadius: 8, border: 'none', background: COLORS.primary, color: '#fff', cursor: 'pointer', fontSize: 12, fontFamily: "'Inter', sans-serif" }}>+ Crear</button>
+        <button onClick={() => setShowForm(!showForm)} style={{ padding: '8px 16px', borderRadius: 8, border: 'none', background: COLORS.primary, color: '#fff', cursor: 'pointer', fontSize: 'var(--font-size-sm)', fontFamily: "'Inter', sans-serif" }}>+ Crear</button>
       </div>
-      {showForm && <div style={{ display: 'flex', gap: 8, marginBottom: 16, flexWrap: 'wrap', padding: 12, background: COLORS.bg, borderRadius: 8 }}><input value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} placeholder="Nombre" style={{ flex: 1, minWidth: 120, padding: '6px 10px', background: COLORS.card, border: `1px solid ${COLORS.border}`, borderRadius: 6, color: COLORS.text, fontSize: 12, fontFamily: "'Inter', sans-serif" }} /><select value={form.mg} onChange={e => setForm(f => ({ ...f, mg: e.target.value }))} style={{ padding: '6px 10px', background: COLORS.card, border: `1px solid ${COLORS.border}`, borderRadius: 6, color: COLORS.text, fontSize: 12, fontFamily: "'Inter', sans-serif" }}>{mgs.map(m => <option key={m} value={m}>{m}</option>)}</select><select value={form.type} onChange={e => setForm(f => ({ ...f, type: e.target.value }))} style={{ padding: '6px 10px', background: COLORS.card, border: `1px solid ${COLORS.border}`, borderRadius: 6, color: COLORS.text, fontSize: 12, fontFamily: "'Inter', sans-serif" }}><option value="fuerza">Fuerza</option><option value="cardio">Cardio</option><option value="peso_corporal">Peso Corporal</option></select><input value={form.equip} onChange={e => setForm(f => ({ ...f, equip: e.target.value }))} placeholder="Equipo" style={{ width: 100, padding: '6px 10px', background: COLORS.card, border: `1px solid ${COLORS.border}`, borderRadius: 6, color: COLORS.text, fontSize: 12, fontFamily: "'Inter', sans-serif" }} /><button onClick={createEx} style={{ padding: '6px 16px', borderRadius: 6, border: 'none', background: COLORS.success, color: '#000', cursor: 'pointer', fontSize: 12, fontFamily: "'Inter', sans-serif" }}>Guardar</button></div>}
+      {showForm && <div style={{ display: 'flex', gap: 8, marginBottom: 16, flexWrap: 'wrap', padding: 12, background: COLORS.bg, borderRadius: 8 }}><input value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} placeholder="Nombre" style={{ flex: 1, minWidth: 120, padding: '6px 10px', background: COLORS.card, border: `1px solid ${COLORS.border}`, borderRadius: 6, color: COLORS.text, fontSize: 'var(--font-size-sm)', fontFamily: "'Inter', sans-serif" }} /><select value={form.mg} onChange={e => setForm(f => ({ ...f, mg: e.target.value }))} style={{ padding: '6px 10px', background: COLORS.card, border: `1px solid ${COLORS.border}`, borderRadius: 6, color: COLORS.text, fontSize: 'var(--font-size-sm)', fontFamily: "'Inter', sans-serif" }}>{mgs.map(m => <option key={m} value={m}>{m}</option>)}</select><select value={form.type} onChange={e => setForm(f => ({ ...f, type: e.target.value }))} style={{ padding: '6px 10px', background: COLORS.card, border: `1px solid ${COLORS.border}`, borderRadius: 6, color: COLORS.text, fontSize: 'var(--font-size-sm)', fontFamily: "'Inter', sans-serif" }}><option value="fuerza">Fuerza</option><option value="cardio">Cardio</option><option value="peso_corporal">Peso Corporal</option></select><input value={form.equip} onChange={e => setForm(f => ({ ...f, equip: e.target.value }))} placeholder="Equipo" style={{ width: 100, padding: '6px 10px', background: COLORS.card, border: `1px solid ${COLORS.border}`, borderRadius: 6, color: COLORS.text, fontSize: 'var(--font-size-sm)', fontFamily: "'Inter', sans-serif" }} /><button onClick={createEx} style={{ padding: '6px 16px', borderRadius: 6, border: 'none', background: COLORS.success, color: '#000', cursor: 'pointer', fontSize: 'var(--font-size-sm)', fontFamily: "'Inter', sans-serif" }}>Guardar</button></div>}
       <div style={{ maxHeight: 400, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: 4 }}>
         {filtered.map(e => <div key={e.id} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '8px 12px', background: COLORS.bg, borderRadius: 8 }}>
           <span style={{ fontSize: 13, color: COLORS.text, flex: 1, fontFamily: "'Inter', sans-serif" }}>{e.name}</span>
-          <span style={{ fontSize: 10, padding: '2px 8px', borderRadius: 4, background: `${MUSCLE_COLORS[e.mg] || COLORS.primary}20`, color: MUSCLE_COLORS[e.mg] || COLORS.text }}>{e.mg}</span>
-          <span style={{ fontSize: 10, color: COLORS.textDim }}>{e.equip}</span>
-          {e.custom && <span style={{ fontSize: 9, padding: '2px 6px', borderRadius: 4, background: `${COLORS.alert}20`, color: COLORS.alert }}>CUSTOM</span>}
+          <span style={{ fontSize: 'var(--font-size-xs)', padding: '2px 8px', borderRadius: 4, background: `${MUSCLE_COLORS[e.mg] || COLORS.primary}20`, color: MUSCLE_COLORS[e.mg] || COLORS.text }}>{e.mg}</span>
+          <span style={{ fontSize: 'var(--font-size-xs)', color: COLORS.textDim }}>{e.equip}</span>
+          {e.custom && <span style={{ fontSize: 'var(--font-size-2xs)', padding: '2px 6px', borderRadius: 4, background: `${COLORS.alert}20`, color: COLORS.alert }}>CUSTOM</span>}
           {e.custom && <button onClick={() => deleteEx(e.id)} style={{ background: 'none', border: 'none', color: COLORS.alert, cursor: 'pointer', padding: 2 }}><Trash2 size={12} /></button>}
         </div>)}
       </div>
@@ -20209,12 +20306,12 @@ const GymMode = ({ gymData, workoutData, onUpdateData, onClose, onSaveSession, o
             ['Mejor 1RM est.', `${summaryStats.bestRm} kg`, '#ffd93d']
           ].map(([label, value, color]) => (
             <div key={label} style={{ background: COLORS.bg, borderRadius: 12, border: `1px solid ${COLORS.border}`, padding: '12px 14px', textAlign: 'center' }}>
-              <div style={{ fontSize: 11, color: COLORS.textDim, marginBottom: 5, fontFamily: "'Inter', sans-serif" }}>{label}</div>
+              <div style={{ fontSize: 'var(--font-size-xs)', color: COLORS.textDim, marginBottom: 5, fontFamily: "'Inter', sans-serif" }}>{label}</div>
               <div style={{ fontSize: 18, color, fontFamily: "'Inter', sans-serif", fontWeight: 900 }}>{value}</div>
             </div>
           ))}
         </div>
-        {prs.length > 0 && <div style={{ marginBottom: 16 }}><div style={{ fontSize: 12, color: '#ffd93d', marginBottom: 8 }}>{'\u{1F3C6}'} Nuevos Récords Personales</div>{prs.map((p, i) => <div key={i} style={{ fontSize: 11, color: COLORS.text, fontFamily: "'Inter', sans-serif" }}>{p.exName}: {p.weight}kg - {p.reps} reps</div>)}</div>}
+        {prs.length > 0 && <div style={{ marginBottom: 16 }}><div style={{ fontSize: 'var(--font-size-sm)', color: '#ffd93d', marginBottom: 8 }}>{'\u{1F3C6}'} Nuevos Récords Personales</div>{prs.map((p, i) => <div key={i} style={{ fontSize: 'var(--font-size-xs)', color: COLORS.text, fontFamily: "'Inter', sans-serif" }}>{p.exName}: {p.weight}kg - {p.reps} reps</div>)}</div>}
         <div style={{ borderTop: `1px solid ${COLORS.border}`, paddingTop: 12, marginBottom: 14 }}>
           <div style={{ color: COLORS.text, fontSize: 13, fontWeight: 800, fontFamily: "'Inter', sans-serif", marginBottom: 8 }}>Duración por ejercicio</div>
           <div style={{ display: 'grid', gap: 6 }}>
@@ -20222,7 +20319,7 @@ const GymMode = ({ gymData, workoutData, onUpdateData, onClose, onSaveSession, o
               const key = e.eid || e.exerciseId;
               const exInfo = getEx(key);
               return (
-                <div key={key} style={{ display: 'flex', justifyContent: 'space-between', gap: 12, padding: '8px 10px', borderRadius: 10, background: COLORS.bg, border: `1px solid ${COLORS.border}`, fontSize: 12, fontFamily: "'Inter', sans-serif" }}>
+                <div key={key} style={{ display: 'flex', justifyContent: 'space-between', gap: 12, padding: '8px 10px', borderRadius: 10, background: COLORS.bg, border: `1px solid ${COLORS.border}`, fontSize: 'var(--font-size-sm)', fontFamily: "'Inter', sans-serif" }}>
                   <span style={{ color: COLORS.text }}>{exInfo?.name || 'Ejercicio'}</span>
                   <span style={{ color: COLORS.primary, fontWeight: 900 }}>{durationLabel(summaryStats.exerciseDurations[key] || 0)}</span>
                 </div>
@@ -20250,13 +20347,13 @@ const GymMode = ({ gymData, workoutData, onUpdateData, onClose, onSaveSession, o
         </div>
         <div style={{ textAlign: 'center' }}>
           <div style={{ fontSize: 18, color: COLORS.text, fontFamily: "'DM Serif Display', serif" }}>{gymData.routine?.name || 'Entreno Libre'}</div>
-          <div style={{ marginTop: 3, fontSize: 11, color: COLORS.textDim, fontFamily: "'Inter', sans-serif" }}>Ejercicio {activeExIdx + 1} de {totalExs}  ? {completedSets}/{totalSets} series</div>
+          <div style={{ marginTop: 3, fontSize: 'var(--font-size-xs)', color: COLORS.textDim, fontFamily: "'Inter', sans-serif" }}>Ejercicio {activeExIdx + 1} de {totalExs}  ? {completedSets}/{totalSets} series</div>
         </div>
         {confirmSkip  ? (
           <div style={{ display: 'flex', gap: 8, alignItems: 'center', justifySelf: 'end' }}>
-            <span style={{ fontSize: 11, color: COLORS.alert }}>¿Salir sin guardar?</span>
-            <button onClick={() => { setConfirmSkip(false); }} style={{ padding: '6px 12px', borderRadius: 6, border: `1px solid ${COLORS.border}`, background: 'transparent', color: COLORS.textDim, cursor: 'pointer', fontSize: 12, fontFamily: "'Inter', sans-serif" }}>No</button>
-            <button onClick={onClose} style={{ padding: '6px 12px', borderRadius: 6, border: 'none', background: COLORS.alert, color: '#fff', cursor: 'pointer', fontSize: 12, fontFamily: "'Inter', sans-serif" }}>S?</button>
+            <span style={{ fontSize: 'var(--font-size-xs)', color: COLORS.alert }}>¿Salir sin guardar?</span>
+            <button onClick={() => { setConfirmSkip(false); }} style={{ padding: '6px 12px', borderRadius: 6, border: `1px solid ${COLORS.border}`, background: 'transparent', color: COLORS.textDim, cursor: 'pointer', fontSize: 'var(--font-size-sm)', fontFamily: "'Inter', sans-serif" }}>No</button>
+            <button onClick={onClose} style={{ padding: '6px 12px', borderRadius: 6, border: 'none', background: COLORS.alert, color: '#fff', cursor: 'pointer', fontSize: 'var(--font-size-sm)', fontFamily: "'Inter', sans-serif" }}>S?</button>
           </div>
         ) : (
           <button onClick={() => setConfirmSkip(true)} style={{ justifySelf: 'end', padding: '8px 16px', borderRadius: 8, border: 'none', background: COLORS.alert + '20', color: COLORS.alert, cursor: 'pointer', fontSize: 13, fontFamily: "'Inter', sans-serif" }}>Terminar</button>
@@ -20264,7 +20361,7 @@ const GymMode = ({ gymData, workoutData, onUpdateData, onClose, onSaveSession, o
       </div>
 
       <div className="workout-session-progress" style={{ padding: '12px 28px', borderBottom: `1px solid ${COLORS.border}` }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, color: COLORS.textDim, marginBottom: 7, fontFamily: "'Inter', sans-serif" }}><span>Progreso del entreno</span><span>{totalSets  ? Math.round((completedSets / totalSets) * 100) : 0}%</span></div>
+        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 'var(--font-size-sm)', color: COLORS.textDim, marginBottom: 7, fontFamily: "'Inter', sans-serif" }}><span>Progreso del entreno</span><span>{totalSets  ? Math.round((completedSets / totalSets) * 100) : 0}%</span></div>
         <div style={{ width: '100%', height: 4, background: COLORS.bg, borderRadius: 2, overflow: 'hidden', display: 'flex' }}>
           {exState.map((ex, i) => <div key={i} style={{ flex: 1, height: '100%', marginRight: 2, borderRadius: 2, background: i < activeExIdx  ? COLORS.success : i === activeExIdx  ? COLORS.primary : COLORS.border }} title={getEx(ex.eid || ex.exerciseId)?.name || ''} />)}
         </div>
@@ -20274,7 +20371,7 @@ const GymMode = ({ gymData, workoutData, onUpdateData, onClose, onSaveSession, o
         <div className="workout-session-main" style={{ flex: 1, overflowY: 'auto', maxWidth: 980, margin: '0 auto', background: COLORS.card, border: `1px solid ${COLORS.border}`, borderRadius: 22, padding: 24, boxShadow: '0 24px 90px rgba(0,0,0,0.16)' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 18 }}>
             <span className="fire-emoji" style={{ fontSize: 34 }}>{getEx(curEx.eid || curEx.exerciseId)?.name?.charAt(0) || '\u{1F3CB}\u{FE0F}'}</span>
-            <div><div style={{ fontSize: 28, color: COLORS.text, fontFamily: "'DM Serif Display', serif" }}>{getEx(curEx.eid || curEx.exerciseId)?.name || 'Ejercicio'}</div><div style={{ display: 'flex', gap: 8, marginTop: 6 }}><span style={{ fontSize: 12, padding: '4px 10px', borderRadius: 999, background: `${MUSCLE_COLORS[getEx(curEx.eid || curEx.exerciseId)?.mg] || COLORS.primary}20`, color: MUSCLE_COLORS[getEx(curEx.eid || curEx.exerciseId)?.mg] || COLORS.text }}>{getEx(curEx.eid || curEx.exerciseId)?.mg || 'Grupo'}</span><span style={{ fontSize: 12, padding: '4px 10px', borderRadius: 999, background: COLORS.bg, color: COLORS.textDim }}>{getEx(curEx.eid || curEx.exerciseId)?.equip || 'Equipo'}</span></div></div>
+            <div><div style={{ fontSize: 28, color: COLORS.text, fontFamily: "'DM Serif Display', serif" }}>{getEx(curEx.eid || curEx.exerciseId)?.name || 'Ejercicio'}</div><div style={{ display: 'flex', gap: 8, marginTop: 6 }}><span style={{ fontSize: 'var(--font-size-sm)', padding: '4px 10px', borderRadius: 999, background: `${MUSCLE_COLORS[getEx(curEx.eid || curEx.exerciseId)?.mg] || COLORS.primary}20`, color: MUSCLE_COLORS[getEx(curEx.eid || curEx.exerciseId)?.mg] || COLORS.text }}>{getEx(curEx.eid || curEx.exerciseId)?.mg || 'Grupo'}</span><span style={{ fontSize: 'var(--font-size-sm)', padding: '4px 10px', borderRadius: 999, background: COLORS.bg, color: COLORS.textDim }}>{getEx(curEx.eid || curEx.exerciseId)?.equip || 'Equipo'}</span></div></div>
           </div>
 
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(145px, 1fr))', gap: 10, marginBottom: 18 }}>
@@ -20283,25 +20380,25 @@ const GymMode = ({ gymData, workoutData, onUpdateData, onClose, onSaveSession, o
               ['Pendientes', pendingSets, COLORS.text]
             ].map(([label, value, color]) => (
               <div key={label} style={{ background: COLORS.bg, border: `1px solid ${COLORS.border}`, borderRadius: 14, padding: '11px 12px' }}>
-                <div style={{ color: COLORS.textDim, fontSize: 10, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.06em', fontFamily: "'Inter', sans-serif", marginBottom: 5 }}>{label}</div>
+                <div style={{ color: COLORS.textDim, fontSize: 'var(--font-size-xs)', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.06em', fontFamily: "'Inter', sans-serif", marginBottom: 5 }}>{label}</div>
                 <div style={{ color, fontSize: 18, fontWeight: 900, fontFamily: "'Inter', sans-serif" }}>{value}</div>
               </div>
             ))}
             <div style={{ background: COLORS.bg, border: `1px solid ${COLORS.border}`, borderRadius: 14, padding: '11px 12px' }}>
-              <div style={{ color: COLORS.textDim, fontSize: 10, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.06em', fontFamily: "'Inter', sans-serif", marginBottom: 7 }}>Descanso</div>
+              <div style={{ color: COLORS.textDim, fontSize: 'var(--font-size-xs)', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.06em', fontFamily: "'Inter', sans-serif", marginBottom: 7 }}>Descanso</div>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                 <input type="number" value={Number(((curEx.rest || 90) / 60).toFixed(1))} min="0" step="0.5" onChange={e => updateCurrentExerciseRestMinutes(e.target.value)} style={{ width: 72, padding: '6px 8px', borderRadius: 9, border: `1px solid ${COLORS.border}`, background: COLORS.bg, color: COLORS.text, fontSize: 14, fontWeight: 900, outline: 'none' }} />
-                <span style={{ color: COLORS.textDim, fontSize: 12, fontFamily: "'Inter', sans-serif" }}>min</span>
+                <span style={{ color: COLORS.textDim, fontSize: 'var(--font-size-sm)', fontFamily: "'Inter', sans-serif" }}>min</span>
               </div>
             </div>
           </div>
 
           <div style={{ marginBottom: 18 }}>
             <div className="workout-set-grid" style={{ display: 'grid', gridTemplateColumns: '70px 1fr 1fr 48px', gap: 8, padding: '10px 14px', background: COLORS.bg, borderRadius: 12, marginBottom: 8 }}>
-              <span style={{ fontSize: 12, color: COLORS.textDim, fontWeight: 800 }}>Serie</span>
-              <span style={{ fontSize: 12, color: COLORS.textDim, fontWeight: 800 }}>Peso (kg)</span>
-              <span style={{ fontSize: 12, color: COLORS.textDim, fontWeight: 800 }}>Reps</span>
-              <span style={{ fontSize: 12, color: COLORS.textDim }}></span>
+              <span style={{ fontSize: 'var(--font-size-sm)', color: COLORS.textDim, fontWeight: 800 }}>Serie</span>
+              <span style={{ fontSize: 'var(--font-size-sm)', color: COLORS.textDim, fontWeight: 800 }}>Peso (kg)</span>
+              <span style={{ fontSize: 'var(--font-size-sm)', color: COLORS.textDim, fontWeight: 800 }}>Reps</span>
+              <span style={{ fontSize: 'var(--font-size-sm)', color: COLORS.textDim }}></span>
             </div>
             {curSets.map((set, idx) => (
               <div className="workout-set-grid" key={idx} style={{ display: 'grid', gridTemplateColumns: '70px 1fr 1fr 48px', gap: 8, padding: '12px 14px', background: set.completed  ? `${COLORS.success}08` : idx === activeSetIdx && !restRunning  ? `${COLORS.primary}10` : 'rgba(255,255,255,0.015)', borderRadius: 12, marginBottom: 6, border: idx === activeSetIdx && !restRunning  ? `1px solid ${COLORS.primary}35` : `1px solid ${COLORS.border}`, transition: 'all 0.2s' }}>
@@ -20317,7 +20414,7 @@ const GymMode = ({ gymData, workoutData, onUpdateData, onClose, onSaveSession, o
                 </div>
               </div>
             ))}
-            <button onClick={addSetToCurrentExercise} style={{ marginTop: 4, padding: '9px 13px', borderRadius: 11, border: `1px dashed ${COLORS.primary}55`, background: `${COLORS.primary}10`, color: COLORS.primary, cursor: 'pointer', fontSize: 12, fontFamily: "'Inter', sans-serif", fontWeight: 800 }}><Plus size={13} style={{ verticalAlign: 'middle', marginRight: 5 }} />Añadir serie</button>
+            <button onClick={addSetToCurrentExercise} style={{ marginTop: 4, padding: '9px 13px', borderRadius: 11, border: `1px dashed ${COLORS.primary}55`, background: `${COLORS.primary}10`, color: COLORS.primary, cursor: 'pointer', fontSize: 'var(--font-size-sm)', fontFamily: "'Inter', sans-serif", fontWeight: 800 }}><Plus size={13} style={{ verticalAlign: 'middle', marginRight: 5 }} />Añadir serie</button>
           </div>
 
           {restRunning && restTime > 0  ? (
@@ -20329,9 +20426,9 @@ const GymMode = ({ gymData, workoutData, onUpdateData, onClose, onSaveSession, o
               </svg>
               <div style={{ fontSize: 48, color: restTime <= 5  ? COLORS.alert : COLORS.secondary, fontFamily: "'Inter', sans-serif" }}>{String(Math.floor(restTime / 60)).padStart(2, '0')}:{String(restTime % 60).padStart(2, '0')}</div>
               <div style={{ display: 'flex', gap: 8, justifyContent: 'center', marginTop: 12 }}>
-                <button onClick={() => setRestTime(t => Math.min(t + 30, 300))} style={{ padding: '6px 12px', borderRadius: 6, border: `1px solid ${COLORS.border}`, background: COLORS.card, color: COLORS.textDim, cursor: 'pointer', fontSize: 11, fontFamily: "'Inter', sans-serif" }}>+30s</button>
-                <button onClick={() => setRestTime(t => Math.max(0, t - 30))} style={{ padding: '6px 12px', borderRadius: 6, border: `1px solid ${COLORS.border}`, background: COLORS.card, color: COLORS.textDim, cursor: 'pointer', fontSize: 11, fontFamily: "'Inter', sans-serif" }}>-30s</button>
-                <button onClick={() => { setRestRunning(false); setRestTime(0); }} style={{ padding: '6px 12px', borderRadius: 6, border: 'none', background: COLORS.primary, color: '#fff', cursor: 'pointer', fontSize: 11, fontFamily: "'Inter', sans-serif" }}>Saltar</button>
+                <button onClick={() => setRestTime(t => Math.min(t + 30, 300))} style={{ padding: '6px 12px', borderRadius: 6, border: `1px solid ${COLORS.border}`, background: COLORS.card, color: COLORS.textDim, cursor: 'pointer', fontSize: 'var(--font-size-xs)', fontFamily: "'Inter', sans-serif" }}>+30s</button>
+                <button onClick={() => setRestTime(t => Math.max(0, t - 30))} style={{ padding: '6px 12px', borderRadius: 6, border: `1px solid ${COLORS.border}`, background: COLORS.card, color: COLORS.textDim, cursor: 'pointer', fontSize: 'var(--font-size-xs)', fontFamily: "'Inter', sans-serif" }}>-30s</button>
+                <button onClick={() => { setRestRunning(false); setRestTime(0); }} style={{ padding: '6px 12px', borderRadius: 6, border: 'none', background: COLORS.primary, color: '#fff', cursor: 'pointer', fontSize: 'var(--font-size-xs)', fontFamily: "'Inter', sans-serif" }}>Saltar</button>
               </div>
             </div>
           ) : (
@@ -20348,7 +20445,7 @@ const GymMode = ({ gymData, workoutData, onUpdateData, onClose, onSaveSession, o
         </div>
 
         <div className="mobile-only" style={{ flexDirection: 'column', gap: 4, padding: '8px 16px', borderTop: `1px solid ${COLORS.border}` }}>
-          <div style={{ fontSize: 10, color: COLORS.textDim, marginBottom: 4, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Ejercicios</div>
+          <div style={{ fontSize: 'var(--font-size-xs)', color: COLORS.textDim, marginBottom: 4, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Ejercicios</div>
           <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
             {exState.map((ex, i) => {
               const exInfo = getEx(ex.eid || ex.exerciseId);
@@ -20358,7 +20455,7 @@ const GymMode = ({ gymData, workoutData, onUpdateData, onClose, onSaveSession, o
                   padding: '4px 10px', borderRadius: 12, border: 'none',
                   background: i === activeExIdx  ? COLORS.primary : COLORS.card,
                   color: i === activeExIdx  ? '#fff' : COLORS.textDim,
-                  cursor: 'pointer', fontSize: 11, fontFamily: "'Inter', sans-serif",
+                  cursor: 'pointer', fontSize: 'var(--font-size-xs)', fontFamily: "'Inter', sans-serif",
                   display: 'flex', alignItems: 'center', gap: 4,
                   opacity: setsDone === ex.sets.length  ? 0.7 : 1
                 }}>
@@ -20369,14 +20466,14 @@ const GymMode = ({ gymData, workoutData, onUpdateData, onClose, onSaveSession, o
           </div>
         </div>
         <div className="gym-sidebar desktop-only" style={{ width: 280, border: `1px solid ${COLORS.border}`, borderRadius: 18, padding: 16, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: 4, background: COLORS.card, alignSelf: 'stretch' }}>
-          <div style={{ fontSize: 11, color: COLORS.textDim, marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Ejercicios</div>
+          <div style={{ fontSize: 'var(--font-size-xs)', color: COLORS.textDim, marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Ejercicios</div>
           {exState.map((ex, i) => {
             const exInfo = getEx(ex.eid || ex.exerciseId);
             const setsDone = ex.sets.filter(s => s.completed).length;
-            return <button key={i} onClick={() => goToExercise(i)} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '8px 10px', borderRadius: 8, border: 'none', background: i === activeExIdx  ? COLORS.primary + '15' : 'transparent', color: COLORS.text, cursor: 'pointer', textAlign: 'left', fontSize: 12, fontFamily: "'Inter', sans-serif" }}>
+            return <button key={i} onClick={() => goToExercise(i)} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '8px 10px', borderRadius: 8, border: 'none', background: i === activeExIdx  ? COLORS.primary + '15' : 'transparent', color: COLORS.text, cursor: 'pointer', textAlign: 'left', fontSize: 'var(--font-size-sm)', fontFamily: "'Inter', sans-serif" }}>
               <span>{setsDone === ex.sets.length  ? '\u{2705}' : i === activeExIdx  ? '\u{1F3CB}\u{FE0F}' : '\u{25CB}'}</span>
               <span style={{ flex: 1, textDecoration: setsDone === ex.sets.length  ? 'line-through' : 'none', opacity: setsDone === ex.sets.length  ? 0.6 : 1 }}>{exInfo?.name || 'Ejercicio'}</span>
-              <span style={{ fontSize: 10, color: COLORS.textDim }}>{setsDone}/{ex.sets.length}</span>
+              <span style={{ fontSize: 'var(--font-size-xs)', color: COLORS.textDim }}>{setsDone}/{ex.sets.length}</span>
             </button>;
           })}
         </div>
@@ -20386,8 +20483,8 @@ const GymMode = ({ gymData, workoutData, onUpdateData, onClose, onSaveSession, o
       {showFitnessToast && (
         <div style={{ position: 'fixed', bottom: 24, left: '50%', transform: 'translateX(-50%)', zIndex: 2001, background: COLORS.card, border: `1px solid ${COLORS.success}40`, borderRadius: 12, padding: '12px 20px', display: 'flex', alignItems: 'center', gap: 12, animation: 'slideIn 0.3s ease-out' }}>
           <span>{'\u{1F4AA}'} ¿Marcar tu hábito de fitness como completado hoy?</span>
-          <button onClick={() => { onCompleteHabit('h2'); setShowFitnessToast(false); }} style={{ padding: '6px 14px', borderRadius: 6, border: 'none', background: COLORS.success, color: '#000', cursor: 'pointer', fontSize: 12, fontFamily: "'Inter', sans-serif" }}>S?</button>
-          <button onClick={() => setShowFitnessToast(false)} style={{ padding: '6px 14px', borderRadius: 6, border: 'none', background: 'transparent', color: COLORS.textDim, cursor: 'pointer', fontSize: 12, fontFamily: "'Inter', sans-serif" }}>No</button>
+          <button onClick={() => { onCompleteHabit('h2'); setShowFitnessToast(false); }} style={{ padding: '6px 14px', borderRadius: 6, border: 'none', background: COLORS.success, color: '#000', cursor: 'pointer', fontSize: 'var(--font-size-sm)', fontFamily: "'Inter', sans-serif" }}>S?</button>
+          <button onClick={() => setShowFitnessToast(false)} style={{ padding: '6px 14px', borderRadius: 6, border: 'none', background: 'transparent', color: COLORS.textDim, cursor: 'pointer', fontSize: 'var(--font-size-sm)', fontFamily: "'Inter', sans-serif" }}>No</button>
         </div>
       )}
     </div>
@@ -20424,11 +20521,11 @@ const WorkoutExerciseAdder = ({ workoutData, onAdd, onClose, onUpdateData }) => 
           </div>
         )}
         <div style={{ display: 'flex', gap: 6, marginBottom: 12, flexWrap: 'wrap' }}>
-          <button onClick={() => setMgFilter('all')} style={{ padding: '4px 12px', borderRadius: 12, border: 'none', background: mgFilter === 'all'  ? COLORS.primary : COLORS.bg, color: mgFilter === 'all'  ? '#fff' : COLORS.textDim, cursor: 'pointer', fontSize: 11, fontFamily: "'Inter', sans-serif" }}>Todos</button>
-          {mgs.map(mg => <button key={mg} onClick={() => setMgFilter(mg)} style={{ padding: '4px 12px', borderRadius: 12, border: 'none', background: mgFilter === mg  ? MUSCLE_COLORS[mg] || COLORS.primary : COLORS.bg, color: mgFilter === mg  ? '#fff' : COLORS.textDim, cursor: 'pointer', fontSize: 11, fontFamily: "'Inter', sans-serif" }}>{mg}</button>)}
+          <button onClick={() => setMgFilter('all')} style={{ padding: '4px 12px', borderRadius: 12, border: 'none', background: mgFilter === 'all'  ? COLORS.primary : COLORS.bg, color: mgFilter === 'all'  ? '#fff' : COLORS.textDim, cursor: 'pointer', fontSize: 'var(--font-size-xs)', fontFamily: "'Inter', sans-serif" }}>Todos</button>
+          {mgs.map(mg => <button key={mg} onClick={() => setMgFilter(mg)} style={{ padding: '4px 12px', borderRadius: 12, border: 'none', background: mgFilter === mg  ? MUSCLE_COLORS[mg] || COLORS.primary : COLORS.bg, color: mgFilter === mg  ? '#fff' : COLORS.textDim, cursor: 'pointer', fontSize: 'var(--font-size-xs)', fontFamily: "'Inter', sans-serif" }}>{mg}</button>)}
         </div>
         <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Buscar..." style={{ width: '100%', padding: '8px 12px', background: COLORS.bg, border: `1px solid ${COLORS.border}`, borderRadius: 8, color: COLORS.text, fontSize: 13, marginBottom: 12, outline: 'none', fontFamily: "'Inter', sans-serif" }} />
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>{filtered.map(e => <div key={e.id} style={{ display: 'flex', alignItems: 'center', gap: 4 }}><button onClick={() => onAdd(e.id)} style={{ flex: 1, display: 'flex', alignItems: 'center', gap: 8, padding: '8px 12px', background: 'none', border: 'none', borderRadius: 8, cursor: 'pointer', color: COLORS.text, fontSize: 13, fontFamily: "'Inter', sans-serif", textAlign: 'left' }}><Plus size={14} color={COLORS.primary} />{e.name} <span style={{ fontSize: 10, color: COLORS.textDim }}>- {e.mg}</span></button>{e.custom && <button onClick={() => onUpdateData(wd => ({ ...wd, exercises: wd.exercises.filter(x => x.id !== e.id) }))} style={{ width: 28, height: 28, borderRadius: 6, border: 'none', background: 'transparent', color: COLORS.alert, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: 0.5, flexShrink: 0 }}><Trash2 size={12} /></button>}</div>)}</div>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>{filtered.map(e => <div key={e.id} style={{ display: 'flex', alignItems: 'center', gap: 4 }}><button onClick={() => onAdd(e.id)} style={{ flex: 1, display: 'flex', alignItems: 'center', gap: 8, padding: '8px 12px', background: 'none', border: 'none', borderRadius: 8, cursor: 'pointer', color: COLORS.text, fontSize: 13, fontFamily: "'Inter', sans-serif", textAlign: 'left' }}><Plus size={14} color={COLORS.primary} />{e.name} <span style={{ fontSize: 'var(--font-size-xs)', color: COLORS.textDim }}>- {e.mg}</span></button>{e.custom && <button onClick={() => onUpdateData(wd => ({ ...wd, exercises: wd.exercises.filter(x => x.id !== e.id) }))} style={{ width: 28, height: 28, borderRadius: 6, border: 'none', background: 'transparent', color: COLORS.alert, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: 0.5, flexShrink: 0 }}><Trash2 size={12} /></button>}</div>)}</div>
       </div>
     </div>
   );
@@ -20480,13 +20577,13 @@ const WorkoutCalTab = ({ workoutData }) => {
           <button onClick={nextMonth} style={{ background: 'none', border: 'none', color: COLORS.textDim, cursor: 'pointer' }}><ChevronRight size={20} /></button>
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: 3, marginBottom: 6 }}>
-          {dayLabels.map(d => <div key={d} style={{ fontSize: 10, color: COLORS.textDim, textAlign: 'center', padding: '4px 0' }}>{d}</div>)}
+          {dayLabels.map(d => <div key={d} style={{ fontSize: 'var(--font-size-xs)', color: COLORS.textDim, textAlign: 'center', padding: '4px 0' }}>{d}</div>)}
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: 3 }}>
           {Array.from({ length: firstDay }, (_, i) => <div key={`e${i}`} />)}
           {days.map(d => {
             const isToday = d.dateStr === toYYYYMMDD(new Date());
-            return <div key={d.day} onClick={() => d.session && setSelectedDay(d.session)} style={{ height: 34, display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: 9, background: d.session  ? `${MUSCLE_COLORS[d.session.exercises?.[0]?.muscleGroup] || COLORS.primary}dd` : 'rgba(255,255,255,0.018)', cursor: d.session  ? 'pointer' : 'default', border: isToday  ? `2px solid ${COLORS.primary}` : `1px solid ${COLORS.border}`, fontSize: 12, color: d.session  ? '#000' : COLORS.textDim, fontFamily: "'Inter', sans-serif", fontWeight: d.session  ? 800 : 500 }}>{d.day}</div>;
+            return <div key={d.day} onClick={() => d.session && setSelectedDay(d.session)} style={{ height: 34, display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: 9, background: d.session  ? `${MUSCLE_COLORS[d.session.exercises?.[0]?.muscleGroup] || COLORS.primary}dd` : 'rgba(255,255,255,0.018)', cursor: d.session  ? 'pointer' : 'default', border: isToday  ? `2px solid ${COLORS.primary}` : `1px solid ${COLORS.border}`, fontSize: 'var(--font-size-sm)', color: d.session  ? '#000' : COLORS.textDim, fontFamily: "'Inter', sans-serif", fontWeight: d.session  ? 800 : 500 }}>{d.day}</div>;
           })}
         </div>
       </div>
@@ -20495,20 +20592,20 @@ const WorkoutCalTab = ({ workoutData }) => {
         <div style={{ background: COLORS.card, borderRadius: 16, border: `1px solid ${COLORS.border}`, padding: 20, marginBottom: 24, animation: 'fadeIn 0.2s ease-out' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
             <div style={{ fontSize: 16, color: COLORS.text, fontFamily: "'DM Serif Display', serif" }}>{selectedDay.routineName}</div>
-            <div style={{ fontSize: 12, color: COLORS.textDim, fontFamily: "'Inter', sans-serif" }}>{selectedDay.date} - {selectedDay.durationMinutes} min</div>
+            <div style={{ fontSize: 'var(--font-size-sm)', color: COLORS.textDim, fontFamily: "'Inter', sans-serif" }}>{selectedDay.date} - {selectedDay.durationMinutes} min</div>
           </div>
-          {selectedDay.exercises?.map((ex, i) => <div key={i} style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 0', borderBottom: `1px solid ${COLORS.border}`, fontSize: 12, color: COLORS.text, fontFamily: "'Inter', sans-serif" }}><span>{ex.exerciseName}</span><span style={{ color: COLORS.textDim }}>{ex.sets?.length} sets</span></div>)}
-          <div style={{ fontSize: 12, color: COLORS.textDim, marginTop: 8 }}>Volumen: {selectedDay.totalVolume} kg - Series: {selectedDay.totalSets}</div>
-          {selectedDay.notes && <div style={{ fontSize: 12, color: COLORS.textDim, marginTop: 4, fontStyle: 'italic' }}>"{selectedDay.notes}"</div>}
+          {selectedDay.exercises?.map((ex, i) => <div key={i} style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 0', borderBottom: `1px solid ${COLORS.border}`, fontSize: 'var(--font-size-sm)', color: COLORS.text, fontFamily: "'Inter', sans-serif" }}><span>{ex.exerciseName}</span><span style={{ color: COLORS.textDim }}>{ex.sets?.length} sets</span></div>)}
+          <div style={{ fontSize: 'var(--font-size-sm)', color: COLORS.textDim, marginTop: 8 }}>Volumen: {selectedDay.totalVolume} kg - Series: {selectedDay.totalSets}</div>
+          {selectedDay.notes && <div style={{ fontSize: 'var(--font-size-sm)', color: COLORS.textDim, marginTop: 4, fontStyle: 'italic' }}>"{selectedDay.notes}"</div>}
         </div>
       )}
 
       <div style={{ background: COLORS.card, borderRadius: 16, border: `1px solid ${COLORS.border}`, padding: 18, maxWidth: 780, marginInline: 'auto' }}>
         <div style={{ fontSize: 14, color: COLORS.text, fontFamily: "'DM Serif Display', serif", marginBottom: 12 }}>Resumen del Mes</div>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))', gap: 12 }}>
-          <div style={{ background: COLORS.bg, borderRadius: 8, padding: '12px', textAlign: 'center' }}><div style={{ fontSize: 24, color: COLORS.primary, fontFamily: "'Inter', sans-serif" }}>{thisMonthSessions.length}</div><div style={{ fontSize: 10, color: COLORS.textDim }}>Sesiones</div></div>
-          <div style={{ background: COLORS.bg, borderRadius: 8, padding: '12px', textAlign: 'center' }}><div style={{ fontSize: 24, color: COLORS.success, fontFamily: "'Inter', sans-serif" }}>{totalVol > 999  ? `${(totalVol / 1000).toFixed(1)}k` : totalVol}</div><div style={{ fontSize: 10, color: COLORS.textDim }}>Volumen (kg)</div></div>
-          <div style={{ background: COLORS.bg, borderRadius: 8, padding: '12px', textAlign: 'center' }}><div style={{ fontSize: 24, color: COLORS.alert, fontFamily: "'Inter', sans-serif" }}>{topMg?.[0] || '--'}</div><div style={{ fontSize: 10, color: COLORS.textDim }}>Grupo + Entrenado</div></div>
+          <div style={{ background: COLORS.bg, borderRadius: 8, padding: '12px', textAlign: 'center' }}><div style={{ fontSize: 24, color: COLORS.primary, fontFamily: "'Inter', sans-serif" }}>{thisMonthSessions.length}</div><div style={{ fontSize: 'var(--font-size-xs)', color: COLORS.textDim }}>Sesiones</div></div>
+          <div style={{ background: COLORS.bg, borderRadius: 8, padding: '12px', textAlign: 'center' }}><div style={{ fontSize: 24, color: COLORS.success, fontFamily: "'Inter', sans-serif" }}>{totalVol > 999  ? `${(totalVol / 1000).toFixed(1)}k` : totalVol}</div><div style={{ fontSize: 'var(--font-size-xs)', color: COLORS.textDim }}>Volumen (kg)</div></div>
+          <div style={{ background: COLORS.bg, borderRadius: 8, padding: '12px', textAlign: 'center' }}><div style={{ fontSize: 24, color: COLORS.alert, fontFamily: "'Inter', sans-serif" }}>{topMg?.[0] || '--'}</div><div style={{ fontSize: 'var(--font-size-xs)', color: COLORS.textDim }}>Grupo + Entrenado</div></div>
         </div>
       </div>
     </div>
@@ -20547,7 +20644,7 @@ const WorkoutProgTab = ({ workoutData }) => {
           { label: 'Ejercicios tocados', value: `${trainedExercises}/${exercises.length}`, color: '#ffd93d' }
         ].map(item => (
           <div key={item.label} style={{ background: COLORS.card, borderRadius: 14, border: `1px solid ${COLORS.border}`, padding: 16 }}>
-            <div style={{ color: COLORS.textDim, fontSize: 10, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 8 }}>{item.label}</div>
+            <div style={{ color: COLORS.textDim, fontSize: 'var(--font-size-xs)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 8 }}>{item.label}</div>
             <div style={{ color: item.color, fontSize: 24, fontWeight: 900, fontFamily: "'Inter', sans-serif" }}>{item.value}</div>
           </div>
         ))}
@@ -20558,14 +20655,14 @@ const WorkoutProgTab = ({ workoutData }) => {
         <ResponsiveContainer width="100%" height={230}>
           <BarChart data={weeklyData}>
             <CartesianGrid stroke="rgba(255,255,255,0.05)" vertical={false} />
-            <XAxis dataKey="week" tick={{ fontSize: 10, fill: COLORS.textDim }} />
-            <YAxis tick={{ fontSize: 10, fill: COLORS.textDim }} />
+            <XAxis dataKey="week" tick={{ fontSize: 'var(--font-size-xs)', fill: COLORS.textDim }} />
+            <YAxis tick={{ fontSize: 'var(--font-size-xs)', fill: COLORS.textDim }} />
             <Tooltip />
             <Bar dataKey="sessions" name="Sesiones" fill={COLORS.primary} radius={[5, 5, 0, 0]} />
             <Bar dataKey="volume" name="Volumen" fill={COLORS.success} radius={[5, 5, 0, 0]} />
           </BarChart>
         </ResponsiveContainer>
-        <div style={{ color: COLORS.textDim, fontSize: 11, marginTop: 8 }}>Registros de ejercicios guardados: {totalExerciseLogs}</div>
+        <div style={{ color: COLORS.textDim, fontSize: 'var(--font-size-xs)', marginTop: 8 }}>Registros de ejercicios guardados: {totalExerciseLogs}</div>
       </div>
 
       <div style={{ display: 'flex', gap: 8, alignItems: 'center', marginBottom: 20, flexWrap: 'wrap' }}>
@@ -20580,30 +20677,30 @@ const WorkoutProgTab = ({ workoutData }) => {
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24, marginBottom: 24 }}>
             <div style={{ background: COLORS.card, borderRadius: 16, border: `1px solid ${COLORS.border}`, padding: 20 }}>
               <div style={{ fontSize: 14, color: COLORS.text, marginBottom: 12, fontFamily: "'DM Serif Display', serif" }}>Progresión de Peso Máximo</div>
-              <ResponsiveContainer width="100%" height={250}><LineChart data={chartData}><XAxis dataKey="date" tick={{ fontSize: 10, fill: COLORS.textDim }} /><YAxis tick={{ fontSize: 10, fill: COLORS.textDim }} /><Tooltip /><defs><linearGradient id="rmGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor={COLORS.primary} stopOpacity={0.3} /><stop offset="100%" stopColor={COLORS.primary} stopOpacity={0} /></linearGradient></defs><Line type="monotone" dataKey="rm" stroke={COLORS.primary} strokeWidth={2} dot={{ fill: COLORS.primary, r: 4 }} activeDot={{ r: 6 }} /></LineChart></ResponsiveContainer>
+              <ResponsiveContainer width="100%" height={250}><LineChart data={chartData}><XAxis dataKey="date" tick={{ fontSize: 'var(--font-size-xs)', fill: COLORS.textDim }} /><YAxis tick={{ fontSize: 'var(--font-size-xs)', fill: COLORS.textDim }} /><Tooltip /><defs><linearGradient id="rmGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor={COLORS.primary} stopOpacity={0.3} /><stop offset="100%" stopColor={COLORS.primary} stopOpacity={0} /></linearGradient></defs><Line type="monotone" dataKey="rm" stroke={COLORS.primary} strokeWidth={2} dot={{ fill: COLORS.primary, r: 4 }} activeDot={{ r: 6 }} /></LineChart></ResponsiveContainer>
             </div>
             <div style={{ background: COLORS.card, borderRadius: 16, border: `1px solid ${COLORS.border}`, padding: 20 }}>
               <div style={{ fontSize: 14, color: COLORS.text, marginBottom: 12, fontFamily: "'DM Serif Display', serif" }}>Volumen por Sesión</div>
-              <ResponsiveContainer width="100%" height={250}><BarChart data={chartData}><XAxis dataKey="date" tick={{ fontSize: 10, fill: COLORS.textDim }} /><YAxis tick={{ fontSize: 10, fill: COLORS.textDim }} /><Tooltip /><defs><linearGradient id="volGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor={COLORS.secondary} stopOpacity={0.8} /><stop offset="100%" stopColor={COLORS.secondary} stopOpacity={0.3} /></linearGradient></defs><Bar dataKey="volume" fill="url(#volGrad)" radius={[4, 4, 0, 0]} /></BarChart></ResponsiveContainer>
+              <ResponsiveContainer width="100%" height={250}><BarChart data={chartData}><XAxis dataKey="date" tick={{ fontSize: 'var(--font-size-xs)', fill: COLORS.textDim }} /><YAxis tick={{ fontSize: 'var(--font-size-xs)', fill: COLORS.textDim }} /><Tooltip /><defs><linearGradient id="volGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor={COLORS.secondary} stopOpacity={0.8} /><stop offset="100%" stopColor={COLORS.secondary} stopOpacity={0.3} /></linearGradient></defs><Bar dataKey="volume" fill="url(#volGrad)" radius={[4, 4, 0, 0]} /></BarChart></ResponsiveContainer>
             </div>
           </div>
           <div style={{ background: COLORS.card, borderRadius: 16, border: `1px solid ${COLORS.border}`, padding: 20, marginBottom: 24 }}>
             <div style={{ fontSize: 14, color: COLORS.text, marginBottom: 12, fontFamily: "'DM Serif Display', serif" }}>Frecuencia Semanal</div>
-            <ResponsiveContainer width="100%" height={200}><BarChart data={weeklyData}><XAxis dataKey="week" tick={{ fontSize: 10, fill: COLORS.textDim }} /><YAxis tick={{ fontSize: 10, fill: COLORS.textDim }} /><Tooltip /><Bar dataKey="sessions" fill={COLORS.primary} radius={[4, 4, 0, 0]} /></BarChart></ResponsiveContainer>
+            <ResponsiveContainer width="100%" height={200}><BarChart data={weeklyData}><XAxis dataKey="week" tick={{ fontSize: 'var(--font-size-xs)', fill: COLORS.textDim }} /><YAxis tick={{ fontSize: 'var(--font-size-xs)', fill: COLORS.textDim }} /><Tooltip /><Bar dataKey="sessions" fill={COLORS.primary} radius={[4, 4, 0, 0]} /></BarChart></ResponsiveContainer>
           </div>
         </>
         ) : <EmptyState icon={'\u{1F3CB}\u{FE0F}'} title="Sin datos de entrenos" subtitle="Registra sesiones para ver tu progreso aquí" compact />}
 
       <div style={{ background: COLORS.card, borderRadius: 16, border: `1px solid ${COLORS.border}`, padding: 20, marginBottom: 24 }}>
         <div style={{ fontSize: 16, color: COLORS.text, fontFamily: "'DM Serif Display', serif", marginBottom: 16 }}>{'\u{1F3C6}'} Récords Personales</div>
-        {allPRs.length > 0  ? <div style={{ overflowX: 'auto' }}><table style={{ width: '100%', borderCollapse: 'collapse' }}><thead><tr style={{ borderBottom: `1px solid ${COLORS.border}` }}><th style={{ textAlign: 'left', padding: '8px 12px', fontSize: 10, color: COLORS.textDim }}>EJERCICIO</th><th style={{ textAlign: 'center', padding: '8px 12px', fontSize: 10, color: COLORS.textDim }}>PESO</th><th style={{ textAlign: 'center', padding: '8px 12px', fontSize: 10, color: COLORS.textDim }}>REPS</th><th style={{ textAlign: 'center', padding: '8px 12px', fontSize: 10, color: COLORS.textDim }}>1RM EST.</th><th style={{ textAlign: 'center', padding: '8px 12px', fontSize: 10, color: COLORS.textDim }}>FECHA</th></tr></thead><tbody>{allPRs.map((pr, i) => <tr key={i} style={{ borderBottom: `1px solid ${COLORS.border}` }}><td style={{ padding: '8px 12px', fontSize: 12, color: COLORS.text, fontFamily: "'Inter', sans-serif" }}>{pr.exName} {isNewPR(pr.date) && <span style={{ fontSize: 9, background: COLORS.alert, color: '#fff', padding: '1px 6px', borderRadius: 4, marginLeft: 4 }}>NUEVO</span>}</td><td style={{ textAlign: 'center', padding: '8px 12px', fontSize: 12, color: COLORS.text, fontFamily: "'Inter', sans-serif" }}>{pr.weight} kg</td><td style={{ textAlign: 'center', padding: '8px 12px', fontSize: 12, color: COLORS.textDim, fontFamily: "'Inter', sans-serif" }}>{pr.reps}</td><td style={{ textAlign: 'center', padding: '8px 12px', fontSize: 12, color: COLORS.primary, fontFamily: "'Inter', sans-serif" }}>{calcRM(pr.weight, pr.reps)} kg</td><td style={{ textAlign: 'center', padding: '8px 12px', fontSize: 11, color: COLORS.textDim, fontFamily: "'Inter', sans-serif" }}>{pr.date}</td></tr>)}</tbody></table></div> : <div style={{ textAlign: 'center', padding: 20, color: COLORS.textDim }}>Aún no hay récords personales. ¡A darle!</div>}
+        {allPRs.length > 0  ? <div style={{ overflowX: 'auto' }}><table style={{ width: '100%', borderCollapse: 'collapse' }}><thead><tr style={{ borderBottom: `1px solid ${COLORS.border}` }}><th style={{ textAlign: 'left', padding: '8px 12px', fontSize: 'var(--font-size-xs)', color: COLORS.textDim }}>EJERCICIO</th><th style={{ textAlign: 'center', padding: '8px 12px', fontSize: 'var(--font-size-xs)', color: COLORS.textDim }}>PESO</th><th style={{ textAlign: 'center', padding: '8px 12px', fontSize: 'var(--font-size-xs)', color: COLORS.textDim }}>REPS</th><th style={{ textAlign: 'center', padding: '8px 12px', fontSize: 'var(--font-size-xs)', color: COLORS.textDim }}>1RM EST.</th><th style={{ textAlign: 'center', padding: '8px 12px', fontSize: 'var(--font-size-xs)', color: COLORS.textDim }}>FECHA</th></tr></thead><tbody>{allPRs.map((pr, i) => <tr key={i} style={{ borderBottom: `1px solid ${COLORS.border}` }}><td style={{ padding: '8px 12px', fontSize: 'var(--font-size-sm)', color: COLORS.text, fontFamily: "'Inter', sans-serif" }}>{pr.exName} {isNewPR(pr.date) && <span style={{ fontSize: 'var(--font-size-2xs)', background: COLORS.alert, color: '#fff', padding: '1px 6px', borderRadius: 4, marginLeft: 4 }}>NUEVO</span>}</td><td style={{ textAlign: 'center', padding: '8px 12px', fontSize: 'var(--font-size-sm)', color: COLORS.text, fontFamily: "'Inter', sans-serif" }}>{pr.weight} kg</td><td style={{ textAlign: 'center', padding: '8px 12px', fontSize: 'var(--font-size-sm)', color: COLORS.textDim, fontFamily: "'Inter', sans-serif" }}>{pr.reps}</td><td style={{ textAlign: 'center', padding: '8px 12px', fontSize: 'var(--font-size-sm)', color: COLORS.primary, fontFamily: "'Inter', sans-serif" }}>{calcRM(pr.weight, pr.reps)} kg</td><td style={{ textAlign: 'center', padding: '8px 12px', fontSize: 'var(--font-size-xs)', color: COLORS.textDim, fontFamily: "'Inter', sans-serif" }}>{pr.date}</td></tr>)}</tbody></table></div> : <div style={{ textAlign: 'center', padding: 20, color: COLORS.textDim }}>Aún no hay récords personales. ¡A darle!</div>}
       </div>
 
       <div className="stats-grid-2" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: 12 }}>
-        <div style={{ background: COLORS.card, borderRadius: 12, border: `1px solid ${COLORS.border}`, padding: 16, textAlign: 'center' }}><div style={{ fontSize: 28, color: COLORS.primary, fontFamily: "'Inter', sans-serif" }}>{sessions.length}</div><div style={{ fontSize: 11, color: COLORS.textDim }}>Sesiones Registradas</div></div>
-        <div style={{ background: COLORS.card, borderRadius: 12, border: `1px solid ${COLORS.border}`, padding: 16, textAlign: 'center' }}><div style={{ fontSize: 28, color: COLORS.success, fontFamily: "'Inter', sans-serif" }}>{sessions.reduce((t, s) => t + s.totalVolume, 0) > 999  ? `${(sessions.reduce((t, s) => t + s.totalVolume, 0) / 1000).toFixed(1)}k` : sessions.reduce((t, s) => t + s.totalVolume, 0)}</div><div style={{ fontSize: 11, color: COLORS.textDim }}>Volumen Total (kg)</div></div>
-        <div style={{ background: COLORS.card, borderRadius: 12, border: `1px solid ${COLORS.border}`, padding: 16, textAlign: 'center' }}><div style={{ fontSize: 28, color: COLORS.alert, fontFamily: "'Inter', sans-serif" }}>{exercises.reduce((best, e) => { const c = sessions.filter(s => s.exercises?.some(x => x.exerciseId === e.id)).length; return c > best.count  ? { count: c, name: e.name } : best; }, { count: 0, name: '--' }).name}</div><div style={{ fontSize: 11, color: COLORS.textDim }}>Ejercicio + Frecuente</div></div>
-        <div style={{ background: COLORS.card, borderRadius: 12, border: `1px solid ${COLORS.border}`, padding: 16, textAlign: 'center' }}><div style={{ fontSize: 28, color: '#ffd93d', fontFamily: "'Inter', sans-serif" }}>{Object.entries(sessions.flatMap(s => s.exercises?.map(e => e.muscleGroup) || []).reduce((acc, mg) => { acc[mg] = (acc[mg] || 0) + 1; return acc; }, {})).sort((a, b) => b[1] - a[1])[0]?.[0] || '--'}</div><div style={{ fontSize: 11, color: COLORS.textDim }}>Músculo + Entrenado</div></div>
+        <div style={{ background: COLORS.card, borderRadius: 12, border: `1px solid ${COLORS.border}`, padding: 16, textAlign: 'center' }}><div style={{ fontSize: 28, color: COLORS.primary, fontFamily: "'Inter', sans-serif" }}>{sessions.length}</div><div style={{ fontSize: 'var(--font-size-xs)', color: COLORS.textDim }}>Sesiones Registradas</div></div>
+        <div style={{ background: COLORS.card, borderRadius: 12, border: `1px solid ${COLORS.border}`, padding: 16, textAlign: 'center' }}><div style={{ fontSize: 28, color: COLORS.success, fontFamily: "'Inter', sans-serif" }}>{sessions.reduce((t, s) => t + s.totalVolume, 0) > 999  ? `${(sessions.reduce((t, s) => t + s.totalVolume, 0) / 1000).toFixed(1)}k` : sessions.reduce((t, s) => t + s.totalVolume, 0)}</div><div style={{ fontSize: 'var(--font-size-xs)', color: COLORS.textDim }}>Volumen Total (kg)</div></div>
+        <div style={{ background: COLORS.card, borderRadius: 12, border: `1px solid ${COLORS.border}`, padding: 16, textAlign: 'center' }}><div style={{ fontSize: 28, color: COLORS.alert, fontFamily: "'Inter', sans-serif" }}>{exercises.reduce((best, e) => { const c = sessions.filter(s => s.exercises?.some(x => x.exerciseId === e.id)).length; return c > best.count  ? { count: c, name: e.name } : best; }, { count: 0, name: '--' }).name}</div><div style={{ fontSize: 'var(--font-size-xs)', color: COLORS.textDim }}>Ejercicio + Frecuente</div></div>
+        <div style={{ background: COLORS.card, borderRadius: 12, border: `1px solid ${COLORS.border}`, padding: 16, textAlign: 'center' }}><div style={{ fontSize: 28, color: '#ffd93d', fontFamily: "'Inter', sans-serif" }}>{Object.entries(sessions.flatMap(s => s.exercises?.map(e => e.muscleGroup) || []).reduce((acc, mg) => { acc[mg] = (acc[mg] || 0) + 1; return acc; }, {})).sort((a, b) => b[1] - a[1])[0]?.[0] || '--'}</div><div style={{ fontSize: 'var(--font-size-xs)', color: COLORS.textDim }}>Músculo + Entrenado</div></div>
       </div>
     </div>
   );
@@ -21236,7 +21333,7 @@ const LegacyAgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAg
   const getUpcomingTasks = () => Object.entries(expandedAgenda || {}).filter(([d]) => d >= todayStr).flatMap(([d, ts]) => ts.map(t => normalizeTaskTimes(t, d)).filter(t => !t.completed)).sort((a, b) => (a.dueDate || '').localeCompare(b.dueDate || '') || compareTaskTime(a, b)).slice(0, 3);
   const getAlarmTasks = () => tasks.filter(t => t.alarm && !t.completed);
 
-  const btnBase = { border: 'none', borderRadius: 8, cursor: 'pointer', fontFamily: "'Inter', sans-serif", fontSize: 11, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4, transition: 'all 0.15s' };
+  const btnBase = { border: 'none', borderRadius: 8, cursor: 'pointer', fontFamily: "'Inter', sans-serif", fontSize: 'var(--font-size-xs)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4, transition: 'all 0.15s' };
   const TASK_BLOCK_COLORS = { 1: { bg: '#ff6b6b18', border: '#ff6b6b', text: '#ff6b6b' }, 2: { bg: '#ff9f4318', border: '#ff9f43', text: '#ff9f43' }, 3: { bg: '#e11d4818', border: '#e11d48', text: '#e11d48' }, 4: { bg: '#8888a015', border: '#8888a0', text: '#8888a0' } };
   const getTaskBlockColors = (priority) => TASK_BLOCK_COLORS[Number(priority)] || TASK_BLOCK_COLORS[3];
 
@@ -21261,7 +21358,7 @@ const LegacyAgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAg
               <div style={{ fontSize: 18, fontWeight: 700, fontFamily: "'Inter', sans-serif" }}>{c.value}</div>
               <span className="fire-emoji" style={{ opacity: 0.75 }}>{c.icon}</span>
             </div>
-            <div style={{ fontSize: 9, color: COLORS.textDim, ...s }}>{c.label}</div>
+            <div style={{ fontSize: 'var(--font-size-2xs)', color: COLORS.textDim, ...s }}>{c.label}</div>
           </div>
         ))}
       </div>
@@ -21299,31 +21396,31 @@ const LegacyAgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAg
               overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', ...s
             }} onDoubleClick={e => { e.stopPropagation(); startEdit(task); }}>
               {!hideTime && taskStartTime && !compact && (
-                <span style={{ color: pc.text, fontWeight: 600, marginRight: 5, fontSize: 11 }}>{taskTimeLabel}</span>
+                <span style={{ color: pc.text, fontWeight: 600, marginRight: 5, fontSize: 'var(--font-size-xs)' }}>{taskTimeLabel}</span>
               )}
               {task.text}
             </div>
             {!compact && (
               <div style={{ display: 'flex', gap: 4, marginTop: 2, alignItems: 'center' }}>
-                {taskStartTime && <span style={{ fontSize: 9, color: pc.text, fontWeight: 500, ...s }}>{taskTimeLabel}</span>}
-                {taskStartTime && taskEndTime && <span style={{ fontSize: 8, color: COLORS.textDim, ...s }}>({formatDuration(taskStartTime, taskEndTime)})</span>}
-                {!hideTime && !taskStartTime && <span style={{ fontSize: 8, color: COLORS.textDim + '88', ...s }}>Sin hora</span>}
-                {task.category && <span style={{ fontSize: 8, padding: '1px 5px', borderRadius: 3, background: `${COLORS.textDim}12`, color: COLORS.textDim + 'cc', ...s }}>{task.category}</span>}
+                {taskStartTime && <span style={{ fontSize: 'var(--font-size-2xs)', color: pc.text, fontWeight: 500, ...s }}>{taskTimeLabel}</span>}
+                {taskStartTime && taskEndTime && <span style={{ fontSize: 'var(--font-size-2xs)', color: COLORS.textDim, ...s }}>({formatDuration(taskStartTime, taskEndTime)})</span>}
+                {!hideTime && !taskStartTime && <span style={{ fontSize: 'var(--font-size-2xs)', color: COLORS.textDim + '88', ...s }}>Sin hora</span>}
+                {task.category && <span style={{ fontSize: 'var(--font-size-2xs)', padding: '1px 5px', borderRadius: 3, background: `${COLORS.textDim}12`, color: COLORS.textDim + 'cc', ...s }}>{task.category}</span>}
                 {task.alarm && <Clock size={10} color={COLORS.primary} />}
                 {task.recurrence && task.recurrence !== 'none' && <Repeat size={10} color={COLORS.primary} />}
-                {getTaskIntervalMinutes(task) > 0 && <span style={{ fontSize: 8, color: COLORS.primary, background: `${COLORS.primary}10`, padding: '1px 5px', borderRadius: 999, ...s }}>{getTaskIntervalLabel(task)}</span>}
-                {task.status === 'in_progress' && <span style={{ fontSize: 8, color: COLORS.primary, fontWeight: 600, ...s }}>{'\u{25CF}'}</span>}
+                {getTaskIntervalMinutes(task) > 0 && <span style={{ fontSize: 'var(--font-size-2xs)', color: COLORS.primary, background: `${COLORS.primary}10`, padding: '1px 5px', borderRadius: 999, ...s }}>{getTaskIntervalLabel(task)}</span>}
+                {task.status === 'in_progress' && <span style={{ fontSize: 'var(--font-size-2xs)', color: COLORS.primary, fontWeight: 600, ...s }}>{'\u{25CF}'}</span>}
               </div>
             )}
           </div>
           {!compact && (
             <div style={{ display: 'flex', gap: 2, flexShrink: 0 }}>
               {!taskStartTime && <button onClick={e => { e.stopPropagation(); const n = new Date(); updateTaskStartTime(task.id, `${String(n.getHours()).padStart(2,'0')}:${String(n.getMinutes()).padStart(2,'0')}`); }}
-                style={{ ...btnBase, width: 22, height: 22, background: 'transparent', color: COLORS.primary + '99', fontSize: 10 }}><Clock size={11} /></button>}
+                style={{ ...btnBase, width: 22, height: 22, background: 'transparent', color: COLORS.primary + '99', fontSize: 'var(--font-size-xs)' }}><Clock size={11} /></button>}
               <button onClick={e => { e.stopPropagation(); openTaskModal(task); }}
-                style={{ ...btnBase, width: 22, height: 22, background: 'transparent', color: COLORS.textDim + '77', fontSize: 10 }}><Edit size={11} /></button>
+                style={{ ...btnBase, width: 22, height: 22, background: 'transparent', color: COLORS.textDim + '77', fontSize: 'var(--font-size-xs)' }}><Edit size={11} /></button>
               <button onClick={e => { e.stopPropagation(); requestDeleteTask(task); }}
-                style={{ ...btnBase, width: 22, height: 22, background: 'transparent', color: COLORS.textDim + '55', fontSize: 10 }}><X size={11} /></button>
+                style={{ ...btnBase, width: 22, height: 22, background: 'transparent', color: COLORS.textDim + '55', fontSize: 'var(--font-size-xs)' }}><X size={11} /></button>
             </div>
           )}
         </div>
@@ -21331,20 +21428,20 @@ const LegacyAgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAg
           <div style={{ padding: '8px 0 2px 22px', borderTop: `1px solid ${COLORS.border}`, marginTop: 5 }}>
             <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap', marginBottom: 4, alignItems: 'center' }}>
               <input type="date" value={task.dueDate || dateStr} onClick={e => openNativeDatePicker(e.currentTarget)} onFocus={e => openNativeDatePicker(e.currentTarget)} onChange={e => handleDueDateChange(task.id, e.target.value)}
-                style={{ padding: '2px 6px', borderRadius: 5, border: `1px solid ${COLORS.border}`, background: COLORS.surface, color: COLORS.text, fontSize: 9, ...s, outline: 'none', width: 100, cursor: 'pointer' }} />
+                style={{ padding: '2px 6px', borderRadius: 5, border: `1px solid ${COLORS.border}`, background: COLORS.surface, color: COLORS.text, fontSize: 'var(--font-size-2xs)', ...s, outline: 'none', width: 100, cursor: 'pointer' }} />
               <input type="time" value={taskStartTime || ''} onChange={e => updateTaskStartTime(task.id, e.target.value)}
-                style={{ padding: '2px 6px', borderRadius: 5, border: `1px solid ${COLORS.border}`, background: COLORS.surface, color: COLORS.text, fontSize: 9, ...s, outline: 'none', width: 65 }} />
+                style={{ padding: '2px 6px', borderRadius: 5, border: `1px solid ${COLORS.border}`, background: COLORS.surface, color: COLORS.text, fontSize: 'var(--font-size-2xs)', ...s, outline: 'none', width: 65 }} />
               <input type="time" value={taskEndTime || ''} min={taskStartTime || undefined} onChange={e => updateTaskEndTime(task.id, e.target.value)}
-                style={{ padding: '2px 6px', borderRadius: 5, border: `1px solid ${COLORS.border}`, background: COLORS.surface, color: COLORS.text, fontSize: 9, ...s, outline: 'none', width: 65 }} />
+                style={{ padding: '2px 6px', borderRadius: 5, border: `1px solid ${COLORS.border}`, background: COLORS.surface, color: COLORS.text, fontSize: 'var(--font-size-2xs)', ...s, outline: 'none', width: 65 }} />
               {(taskStartTime || taskEndTime) && <button onClick={() => removeTaskTime(task.id)}
-                style={{ ...btnBase, padding: '2px 6px', background: `${COLORS.alert}08`, color: COLORS.alert, fontSize: 9 }}>Sin hora</button>}
+                style={{ ...btnBase, padding: '2px 6px', background: `${COLORS.alert}08`, color: COLORS.alert, fontSize: 'var(--font-size-2xs)' }}>Sin hora</button>}
               <select value={task.category} onChange={e => updateTaskField(task.id, 'category', e.target.value)}
-                style={{ padding: '2px 6px', borderRadius: 5, border: `1px solid ${COLORS.border}`, background: COLORS.surface, color: COLORS.text, fontSize: 9, ...s, outline: 'none' }}>
+                style={{ padding: '2px 6px', borderRadius: 5, border: `1px solid ${COLORS.border}`, background: COLORS.surface, color: COLORS.text, fontSize: 'var(--font-size-2xs)', ...s, outline: 'none' }}>
                 {taskCategories.map(c => <option key={c.id} value={c.name}>{c.name}</option>)}
               </select>
               <button onClick={() => { if (!task.alarm) requestHabitFlowNotifications(); updateTaskField(task.id, 'alarm', !task.alarm); }}
-                style={{ ...btnBase, padding: '2px 6px', background: task.alarm  ? `${COLORS.primary}15` : `${COLORS.alert}08`, color: task.alarm  ? COLORS.primary : COLORS.alert, fontSize: 9 }}><Clock size={11} /></button>
-              <button onClick={() => openTaskModal(task)} style={{ ...btnBase, padding: '2px 8px', background: `${COLORS.primary}10`, color: COLORS.primary, fontSize: 9 }}>Editar</button>
+                style={{ ...btnBase, padding: '2px 6px', background: task.alarm  ? `${COLORS.primary}15` : `${COLORS.alert}08`, color: task.alarm  ? COLORS.primary : COLORS.alert, fontSize: 'var(--font-size-2xs)' }}><Clock size={11} /></button>
+              <button onClick={() => openTaskModal(task)} style={{ ...btnBase, padding: '2px 8px', background: `${COLORS.primary}10`, color: COLORS.primary, fontSize: 'var(--font-size-2xs)' }}>Editar</button>
             </div>
           </div>
         )}
@@ -21362,11 +21459,11 @@ const LegacyAgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAg
           <div style={{ fontSize: 14, fontWeight: 600, color: COLORS.text, ...s, marginBottom: 4 }}>
             {isToday  ? 'Tu día está libre' : 'No hay tareas para este día'}
           </div>
-          <div style={{ fontSize: 11, color: COLORS.textDim, ...s, marginBottom: 12 }}>
+          <div style={{ fontSize: 'var(--font-size-xs)', color: COLORS.textDim, ...s, marginBottom: 12 }}>
             {isToday  ? 'Añade una tarea o bloquea tiempo para enfocarte' : 'Selecciona otro día o crea una tarea aquí'}
           </div>
           <button onClick={() => { setEditModalTask({ dueDate: dateStr, dueTime: '', startTime: '', endTime: '', priority: inputPrio }); setShowModal(true); }}
-            style={{ ...btnBase, padding: '8px 20px', background: `linear-gradient(135deg, ${COLORS.primary}, #7f1028)`, color: '#fff', margin: '0 auto', fontSize: 12 }}>
+            style={{ ...btnBase, padding: '8px 20px', background: `linear-gradient(135deg, ${COLORS.primary}, #7f1028)`, color: '#fff', margin: '0 auto', fontSize: 'var(--font-size-sm)' }}>
             <Plus size={14} /> Añadir tarea
           </button>
         </div>
@@ -21388,13 +21485,13 @@ const LegacyAgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAg
                 {isCurrent && <div style={{ position: 'absolute', left: 38, right: 0, top: 0, height: 2, background: `linear-gradient(90deg, ${COLORS.primary}, transparent)`, zIndex: 2, pointerEvents: 'none' }} />}
                 <div style={{ width: 40, flexShrink: 0, textAlign: 'center', padding: '4px 0', alignSelf: 'flex-start' }}>
                   {isSectionStart && sectionLabel && (
-                    <div style={{ fontSize: 7, color: COLORS.textDim + '70', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 3 }}>{SECTION_LABELS[sectionLabel]}</div>
+                    <div style={{ fontSize: 'var(--font-size-2xs)', color: COLORS.textDim + '70', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 3 }}>{SECTION_LABELS[sectionLabel]}</div>
                   )}
-                  <div style={{ fontSize: 10, color: isCurrent  ? COLORS.primary : COLORS.textDim + 'bb', fontWeight: isCurrent  ? 700 : 500, background: isCurrent  ? `${COLORS.primary}15` : 'transparent', borderRadius: 4, padding: '0 4px', display: 'inline-block', ...s }}>
+                  <div style={{ fontSize: 'var(--font-size-xs)', color: isCurrent  ? COLORS.primary : COLORS.textDim + 'bb', fontWeight: isCurrent  ? 700 : 500, background: isCurrent  ? `${COLORS.primary}15` : 'transparent', borderRadius: 4, padding: '0 4px', display: 'inline-block', ...s }}>
                     {String(hour).padStart(2, '0')}
                   </div>
                   <button onClick={e => { e.stopPropagation(); setEditModalTask({ dueTime: `${String(hour).padStart(2,'0')}:00`, startTime: `${String(hour).padStart(2,'0')}:00`, endTime: '', dueDate: dateStr, priority: inputPrio }); setShowModal(true); }}
-                    style={{ width: 14, height: 14, borderRadius: '50%', border: 'none', background: 'transparent', cursor: 'pointer', color: COLORS.textDim + '44', fontSize: 9, display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '1px auto', padding: 0 }}>+</button>
+                    style={{ width: 14, height: 14, borderRadius: '50%', border: 'none', background: 'transparent', cursor: 'pointer', color: COLORS.textDim + '44', fontSize: 'var(--font-size-2xs)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '1px auto', padding: 0 }}>+</button>
                   {hour < 23 && <div style={{ width: 1, height: 10, background: isCurrent  ? COLORS.primary : COLORS.border, margin: '0 auto' }} />}
                 </div>
                 <div onClick={() => {
@@ -21402,7 +21499,7 @@ const LegacyAgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAg
                   setShowModal(true);
                 }} style={{ flex: 1, padding: '2px 8px', minHeight: hourTasks.length > 0  ? undefined : 28, borderRadius: 4 }}>
                   {isDrop && hourTasks.length === 0 && (
-                    <div style={{ margin: '3px 0', padding: '6px 10px', borderRadius: 8, border: `1.5px dashed ${COLORS.primary}50`, fontSize: 10, color: COLORS.primary + '88', textAlign: 'center' }}>Soltar aquí</div>
+                    <div style={{ margin: '3px 0', padding: '6px 10px', borderRadius: 8, border: `1.5px dashed ${COLORS.primary}50`, fontSize: 'var(--font-size-xs)', color: COLORS.primary + '88', textAlign: 'center' }}>Soltar aquí</div>
                   )}
                   {hourTasks.map(task => renderTaskBlock(task))}
                 </div>
@@ -21428,7 +21525,7 @@ const LegacyAgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAg
             <div className="agenda-week-day" key={i} onClick={() => { setCurrentDate(d); }}
               style={{ minWidth: 0, overflow: 'hidden', background: isSel  ? `${COLORS.primary}08` : 'transparent', borderRadius: 12, padding: 8, border: `1px solid ${isSel  ? COLORS.primary + '55' : COLORS.border}`, cursor: 'pointer', minHeight: 190, boxSizing: 'border-box', transition: 'border-color 160ms ease, background 160ms ease' }}>
               <div style={{ textAlign: 'center', marginBottom: 8, padding: '6px 0', borderRadius: 9, background: isT  ? `${COLORS.primary}18` : 'transparent', border: isT  ? `1px solid ${COLORS.primary}45` : '1px solid transparent' }}>
-                <div style={{ fontSize: 9, color: isT  ? COLORS.primary : COLORS.textDim, fontWeight: 700, letterSpacing: '0.05em', textTransform: 'uppercase', ...s }}>{DAY_NAMES[i]}</div>
+                <div style={{ fontSize: 'var(--font-size-2xs)', color: isT  ? COLORS.primary : COLORS.textDim, fontWeight: 700, letterSpacing: '0.05em', textTransform: 'uppercase', ...s }}>{DAY_NAMES[i]}</div>
                 <div style={{ fontSize: 20, fontWeight: 800, color: isT  ? COLORS.primary : COLORS.text, lineHeight: 1.1, ...s }}>{d.getDate()}</div>
               </div>
               <div style={{ height: 3, borderRadius: 4, background: COLORS.bg, marginBottom: 8, overflow: 'hidden', opacity: dayTasks.length ? 1 : 0.45 }}>
@@ -21446,17 +21543,17 @@ const LegacyAgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAg
                       overflow: 'hidden'
                     }}>
                       {hasTaskTime(t) && (
-                        <div style={{ color: t.completed  ? COLORS.textDim : taskColors.text, fontSize: 8, fontWeight: 700, marginBottom: 2, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                        <div style={{ color: t.completed  ? COLORS.textDim : taskColors.text, fontSize: 'var(--font-size-2xs)', fontWeight: 700, marginBottom: 2, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                           {getTaskTimeRangeLabel(t)}
                         </div>
                       )}
-                      <div style={{ fontSize: 9.5, fontWeight: 650, textDecoration: t.completed  ? 'line-through' : 'none', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                      <div style={{ fontSize: 'var(--font-size-2xs)', fontWeight: 650, textDecoration: t.completed  ? 'line-through' : 'none', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                         {t.text}
                       </div>
                     </div>
                   );
                 })}
-                {visibleTasks.length > 4 && <div style={{ fontSize: 9, color: COLORS.textDim, textAlign: 'center', fontWeight: 700, paddingTop: 1, ...s }}>+{visibleTasks.length - 4} más</div>}
+                {visibleTasks.length > 4 && <div style={{ fontSize: 'var(--font-size-2xs)', color: COLORS.textDim, textAlign: 'center', fontWeight: 700, paddingTop: 1, ...s }}>+{visibleTasks.length - 4} más</div>}
               </div>
             </div>
           );
@@ -21468,7 +21565,7 @@ const LegacyAgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAg
   const renderMonthView = () => (
     <div style={{ background: COLORS.card, borderRadius: 16, border: `1px solid ${COLORS.border}`, overflow: 'hidden' }}>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7,1fr)', textAlign: 'center', borderBottom: `1px solid ${COLORS.border}` }}>
-        {DAY_NAMES.map(d => <div key={d} style={{ padding: '12px 0', fontSize: 12, color: COLORS.textDim, fontWeight: 700, letterSpacing: '0.02em', ...s }}>{d}</div>)}
+        {DAY_NAMES.map(d => <div key={d} style={{ padding: '12px 0', fontSize: 'var(--font-size-sm)', color: COLORS.textDim, fontWeight: 700, letterSpacing: '0.02em', ...s }}>{d}</div>)}
       </div>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7,1fr)' }}>
         {monthGrid.flat().map((d, i) => {
@@ -21490,13 +21587,13 @@ const LegacyAgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAg
               <div style={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
                 {dayTasks.slice(0, 4).map(t => (
                   <div key={t.id} style={{
-                    padding: '3px 6px', borderRadius: 5, fontSize: 9, lineHeight: 1.25, fontWeight: 600, ...s,
+                    padding: '3px 6px', borderRadius: 5, fontSize: 'var(--font-size-2xs)', lineHeight: 1.25, fontWeight: 600, ...s,
                     background: t.completed  ? `${COLORS.success}15` : getTaskBlockColors(t.priority).bg,
                     color: t.completed  ? COLORS.textDim : getTaskBlockColors(t.priority).text,
                     overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap'
                   }}>{hasTaskTime(t) && <span style={{ marginRight: 4 }}>{getTaskStartTime(t)}</span>}{t.text}</div>
                 ))}
-                {dayTasks.length > 4 && <div style={{ fontSize: 9, color: COLORS.textDim, fontWeight: 700, paddingLeft: 2, ...s }}>+{dayTasks.length - 4}</div>}
+                {dayTasks.length > 4 && <div style={{ fontSize: 'var(--font-size-2xs)', color: COLORS.textDim, fontWeight: 700, paddingLeft: 2, ...s }}>+{dayTasks.length - 4}</div>}
               </div>
             </div>
           );
@@ -21513,13 +21610,13 @@ const LegacyAgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAg
           <div style={{ textAlign: 'center', padding: 40, color: COLORS.textDim }}>
             <div style={{ fontSize: 28, marginBottom: 8, opacity: 0.6 }}>{'\u{1F4CB}'}</div>
             <div style={{ fontSize: 14, fontWeight: 600, color: COLORS.text, ...s, marginBottom: 4 }}>No hay tareas</div>
-            <div style={{ fontSize: 11, color: COLORS.textDim, ...s }}>Prueba a cambiar los filtros o crea una nueva tarea</div>
+            <div style={{ fontSize: 'var(--font-size-xs)', color: COLORS.textDim, ...s }}>Prueba a cambiar los filtros o crea una nueva tarea</div>
           </div>
         ) : filtered.map(([date, ts]) => (
           <div key={date}>
-            <div style={{ padding: '8px 14px', fontSize: 11, color: COLORS.textDim, fontWeight: 600, background: COLORS.bg, borderBottom: `1px solid ${COLORS.border}`, display: 'flex', justifyContent: 'space-between', alignItems: 'center', ...s }}>
+            <div style={{ padding: '8px 14px', fontSize: 'var(--font-size-xs)', color: COLORS.textDim, fontWeight: 600, background: COLORS.bg, borderBottom: `1px solid ${COLORS.border}`, display: 'flex', justifyContent: 'space-between', alignItems: 'center', ...s }}>
               <span>{date === todayStr  ? 'Hoy' : date === toYYYYMMDD(new Date(Date.now() + 86400000))  ? 'Mañana' : new Date(date + 'T12:00:00').toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'short' })}</span>
-              <span style={{ fontSize: 10, color: COLORS.textDim + '88' }}>{ts.length} tareas</span>
+              <span style={{ fontSize: 'var(--font-size-xs)', color: COLORS.textDim + '88' }}>{ts.length} tareas</span>
             </div>
             <div style={{ padding: '5px 10px' }}>
               {ts.map(t => normalizeTaskTimes(t, date)).sort(compareTaskTime).map(t => renderTaskBlock(t))}
@@ -21537,12 +21634,12 @@ const LegacyAgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAg
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
           <button onClick={() => setCurrentDate(d => new Date(d.getFullYear(), d.getMonth() - 1, 1))}
             style={{ width: 22, height: 22, borderRadius: 5, border: 'none', background: COLORS.bg, cursor: 'pointer', color: COLORS.textDim, fontSize: 14, display: 'flex', alignItems: 'center', justifyContent: 'center' }}></button>
-          <span style={{ fontSize: 11, fontWeight: 600, color: COLORS.text, ...s }}>{monthYear}</span>
+          <span style={{ fontSize: 'var(--font-size-xs)', fontWeight: 600, color: COLORS.text, ...s }}>{monthYear}</span>
           <button onClick={() => setCurrentDate(d => new Date(d.getFullYear(), d.getMonth() + 1, 1))}
             style={{ width: 22, height: 22, borderRadius: 5, border: 'none', background: COLORS.bg, cursor: 'pointer', color: COLORS.textDim, fontSize: 14, display: 'flex', alignItems: 'center', justifyContent: 'center' }}></button>
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7,1fr)', gap: 1, textAlign: 'center' }}>
-          {DAY_NAMES.map(d => <div key={d} style={{ fontSize: 8, color: COLORS.textDim, padding: '2px 0', ...s }}>{d}</div>)}
+          {DAY_NAMES.map(d => <div key={d} style={{ fontSize: 'var(--font-size-2xs)', color: COLORS.textDim, padding: '2px 0', ...s }}>{d}</div>)}
           {monthGrid.flat().map((d, i) => {
             const ds = toYYYYMMDD(d);
             const isCurr = d.getMonth() === currentDate.getMonth();
@@ -21553,7 +21650,7 @@ const LegacyAgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAg
               <button key={i} onClick={() => setCurrentDate(new Date(d))} style={{
                 padding: '2px 0', border: 'none', background: isSel  ? COLORS.primary : 'transparent',
                 color: isSel  ? '#fff' : isT  ? COLORS.primary : isCurr  ? COLORS.text : COLORS.textDim + '40',
-                fontSize: 9, fontWeight: isSel || isT  ? 700 : 400, borderRadius: 4, cursor: 'pointer', position: 'relative', ...s
+                fontSize: 'var(--font-size-2xs)', fontWeight: isSel || isT  ? 700 : 400, borderRadius: 4, cursor: 'pointer', position: 'relative', ...s
               }}>
                 {d.getDate()}
                 {cnt > 0 && !isSel && <div style={{ position: 'absolute', bottom: 1, left: '50%', transform: 'translateX(-50%)', width: 3, height: 3, borderRadius: '50%', background: COLORS.primary + '66' }} />}
@@ -21578,10 +21675,10 @@ const LegacyAgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAg
               flex: 1, padding: '8px 4px', border: 'none',
               background: sidebarTab === tab.id  ? `${COLORS.primary}12` : 'transparent',
               color: sidebarTab === tab.id  ? COLORS.primary : COLORS.textDim, cursor: 'pointer',
-              fontSize: 8, fontWeight: 600, ...s,
+              fontSize: 'var(--font-size-2xs)', fontWeight: 600, ...s,
               borderBottom: sidebarTab === tab.id  ? `2px solid ${COLORS.primary}` : 'none',
               transition: 'all 0.15s'
-            }}><div className="fire-emoji" style={{ fontSize: 12, marginBottom: 2 }}>{tab.icon}</div>{tab.label}</button>
+            }}><div className="fire-emoji" style={{ fontSize: 'var(--font-size-sm)', marginBottom: 2 }}>{tab.icon}</div>{tab.label}</button>
           ))}
         </div>
         <div style={{ padding: 8 }}>
@@ -21589,7 +21686,7 @@ const LegacyAgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAg
             untimedTasks.length === 0  ? (
               <div style={{ textAlign: 'center', padding: '16px 8px', color: COLORS.textDim + '99' }}>
                 <div style={{ fontSize: 20, marginBottom: 4 }}>?</div>
-                <div style={{ fontSize: 10, ...s }}>Todo programado</div>
+                <div style={{ fontSize: 'var(--font-size-xs)', ...s }}>Todo programado</div>
               </div>
             ) : untimedTasks.map(task => renderTaskBlock(task, { compact: true }))
           )}
@@ -21597,10 +21694,10 @@ const LegacyAgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAg
             <div>
               {renderMiniCalendar()}
               <div style={{ borderTop: `1px solid ${COLORS.border}`, paddingTop: 8, marginTop: 4 }}>
-                <div style={{ fontSize: 10, fontWeight: 600, color: COLORS.text, ...s, marginBottom: 6 }}>Resumen del día</div>
+                <div style={{ fontSize: 'var(--font-size-xs)', fontWeight: 600, color: COLORS.text, ...s, marginBottom: 6 }}>Resumen del día</div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
-                  <span style={{ fontSize: 9, color: COLORS.textDim, ...s }}>Progreso</span>
-                  <span style={{ fontSize: 9, color: COLORS.text, fontWeight: 600, ...s }}>{pct}%</span>
+                  <span style={{ fontSize: 'var(--font-size-2xs)', color: COLORS.textDim, ...s }}>Progreso</span>
+                  <span style={{ fontSize: 'var(--font-size-2xs)', color: COLORS.text, fontWeight: 600, ...s }}>{pct}%</span>
                 </div>
                 <div style={{ height: 3, background: COLORS.bg, borderRadius: 2, overflow: 'hidden', marginBottom: 6 }}>
                   <div style={{ width: `${pct}%`, height: '100%', borderRadius: 2, background: `linear-gradient(90deg, ${COLORS.success}, ${COLORS.secondary})`, transition: 'width 0.4s' }} />
@@ -21612,7 +21709,7 @@ const LegacyAgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAg
                   ['Ocupado', busyMins >= 60  ? `${Math.round(busyMins/60)}h` : `${busyMins}m`, COLORS.secondary],
                   ['Libre', freeMins >= 60  ? `${Math.round(freeMins/60)}h` : `${freeMins}m`, COLORS.textDim]
                 ].map(([label, val, color]) => (
-                  <div key={label} style={{ display: 'flex', justifyContent: 'space-between', fontSize: 9, color: COLORS.textDim, ...s, marginBottom: 2 }}>
+                  <div key={label} style={{ display: 'flex', justifyContent: 'space-between', fontSize: 'var(--font-size-2xs)', color: COLORS.textDim, ...s, marginBottom: 2 }}>
                     <span>{label}</span>
                     <span style={{ color, fontWeight: 600 }}>{val}</span>
                   </div>
@@ -21622,29 +21719,29 @@ const LegacyAgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAg
           )}
           {sidebarTab === 'alarms' && (
             <div>
-              <div style={{ fontSize: 10, fontWeight: 600, color: COLORS.text, ...s, marginBottom: 6 }}>Próximas alarmas</div>
+              <div style={{ fontSize: 'var(--font-size-xs)', fontWeight: 600, color: COLORS.text, ...s, marginBottom: 6 }}>Próximas alarmas</div>
               {tasks.filter(t => t.alarm && !t.completed && hasTaskTime(t)).length === 0  ? (
                 <div style={{ textAlign: 'center', padding: '12px 8px', color: COLORS.textDim + '99' }}>
                   <div style={{ fontSize: 18, marginBottom: 4 }}>{'\u{1F515}'}</div>
-                  <div style={{ fontSize: 9, ...s }}>No hay alarmas próximas</div>
+                  <div style={{ fontSize: 'var(--font-size-2xs)', ...s }}>No hay alarmas próximas</div>
                 </div>
               ) : tasks.filter(t => t.alarm && !t.completed && hasTaskTime(t)).sort(compareTaskTime).slice(0, 5).map(t => (
                 <div key={t.id} style={{ padding: '5px 8px', borderRadius: 6, marginBottom: 3, background: COLORS.bg, display: 'flex', alignItems: 'center', gap: 5 }}>
-                  <span style={{ fontSize: 10 }}>{'\u{1F514}'}</span>
-                  <span style={{ fontSize: 9, color: COLORS.primary, fontWeight: 600, ...s, flexShrink: 0 }}>{getTaskTimeRangeLabel(t)}</span>
-                  <span style={{ fontSize: 9, color: COLORS.text, ...s, flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{t.text}</span>
+                  <span style={{ fontSize: 'var(--font-size-xs)' }}>{'\u{1F514}'}</span>
+                  <span style={{ fontSize: 'var(--font-size-2xs)', color: COLORS.primary, fontWeight: 600, ...s, flexShrink: 0 }}>{getTaskTimeRangeLabel(t)}</span>
+                  <span style={{ fontSize: 'var(--font-size-2xs)', color: COLORS.text, ...s, flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{t.text}</span>
                 </div>
               ))}
               {overdueCount > 0 && <>
-                <div style={{ fontSize: 10, fontWeight: 600, color: COLORS.alert, ...s, margin: '8px 0 4px', display: 'flex', alignItems: 'center', gap: 4 }}>
+                <div style={{ fontSize: 'var(--font-size-xs)', fontWeight: 600, color: COLORS.alert, ...s, margin: '8px 0 4px', display: 'flex', alignItems: 'center', gap: 4 }}>
                   <span>  Vencidas ({overdueCount})</span>
                 </div>
                 {getOverdueTasks().slice(0, 3).map(t => (
                   <div key={t.id} style={{ padding: '4px 8px', borderRadius: 6, marginBottom: 2, background: `${COLORS.alert}06`, display: 'flex', alignItems: 'center', gap: 4 }}>
-                    <span style={{ fontSize: 9, color: COLORS.text, ...s, flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{t.text}</span>
+                    <span style={{ fontSize: 'var(--font-size-2xs)', color: COLORS.text, ...s, flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{t.text}</span>
                     <button onClick={() => { const d = new Date(t.dueDate + 'T12:00:00'); d.setDate(d.getDate() + 1); onMoveTaskToDate(t.id, t.dueDate, toYYYYMMDD(d)); }}
-                      style={{ ...btnBase, fontSize: 8, padding: '1px 5px', background: `${COLORS.primary}10`, color: COLORS.primary }}>Mover</button>
-                    <button onClick={() => toggleTask(t.id)} style={{ ...btnBase, fontSize: 8, padding: '1px 5px', background: `${COLORS.success}10`, color: COLORS.success }}>?</button>
+                      style={{ ...btnBase, fontSize: 'var(--font-size-2xs)', padding: '1px 5px', background: `${COLORS.primary}10`, color: COLORS.primary }}>Mover</button>
+                    <button onClick={() => toggleTask(t.id)} style={{ ...btnBase, fontSize: 'var(--font-size-2xs)', padding: '1px 5px', background: `${COLORS.success}10`, color: COLORS.success }}>?</button>
                   </div>
                 ))}
               </>}
@@ -21661,7 +21758,7 @@ const LegacyAgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAg
         <Plus size={15} color={COLORS.primary} style={{ marginLeft: 4 }} />
         <input value={quickText} onChange={e => setQuickText(e.target.value)} onKeyDown={e => { if (e.key === 'Enter') handleQuickAdd(); }}
           placeholder="Añade una tarea... prueba: pagar luz mañana 18:00 p1 @finanzas"
-          style={{ flex: 1, padding: '8px 4px', border: 'none', background: 'transparent', color: COLORS.text, fontSize: 12, ...s, outline: 'none' }} />
+          style={{ flex: 1, padding: '8px 4px', border: 'none', background: 'transparent', color: COLORS.text, fontSize: 'var(--font-size-sm)', ...s, outline: 'none' }} />
         <button onClick={handleQuickAdd} style={{ ...btnBase, padding: '7px 11px', background: `${COLORS.primary}16`, color: COLORS.primary, fontWeight: 700 }}>
           Añadir
         </button>
@@ -21677,13 +21774,13 @@ const LegacyAgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAg
         <button className="agenda-plan-check" onClick={() => toggleTask(task.id)} style={{ width: 18, height: 18, borderRadius: '50%', flexShrink: 0, border: task.completed  ? 'none' : `2px solid ${priorityColor}88`, background: task.completed  ? COLORS.success : 'transparent', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0 }}>
           {task.completed && <Check size={10} color={COLORS.bg} strokeWidth={4} />}
         </button>
-        <div style={{ width: hasTaskTime(task) && getTaskEndTime(task) ? 82 : 52, flexShrink: 0, fontSize: 10, fontWeight: 700, color: hasTaskTime(task)  ? priorityColor : COLORS.textDim, ...s }}>
+        <div style={{ width: hasTaskTime(task) && getTaskEndTime(task) ? 82 : 52, flexShrink: 0, fontSize: 'var(--font-size-xs)', fontWeight: 700, color: hasTaskTime(task)  ? priorityColor : COLORS.textDim, ...s }}>
           {timeLabel}
         </div>
         <div style={{ flex: 1, minWidth: 0 }}>
-          <div style={{ fontSize: 12, color: task.completed  ? COLORS.textDim : COLORS.text, textDecoration: task.completed  ? 'line-through' : 'none', ...s, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{task.text}</div>
+          <div style={{ fontSize: 'var(--font-size-sm)', color: task.completed  ? COLORS.textDim : COLORS.text, textDecoration: task.completed  ? 'line-through' : 'none', ...s, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{task.text}</div>
           <div style={{ display: 'flex', gap: 6, alignItems: 'center', marginTop: 3 }}>
-            <span style={{ fontSize: 8, color: COLORS.textDim, ...s }}>{task.category || 'Personal'}</span>
+            <span style={{ fontSize: 'var(--font-size-2xs)', color: COLORS.textDim, ...s }}>{task.category || 'Personal'}</span>
             {task.alarm && <Clock size={10} color="#ffd93d" />}
             {task.recurrence && task.recurrence !== 'none' && <Repeat size={10} color={COLORS.primary} />}
             {getTaskIntervalMinutes(task) > 0 && <span>{getTaskIntervalMinutes(task) === 1  ? 'cada minuto' : getTaskIntervalMinutes(task) === 60  ? 'cada hora' : `cada ${Math.round((getTaskIntervalMinutes(task) / 60) * 100) / 100}h`}</span>}
@@ -21707,7 +21804,7 @@ const LegacyAgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAg
         <div className="agenda-plan-head" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12, paddingBottom: 13, borderBottom: `1px solid ${COLORS.border}` }}>
           <div>
             <div style={{ fontSize: 15, color: COLORS.text, fontWeight: 700, ...s }}>Plan del día</div>
-            <div style={{ marginTop: 3, fontSize: 10, color: COLORS.textDim, ...s }}>{totalCount - completedCount} pendientes  {freeMins >= 60  ? `${Math.floor(freeMins / 60)}h ${freeMins % 60}m` : `${freeMins}m`} disponibles</div>
+            <div style={{ marginTop: 3, fontSize: 'var(--font-size-xs)', color: COLORS.textDim, ...s }}>{totalCount - completedCount} pendientes  {freeMins >= 60  ? `${Math.floor(freeMins / 60)}h ${freeMins % 60}m` : `${freeMins}m`} disponibles</div>
           </div>
           <button className="agenda-add-task-button" onClick={() => openTaskModal(null)} style={{ ...btnBase, padding: '7px 10px', color: COLORS.primary, background: `${COLORS.primary}12`, fontWeight: 700 }}><Plus size={13} /> Tarea</button>
         </div>
@@ -21715,22 +21812,22 @@ const LegacyAgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAg
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: 330, textAlign: 'center' }}>
             <div style={{ width: 46, height: 46, borderRadius: 14, background: `${COLORS.primary}12`, display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 12 }}><Check size={21} color={COLORS.primary} /></div>
             <div style={{ color: COLORS.text, fontSize: 15, fontWeight: 700, ...s }}>Tu día está despejado</div>
-            <div style={{ color: COLORS.textDim, fontSize: 11, marginTop: 5, maxWidth: 260, lineHeight: 1.5, ...s }}>Captura algo arriba o disfruta del espacio libre. No hace falta llenar cada hora.</div>
+            <div style={{ color: COLORS.textDim, fontSize: 'var(--font-size-xs)', marginTop: 5, maxWidth: 260, lineHeight: 1.5, ...s }}>Captura algo arriba o disfruta del espacio libre. No hace falta llenar cada hora.</div>
           </div>
         ) : (
           <div>
             {sections.map(section => section.tasks.length > 0 && (
               <div className="agenda-plan-section" key={section.id} style={{ marginTop: 17 }}>
                 <div style={{ display: 'flex', alignItems: 'baseline', gap: 7, marginBottom: 3 }}>
-                  <span style={{ color: COLORS.text, fontSize: 11, fontWeight: 700, ...s }}>{section.label}</span>
-                  <span style={{ color: COLORS.textDim, fontSize: 9, ...s }}>{section.hint}</span>
+                  <span style={{ color: COLORS.text, fontSize: 'var(--font-size-xs)', fontWeight: 700, ...s }}>{section.label}</span>
+                  <span style={{ color: COLORS.textDim, fontSize: 'var(--font-size-2xs)', ...s }}>{section.hint}</span>
                 </div>
                 {section.tasks.map(renderCleanTaskRow)}
               </div>
             ))}
             {visibleDone.length > 0 && (
               <div className="agenda-plan-section" style={{ marginTop: 17 }}>
-                <div style={{ color: COLORS.textDim, fontSize: 10, fontWeight: 700, ...s, marginBottom: 3 }}>Completadas  {visibleDone.length}</div>
+                <div style={{ color: COLORS.textDim, fontSize: 'var(--font-size-xs)', fontWeight: 700, ...s, marginBottom: 3 }}>Completadas  {visibleDone.length}</div>
                 {visibleDone.map(renderCleanTaskRow)}
               </div>
             )}
@@ -21749,7 +21846,7 @@ const LegacyAgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAg
         const count = (expandedAgenda[ds] || []).filter(task => !task.completed).length;
         return (
           <button key={ds} onClick={() => setCurrentDate(new Date(day))} style={{ padding: '8px 4px', borderRadius: 10, border: `1px solid ${selected  ? COLORS.primary + '55' : 'transparent'}`, background: selected  ? `${COLORS.primary}16` : 'transparent', color: selected  ? COLORS.text : COLORS.textDim, cursor: 'pointer' }}>
-            <div style={{ fontSize: 8, textTransform: 'uppercase', letterSpacing: '0.08em', ...s }}>{DAY_NAMES[index]}</div>
+            <div style={{ fontSize: 'var(--font-size-2xs)', textTransform: 'uppercase', letterSpacing: '0.08em', ...s }}>{DAY_NAMES[index]}</div>
             <div style={{ fontSize: 15, marginTop: 3, fontWeight: today || selected  ? 700 : 500, color: today  ? COLORS.primary : 'inherit', ...s }}>{day.getDate()}</div>
             <div style={{ margin: '5px auto 0', width: 4, height: 4, borderRadius: '50%', background: count > 0  ? COLORS.primary : 'transparent' }} />
           </button>
@@ -21762,11 +21859,11 @@ const LegacyAgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAg
     const upcoming = getUpcomingTasks().filter(task => task.dueDate !== dateStr).slice(0, 5);
     return (
       <div>
-        <div style={{ color: COLORS.text, fontSize: 12, fontWeight: 700, marginBottom: 9, ...s }}>Próximos días</div>
-        {upcoming.length === 0  ? <div style={{ color: COLORS.textDim, fontSize: 10, lineHeight: 1.5, ...s }}>No tienes tareas próximas. Tu semana se ve tranquila.</div> : upcoming.map(task => (
+        <div style={{ color: COLORS.text, fontSize: 'var(--font-size-sm)', fontWeight: 700, marginBottom: 9, ...s }}>Próximos días</div>
+        {upcoming.length === 0  ? <div style={{ color: COLORS.textDim, fontSize: 'var(--font-size-xs)', lineHeight: 1.5, ...s }}>No tienes tareas próximas. Tu semana se ve tranquila.</div> : upcoming.map(task => (
           <div key={`${task.id}-${task.dueDate}`} style={{ padding: '8px 0', borderBottom: `1px solid ${COLORS.border}` }}>
-            <div style={{ color: COLORS.text, fontSize: 10, ...s }}>{task.text}</div>
-            <div style={{ color: COLORS.textDim, fontSize: 8, marginTop: 3, ...s }}>{new Date(task.dueDate + 'T12:00:00').toLocaleDateString('es-ES', { weekday: 'short', day: 'numeric', month: 'short' })}{hasTaskTime(task)  ? `  ${getTaskTimeRangeLabel(task)}` : ''}</div>
+            <div style={{ color: COLORS.text, fontSize: 'var(--font-size-xs)', ...s }}>{task.text}</div>
+            <div style={{ color: COLORS.textDim, fontSize: 'var(--font-size-2xs)', marginTop: 3, ...s }}>{new Date(task.dueDate + 'T12:00:00').toLocaleDateString('es-ES', { weekday: 'short', day: 'numeric', month: 'short' })}{hasTaskTime(task)  ? `  ${getTaskTimeRangeLabel(task)}` : ''}</div>
           </div>
         ))}
       </div>
@@ -21811,41 +21908,41 @@ const LegacyAgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAg
     return (
       <div className="agenda-todo-list" style={{ marginTop: 0, paddingTop: 0, borderTop: 'none' }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}>
-          <div style={{ color: COLORS.text, fontSize: 12, fontWeight: 700, ...s }}>To-do list</div>
-          <button onClick={() => setShowTodoLabels(value => !value)} style={{ ...btnBase, padding: '4px 6px', color: showTodoLabels  ? COLORS.primary : COLORS.textDim, background: showTodoLabels  ? `${COLORS.primary}12` : 'transparent', fontSize: 9 }}><Hash size={10} /> Etiquetas</button>
+          <div style={{ color: COLORS.text, fontSize: 'var(--font-size-sm)', fontWeight: 700, ...s }}>To-do list</div>
+          <button onClick={() => setShowTodoLabels(value => !value)} style={{ ...btnBase, padding: '4px 6px', color: showTodoLabels  ? COLORS.primary : COLORS.textDim, background: showTodoLabels  ? `${COLORS.primary}12` : 'transparent', fontSize: 'var(--font-size-2xs)' }}><Hash size={10} /> Etiquetas</button>
         </div>
-        <div style={{ color: COLORS.textDim, fontSize: 9, marginTop: 2, marginBottom: 8, ...s }}>Anota algo rápido y márcalo cuando está hecho.</div>
+        <div style={{ color: COLORS.textDim, fontSize: 'var(--font-size-2xs)', marginTop: 2, marginBottom: 8, ...s }}>Anota algo rápido y márcalo cuando está hecho.</div>
         {showTodoLabels && (
           <div style={{ marginBottom: 7, padding: 7, borderRadius: 8, background: COLORS.bg, border: `1px solid ${COLORS.border}` }}>
             <div style={{ display: 'flex', gap: 5 }}>
               <input value={newTodoLabel} onChange={e => setNewTodoLabel(e.target.value)} onKeyDown={e => { if (e.key === 'Enter') addTodoLabel(); }} placeholder="Nueva etiqueta..."
-                style={{ flex: 1, minWidth: 0, padding: '5px 6px', borderRadius: 6, border: `1px solid ${COLORS.border}`, background: COLORS.card, color: COLORS.text, fontSize: 9, ...s, outline: 'none' }} />
+                style={{ flex: 1, minWidth: 0, padding: '5px 6px', borderRadius: 6, border: `1px solid ${COLORS.border}`, background: COLORS.card, color: COLORS.text, fontSize: 'var(--font-size-2xs)', ...s, outline: 'none' }} />
               <button onClick={addTodoLabel} style={{ ...btnBase, width: 25, color: COLORS.primary, background: `${COLORS.primary}14` }} title="Crear etiqueta"><Plus size={11} /></button>
             </div>
             {agendaTodoLabels.length > 0 && <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4, marginTop: 6 }}>
-              {agendaTodoLabels.map(label => <span key={label} style={{ display: 'flex', alignItems: 'center', gap: 3, padding: '2px 4px 2px 6px', borderRadius: 10, color: getTodoLabelColor(label), background: `${getTodoLabelColor(label)}16`, fontSize: 8, ...s }}>{label}<button onClick={() => deleteTodoLabel(label)} style={{ border: 'none', background: 'transparent', color: 'inherit', cursor: 'pointer', padding: 0, display: 'flex' }}><X size={9} /></button></span>)}
+              {agendaTodoLabels.map(label => <span key={label} style={{ display: 'flex', alignItems: 'center', gap: 3, padding: '2px 4px 2px 6px', borderRadius: 10, color: getTodoLabelColor(label), background: `${getTodoLabelColor(label)}16`, fontSize: 'var(--font-size-2xs)', ...s }}>{label}<button onClick={() => deleteTodoLabel(label)} style={{ border: 'none', background: 'transparent', color: 'inherit', cursor: 'pointer', padding: 0, display: 'flex' }}><X size={9} /></button></span>)}
             </div>}
           </div>
         )}
-        {agendaTodoLabels.length > 0 && <select value={todoLabel} onChange={e => setTodoLabel(e.target.value)} style={{ width: '100%', marginBottom: 6, padding: '5px 6px', borderRadius: 6, border: `1px solid ${COLORS.border}`, background: COLORS.bg, color: todoLabel  ? getTodoLabelColor(todoLabel) : COLORS.textDim, fontSize: 9, ...s, outline: 'none' }}>
+        {agendaTodoLabels.length > 0 && <select value={todoLabel} onChange={e => setTodoLabel(e.target.value)} style={{ width: '100%', marginBottom: 6, padding: '5px 6px', borderRadius: 6, border: `1px solid ${COLORS.border}`, background: COLORS.bg, color: todoLabel  ? getTodoLabelColor(todoLabel) : COLORS.textDim, fontSize: 'var(--font-size-2xs)', ...s, outline: 'none' }}>
           <option value="">Añadir sin etiqueta</option>
           {agendaTodoLabels.map(label => <option key={label} value={label}>{label}</option>)}
         </select>}
         <div className="agenda-todo-add-row" style={{ display: 'flex', gap: 5, marginBottom: 6 }}>
           <input value={todoText} onChange={e => setTodoText(e.target.value)} onKeyDown={e => { if (e.key === 'Enter') addTodo(); }} placeholder="Ej: compras supermercado"
-            style={{ flex: 1, minWidth: 0, padding: '7px 8px', borderRadius: 7, border: `1px solid ${COLORS.border}`, background: COLORS.bg, color: COLORS.text, fontSize: 10, ...s, outline: 'none' }} />
+            style={{ flex: 1, minWidth: 0, padding: '7px 8px', borderRadius: 7, border: `1px solid ${COLORS.border}`, background: COLORS.bg, color: COLORS.text, fontSize: 'var(--font-size-xs)', ...s, outline: 'none' }} />
           <button onClick={addTodo} style={{ ...btnBase, width: 30, color: COLORS.primary, background: `${COLORS.primary}14` }} title="Añadir pendiente"><Plus size={13} /></button>
         </div>
         {todoItems.length === 0  ? (
-          <div style={{ padding: '7px 0 2px', color: COLORS.textDim, fontSize: 10, lineHeight: 1.45, ...s }}>Todavía no hay pendientes.</div>
+          <div style={{ padding: '7px 0 2px', color: COLORS.textDim, fontSize: 'var(--font-size-xs)', lineHeight: 1.45, ...s }}>Todavía no hay pendientes.</div>
         ) : todoGroups.map(([label, groupTodos]) => {
           const labelColor = label  ? getTodoLabelColor(label) : COLORS.textDim;
           return (
             <div key={label || '__unlabeled__'} style={{ marginTop: 10 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 5, paddingBottom: 4, borderBottom: `1px solid ${label  ? labelColor + '35' : COLORS.border}` }}>
                 <span style={{ width: 6, height: 6, borderRadius: '50%', background: labelColor }} />
-                <span style={{ color: labelColor, fontSize: 8, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', ...s }}>{label || 'Sin etiqueta'}</span>
-                <span style={{ marginLeft: 'auto', color: COLORS.textDim, fontSize: 8, ...s }}>{groupTodos.length}</span>
+                <span style={{ color: labelColor, fontSize: 'var(--font-size-2xs)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', ...s }}>{label || 'Sin etiqueta'}</span>
+                <span style={{ marginLeft: 'auto', color: COLORS.textDim, fontSize: 'var(--font-size-2xs)', ...s }}>{groupTodos.length}</span>
               </div>
               {groupTodos.map(todo => (
                 <div className="agenda-todo-row" key={todo.id} style={{ display: 'flex', alignItems: 'center', gap: 7, padding: '7px 0', borderBottom: `1px solid ${COLORS.border}` }}>
@@ -21853,16 +21950,16 @@ const LegacyAgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAg
                     {todo.completed && <Check size={8} color={COLORS.bg} strokeWidth={4} />}
                   </button>
                   <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ color: todo.completed  ? COLORS.textDim : COLORS.text, fontSize: 10, textDecoration: todo.completed  ? 'line-through' : 'none', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', ...s }}>{todo.text}</div>
+                    <div style={{ color: todo.completed  ? COLORS.textDim : COLORS.text, fontSize: 'var(--font-size-xs)', textDecoration: todo.completed  ? 'line-through' : 'none', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', ...s }}>{todo.text}</div>
                     {agendaTodoLabels.length > 0 && (
                       editingTodoLabelId === todo.id  ? (
                         <select autoFocus value={todo.label || ''} onChange={e => { updateTodoLabel(todo.id, e.target.value); setEditingTodoLabelId(null); }} onBlur={() => setEditingTodoLabelId(null)}
-                          style={{ maxWidth: 105, marginTop: 3, padding: '1px 3px', borderRadius: 5, border: `1px solid ${COLORS.border}`, background: COLORS.bg, color: todo.label  ? getTodoLabelColor(todo.label) : COLORS.textDim, fontSize: 8, ...s, outline: 'none' }}>
+                          style={{ maxWidth: 105, marginTop: 3, padding: '1px 3px', borderRadius: 5, border: `1px solid ${COLORS.border}`, background: COLORS.bg, color: todo.label  ? getTodoLabelColor(todo.label) : COLORS.textDim, fontSize: 'var(--font-size-2xs)', ...s, outline: 'none' }}>
                           <option value="">Sin etiqueta</option>
                           {agendaTodoLabels.map(todoLabelOption => <option key={todoLabelOption} value={todoLabelOption}>{todoLabelOption}</option>)}
                         </select>
                       ) : (
-                        <button className="agenda-todo-label-chip" onClick={() => setEditingTodoLabelId(todo.id)} style={{ marginTop: 4, padding: todo.label  ? '2px 6px' : '1px 0', borderRadius: 10, border: 'none', background: todo.label  ? `${getTodoLabelColor(todo.label)}16` : 'transparent', color: todo.label  ? getTodoLabelColor(todo.label) : COLORS.textDim + '99', fontSize: 8, lineHeight: 1, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4, ...s }}>
+                        <button className="agenda-todo-label-chip" onClick={() => setEditingTodoLabelId(todo.id)} style={{ marginTop: 4, padding: todo.label  ? '2px 6px' : '1px 0', borderRadius: 10, border: 'none', background: todo.label  ? `${getTodoLabelColor(todo.label)}16` : 'transparent', color: todo.label  ? getTodoLabelColor(todo.label) : COLORS.textDim + '99', fontSize: 'var(--font-size-2xs)', lineHeight: 1, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4, ...s }}>
                           {todo.label && <span style={{ width: 5, height: 5, borderRadius: '50%', background: getTodoLabelColor(todo.label) }} />}
                           {todo.label || '+ etiqueta'}
                         </button>
@@ -21887,7 +21984,7 @@ const LegacyAgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAg
           { id: 'calendar', label: 'Mes', icon: <Calendar size={11} /> },
           { id: 'upcoming', label: 'Próximo', icon: <List size={11} /> }
         ].map(item => (
-          <button key={item.id} onClick={() => setSidePanel(item.id)} style={{ ...btnBase, flex: 1, padding: '6px 3px', background: sidePanel === item.id  ? COLORS.card : 'transparent', color: sidePanel === item.id  ? COLORS.text : COLORS.textDim, fontSize: 9 }}>{item.icon}{item.label}</button>
+          <button key={item.id} onClick={() => setSidePanel(item.id)} style={{ ...btnBase, flex: 1, padding: '6px 3px', background: sidePanel === item.id  ? COLORS.card : 'transparent', color: sidePanel === item.id  ? COLORS.text : COLORS.textDim, fontSize: 'var(--font-size-2xs)' }}>{item.icon}{item.label}</button>
         ))}
       </div>
       {sidePanel === 'todos' && (
@@ -21904,8 +22001,8 @@ const LegacyAgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAg
     <div style={{ textAlign: 'center', padding: '40px 20px', color: COLORS.textDim }}>
       <div className="fire-emoji" style={{ fontSize: 36, marginBottom: 8, opacity: 0.8 }}>{msg.icon}</div>
       <div style={{ fontSize: 14, fontWeight: 600, color: COLORS.text, ...s, marginBottom: 4 }}>{msg.title}</div>
-      <div style={{ fontSize: 11, color: COLORS.textDim, ...s, marginBottom: 12 }}>{msg.desc}</div>
-      {cta && <button onClick={cta.onClick} style={{ ...btnBase, padding: '8px 20px', background: `linear-gradient(135deg, ${COLORS.primary}, #7f1028)`, color: '#fff', margin: '0 auto', fontSize: 12 }}>
+      <div style={{ fontSize: 'var(--font-size-xs)', color: COLORS.textDim, ...s, marginBottom: 12 }}>{msg.desc}</div>
+      {cta && <button onClick={cta.onClick} style={{ ...btnBase, padding: '8px 20px', background: `linear-gradient(135deg, ${COLORS.primary}, #7f1028)`, color: '#fff', margin: '0 auto', fontSize: 'var(--font-size-sm)' }}>
         {cta.icon && <Plus size={14} />}{cta.label}
       </button>}
     </div>
@@ -21923,10 +22020,10 @@ const LegacyAgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAg
             <div style={{ width: 34, height: 34, borderRadius: 12, background: `${COLORS.primary}16`, color: COLORS.primary, display: 'flex', alignItems: 'center', justifyContent: 'center' }}><Repeat size={16} /></div>
             <div>
               <div style={{ color: COLORS.text, fontSize: 18, fontFamily: "'DM Serif Display', serif", lineHeight: 1.1 }}>Eliminar tarea recurrente</div>
-              <div style={{ color: COLORS.textDim, fontSize: 11, ...s, marginTop: 3 }}>{formattedOccurrence}</div>
+              <div style={{ color: COLORS.textDim, fontSize: 'var(--font-size-xs)', ...s, marginTop: 3 }}>{formattedOccurrence}</div>
             </div>
           </div>
-          <div style={{ color: COLORS.textDim, fontSize: 12, lineHeight: 1.6, ...s, margin: '14px 0 18px' }}>
+          <div style={{ color: COLORS.textDim, fontSize: 'var(--font-size-sm)', lineHeight: 1.6, ...s, margin: '14px 0 18px' }}>
             {deleteChoiceTask.text} pertenece a una repetición. Elige si quieres borrar solo esta aparición o cortar la serie desde aquí.
           </div>
           <div style={{ display: 'grid', gap: 8 }}>
@@ -21960,10 +22057,10 @@ const LegacyAgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAg
             <input value={t.text || ''} onChange={e => setEditModalTask(p => ({ ...p, text: e.target.value }))} placeholder="Título de la tarea"
               style={{ width: '100%', height: 44, flexShrink: 0, boxSizing: 'border-box', padding: '0 14px', borderRadius: 10, border: `1px solid ${COLORS.border}`, background: COLORS.bg, color: COLORS.text, fontSize: 14, fontWeight: 500, ...s, outline: 'none' }} />
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
-              <div><div style={{ fontSize: 9, color: COLORS.textDim, marginBottom: 3, ...s }}>Fecha</div>
+              <div><div style={{ fontSize: 'var(--font-size-2xs)', color: COLORS.textDim, marginBottom: 3, ...s }}>Fecha</div>
                 <div style={{ position: 'relative' }}>
                   <button onClick={() => setShowDatePicker(!showDatePicker)} type="button"
-                    style={{ width: '100%', padding: '6px 8px', borderRadius: 6, border: `1px solid ${COLORS.border}`, background: COLORS.bg, color: COLORS.text, fontSize: 10, ...s, cursor: 'pointer', textAlign: 'left', display: 'flex', alignItems: 'center', gap: 6 }}>
+                    style={{ width: '100%', padding: '6px 8px', borderRadius: 6, border: `1px solid ${COLORS.border}`, background: COLORS.bg, color: COLORS.text, fontSize: 'var(--font-size-xs)', ...s, cursor: 'pointer', textAlign: 'left', display: 'flex', alignItems: 'center', gap: 6 }}>
                     <Calendar size={11} color={COLORS.textDim} />
                     {new Date((t.dueDate || dateStr) + 'T12:00:00').toLocaleDateString('es-ES', { day: 'numeric', month: 'short', year: 'numeric' })}
                   </button>
@@ -21976,12 +22073,12 @@ const LegacyAgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAg
                           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
                             <button onClick={() => { const d = new Date(dp); d.setMonth(d.getMonth() - 1); setEditModalTask(p => ({ ...p, dueDate: toYYYYMMDD(d) })); }}
                               style={{ width: 22, height: 22, borderRadius: 5, border: 'none', background: COLORS.bg, cursor: 'pointer', color: COLORS.textDim, fontSize: 14, display: 'flex', alignItems: 'center', justifyContent: 'center' }}></button>
-                            <span style={{ fontSize: 11, fontWeight: 600, color: COLORS.text, ...s }}>{MONTH_NAMES[dp.getMonth()]} {dp.getFullYear()}</span>
+                            <span style={{ fontSize: 'var(--font-size-xs)', fontWeight: 600, color: COLORS.text, ...s }}>{MONTH_NAMES[dp.getMonth()]} {dp.getFullYear()}</span>
                             <button onClick={() => { const d = new Date(dp); d.setMonth(d.getMonth() + 1); setEditModalTask(p => ({ ...p, dueDate: toYYYYMMDD(d) })); }}
                               style={{ width: 22, height: 22, borderRadius: 5, border: 'none', background: COLORS.bg, cursor: 'pointer', color: COLORS.textDim, fontSize: 14, display: 'flex', alignItems: 'center', justifyContent: 'center' }}></button>
                           </div>
                           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7,1fr)', gap: 1, textAlign: 'center' }}>
-                            {DAY_NAMES.map(d => <div key={d} style={{ fontSize: 8, color: COLORS.textDim, padding: '2px 0', ...s }}>{d}</div>)}
+                            {DAY_NAMES.map(d => <div key={d} style={{ fontSize: 'var(--font-size-2xs)', color: COLORS.textDim, padding: '2px 0', ...s }}>{d}</div>)}
                             {grid.flat().map((d, i) => {
                               const ds = toYYYYMMDD(d);
                               const isCurr = d.getMonth() === dp.getMonth();
@@ -21989,7 +22086,7 @@ const LegacyAgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAg
                               const isT = ds === todayStr;
                               return (
                                 <button key={i} onClick={() => { setEditModalTask(p => ({ ...p, dueDate: ds, repeatUntilDate: !p.repeatUntilDate || p.repeatUntilDate < ds  ? ds : p.repeatUntilDate })); setShowDatePicker(false); }}
-                                  style={{ padding: '2px 0', border: 'none', background: isSel  ? COLORS.primary : isT  ? `${COLORS.primary}15` : 'transparent', color: isSel  ? '#fff' : isT  ? COLORS.primary : isCurr  ? COLORS.text : COLORS.textDim + '40', fontSize: 9, fontWeight: isSel || isT  ? 700 : 400, borderRadius: 4, cursor: 'pointer', ...s }}>{d.getDate()}</button>
+                                  style={{ padding: '2px 0', border: 'none', background: isSel  ? COLORS.primary : isT  ? `${COLORS.primary}15` : 'transparent', color: isSel  ? '#fff' : isT  ? COLORS.primary : isCurr  ? COLORS.text : COLORS.textDim + '40', fontSize: 'var(--font-size-2xs)', fontWeight: isSel || isT  ? 700 : 400, borderRadius: 4, cursor: 'pointer', ...s }}>{d.getDate()}</button>
                               );
                             })}
                           </div>
@@ -22001,10 +22098,10 @@ const LegacyAgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAg
               </div>
               <div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 3 }}>
-                  <div style={{ fontSize: 9, color: COLORS.textDim, ...s }}>Horario</div>
+                  <div style={{ fontSize: 'var(--font-size-2xs)', color: COLORS.textDim, ...s }}>Horario</div>
                   {(getTaskStartTime(t) || getTaskEndTime(t)) && (
                     <button type="button" onClick={() => setEditModalTask(p => ({ ...p, dueTime: '', startTime: '', endTime: '', durationMinutes: undefined }))}
-                      style={{ border: 'none', background: 'transparent', color: COLORS.textDim, cursor: 'pointer', fontSize: 9, ...s }}>Sin hora</button>
+                      style={{ border: 'none', background: 'transparent', color: COLORS.textDim, cursor: 'pointer', fontSize: 'var(--font-size-2xs)', ...s }}>Sin hora</button>
                   )}
                 </div>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 6 }}>
@@ -22015,7 +22112,7 @@ const LegacyAgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAg
                       const durationMinutes = nextStart && endTime && isValidTaskTimeRange(nextStart, endTime) ? timeToMinutes(endTime) - timeToMinutes(nextStart) : undefined;
                       return { ...p, startTime: nextStart, dueTime: nextStart, endTime, durationMinutes };
                     });
-                  }} style={{ width: '100%', padding: '6px 8px', borderRadius: 6, border: `1px solid ${COLORS.border}`, background: COLORS.bg, color: COLORS.text, fontSize: 10, ...s, outline: 'none' }} />
+                  }} style={{ width: '100%', padding: '6px 8px', borderRadius: 6, border: `1px solid ${COLORS.border}`, background: COLORS.bg, color: COLORS.text, fontSize: 'var(--font-size-xs)', ...s, outline: 'none' }} />
                   <input type="time" value={getTaskEndTime(t)} min={getTaskStartTime(t) || undefined} onChange={e => {
                     const nextEnd = e.target.value;
                     setEditModalTask(p => {
@@ -22023,25 +22120,25 @@ const LegacyAgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAg
                       const durationMinutes = startTime && nextEnd && isValidTaskTimeRange(startTime, nextEnd) ? timeToMinutes(nextEnd) - timeToMinutes(startTime) : undefined;
                       return { ...p, endTime: nextEnd, durationMinutes };
                     });
-                  }} style={{ width: '100%', padding: '6px 8px', borderRadius: 6, border: `1px solid ${COLORS.border}`, background: COLORS.bg, color: COLORS.text, fontSize: 10, ...s, outline: 'none' }} />
+                  }} style={{ width: '100%', padding: '6px 8px', borderRadius: 6, border: `1px solid ${COLORS.border}`, background: COLORS.bg, color: COLORS.text, fontSize: 'var(--font-size-xs)', ...s, outline: 'none' }} />
                 </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 4, fontSize: 8.5, color: isValidTaskTimeRange(getTaskStartTime(t), getTaskEndTime(t)) ? COLORS.textDim : COLORS.alert, ...s }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 4, fontSize: 'var(--font-size-2xs)', color: isValidTaskTimeRange(getTaskStartTime(t), getTaskEndTime(t)) ? COLORS.textDim : COLORS.alert, ...s }}>
                   <span>Inicio / Final en 24h</span>
                   <span>{getTaskStartTime(t) && getTaskEndTime(t) ? (formatDuration(getTaskStartTime(t), getTaskEndTime(t)) || 'Final inválida') : 'Opcional'}</span>
                 </div>
               </div>
             </div>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
-              <div><div style={{ fontSize: 9, color: COLORS.textDim, marginBottom: 3, ...s }}>Prioridad</div>
+              <div><div style={{ fontSize: 'var(--font-size-2xs)', color: COLORS.textDim, marginBottom: 3, ...s }}>Prioridad</div>
                 <div style={{ display: 'flex', gap: 3 }}>{[1, 2, 3, 4].map(p => (
                   <button key={p} onClick={() => setEditModalTask(prev => ({ ...prev, priority: p }))}
                     style={{ flex: 1, padding: '5px 0', borderRadius: 6, border: 'none', cursor: 'pointer',
                       background: (t.priority || 3) === p  ? PRIORITY_COLORS[p] : `${PRIORITY_COLORS[p]}15`,
-                      color: (t.priority || 3) === p  ? '#fff' : PRIORITY_COLORS[p], fontWeight: 700, fontSize: 9, ...s }}>{PRIORITY_LABELS[p]}</button>
+                      color: (t.priority || 3) === p  ? '#fff' : PRIORITY_COLORS[p], fontWeight: 700, fontSize: 'var(--font-size-2xs)', ...s }}>{PRIORITY_LABELS[p]}</button>
                 ))}</div></div>
-              <div><div style={{ fontSize: 9, color: COLORS.textDim, marginBottom: 3, ...s }}>Categoría</div>
+              <div><div style={{ fontSize: 'var(--font-size-2xs)', color: COLORS.textDim, marginBottom: 3, ...s }}>Categoría</div>
                 <select value={t.category || 'Personal'} onChange={e => handleTaskCategorySelection(e.target.value)}
-                  style={{ width: '100%', padding: '6px 8px', borderRadius: 6, border: `1px solid ${COLORS.border}`, background: COLORS.bg, color: COLORS.text, fontSize: 10, ...s, outline: 'none' }}>
+                  style={{ width: '100%', padding: '6px 8px', borderRadius: 6, border: `1px solid ${COLORS.border}`, background: COLORS.bg, color: COLORS.text, fontSize: 'var(--font-size-xs)', ...s, outline: 'none' }}>
                   {taskCategories.map(c => <option key={c.id} value={c.name}>{c.name}</option>)}
                   <option value="__create__">+ Crear categoría</option>
                 </select></div>
@@ -22050,10 +22147,10 @@ const LegacyAgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAg
               <div style={{ display: 'grid', gap: 8, padding: 12, borderRadius: 12, border: `1px solid ${COLORS.border}`, background: `${COLORS.primary}08` }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 10 }}>
                   <div>
-                    <div style={{ color: COLORS.text, fontWeight: 800, fontSize: 12, ...s }}>Crear categoría</div>
-                    <div style={{ color: COLORS.textDim, fontSize: 9, marginTop: 2, ...s }}>Se guardará para futuras tareas y filtros.</div>
+                    <div style={{ color: COLORS.text, fontWeight: 800, fontSize: 'var(--font-size-sm)', ...s }}>Crear categoría</div>
+                    <div style={{ color: COLORS.textDim, fontSize: 'var(--font-size-2xs)', marginTop: 2, ...s }}>Se guardará para futuras tareas y filtros.</div>
                   </div>
-                  <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, color: COLORS.textDim, fontSize: 10, ...s }}>
+                  <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, color: COLORS.textDim, fontSize: 'var(--font-size-xs)', ...s }}>
                     <i style={{ width: 9, height: 9, borderRadius: 999, background: newTaskCategory.color || COLORS.primary, display: 'inline-block' }} />
                     {newTaskCategory.name.trim() || 'Vista previa'}
                   </span>
@@ -22063,7 +22160,7 @@ const LegacyAgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAg
                     value={newTaskCategory.name}
                     onChange={e => setNewTaskCategory(prev => ({ ...prev, name: e.target.value }))}
                     placeholder="Nombre de la categoría"
-                    style={{ width: '100%', minWidth: 0, padding: '8px 10px', borderRadius: 8, border: `1px solid ${COLORS.border}`, background: COLORS.bg, color: COLORS.text, fontSize: 11, ...s, outline: 'none', boxSizing: 'border-box' }}
+                    style={{ width: '100%', minWidth: 0, padding: '8px 10px', borderRadius: 8, border: `1px solid ${COLORS.border}`, background: COLORS.bg, color: COLORS.text, fontSize: 'var(--font-size-xs)', ...s, outline: 'none', boxSizing: 'border-box' }}
                   />
                   <input
                     type="color"
@@ -22073,7 +22170,7 @@ const LegacyAgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAg
                     style={{ width: 44, height: 34, padding: 3, borderRadius: 8, border: `1px solid ${COLORS.border}`, background: COLORS.bg, cursor: 'pointer' }}
                   />
                   <button type="button" onClick={saveTaskCategory} disabled={!newTaskCategory.name.trim()}
-                    style={{ ...btnBase, padding: '8px 12px', background: newTaskCategory.name.trim() ? COLORS.primary : COLORS.border, color: '#fff', fontWeight: 800, fontSize: 10, opacity: newTaskCategory.name.trim() ? 1 : 0.55 }}>
+                    style={{ ...btnBase, padding: '8px 12px', background: newTaskCategory.name.trim() ? COLORS.primary : COLORS.border, color: '#fff', fontWeight: 800, fontSize: 'var(--font-size-xs)', opacity: newTaskCategory.name.trim() ? 1 : 0.55 }}>
                     Guardar
                   </button>
                 </div>
@@ -22083,28 +22180,28 @@ const LegacyAgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAg
               <label style={{ display: 'flex', alignItems: 'center', gap: 5, cursor: 'pointer' }}>
                 <input type="checkbox" checked={t.alarm || false} onChange={e => { if (e.target.checked) requestHabitFlowNotifications(); setEditModalTask(p => ({ ...p, alarm: e.target.checked })); }}
                   style={{ accentColor: COLORS.primary }} />
-                <span style={{ fontSize: 10, ...s }}>Alerta</span>
+                <span style={{ fontSize: 'var(--font-size-xs)', ...s }}>Alerta</span>
               </label>
               <select value={getTaskIntervalMinutes(t) > 0  ? 'none' : (t.recurrence || 'none')} disabled={getTaskIntervalMinutes(t) > 0} onChange={e => setEditModalTask(p => ({ ...p, recurrence: e.target.value }))}
-                style={{ padding: '4px 8px', borderRadius: 6, border: `1px solid ${COLORS.border}`, background: COLORS.bg, color: getTaskIntervalMinutes(t) > 0  ? COLORS.textDim : COLORS.text, fontSize: 9, ...s, outline: 'none', opacity: getTaskIntervalMinutes(t) > 0  ? 0.6 : 1 }}>
+                style={{ padding: '4px 8px', borderRadius: 6, border: `1px solid ${COLORS.border}`, background: COLORS.bg, color: getTaskIntervalMinutes(t) > 0  ? COLORS.textDim : COLORS.text, fontSize: 'var(--font-size-2xs)', ...s, outline: 'none', opacity: getTaskIntervalMinutes(t) > 0  ? 0.6 : 1 }}>
                 {RECURRENCE_TYPES.map(r => <option key={r.id} value={r.id}>{r.label}</option>)}
               </select>
               <select value={t.status || 'pending'} onChange={e => setEditModalTask(p => ({ ...p, status: e.target.value }))}
-                style={{ padding: '4px 8px', borderRadius: 6, border: `1px solid ${COLORS.border}`, background: COLORS.bg, color: COLORS.text, fontSize: 9, ...s, outline: 'none' }}>
+                style={{ padding: '4px 8px', borderRadius: 6, border: `1px solid ${COLORS.border}`, background: COLORS.bg, color: COLORS.text, fontSize: 'var(--font-size-2xs)', ...s, outline: 'none' }}>
                 {Object.entries(STATUS_LABELS).map(([k, v]) => <option key={k} value={k}>{v}</option>)}
               </select>
             </div>
             {t.alarm && (
               <div>
-                <div style={{ fontSize: 9, color: COLORS.textDim, marginBottom: 3, ...s }}>Avisarme</div>
+                <div style={{ fontSize: 'var(--font-size-2xs)', color: COLORS.textDim, marginBottom: 3, ...s }}>Avisarme</div>
                 <select value={t.reminders?.[0] || 'exact'} onChange={e => setEditModalTask(p => ({ ...p, reminders: [e.target.value] }))}
-                  style={{ width: '100%', padding: '6px 8px', borderRadius: 6, border: `1px solid ${COLORS.border}`, background: COLORS.bg, color: COLORS.text, fontSize: 10, ...s, outline: 'none' }}>
+                  style={{ width: '100%', padding: '6px 8px', borderRadius: 6, border: `1px solid ${COLORS.border}`, background: COLORS.bg, color: COLORS.text, fontSize: 'var(--font-size-xs)', ...s, outline: 'none' }}>
                   {REMINDER_OPTIONS.map(option => <option key={option.id} value={option.id}>{option.label}</option>)}
                 </select>
               </div>
             )}
             <div style={{ padding: 12, borderRadius: 12, border: `1px solid ${COLORS.border}`, background: `${COLORS.primary}08` }}>
-              <div style={{ fontSize: 10, color: COLORS.text, fontWeight: 700, marginBottom: 8, ...s }}>Repetición de alarma</div>
+              <div style={{ fontSize: 'var(--font-size-xs)', color: COLORS.text, fontWeight: 700, marginBottom: 8, ...s }}>Repetición de alarma</div>
               <select value={t.intervalRepeat || 'none'} onChange={e => {
                 const value = e.target.value;
                 if (value !== 'none') requestHabitFlowNotifications();
@@ -22123,44 +22220,44 @@ const LegacyAgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAg
                   repeatUntilTime: p.repeatUntilTime || '23:59',
                   intervalEvery: p.intervalEvery || 1
                 }));
-              }} style={{ width: '100%', padding: '7px 9px', borderRadius: 8, border: `1px solid ${COLORS.border}`, background: COLORS.bg, color: COLORS.text, fontSize: 10, ...s, outline: 'none' }}>
+              }} style={{ width: '100%', padding: '7px 9px', borderRadius: 8, border: `1px solid ${COLORS.border}`, background: COLORS.bg, color: COLORS.text, fontSize: 'var(--font-size-xs)', ...s, outline: 'none' }}>
                 {INTERVAL_REPEAT_TYPES.map(option => <option key={option.id} value={option.id}>{option.label}</option>)}
               </select>
               {(t.intervalRepeat || 'none') === 'customHours' && (
                 <div style={{ marginTop: 8 }}>
-                  <div style={{ fontSize: 9, color: COLORS.textDim, marginBottom: 3, ...s }}>Repetir cada cuántas horas</div>
+                  <div style={{ fontSize: 'var(--font-size-2xs)', color: COLORS.textDim, marginBottom: 3, ...s }}>Repetir cada cuántas horas</div>
                   <input type="number" min="0.25" step="0.25" value={t.intervalEvery || 1} onChange={e => setEditModalTask(p => ({ ...p, intervalEvery: e.target.value }))}
-                    style={{ width: '100%', padding: '7px 9px', borderRadius: 8, border: `1px solid ${COLORS.border}`, background: COLORS.bg, color: COLORS.text, fontSize: 10, ...s, outline: 'none' }} />
+                    style={{ width: '100%', padding: '7px 9px', borderRadius: 8, border: `1px solid ${COLORS.border}`, background: COLORS.bg, color: COLORS.text, fontSize: 'var(--font-size-xs)', ...s, outline: 'none' }} />
                 </div>
               )}
               {(t.intervalRepeat || 'none') !== 'none' && (
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginTop: 8 }}>
                   <div>
-                    <div style={{ fontSize: 9, color: COLORS.textDim, marginBottom: 3, ...s }}>Finaliza el día</div>
+                    <div style={{ fontSize: 'var(--font-size-2xs)', color: COLORS.textDim, marginBottom: 3, ...s }}>Finaliza el día</div>
                     <input type="date" value={t.repeatUntilDate || t.dueDate || dateStr} min={t.dueDate || dateStr} onClick={e => openNativeDatePicker(e.currentTarget)} onFocus={e => openNativeDatePicker(e.currentTarget)} onChange={e => setEditModalTask(p => ({ ...p, repeatUntilDate: e.target.value }))}
-                      style={{ width: '100%', padding: '7px 9px', borderRadius: 8, border: `1px solid ${COLORS.border}`, background: COLORS.bg, color: COLORS.text, fontSize: 10, ...s, outline: 'none', cursor: 'pointer' }} />
+                      style={{ width: '100%', padding: '7px 9px', borderRadius: 8, border: `1px solid ${COLORS.border}`, background: COLORS.bg, color: COLORS.text, fontSize: 'var(--font-size-xs)', ...s, outline: 'none', cursor: 'pointer' }} />
                   </div>
                   <div>
-                    <div style={{ fontSize: 9, color: COLORS.textDim, marginBottom: 3, ...s }}>Finaliza a las</div>
+                    <div style={{ fontSize: 'var(--font-size-2xs)', color: COLORS.textDim, marginBottom: 3, ...s }}>Finaliza a las</div>
                     <input type="time" value={t.repeatUntilTime || '23:59'} onChange={e => setEditModalTask(p => ({ ...p, repeatUntilTime: e.target.value }))}
-                      style={{ width: '100%', padding: '7px 9px', borderRadius: 8, border: `1px solid ${COLORS.border}`, background: COLORS.bg, color: COLORS.text, fontSize: 10, ...s, outline: 'none' }} />
+                      style={{ width: '100%', padding: '7px 9px', borderRadius: 8, border: `1px solid ${COLORS.border}`, background: COLORS.bg, color: COLORS.text, fontSize: 'var(--font-size-xs)', ...s, outline: 'none' }} />
                   </div>
                 </div>
               )}
               {(t.intervalRepeat || 'none') !== 'none' && (
-                <div style={{ marginTop: 8, fontSize: 9, color: COLORS.textDim, lineHeight: 1.5, ...s }}>
+                <div style={{ marginTop: 8, fontSize: 'var(--font-size-2xs)', color: COLORS.textDim, lineHeight: 1.5, ...s }}>
                   Ejemplo: una tarea a las {getTaskStartTime(t) || '--:--'} con repetición sonará hasta {t.repeatUntilDate || t.dueDate || dateStr} {t.repeatUntilTime || '23:59'}.
                 </div>
               )}
             </div>
             {t.recurrence === 'custom' && (
               <div>
-                <div style={{ fontSize: 9, color: COLORS.textDim, marginBottom: 4, ...s }}>Repetir estos días</div>
+                <div style={{ fontSize: 'var(--font-size-2xs)', color: COLORS.textDim, marginBottom: 4, ...s }}>Repetir estos días</div>
                 <div style={{ display: 'flex', gap: 4 }}>
                   {DAY_NAMES.map((day, idx) => {
                     const active = (t.recurrenceDays || []).includes(idx);
                     return <button key={day} onClick={() => setEditModalTask(p => ({ ...p, recurrenceDays: active  ? (p.recurrenceDays || []).filter(d => d !== idx) : [...(p.recurrenceDays || []), idx] }))}
-                      style={{ ...btnBase, flex: 1, padding: '5px 0', background: active  ? COLORS.primary : COLORS.bg, color: active  ? '#fff' : COLORS.textDim, fontSize: 8 }}>{day}</button>;
+                      style={{ ...btnBase, flex: 1, padding: '5px 0', background: active  ? COLORS.primary : COLORS.bg, color: active  ? '#fff' : COLORS.textDim, fontSize: 'var(--font-size-2xs)' }}>{day}</button>;
                   })}
                 </div>
               </div>
@@ -22169,13 +22266,13 @@ const LegacyAgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAg
               {t.id  ? (
                 <>
                   <button onClick={saveTaskModal}
-                    style={{ flex: 1, padding: '9px 0', borderRadius: 8, border: 'none', background: `linear-gradient(135deg, ${COLORS.primary}, #7f1028)`, color: '#fff', cursor: 'pointer', fontSize: 11, fontWeight: 600, ...s }}>Guardar cambios</button>
+                    style={{ flex: 1, padding: '9px 0', borderRadius: 8, border: 'none', background: `linear-gradient(135deg, ${COLORS.primary}, #7f1028)`, color: '#fff', cursor: 'pointer', fontSize: 'var(--font-size-xs)', fontWeight: 600, ...s }}>Guardar cambios</button>
                   <button onClick={() => { if (!requestDeleteTask(t)) closeTaskModal(); }}
-                    style={{ padding: '9px 16px', borderRadius: 8, border: 'none', background: `${COLORS.alert}10`, color: COLORS.alert, cursor: 'pointer', fontSize: 11, fontWeight: 500, ...s }}>Eliminar</button>
+                    style={{ padding: '9px 16px', borderRadius: 8, border: 'none', background: `${COLORS.alert}10`, color: COLORS.alert, cursor: 'pointer', fontSize: 'var(--font-size-xs)', fontWeight: 500, ...s }}>Eliminar</button>
                 </>
               ) : (
                 <button onClick={saveTaskModal}
-                  style={{ flex: 1, padding: '9px 0', borderRadius: 8, border: 'none', background: `linear-gradient(135deg, ${COLORS.primary}, #7f1028)`, color: '#fff', cursor: 'pointer', fontSize: 11, fontWeight: 600, ...s }}>Crear tarea</button>
+                  style={{ flex: 1, padding: '9px 0', borderRadius: 8, border: 'none', background: `linear-gradient(135deg, ${COLORS.primary}, #7f1028)`, color: '#fff', cursor: 'pointer', fontSize: 'var(--font-size-xs)', fontWeight: 600, ...s }}>Crear tarea</button>
               )}
             </div>
           </div>
@@ -22191,13 +22288,13 @@ const LegacyAgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAg
     <div className="agenda-mobile-view" style={{ maxWidth: viewMode === 'month' || viewMode === 'week'  ? 1280 : 1100, margin: '0 auto', animation: 'fadeIn 0.3s ease' }}>
       <div className="agenda-topbar" style={{ display: 'flex', justifyContent: 'space-between', gap: 18, alignItems: 'flex-start', marginBottom: 16 }}>
         <div>
-          <div style={{ color: COLORS.primary, fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.14em', ...s }}>Agenda</div>
+          <div style={{ color: COLORS.primary, fontSize: 'var(--font-size-xs)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.14em', ...s }}>Agenda</div>
           <div style={{ marginTop: 4, fontSize: 28, color: COLORS.text, fontFamily: "'DM Serif Display', serif", letterSpacing: '-0.03em' }}>{isToday  ? 'Hoy' : dayName.charAt(0).toUpperCase() + dayName.slice(1)}</div>
-          <div style={{ marginTop: 3, color: COLORS.textDim, fontSize: 11, ...s }}>{formattedDate}</div>
+          <div style={{ marginTop: 3, color: COLORS.textDim, fontSize: 'var(--font-size-xs)', ...s }}>{formattedDate}</div>
         </div>
         <div className="agenda-top-actions" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           {totalCount > 0 && <div style={{ marginRight: 8, textAlign: 'right' }}>
-            <div style={{ color: COLORS.text, fontSize: 11, fontWeight: 700, ...s }}>{pct}% completado</div>
+            <div style={{ color: COLORS.text, fontSize: 'var(--font-size-xs)', fontWeight: 700, ...s }}>{pct}% completado</div>
             <div style={{ width: 96, height: 3, borderRadius: 3, marginTop: 5, overflow: 'hidden', background: COLORS.card }}><div style={{ width: `${pct}%`, height: '100%', background: COLORS.success }} /></div>
           </div>}
           <button onClick={goPrev} style={{ ...btnBase, width: 32, height: 32, color: COLORS.textDim, background: COLORS.card }}><ChevronLeft size={14} /></button>
@@ -22224,12 +22321,12 @@ const LegacyAgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAg
       {showFilters && (
         <div style={{ display: 'flex', gap: 6, alignItems: 'center', flexWrap: 'wrap', padding: '8px 10px', marginBottom: 14, borderRadius: 10, background: COLORS.card, border: `1px solid ${COLORS.border}` }}>
           <Search size={12} color={COLORS.textDim} />
-          <input value={searchQuery} onChange={e => setSearchQuery(e.target.value)} placeholder="Buscar tareas..." style={{ width: 145, padding: '5px 2px', background: 'transparent', color: COLORS.text, border: 'none', outline: 'none', fontSize: 10, ...s }} />
+          <input value={searchQuery} onChange={e => setSearchQuery(e.target.value)} placeholder="Buscar tareas..." style={{ width: 145, padding: '5px 2px', background: 'transparent', color: COLORS.text, border: 'none', outline: 'none', fontSize: 'var(--font-size-xs)', ...s }} />
           <div style={{ width: 1, height: 16, background: COLORS.border }} />
-          {[0, 1, 2, 3, 4].map(priority => <button key={priority} onClick={() => setFilterPrio(priority)} style={{ ...btnBase, padding: '4px 7px', borderRadius: 6, color: filterPrio === priority  ? '#fff' : COLORS.textDim, background: filterPrio === priority  ? (priority  ? PRIORITY_COLORS[priority] : COLORS.primary) : 'transparent', fontSize: 9 }}>{priority  ? PRIORITY_LABELS[priority] : 'Todas'}</button>)}
-          <select value={filterCat} onChange={e => setFilterCat(e.target.value)} style={{ padding: '4px 7px', borderRadius: 6, border: `1px solid ${COLORS.border}`, background: COLORS.bg, color: COLORS.text, fontSize: 9, ...s }}><option value="">Categorías</option>{taskCategories.map(category => <option key={category.id} value={category.name}>{category.name}</option>)}</select>
+          {[0, 1, 2, 3, 4].map(priority => <button key={priority} onClick={() => setFilterPrio(priority)} style={{ ...btnBase, padding: '4px 7px', borderRadius: 6, color: filterPrio === priority  ? '#fff' : COLORS.textDim, background: filterPrio === priority  ? (priority  ? PRIORITY_COLORS[priority] : COLORS.primary) : 'transparent', fontSize: 'var(--font-size-2xs)' }}>{priority  ? PRIORITY_LABELS[priority] : 'Todas'}</button>)}
+          <select value={filterCat} onChange={e => setFilterCat(e.target.value)} style={{ padding: '4px 7px', borderRadius: 6, border: `1px solid ${COLORS.border}`, background: COLORS.bg, color: COLORS.text, fontSize: 'var(--font-size-2xs)', ...s }}><option value="">Categorías</option>{taskCategories.map(category => <option key={category.id} value={category.name}>{category.name}</option>)}</select>
           <div style={{ flex: 1 }} />
-          <button onClick={() => setHideDone(v => !v)} style={{ ...btnBase, padding: '4px 7px', color: hideDone  ? COLORS.primary : COLORS.textDim, background: hideDone  ? `${COLORS.primary}12` : 'transparent', fontSize: 9 }}>{hideDone  ? 'Mostrar completadas' : 'Ocultar completadas'}</button>
+          <button onClick={() => setHideDone(v => !v)} style={{ ...btnBase, padding: '4px 7px', color: hideDone  ? COLORS.primary : COLORS.textDim, background: hideDone  ? `${COLORS.primary}12` : 'transparent', fontSize: 'var(--font-size-2xs)' }}>{hideDone  ? 'Mostrar completadas' : 'Ocultar completadas'}</button>
         </div>
       )}
 
@@ -22238,8 +22335,8 @@ const LegacyAgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAg
       {viewMode === 'day'  ? (
         <>
           <div className="agenda-layout-toggle" style={{ display: 'flex', justifyContent: 'flex-end', gap: 3, marginBottom: 7 }}>
-            <button onClick={() => setDayLayout('list')} style={{ ...btnBase, padding: '5px 8px', background: dayLayout === 'list'  ? `${COLORS.primary}12` : 'transparent', color: dayLayout === 'list'  ? COLORS.primary : COLORS.textDim, fontSize: 9 }}><List size={11} /> Lista</button>
-            <button onClick={() => setDayLayout('timeline')} style={{ ...btnBase, padding: '5px 8px', background: dayLayout === 'timeline'  ? `${COLORS.primary}12` : 'transparent', color: dayLayout === 'timeline'  ? COLORS.primary : COLORS.textDim, fontSize: 9 }}><Clock size={11} /> Cronograma</button>
+            <button onClick={() => setDayLayout('list')} style={{ ...btnBase, padding: '5px 8px', background: dayLayout === 'list'  ? `${COLORS.primary}12` : 'transparent', color: dayLayout === 'list'  ? COLORS.primary : COLORS.textDim, fontSize: 'var(--font-size-2xs)' }}><List size={11} /> Lista</button>
+            <button onClick={() => setDayLayout('timeline')} style={{ ...btnBase, padding: '5px 8px', background: dayLayout === 'timeline'  ? `${COLORS.primary}12` : 'transparent', color: dayLayout === 'timeline'  ? COLORS.primary : COLORS.textDim, fontSize: 'var(--font-size-2xs)' }}><Clock size={11} /> Cronograma</button>
           </div>
           <div className="agenda-day-grid" style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) 270px', gap: 14, alignItems: 'start' }}>
             <div>
@@ -22263,35 +22360,35 @@ const LegacyAgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAg
             <div style={{ fontSize: 18, color: COLORS.text, fontFamily: "'DM Serif Display', serif", marginBottom: 20 }}>{'\u{1F9E0}'} Planificar día</div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
               <div style={{ padding: '12px 16px', borderRadius: 10, background: `${COLORS.primary}08`, border: `1px solid ${COLORS.primary}20` }}>
-                <div style={{ fontSize: 10, color: COLORS.textDim, ...s, marginBottom: 2 }}>Tiempo libre disponible</div>
+                <div style={{ fontSize: 'var(--font-size-xs)', color: COLORS.textDim, ...s, marginBottom: 2 }}>Tiempo libre disponible</div>
                 <div style={{ fontSize: 16, fontWeight: 700, color: COLORS.text, ...s }}>{freeMins >= 60  ? `${Math.round(freeMins/60)}h ${freeMins%60}m` : `${freeMins}m`}</div>
               </div>
               {untimedTasks.length > 0 && (
                 <div>
-                  <div style={{ fontSize: 11, fontWeight: 600, color: COLORS.text, ...s, marginBottom: 4 }}>Tareas sin hora ({untimedTasks.length})</div>
+                  <div style={{ fontSize: 'var(--font-size-xs)', fontWeight: 600, color: COLORS.text, ...s, marginBottom: 4 }}>Tareas sin hora ({untimedTasks.length})</div>
                   {untimedTasks.slice(0, 5).map(t => (
                     <div key={t.id} style={{ padding: '6px 10px', borderRadius: 6, marginBottom: 2, background: COLORS.bg, display: 'flex', alignItems: 'center', gap: 5 }}>
-                      <span style={{ fontSize: 10, color: COLORS.text, ...s, flex: 1 }}>{t.text}</span>
-                      <span style={{ fontSize: 8, color: PRIORITY_COLORS[t.priority || 3], fontWeight: 600 }}>{PRIORITY_LABELS[t.priority || 3]}</span>
+                      <span style={{ fontSize: 'var(--font-size-xs)', color: COLORS.text, ...s, flex: 1 }}>{t.text}</span>
+                      <span style={{ fontSize: 'var(--font-size-2xs)', color: PRIORITY_COLORS[t.priority || 3], fontWeight: 600 }}>{PRIORITY_LABELS[t.priority || 3]}</span>
                       <button onClick={() => { const n = new Date(); updateTaskStartTime(t.id, `${String(n.getHours()).padStart(2,'0')}:00`); }}
-                        style={{ ...btnBase, padding: '2px 6px', background: `${COLORS.primary}10`, color: COLORS.primary, fontSize: 8 }}>Programar</button>
+                        style={{ ...btnBase, padding: '2px 6px', background: `${COLORS.primary}10`, color: COLORS.primary, fontSize: 'var(--font-size-2xs)' }}>Programar</button>
                     </div>
                   ))}
                 </div>
               )}
               {overdueCount > 0 && (
                 <div>
-                  <div style={{ fontSize: 11, fontWeight: 600, color: COLORS.alert, ...s, marginBottom: 4 }}>Vencidas ({overdueCount})</div>
+                  <div style={{ fontSize: 'var(--font-size-xs)', fontWeight: 600, color: COLORS.alert, ...s, marginBottom: 4 }}>Vencidas ({overdueCount})</div>
                   {getOverdueTasks().slice(0, 3).map(t => (
                     <div key={t.id} style={{ padding: '6px 10px', borderRadius: 6, marginBottom: 2, background: `${COLORS.alert}06`, display: 'flex', alignItems: 'center', gap: 5 }}>
-                      <span style={{ fontSize: 10, color: COLORS.text, ...s, flex: 1 }}>{t.text}</span>
-                      <button onClick={() => { onMoveTaskToDate(t.id, t.dueDate, todayStr); }} style={{ ...btnBase, padding: '2px 6px', background: `${COLORS.primary}10`, color: COLORS.primary, fontSize: 8 }}>Mover a hoy</button>
-                      <button onClick={() => toggleTask(t.id)} style={{ ...btnBase, padding: '2px 6px', background: `${COLORS.success}10`, color: COLORS.success, fontSize: 8 }}>?</button>
+                      <span style={{ fontSize: 'var(--font-size-xs)', color: COLORS.text, ...s, flex: 1 }}>{t.text}</span>
+                      <button onClick={() => { onMoveTaskToDate(t.id, t.dueDate, todayStr); }} style={{ ...btnBase, padding: '2px 6px', background: `${COLORS.primary}10`, color: COLORS.primary, fontSize: 'var(--font-size-2xs)' }}>Mover a hoy</button>
+                      <button onClick={() => toggleTask(t.id)} style={{ ...btnBase, padding: '2px 6px', background: `${COLORS.success}10`, color: COLORS.success, fontSize: 'var(--font-size-2xs)' }}>?</button>
                     </div>
                   ))}
                 </div>
               )}
-              <div style={{ marginTop: 4, fontSize: 10, color: COLORS.textDim, ...s, padding: '8px 12px', borderRadius: 8, background: COLORS.bg, border: `1px solid ${COLORS.border}` }}>
+              <div style={{ marginTop: 4, fontSize: 'var(--font-size-xs)', color: COLORS.textDim, ...s, padding: '8px 12px', borderRadius: 8, background: COLORS.bg, border: `1px solid ${COLORS.border}` }}>
                 <span style={{ color: COLORS.primary, fontWeight: 600 }}>{'\u{1F4A1}'} Sugerencia:</span>{' '}
                 {freeMins > 120  ? 'Tienes tiempo libre amplio. Ideal para programar tus tareas P1 en bloques de enfoque.' :
                  untimedTasks.length > 0  ? `Tienes ${untimedTasks.length} tareas sin hora. Asígnales un horario para mejorar tu productividad.` :
@@ -22373,21 +22470,21 @@ const AgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAgendaTa
       .agenda-pro{--ag-bg:#050505;--ag-card:#0b0c0e;--ag-raised:#111317;--ag-line:rgba(255,255,255,.095);--ag-text:#f4f4f2;--ag-muted:#a4a7ad;--ag-subtle:#666a72;--ag-red:#e00000;min-width:0;width:100%;max-width:none;box-sizing:border-box;color:var(--ag-text);font-family:Inter,sans-serif;padding:26px 30px 48px;background:var(--ag-bg)}
       html[data-theme-mode="pinkLight"] .agenda-pro{--ag-bg:#fff9fb;--ag-card:#fff;--ag-raised:#fff3f6;--ag-line:rgba(74,31,43,.13);--ag-text:#25181d;--ag-muted:#7a626a;--ag-subtle:#aa9299;--ag-red:#c8143d}
       .ag-header,.ag-toolbar,.ag-view-nav,.ag-date-nav,.ag-side-head,.ag-row,.ag-event-meta,.ag-modal-actions,.ag-filter-actions,.ag-manage-actions{display:flex;align-items:center}
-      .ag-header{justify-content:space-between;gap:24px;margin-bottom:24px}.ag-eyebrow{font-size:12px;color:var(--ag-muted);margin-bottom:7px;text-transform:capitalize}.ag-title{font:600 40px/1.05 'DM Serif Display',serif;margin:0;letter-spacing:-.02em}.ag-subtitle{font-size:14px;color:var(--ag-muted);margin:8px 0 0}.ag-header-actions{display:flex;gap:10px}.ag-btn{min-height:44px;padding:0 16px;border:1px solid var(--ag-line);border-radius:10px;background:var(--ag-card);color:var(--ag-text);font:650 13px/1 Inter,sans-serif;display:inline-flex;align-items:center;justify-content:center;gap:8px;cursor:pointer;transition:background .18s ease,border-color .18s ease,color .18s ease}.ag-btn:hover{background:var(--ag-raised);border-color:rgba(255,255,255,.2)}.ag-btn:focus-visible{outline:2px solid var(--ag-red);outline-offset:2px}.ag-btn.primary{background:var(--ag-red);border-color:var(--ag-red);color:#fff}.ag-btn.icon{width:44px;padding:0}.ag-btn.small{min-height:38px;padding:0 12px;font-size:11px}.ag-btn.danger{color:#ff4b55}
-      .ag-toolbar{justify-content:space-between;gap:16px;margin-bottom:16px}.ag-view-nav{border:1px solid var(--ag-line);border-radius:9px;overflow:hidden}.ag-view-nav button{min-width:92px;height:42px;border:0;border-right:1px solid var(--ag-line);background:transparent;color:var(--ag-muted);font:650 13px Inter;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:7px}.ag-view-nav button:last-child{border-right:0}.ag-view-nav button.active{background:rgba(224,0,0,.24);color:#fff}.ag-date-nav{gap:8px}.ag-date-label{min-width:230px;text-align:center;font-size:13px;font-weight:700;text-transform:capitalize}.ag-filter-badge{min-width:18px;height:18px;border-radius:999px;background:var(--ag-red);color:#fff;font-size:10px;display:grid;place-items:center}
-      .ag-layout{display:grid;grid-template-columns:minmax(0,1fr) minmax(290px,320px);gap:18px;min-width:0}.ag-main{min-width:0}.ag-side{display:grid;gap:14px;align-content:start}.ag-card{background:var(--ag-card);border:1px solid var(--ag-line);border-radius:14px;overflow:hidden}.ag-side-card{padding:18px}.ag-side-head{justify-content:space-between;margin-bottom:15px}.ag-side-head strong{font-size:15px}.ag-link{border:0;background:none;color:#ff2b32;font-size:11px;font-weight:700;cursor:pointer}.ag-upcoming-item{width:100%;border:0;background:transparent;color:inherit;text-align:left;display:grid;grid-template-columns:9px minmax(0,1fr);gap:10px;padding:10px 0;border-bottom:1px solid var(--ag-line);cursor:pointer}.ag-upcoming-item:last-child{border-bottom:0}.ag-dot{width:8px;height:8px;border-radius:50%;margin-top:5px;flex:none}.ag-upcoming-item strong{display:block;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.ag-upcoming-item small{font-size:10px;color:var(--ag-muted)}
-      .ag-productivity{display:grid;grid-template-columns:78px 1fr;gap:14px;align-items:center}.ag-ring{width:76px;height:76px;border-radius:50%;display:grid;place-items:center;position:relative;background:conic-gradient(#16c784 var(--value),rgba(255,255,255,.08) 0)}.ag-ring:before{content:'';position:absolute;inset:8px;border-radius:50%;background:var(--ag-card)}.ag-ring b{position:relative;font-size:18px}.ag-kpis{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}.ag-kpi{border-top:1px solid var(--ag-line);padding-top:10px}.ag-kpi b{display:block;font-size:15px}.ag-kpi span{font-size:10px;color:var(--ag-muted)}
-      .ag-cal-list{display:grid;gap:8px}.ag-cal-toggle{display:flex;align-items:center;gap:8px;font-size:10px}.ag-cal-toggle input{accent-color:var(--ag-red)}
+      .ag-header{justify-content:space-between;gap:24px;margin-bottom:24px}.ag-eyebrow{font-size: var(--font-size-sm);color:var(--ag-muted);margin-bottom:7px;text-transform:capitalize}.ag-title{font:600 40px/1.05 'DM Serif Display',serif;margin:0;letter-spacing:-.02em}.ag-subtitle{font-size:14px;color:var(--ag-muted);margin:8px 0 0}.ag-header-actions{display:flex;gap:10px}.ag-btn{min-height:44px;padding:0 16px;border:1px solid var(--ag-line);border-radius:10px;background:var(--ag-card);color:var(--ag-text);font:650 13px/1 Inter,sans-serif;display:inline-flex;align-items:center;justify-content:center;gap:8px;cursor:pointer;transition:background .18s ease,border-color .18s ease,color .18s ease}.ag-btn:hover{background:var(--ag-raised);border-color:rgba(255,255,255,.2)}.ag-btn:focus-visible{outline:2px solid var(--ag-red);outline-offset:2px}.ag-btn.primary{background:var(--ag-red);border-color:var(--ag-red);color:#fff}.ag-btn.icon{width:44px;padding:0}.ag-btn.small{min-height:38px;padding:0 12px;font-size: var(--font-size-xs)}.ag-btn.danger{color:#ff4b55}
+      .ag-toolbar{justify-content:space-between;gap:16px;margin-bottom:16px}.ag-view-nav{border:1px solid var(--ag-line);border-radius:9px;overflow:hidden}.ag-view-nav button{min-width:92px;height:42px;border:0;border-right:1px solid var(--ag-line);background:transparent;color:var(--ag-muted);font:650 13px Inter;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:7px}.ag-view-nav button:last-child{border-right:0}.ag-view-nav button.active{background:rgba(224,0,0,.24);color:#fff}.ag-date-nav{gap:8px}.ag-date-label{min-width:230px;text-align:center;font-size:13px;font-weight:700;text-transform:capitalize}.ag-filter-badge{min-width:18px;height:18px;border-radius:999px;background:var(--ag-red);color:#fff;font-size: var(--font-size-xs);display:grid;place-items:center}
+      .ag-layout{display:grid;grid-template-columns:minmax(0,1fr) minmax(290px,320px);gap:18px;min-width:0}.ag-main{min-width:0}.ag-side{display:grid;gap:14px;align-content:start}.ag-card{background:var(--ag-card);border:1px solid var(--ag-line);border-radius:14px;overflow:hidden}.ag-side-card{padding:18px}.ag-side-head{justify-content:space-between;margin-bottom:15px}.ag-side-head strong{font-size:15px}.ag-link{border:0;background:none;color:#ff2b32;font-size: var(--font-size-xs);font-weight:700;cursor:pointer}.ag-upcoming-item{width:100%;border:0;background:transparent;color:inherit;text-align:left;display:grid;grid-template-columns:9px minmax(0,1fr);gap:10px;padding:10px 0;border-bottom:1px solid var(--ag-line);cursor:pointer}.ag-upcoming-item:last-child{border-bottom:0}.ag-dot{width:8px;height:8px;border-radius:50%;margin-top:5px;flex:none}.ag-upcoming-item strong{display:block;font-size: var(--font-size-sm);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.ag-upcoming-item small{font-size: var(--font-size-xs);color:var(--ag-muted)}
+      .ag-productivity{display:grid;grid-template-columns:78px 1fr;gap:14px;align-items:center}.ag-ring{width:76px;height:76px;border-radius:50%;display:grid;place-items:center;position:relative;background:conic-gradient(#16c784 var(--value),rgba(255,255,255,.08) 0)}.ag-ring:before{content:'';position:absolute;inset:8px;border-radius:50%;background:var(--ag-card)}.ag-ring b{position:relative;font-size:18px}.ag-kpis{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}.ag-kpi{border-top:1px solid var(--ag-line);padding-top:10px}.ag-kpi b{display:block;font-size:15px}.ag-kpi span{font-size: var(--font-size-xs);color:var(--ag-muted)}
+      .ag-cal-list{display:grid;gap:8px}.ag-cal-toggle{display:flex;align-items:center;gap:8px;font-size: var(--font-size-xs)}.ag-cal-toggle input{accent-color:var(--ag-red)}
       .ag-quick{display:flex;align-items:center;gap:10px;padding:12px;margin-bottom:12px}.ag-input,.ag-select,.ag-textarea{width:100%;box-sizing:border-box;border:1px solid var(--ag-line);border-radius:9px;background:var(--ag-raised);color:var(--ag-text);font:500 13px Inter;outline:none}.ag-input,.ag-select{height:44px;padding:0 13px}.ag-textarea{min-height:92px;padding:12px;resize:vertical}.ag-input:focus,.ag-select:focus,.ag-textarea:focus{border-color:var(--ag-red)}
-      .ag-week-shell,.ag-day-shell,.ag-month-shell,.ag-list-shell{position:relative;overflow:auto;background:var(--ag-card);border:1px solid var(--ag-line);border-radius:14px}.ag-week{display:grid;grid-template-columns:68px repeat(7,minmax(130px,1fr));min-width:1050px}.ag-week-head{height:62px;border-bottom:1px solid var(--ag-line);border-right:1px solid var(--ag-line);display:grid;place-items:center;text-align:center}.ag-week-head span{font-size:11px;color:var(--ag-muted);text-transform:capitalize}.ag-week-head b{font-size:17px}.ag-week-head.today b{width:28px;height:28px;border-radius:50%;background:var(--ag-red);display:grid;place-items:center;color:#fff}.ag-all-day{min-height:46px;border-bottom:1px solid var(--ag-line);border-right:1px solid var(--ag-line);padding:6px;box-sizing:border-box}.ag-all-day.label{font-size:10px;color:var(--ag-muted);display:grid;place-items:center}.ag-time-col{position:relative;height:960px;border-right:1px solid var(--ag-line)}.ag-time-label{position:absolute;right:10px;transform:translateY(-50%);font-size:10px;color:var(--ag-muted)}.ag-day-col{position:relative;height:960px;border-right:1px solid var(--ag-line);background:repeating-linear-gradient(to bottom,transparent 0,transparent 59px,var(--ag-line) 60px)}.ag-event{position:absolute;left:5px;right:5px;min-height:32px;border-radius:7px;padding:7px 8px;box-sizing:border-box;border:1px solid color-mix(in srgb,var(--event-color) 42%,transparent);border-left:3px solid var(--event-color);background:color-mix(in srgb,var(--event-color) 18%,var(--ag-card));color:var(--ag-text);overflow:hidden;cursor:pointer;transition:filter .18s ease,background .18s ease;text-align:left}.ag-event:hover{filter:brightness(1.18)}.ag-event strong{display:flex;align-items:center;gap:6px;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.ag-event small{font-size:10px;color:var(--ag-muted)}.ag-event-icon{color:var(--event-color);flex:none}.ag-now{position:absolute;left:0;right:0;height:1px;background:var(--ag-red);z-index:4}.ag-now:before{content:'';position:absolute;left:-4px;top:-4px;width:9px;height:9px;border-radius:50%;background:var(--ag-red)}
-      .ag-day-grid{display:grid;grid-template-columns:78px 1fr;min-width:560px}.ag-day-events{position:relative;height:960px;background:repeating-linear-gradient(to bottom,transparent 0,transparent 59px,var(--ag-line) 60px)}.ag-day-events .ag-event{left:10px;right:10px;padding:9px 13px}.ag-day-events .ag-event strong{font-size:13px}.ag-day-events .ag-event small{font-size:11px}.ag-day-all{display:grid;grid-template-columns:78px 1fr;border-bottom:1px solid var(--ag-line)}.ag-day-all>div{padding:11px;border-right:1px solid var(--ag-line);font-size:11px;color:var(--ag-muted)}
-      .ag-month{display:grid;grid-template-columns:repeat(7,minmax(120px,1fr));min-width:840px}.ag-month-name{height:42px;display:grid;place-items:center;border-right:1px solid var(--ag-line);border-bottom:1px solid var(--ag-line);font-size:11px;color:var(--ag-muted)}.ag-month-day{min-height:130px;padding:10px;border-right:1px solid var(--ag-line);border-bottom:1px solid var(--ag-line);cursor:pointer}.ag-month-day.out{opacity:.34}.ag-month-day.selected{box-shadow:inset 0 0 0 1px var(--ag-red);background:rgba(224,0,0,.035)}.ag-day-number{width:26px;height:26px;display:grid;place-items:center;border-radius:50%;font-size:12px}.ag-day-number.today{background:var(--ag-red);color:#fff}.ag-month-event{width:100%;border:0;background:transparent;color:inherit;text-align:left;display:flex;align-items:center;gap:6px;margin-top:7px;font-size:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer}.ag-more{margin-top:6px;font-size:10px;color:var(--ag-red);font-weight:700}
-      .ag-list-groups{display:grid}.ag-list-group h3{margin:0;padding:14px 16px;border-bottom:1px solid var(--ag-line);background:var(--ag-raised);font-size:13px}.ag-row{display:grid;grid-template-columns:90px minmax(220px,1.4fr) 150px minmax(110px,1fr) 34px;gap:14px;min-height:62px;padding:0 16px;border-bottom:1px solid var(--ag-line);font-size:12px;cursor:pointer}.ag-row:hover{background:var(--ag-raised)}.ag-row>span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.ag-row .title{font-weight:700}.ag-status{width:24px;height:24px;border-radius:50%;border:1px solid var(--ag-muted);background:transparent;color:inherit;display:grid;place-items:center;cursor:pointer}.ag-status.done{border-color:#16c784;background:#16c784;color:#000}
-      .ag-overlay,.ag-drawer-wrap{--ag-bg:#050505;--ag-card:#0b0c0e;--ag-raised:#111317;--ag-line:rgba(255,255,255,.12);--ag-text:#f4f4f2;--ag-muted:#a4a7ad;--ag-subtle:#666a72;--ag-red:#e00000;color:var(--ag-text);font-family:Inter,sans-serif}.ag-overlay{position:fixed;inset:0;z-index:20000;background:rgba(0,0,0,.72);backdrop-filter:blur(5px);display:grid;place-items:center;padding:18px}.ag-modal{width:min(620px,calc(100vw - 32px));max-height:calc(100dvh - 36px);overflow:auto;background:var(--ag-card);border:1px solid var(--ag-line);border-radius:16px;box-shadow:0 30px 90px rgba(0,0,0,.55)}.ag-modal.wide{width:min(860px,calc(100vw - 32px))}.ag-modal-head{display:flex;justify-content:space-between;gap:20px;padding:20px;border-bottom:1px solid var(--ag-line)}.ag-modal-head h2{font:500 22px 'DM Serif Display',serif;margin:0}.ag-modal-head p{font-size:10px;color:var(--ag-muted);margin:5px 0 0}.ag-modal-body{padding:20px}.ag-form-grid{display:grid;grid-template-columns:1fr 1fr;gap:13px}.ag-field{display:grid;gap:6px;font-size:9px;color:var(--ag-muted)}.ag-field.full{grid-column:1/-1}.ag-check{display:flex;align-items:center;gap:8px;font-size:10px;color:var(--ag-text)}.ag-check input{accent-color:var(--ag-red)}.ag-modal-actions{justify-content:flex-end;gap:8px;padding:16px 20px;border-top:1px solid var(--ag-line)}
+      .ag-week-shell,.ag-day-shell,.ag-month-shell,.ag-list-shell{position:relative;overflow:auto;background:var(--ag-card);border:1px solid var(--ag-line);border-radius:14px}.ag-week{display:grid;grid-template-columns:68px repeat(7,minmax(130px,1fr));min-width:1050px}.ag-week-head{height:62px;border-bottom:1px solid var(--ag-line);border-right:1px solid var(--ag-line);display:grid;place-items:center;text-align:center}.ag-week-head span{font-size: var(--font-size-xs);color:var(--ag-muted);text-transform:capitalize}.ag-week-head b{font-size:17px}.ag-week-head.today b{width:28px;height:28px;border-radius:50%;background:var(--ag-red);display:grid;place-items:center;color:#fff}.ag-all-day{min-height:46px;border-bottom:1px solid var(--ag-line);border-right:1px solid var(--ag-line);padding:6px;box-sizing:border-box}.ag-all-day.label{font-size: var(--font-size-xs);color:var(--ag-muted);display:grid;place-items:center}.ag-time-col{position:relative;height:960px;border-right:1px solid var(--ag-line)}.ag-time-label{position:absolute;right:10px;transform:translateY(-50%);font-size: var(--font-size-xs);color:var(--ag-muted)}.ag-day-col{position:relative;height:960px;border-right:1px solid var(--ag-line);background:repeating-linear-gradient(to bottom,transparent 0,transparent 59px,var(--ag-line) 60px)}.ag-event{position:absolute;left:5px;right:5px;min-height:32px;border-radius:7px;padding:7px 8px;box-sizing:border-box;border:1px solid color-mix(in srgb,var(--event-color) 42%,transparent);border-left:3px solid var(--event-color);background:color-mix(in srgb,var(--event-color) 18%,var(--ag-card));color:var(--ag-text);overflow:hidden;cursor:pointer;transition:filter .18s ease,background .18s ease;text-align:left}.ag-event:hover{filter:brightness(1.18)}.ag-event strong{display:flex;align-items:center;gap:6px;font-size: var(--font-size-sm);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.ag-event small{font-size: var(--font-size-xs);color:var(--ag-muted)}.ag-event-icon{color:var(--event-color);flex:none}.ag-now{position:absolute;left:0;right:0;height:1px;background:var(--ag-red);z-index:4}.ag-now:before{content:'';position:absolute;left:-4px;top:-4px;width:9px;height:9px;border-radius:50%;background:var(--ag-red)}
+      .ag-day-grid{display:grid;grid-template-columns:78px 1fr;min-width:560px}.ag-day-events{position:relative;height:960px;background:repeating-linear-gradient(to bottom,transparent 0,transparent 59px,var(--ag-line) 60px)}.ag-day-events .ag-event{left:10px;right:10px;padding:9px 13px}.ag-day-events .ag-event strong{font-size:13px}.ag-day-events .ag-event small{font-size: var(--font-size-xs)}.ag-day-all{display:grid;grid-template-columns:78px 1fr;border-bottom:1px solid var(--ag-line)}.ag-day-all>div{padding:11px;border-right:1px solid var(--ag-line);font-size: var(--font-size-xs);color:var(--ag-muted)}
+      .ag-month{display:grid;grid-template-columns:repeat(7,minmax(120px,1fr));min-width:840px}.ag-month-name{height:42px;display:grid;place-items:center;border-right:1px solid var(--ag-line);border-bottom:1px solid var(--ag-line);font-size: var(--font-size-xs);color:var(--ag-muted)}.ag-month-day{min-height:130px;padding:10px;border-right:1px solid var(--ag-line);border-bottom:1px solid var(--ag-line);cursor:pointer}.ag-month-day.out{opacity:.34}.ag-month-day.selected{box-shadow:inset 0 0 0 1px var(--ag-red);background:rgba(224,0,0,.035)}.ag-day-number{width:26px;height:26px;display:grid;place-items:center;border-radius:50%;font-size: var(--font-size-sm)}.ag-day-number.today{background:var(--ag-red);color:#fff}.ag-month-event{width:100%;border:0;background:transparent;color:inherit;text-align:left;display:flex;align-items:center;gap:6px;margin-top:7px;font-size: var(--font-size-xs);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer}.ag-more{margin-top:6px;font-size: var(--font-size-xs);color:var(--ag-red);font-weight:700}
+      .ag-list-groups{display:grid}.ag-list-group h3{margin:0;padding:14px 16px;border-bottom:1px solid var(--ag-line);background:var(--ag-raised);font-size:13px}.ag-row{display:grid;grid-template-columns:90px minmax(220px,1.4fr) 150px minmax(110px,1fr) 34px;gap:14px;min-height:62px;padding:0 16px;border-bottom:1px solid var(--ag-line);font-size: var(--font-size-sm);cursor:pointer}.ag-row:hover{background:var(--ag-raised)}.ag-row>span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.ag-row .title{font-weight:700}.ag-status{width:24px;height:24px;border-radius:50%;border:1px solid var(--ag-muted);background:transparent;color:inherit;display:grid;place-items:center;cursor:pointer}.ag-status.done{border-color:#16c784;background:#16c784;color:#000}
+      .ag-overlay,.ag-drawer-wrap{--ag-bg:#050505;--ag-card:#0b0c0e;--ag-raised:#111317;--ag-line:rgba(255,255,255,.12);--ag-text:#f4f4f2;--ag-muted:#a4a7ad;--ag-subtle:#666a72;--ag-red:#e00000;color:var(--ag-text);font-family:Inter,sans-serif}.ag-overlay{position:fixed;inset:0;z-index:20000;background:rgba(0,0,0,.72);backdrop-filter:blur(5px);display:grid;place-items:center;padding:18px}.ag-modal{width:min(620px,calc(100vw - 32px));max-height:calc(100dvh - 36px);overflow:auto;background:var(--ag-card);border:1px solid var(--ag-line);border-radius:16px;box-shadow:0 30px 90px rgba(0,0,0,.55)}.ag-modal.wide{width:min(860px,calc(100vw - 32px))}.ag-modal-head{display:flex;justify-content:space-between;gap:20px;padding:20px;border-bottom:1px solid var(--ag-line)}.ag-modal-head h2{font:500 22px 'DM Serif Display',serif;margin:0}.ag-modal-head p{font-size: var(--font-size-xs);color:var(--ag-muted);margin:5px 0 0}.ag-modal-body{padding:20px}.ag-form-grid{display:grid;grid-template-columns:1fr 1fr;gap:13px}.ag-field{display:grid;gap:6px;font-size: var(--font-size-2xs);color:var(--ag-muted)}.ag-field.full{grid-column:1/-1}.ag-check{display:flex;align-items:center;gap:8px;font-size: var(--font-size-xs);color:var(--ag-text)}.ag-check input{accent-color:var(--ag-red)}.ag-modal-actions{justify-content:flex-end;gap:8px;padding:16px 20px;border-top:1px solid var(--ag-line)}
       html[data-theme-mode="pinkLight"] .ag-overlay,html[data-theme-mode="pinkLight"] .ag-drawer-wrap{--ag-bg:#fff9fb;--ag-card:#fff;--ag-raised:#fff3f6;--ag-line:rgba(74,31,43,.15);--ag-text:#25181d;--ag-muted:#7a626a;--ag-subtle:#aa9299;--ag-red:#c8143d}
-      .ag-drawer-wrap{position:fixed;inset:0;z-index:20010;background:rgba(0,0,0,.72);backdrop-filter:blur(4px)}.ag-drawer{position:absolute;right:0;top:0;bottom:0;width:min(470px,100vw);overflow:auto;background:var(--ag-card);border-left:1px solid var(--ag-line);padding:22px;box-sizing:border-box;animation:agSlide .24s ease}.ag-filter-section{padding:16px 0;border-bottom:1px solid var(--ag-line)}.ag-filter-section h4{font-size:10px;margin:0 0 10px}.ag-filter-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}.ag-pill-check{min-height:38px;padding:0 10px;border:1px solid var(--ag-line);border-radius:7px;background:var(--ag-raised);display:flex;align-items:center;gap:7px;font-size:9px}.ag-pill-check input{accent-color:var(--ag-red)}.ag-filter-actions{position:sticky;bottom:0;z-index:2;gap:8px;padding:16px 0 max(16px,env(safe-area-inset-bottom));background:var(--ag-card)}
-      .ag-calendar-table{border:1px solid var(--ag-line);border-radius:10px;overflow:hidden}.ag-calendar-row{display:grid;grid-template-columns:minmax(150px,1fr) 70px 80px 70px 130px;gap:10px;align-items:center;padding:12px;border-bottom:1px solid var(--ag-line);font-size:10px}.ag-calendar-row:last-child{border-bottom:0}.ag-calendar-row small{display:block;color:var(--ag-muted);font-size:8px}.ag-calendar-row label{display:flex;align-items:center;gap:7px;cursor:pointer}.ag-calendar-row label input{appearance:none;width:36px;height:21px;border-radius:999px;background:#30333a;padding:3px;cursor:pointer}.ag-calendar-row label input:before{content:'';display:block;width:15px;height:15px;border-radius:50%;background:#fff;transition:transform .18s}.ag-calendar-row label input:checked{background:var(--ag-red)}.ag-calendar-row label input:checked:before{transform:translateX(15px)}.ag-color-input{width:30px;height:30px;padding:0;border:0;background:none}.ag-sync-box{margin-top:14px;padding:15px;border:1px solid var(--ag-line);border-radius:10px;display:flex;justify-content:space-between;align-items:center}.ag-manage-actions{gap:8px;margin-bottom:14px}
-      .ag-upcoming-page{display:grid;grid-template-columns:minmax(0,1fr) 250px;gap:14px}.ag-upcoming-controls{display:flex;gap:8px;margin-bottom:12px}.ag-date-group{display:grid;grid-template-columns:54px 1fr;gap:10px;margin-bottom:12px}.ag-date-badge{height:54px;border:1px solid var(--ag-line);border-radius:9px;display:grid;place-items:center;text-align:center}.ag-date-badge b{font-size:18px}.ag-date-badge span{font-size:8px;color:var(--ag-red)}
+      .ag-drawer-wrap{position:fixed;inset:0;z-index:20010;background:rgba(0,0,0,.72);backdrop-filter:blur(4px)}.ag-drawer{position:absolute;right:0;top:0;bottom:0;width:min(470px,100vw);overflow:auto;background:var(--ag-card);border-left:1px solid var(--ag-line);padding:22px;box-sizing:border-box;animation:agSlide .24s ease}.ag-filter-section{padding:16px 0;border-bottom:1px solid var(--ag-line)}.ag-filter-section h4{font-size: var(--font-size-xs);margin:0 0 10px}.ag-filter-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}.ag-pill-check{min-height:38px;padding:0 10px;border:1px solid var(--ag-line);border-radius:7px;background:var(--ag-raised);display:flex;align-items:center;gap:7px;font-size: var(--font-size-2xs)}.ag-pill-check input{accent-color:var(--ag-red)}.ag-filter-actions{position:sticky;bottom:0;z-index:2;gap:8px;padding:16px 0 max(16px,env(safe-area-inset-bottom));background:var(--ag-card)}
+      .ag-calendar-table{border:1px solid var(--ag-line);border-radius:10px;overflow:hidden}.ag-calendar-row{display:grid;grid-template-columns:minmax(150px,1fr) 70px 80px 70px 130px;gap:10px;align-items:center;padding:12px;border-bottom:1px solid var(--ag-line);font-size: var(--font-size-xs)}.ag-calendar-row:last-child{border-bottom:0}.ag-calendar-row small{display:block;color:var(--ag-muted);font-size: var(--font-size-2xs)}.ag-calendar-row label{display:flex;align-items:center;gap:7px;cursor:pointer}.ag-calendar-row label input{appearance:none;width:36px;height:21px;border-radius:999px;background:#30333a;padding:3px;cursor:pointer}.ag-calendar-row label input:before{content:'';display:block;width:15px;height:15px;border-radius:50%;background:#fff;transition:transform .18s}.ag-calendar-row label input:checked{background:var(--ag-red)}.ag-calendar-row label input:checked:before{transform:translateX(15px)}.ag-color-input{width:30px;height:30px;padding:0;border:0;background:none}.ag-sync-box{margin-top:14px;padding:15px;border:1px solid var(--ag-line);border-radius:10px;display:flex;justify-content:space-between;align-items:center}.ag-manage-actions{gap:8px;margin-bottom:14px}
+      .ag-upcoming-page{display:grid;grid-template-columns:minmax(0,1fr) 250px;gap:14px}.ag-upcoming-controls{display:flex;gap:8px;margin-bottom:12px}.ag-date-group{display:grid;grid-template-columns:54px 1fr;gap:10px;margin-bottom:12px}.ag-date-badge{height:54px;border:1px solid var(--ag-line);border-radius:9px;display:grid;place-items:center;text-align:center}.ag-date-badge b{font-size:18px}.ag-date-badge span{font-size: var(--font-size-2xs);color:var(--ag-red)}
       .ag-filter-dates{display:grid;grid-template-columns:1fr auto 1fr;align-items:end;gap:9px;margin-top:12px}.ag-filter-dates>span{padding-bottom:13px;color:var(--ag-muted)}
       .ag-switch{width:42px;height:24px;border:0;border-radius:999px;background:#30333a;padding:3px;cursor:pointer;transition:.18s}.ag-switch:before{content:'';display:block;width:18px;height:18px;border-radius:50%;background:#fff;transition:.18s}.ag-switch.active{background:var(--ag-red)}.ag-switch.active:before{transform:translateX(18px)}
       @keyframes agSlide{from{transform:translateX(100%)}to{transform:translateX(0)}}
@@ -22406,8 +22503,8 @@ const AgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAgendaTa
       .ag-month{width:100%;min-width:0;grid-template-columns:repeat(7,minmax(0,1fr))}
       .ag-week-head,.ag-all-day,.ag-day-col,.ag-month-name,.ag-month-day{min-width:0;overflow:hidden}
       .ag-event{left:3px;right:3px;padding:6px 5px}
-      .ag-event strong{font-size:11px;gap:4px}
-      .ag-event small{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:9px}
+      .ag-event strong{font-size: var(--font-size-xs);gap:4px}
+      .ag-event small{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size: var(--font-size-2xs)}
       .ag-month-day{padding:8px;min-height:118px}
       .ag-month-event{min-width:0}.ag-month-event span{min-width:0;overflow:hidden;text-overflow:ellipsis}
       .ag-row{grid-template-columns:76px minmax(0,1.45fr) minmax(90px,.7fr) minmax(90px,.9fr) 32px;gap:12px}
@@ -22422,7 +22519,7 @@ const AgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAgendaTa
         .agenda-pro{padding:28px 32px 52px}
         .ag-layout{grid-template-columns:minmax(0,1fr) minmax(300px,320px);gap:20px}
         .ag-upcoming-page{grid-template-columns:minmax(0,1fr) 300px;gap:20px}
-        .ag-event{left:5px;right:5px;padding:7px 8px}.ag-event strong{font-size:12px}.ag-event small{font-size:10px}
+        .ag-event{left:5px;right:5px;padding:7px 8px}.ag-event strong{font-size: var(--font-size-sm)}.ag-event small{font-size: var(--font-size-xs)}
         .ag-month-day{padding:10px;min-height:130px}
       }
       @media(min-width:1280px) and (max-width:1599px){
@@ -22430,7 +22527,7 @@ const AgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAgendaTa
         .ag-layout{grid-template-columns:minmax(0,1fr) minmax(260px,280px);gap:16px}
         .ag-side-card{padding:15px}
         .ag-view-nav button{min-width:78px;padding:0 10px}
-        .ag-date-nav{gap:6px}.ag-date-label{font-size:12px}
+        .ag-date-nav{gap:6px}.ag-date-label{font-size: var(--font-size-sm)}
       }
       @media(max-width:1279px){
         .agenda-pro{padding:20px 18px 44px}
@@ -22448,39 +22545,39 @@ const AgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAgendaTa
         .ag-side{grid-template-columns:repeat(2,minmax(0,1fr))}
         .ag-side>.ag-card:last-child{grid-column:1/-1}
         .ag-week{grid-template-columns:48px repeat(7,minmax(0,1fr))}
-        .ag-week-head{height:56px}.ag-week-head span{font-size:9px}.ag-week-head b{font-size:15px}
-        .ag-time-label{right:6px;font-size:9px}.ag-all-day{padding:4px}.ag-all-day.label{font-size:8px}
-        .ag-event{border-left-width:2px;padding:5px 3px}.ag-event strong{font-size:10px}.ag-event-icon{display:none}.ag-event small{font-size:8px}
-        .ag-month-day{min-height:104px;padding:6px}.ag-month-event{font-size:9px;gap:4px}
+        .ag-week-head{height:56px}.ag-week-head span{font-size: var(--font-size-2xs)}.ag-week-head b{font-size:15px}
+        .ag-time-label{right:6px;font-size: var(--font-size-2xs)}.ag-all-day{padding:4px}.ag-all-day.label{font-size: var(--font-size-2xs)}
+        .ag-event{border-left-width:2px;padding:5px 3px}.ag-event strong{font-size: var(--font-size-xs)}.ag-event-icon{display:none}.ag-event small{font-size: var(--font-size-2xs)}
+        .ag-month-day{min-height:104px;padding:6px}.ag-month-event{font-size: var(--font-size-2xs);gap:4px}
         .ag-row{grid-template-columns:66px minmax(0,1fr) 92px 30px;gap:9px;padding:0 12px}.ag-row .location{display:none}
         .ag-calendar-row{grid-template-columns:minmax(0,1fr) 52px 52px}.ag-calendar-row .sync,.ag-calendar-row .edit-col{display:none}
       }
       @media(max-width:700px){
         .agenda-pro{padding:14px 12px 110px}
         .ag-header{gap:14px;margin-bottom:18px}.ag-header>div:first-child{flex:1 1 220px}.ag-title{font-size:32px}.ag-header-actions{width:auto;margin-left:auto}.ag-header-actions .ag-btn.primary{padding:0 13px}
-        .ag-view-nav button{height:44px;padding:0 4px;font-size:11px;gap:4px}.ag-view-nav button svg{width:13px;height:13px}
-        .ag-date-nav{display:grid;grid-template-columns:44px 58px minmax(0,1fr) 44px 86px;gap:6px}.ag-date-nav>.ag-btn{padding:0 8px}.ag-date-label{width:auto;min-width:0;font-size:11px;line-height:1.25}.ag-date-nav>.ag-btn:last-child{font-size:0;gap:0}.ag-date-nav>.ag-btn:last-child svg{width:17px;height:17px}
-        .ag-quick{padding:8px;gap:6px}.ag-quick .ag-input{font-size:11px}.ag-quick .ag-btn{padding:0 9px}
+        .ag-view-nav button{height:44px;padding:0 4px;font-size: var(--font-size-xs);gap:4px}.ag-view-nav button svg{width:13px;height:13px}
+        .ag-date-nav{display:grid;grid-template-columns:44px 58px minmax(0,1fr) 44px 86px;gap:6px}.ag-date-nav>.ag-btn{padding:0 8px}.ag-date-label{width:auto;min-width:0;font-size: var(--font-size-xs);line-height:1.25}.ag-date-nav>.ag-btn:last-child{font-size:0;gap:0}.ag-date-nav>.ag-btn:last-child svg{width:17px;height:17px}
+        .ag-quick{padding:8px;gap:6px}.ag-quick .ag-input{font-size: var(--font-size-xs)}.ag-quick .ag-btn{padding:0 9px}
         .ag-list-shell>.ag-quick{display:grid;grid-template-columns:auto minmax(0,1fr) auto;width:auto}
         .ag-list-shell>.ag-quick>span{width:max-content;max-width:none;overflow:visible}
         .ag-side{grid-template-columns:1fr}.ag-side>.ag-card:last-child{grid-column:auto}
-        .ag-week{grid-template-columns:38px repeat(7,minmax(0,1fr))}.ag-week-head{height:50px}.ag-week-head span{font-size:8px}.ag-week-head b{font-size:13px}.ag-week-head.today b{width:24px;height:24px}
-        .ag-time-label{font-size:8px;right:4px}
-        .ag-event{left:2px;right:2px;min-height:22px;border-radius:4px;padding:3px 2px}.ag-event strong{font-size:8px;line-height:1.1}.ag-event small{display:none}
-        .ag-day-grid,.ag-day-all{grid-template-columns:48px minmax(0,1fr)}.ag-day-events .ag-event{left:6px;right:6px;padding:7px 9px}.ag-day-events .ag-event strong{font-size:12px}.ag-day-events .ag-event small{display:block;font-size:10px}
-        .ag-month-name{height:34px;font-size:8px}.ag-month-day{min-height:72px;padding:4px}.ag-day-number{width:22px;height:22px;font-size:10px}.ag-month-event{margin-top:3px;font-size:0}.ag-month-event svg{width:8px;height:8px}.ag-month-event:nth-of-type(n+3){display:none}.ag-more{font-size:8px;margin-top:2px}
+        .ag-week{grid-template-columns:38px repeat(7,minmax(0,1fr))}.ag-week-head{height:50px}.ag-week-head span{font-size: var(--font-size-2xs)}.ag-week-head b{font-size:13px}.ag-week-head.today b{width:24px;height:24px}
+        .ag-time-label{font-size: var(--font-size-2xs);right:4px}
+        .ag-event{left:2px;right:2px;min-height:22px;border-radius:4px;padding:3px 2px}.ag-event strong{font-size: var(--font-size-2xs);line-height:1.1}.ag-event small{display:none}
+        .ag-day-grid,.ag-day-all{grid-template-columns:48px minmax(0,1fr)}.ag-day-events .ag-event{left:6px;right:6px;padding:7px 9px}.ag-day-events .ag-event strong{font-size: var(--font-size-sm)}.ag-day-events .ag-event small{display:block;font-size: var(--font-size-xs)}
+        .ag-month-name{height:34px;font-size: var(--font-size-2xs)}.ag-month-day{min-height:72px;padding:4px}.ag-day-number{width:22px;height:22px;font-size: var(--font-size-xs)}.ag-month-event{margin-top:3px;font-size:0}.ag-month-event svg{width:8px;height:8px}.ag-month-event:nth-of-type(n+3){display:none}.ag-more{font-size: var(--font-size-2xs);margin-top:2px}
         .ag-row{grid-template-columns:54px minmax(0,1fr) 28px;min-height:72px;gap:8px;padding:8px 10px;align-items:center}.ag-row .category,.ag-row .location{display:none}.ag-row .title{white-space:normal;line-height:1.25;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}.ag-row .ag-status{width:28px;height:28px}
         .ag-upcoming-controls{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));overflow:visible}.ag-date-group{grid-template-columns:46px minmax(0,1fr)}
         .ag-upcoming-page>aside{display:grid;grid-template-columns:1fr}
         .ag-modal.wide{width:100%}.ag-calendar-table{border:0;display:grid;gap:10px}.ag-calendar-row{border:1px solid var(--ag-line);border-radius:10px;grid-template-columns:minmax(0,1fr) 48px 48px;padding:12px}.ag-calendar-row:last-child{border-bottom:1px solid var(--ag-line)}
         .ag-manage-actions{display:grid;grid-template-columns:1fr 1fr}.ag-manage-actions .ag-btn:first-child{grid-column:1/-1}
         .ag-filter-grid{grid-template-columns:1fr 1fr}.ag-filter-dates{grid-template-columns:1fr}.ag-filter-dates>span{display:none}
-        .ag-date-nav>.ag-btn:last-child{font-size:10px;gap:5px}.ag-date-nav>.ag-btn:last-child svg{width:15px;height:15px}
+        .ag-date-nav>.ag-btn:last-child{font-size: var(--font-size-xs);gap:5px}.ag-date-nav>.ag-btn:last-child svg{width:15px;height:15px}
       }
 
       /* Timeline geometry and semantic Agenda controls. */
       .agenda-pro{--ag-timeline-height:clamp(620px,calc(100dvh - 330px),900px);--ag-time-width:56px;--ag-week-head-height:62px;--ag-all-day-height:46px}
-      .ag-week{grid-template-columns:var(--ag-time-width) repeat(7,minmax(0,1fr));min-width:0}.ag-day-grid,.ag-day-all{grid-template-columns:var(--ag-time-width) minmax(0,1fr);min-width:0}.ag-time-label{right:4px;font-size:9px;white-space:nowrap}
+      .ag-week{grid-template-columns:var(--ag-time-width) repeat(7,minmax(0,1fr));min-width:0}.ag-day-grid,.ag-day-all{grid-template-columns:var(--ag-time-width) minmax(0,1fr);min-width:0}.ag-time-label{right:4px;font-size: var(--font-size-2xs);white-space:nowrap}
       .ag-week-shell,.ag-day-shell{max-height:clamp(500px,calc(100dvh - 300px),760px);overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;scrollbar-width:none;-ms-overflow-style:none;touch-action:pan-y}
       .ag-week-shell::-webkit-scrollbar,.ag-day-shell::-webkit-scrollbar{width:0;height:0;display:none}
       .ag-week-head{position:sticky;top:0;z-index:12;background:var(--ag-card)}
@@ -22494,21 +22591,21 @@ const AgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAgendaTa
       .ag-week .ag-event small{margin-top:2px}
       .ag-now{height:2px;background:var(--ag-red);z-index:8;pointer-events:none}
       .ag-now:before{width:10px;height:10px;top:-4px;left:-5px}
-      .ag-now-label{position:absolute;left:calc((var(--ag-time-width) * -1) + 3px);top:-10px;width:calc(var(--ag-time-width) - 7px);box-sizing:border-box;padding:3px 2px;border-radius:5px;background:var(--ag-red);color:#fff;font-size:9px;font-weight:800;line-height:1;text-align:center;white-space:nowrap}
+      .ag-now-label{position:absolute;left:calc((var(--ag-time-width) * -1) + 3px);top:-10px;width:calc(var(--ag-time-width) - 7px);box-sizing:border-box;padding:3px 2px;border-radius:5px;background:var(--ag-red);color:#fff;font-size: var(--font-size-2xs);font-weight:800;line-height:1;text-align:center;white-space:nowrap}
       .ag-week-now-layer{position:absolute;left:var(--ag-time-width);right:0;top:calc(var(--ag-week-head-height) + var(--ag-all-day-height));z-index:9;pointer-events:none;height:var(--ag-timeline-height)}
       .ag-week-now-line{position:absolute;left:0;right:0;height:2px;background:var(--ag-red)}
-      .ag-week-now-label{position:absolute;left:calc((var(--ag-time-width) * -1) + 3px);transform:translateY(-50%);width:calc(var(--ag-time-width) - 7px);box-sizing:border-box;padding:3px 2px;border-radius:5px;background:var(--ag-red);color:#fff;font-size:9px;font-weight:800;line-height:1;text-align:center;white-space:nowrap}
+      .ag-week-now-label{position:absolute;left:calc((var(--ag-time-width) * -1) + 3px);transform:translateY(-50%);width:calc(var(--ag-time-width) - 7px);box-sizing:border-box;padding:3px 2px;border-radius:5px;background:var(--ag-red);color:#fff;font-size: var(--font-size-2xs);font-weight:800;line-height:1;text-align:center;white-space:nowrap}
       .ag-week-now-dot{position:absolute;width:10px;height:10px;border-radius:50%;background:var(--ag-red);transform:translate(-50%,-4px);box-shadow:0 0 0 3px color-mix(in srgb,var(--ag-red) 22%,transparent)}
       .ag-row{grid-template-columns:84px minmax(180px,1.45fr) minmax(105px,.72fr) minmax(100px,.9fr) 42px 38px;align-items:center}
       .ag-status,.ag-row-action{width:36px;height:36px;border-radius:9px;border:1px solid var(--ag-line);background:transparent;color:var(--ag-muted);display:grid;place-items:center;cursor:pointer;transition:.18s}
       .ag-status:hover,.ag-row-action:hover{border-color:var(--ag-red);color:var(--ag-text);background:var(--ag-raised)}
       .ag-status.done{border-color:#168b5e;background:#168b5e;color:#fff}
       .ag-status-placeholder{width:36px;height:36px;display:grid;place-items:center;color:var(--ag-muted)}
-      .ag-type-state{display:inline-flex;align-items:center;gap:6px;font-size:10px;color:var(--ag-muted)}
-      .ag-google-config{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:9px;align-items:center;margin-top:10px}.ag-google-state{display:inline-flex;align-items:center;gap:7px;font-size:11px}.ag-google-state.connected{color:#24c784}.ag-google-message{display:block;margin-top:5px;color:var(--ag-muted);font-size:10px;line-height:1.45}
+      .ag-type-state{display:inline-flex;align-items:center;gap:6px;font-size: var(--font-size-xs);color:var(--ag-muted)}
+      .ag-google-config{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:9px;align-items:center;margin-top:10px}.ag-google-state{display:inline-flex;align-items:center;gap:7px;font-size: var(--font-size-xs)}.ag-google-state.connected{color:#24c784}.ag-google-message{display:block;margin-top:5px;color:var(--ag-muted);font-size: var(--font-size-xs);line-height:1.45}
       @media(min-width:1600px){.agenda-pro{--ag-timeline-height:clamp(700px,calc(100dvh - 330px),920px)}}
       @media(max-width:1279px){.agenda-pro{--ag-timeline-height:clamp(600px,calc(100dvh - 310px),820px);--ag-time-width:48px;--ag-week-head-height:56px}.ag-row{grid-template-columns:72px minmax(0,1fr) minmax(90px,.7fr) 40px 36px}.ag-row .location{display:none}}
-      @media(max-width:700px){.agenda-pro{--ag-timeline-height:clamp(560px,calc(100dvh - 300px),760px);--ag-time-width:38px;--ag-week-head-height:50px}.ag-row{grid-template-columns:54px minmax(0,1fr) 38px 34px}.ag-row .category,.ag-row .location{display:none}.ag-status,.ag-row-action{width:34px;height:34px}.ag-week-now-label,.ag-now-label{font-size:9px}}
+      @media(max-width:700px){.agenda-pro{--ag-timeline-height:clamp(560px,calc(100dvh - 300px),760px);--ag-time-width:38px;--ag-week-head-height:50px}.ag-row{grid-template-columns:54px minmax(0,1fr) 38px 34px}.ag-row .category,.ag-row .location{display:none}.ag-status,.ag-row-action{width:34px;height:34px}.ag-week-now-label,.ag-now-label{font-size: var(--font-size-2xs)}}
 
       /* Surgical Agenda geometry: one authoritative responsive layer. */
       .agenda-pro{
@@ -22531,13 +22628,13 @@ const AgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAgendaTa
       .ag-time-col,.ag-day-col,.ag-day-events{height:var(--ag-timeline-height)}
       .ag-time-col,.ag-day-col,.ag-day-events{background-size:100% calc(var(--ag-timeline-height) / 24)}
       .ag-day-col,.ag-day-events{background-image:repeating-linear-gradient(to bottom,transparent 0,transparent calc((var(--ag-timeline-height) / 24) - 1px),var(--ag-line) calc(var(--ag-timeline-height) / 24))}
-      .ag-time-label{right:6px;font-size:10px;font-variant-numeric:tabular-nums}
+      .ag-time-label{right:6px;font-size: var(--font-size-xs);font-variant-numeric:tabular-nums}
       .ag-week-now-layer{left:var(--ag-time-width);right:0;top:calc(var(--ag-week-head-height) + var(--ag-all-day-height));height:var(--ag-timeline-height)}
       .ag-week-now-line{left:0;right:0;width:auto}
       .ag-event{left:4px;right:4px;min-height:38px;padding:7px 8px;border-radius:7px}
-      .ag-event strong{font-size:12px;line-height:1.25;display:flex;align-items:flex-start}
+      .ag-event strong{font-size: var(--font-size-sm);line-height:1.25;display:flex;align-items:flex-start}
       .ag-event strong span{display:block;white-space:normal;overflow:visible;overflow-wrap:anywhere;text-overflow:clip}
-      .ag-event small{font-size:10px;line-height:1.25}
+      .ag-event small{font-size: var(--font-size-xs);line-height:1.25}
       .ag-event-icon{display:block;min-width:15px;width:15px;height:15px}
       .ag-month{width:100%;min-width:0;grid-template-columns:repeat(7,minmax(0,1fr))}
       .ag-month-day{min-height:clamp(118px,13.5vh,158px);padding:10px}
@@ -22547,14 +22644,14 @@ const AgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAgendaTa
       .ag-status.done{color:#fff;background:#168b5e;border-color:#168b5e}
       .ag-status-placeholder{width:28px;height:28px}.ag-row-action{width:36px;height:36px;border-radius:9px}
       .ag-modal.wide{width:min(1100px,calc(100vw - 32px))}.ag-modal{width:min(640px,calc(100vw - 32px))}
-      .ag-modal-head h2{font-size:25px}.ag-modal-head p,.ag-field,.ag-check{font-size:11px}
-      .ag-calendar-row{font-size:12px}.ag-calendar-row small{font-size:10px}
+      .ag-modal-head h2{font-size:25px}.ag-modal-head p,.ag-field,.ag-check{font-size: var(--font-size-xs)}
+      .ag-calendar-row{font-size: var(--font-size-sm)}.ag-calendar-row small{font-size: var(--font-size-xs)}
       @media(max-width:1599px){
         .agenda-pro{padding:22px 24px 46px}
         .ag-layout{grid-template-columns:minmax(0,1fr) 270px;gap:14px}
         .ag-side{width:270px}.ag-side-card{padding:16px}
         .ag-view-nav button{min-width:82px}
-        .ag-event{left:3px;right:3px;padding:6px}.ag-event strong{font-size:11px}.ag-event small{font-size:9px}
+        .ag-event{left:3px;right:3px;padding:6px}.ag-event strong{font-size: var(--font-size-xs)}.ag-event small{font-size: var(--font-size-2xs)}
       }
       @media(max-width:1199px){
         .ag-layout,.ag-upcoming-page{grid-template-columns:minmax(0,1fr)}
@@ -22565,17 +22662,17 @@ const AgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAgendaTa
         .agenda-pro{padding:18px 16px 96px;--ag-time-width:48px}
         .ag-side{grid-template-columns:repeat(2,minmax(0,1fr))}
         .ag-side>.ag-card:last-child{grid-column:1/-1}
-        .ag-event-icon{display:none}.ag-event strong{font-size:10px}.ag-event small{font-size:8px}
+        .ag-event-icon{display:none}.ag-event strong{font-size: var(--font-size-xs)}.ag-event small{font-size: var(--font-size-2xs)}
         .ag-row{grid-template-columns:76px minmax(0,1fr) 40px 36px}.ag-row .category,.ag-row .location{display:none}
       }
       @media(max-width:700px){
-        .agenda-pro{padding:14px 12px 110px;--ag-time-width:42px;--ag-week-head-height:52px;--ag-all-day-height:44px;--ag-timeline-height:900px}
+        .agenda-pro{padding:14px 12px 110px;--ag-time-width:54px;--ag-week-head-height:52px;--ag-all-day-height:44px;--ag-timeline-height:900px}
         .ag-title{font-size:34px}.ag-side{grid-template-columns:1fr}
         .ag-week-shell,.ag-day-shell{min-height:540px;max-height:calc(100dvh - 250px)}
-        .ag-week-head span{font-size:8px}.ag-week-head b{font-size:13px}
-        .ag-event{left:2px;right:2px;min-height:28px;padding:4px 3px}.ag-event strong{font-size:8px}.ag-event small{display:none}
+        .ag-week-head span{font-size: var(--font-size-2xs)}.ag-week-head b{font-size:13px}
+        .ag-event{left:2px;right:2px;min-height:28px;padding:4px 3px}.ag-event strong{font-size: var(--font-size-2xs)}.ag-event small{display:none}
         .ag-month-day{min-height:82px;padding:5px}
-        .ag-row{grid-template-columns:60px minmax(0,1fr) 34px 34px;min-height:68px;padding:7px 10px;font-size:12px}
+        .ag-row{grid-template-columns:60px minmax(0,1fr) 34px 34px;min-height:68px;padding:7px 10px;font-size: var(--font-size-sm)}
       }
     `;
     document.head.appendChild(style);
@@ -22777,21 +22874,21 @@ const AgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAgendaTa
   const renderWeek = () => <div className="ag-week-shell"><div className="ag-week"><div className="ag-week-head"/>{weekDays.map(day=><div key={toYYYYMMDD(day)} className={`ag-week-head ${toYYYYMMDD(day)===todayStr?'today':''}`}><span>{day.toLocaleDateString('es-CO',{weekday:'short'})}</span><b>{day.getDate()}</b></div>)}<div className="ag-all-day label">Todo el día</div>{weekDays.map(day=><div key={`all-${toYYYYMMDD(day)}`} className="ag-all-day">{(visibleAgenda[toYYYYMMDD(day)]||[]).filter(t=>t.allDay||!hasTaskTime(t)).slice(0,2).map(t=><button key={t.id} className="ag-month-event" onClick={()=>setSelectedTask(t)}><i className="ag-dot" style={{background:eventColor(t)}}/>{t.text}</button>)}</div>)}<div className="ag-time-col">{HOURS.map(h=><span key={h} className="ag-time-label" style={{top:`${timelinePercent(h*60)}%`}}>{formatAgendaClock(`${String(h).padStart(2,'0')}:00`)}</span>)}</div>{weekDays.map(day=>{const ds=toYYYYMMDD(day);return <div key={ds} className="ag-day-col" data-agenda-date={ds} onDoubleClick={()=>openNew({dueDate:ds})}>{(visibleAgenda[ds]||[]).filter(hasTaskTime).map(t=><EventBlock key={`${t.id}-${ds}`} task={t}/>)}</div>})}<WeekCurrentTimeLine/></div></div>;
   const renderMonth = () => <div className="ag-month-shell"><div className="ag-month">{['Lun','Mar','Mié','Jue','Vie','Sáb','Dom'].map(name=><div className="ag-month-name" key={name}>{name}</div>)}{monthDays.map(day=>{const ds=toYYYYMMDD(day),tasks=visibleAgenda[ds]||[];return <div key={ds} className={`ag-month-day ${day.getMonth()!==currentDate.getMonth()?'out':''} ${ds===dateStr?'selected':''}`} onClick={()=>setCurrentDate(day)} onDoubleClick={()=>openNew({dueDate:ds})}><span className={`ag-day-number ${ds===todayStr?'today':''}`}>{day.getDate()}</span>{tasks.slice(0,3).map(t=>{const Icon=agendaIcon(t);return <button key={`${t.id}-${ds}`} className="ag-month-event" onClick={e=>{e.stopPropagation();setSelectedTask(t)}}><Icon size={12} style={{color:eventColor(t),flex:'none'}}/><span style={{overflow:'hidden',textOverflow:'ellipsis'}}>{hasTaskTime(t)?`${formatAgendaClock(getTaskStartTime(t))} `:''}{t.text}</span></button>})}{tasks.length>3&&<button className="ag-link ag-more" onClick={()=>{setCurrentDate(day);setViewMode('day')}}>+{tasks.length-3} más</button>}</div>})}</div></div>;
   const groupLabel = date => date===todayStr?'Hoy':date===toYYYYMMDD(addDays(new Date(),1))?'Mañana':new Date(`${date}T12:00:00`).toLocaleDateString('es-CO',{weekday:'long',day:'numeric',month:'long'});
-  const renderList = () => { const groups=Object.entries(visibleAgenda).filter(([date,tasks])=>date>=todayStr&&tasks.length).sort(([a],[b])=>a.localeCompare(b)); return <div className="ag-list-shell"><div className="ag-quick"><Search size={18}/><input className="ag-input" value={search} onChange={e=>setSearch(e.target.value)} placeholder="Buscar evento o añadir rápido…"/><span style={{fontSize:11,color:'var(--ag-muted)',whiteSpace:'nowrap'}}>{groups.reduce((n,[,items])=>n+items.length,0)} eventos</span></div><div className="ag-list-groups">{!groups.length?<div style={{padding:54,textAlign:'center',color:'var(--ag-muted)'}}><CalendarDays size={28} style={{marginBottom:10}}/><div>No hay resultados.</div><button className="ag-link" style={{marginTop:8}} onClick={resetFilters}>Limpiar filtros</button></div>:groups.slice(0,12).map(([date,tasks])=><section className="ag-list-group" key={date}><h3>{groupLabel(date)} <span style={{color:'var(--ag-muted)',fontWeight:400}}>· {tasks.length} eventos</span></h3>{tasks.sort(compareTaskTime).map(task=>{const Icon=categoryIcon(task.category,task.text);return <div className="ag-row" key={`${task.id}-${date}`} onClick={()=>setSelectedTask(task)}><span><Clock size={13} style={{marginRight:6,verticalAlign:'middle'}}/>{eventTime(task)}</span><span className="title"><Icon size={15} style={{color:eventColor(task),marginRight:8,verticalAlign:'middle'}}/>{task.text}</span><span className="category">{task.category}</span><span className="location">{task.location?<><MapPin size={12} style={{marginRight:5,verticalAlign:'middle'}}/>{task.location}</>:<span style={{opacity:.45}}>—</span>}</span>{isCompletableAgendaItem(task)?<button className={`ag-status ${task.completed?'done':''}`} onClick={e=>{e.stopPropagation();toggleComplete(task)}} aria-label={task.completed?'Marcar pendiente':'Completar tarea'} aria-pressed={Boolean(task.completed)} title={task.completed?'Marcar pendiente':'Completar tarea'}>{task.completed?<Check size={17}/>:<Circle size={17}/>}</button>:<span className="ag-status-placeholder" title={task.type==='reminder'?'Recordatorio':'Evento'}>{task.type==='reminder'?<Bell size={16}/>:<Calendar size={16}/>}</span>}<button className="ag-row-action" aria-label={`Más acciones para ${task.text}`} title="Más acciones" onClick={e=>{e.stopPropagation();setSelectedTask(task)}}><MoreVertical size={17}/></button></div>})}</section>)}</div></div>; };
+  const renderList = () => { const groups=Object.entries(visibleAgenda).filter(([date,tasks])=>date>=todayStr&&tasks.length).sort(([a],[b])=>a.localeCompare(b)); return <div className="ag-list-shell"><div className="ag-quick"><Search size={18}/><input className="ag-input" value={search} onChange={e=>setSearch(e.target.value)} placeholder="Buscar evento o añadir rápido…"/><span style={{fontSize: 'var(--font-size-xs)',color:'var(--ag-muted)',whiteSpace:'nowrap'}}>{groups.reduce((n,[,items])=>n+items.length,0)} eventos</span></div><div className="ag-list-groups">{!groups.length?<div style={{padding:54,textAlign:'center',color:'var(--ag-muted)'}}><CalendarDays size={28} style={{marginBottom:10}}/><div>No hay resultados.</div><button className="ag-link" style={{marginTop:8}} onClick={resetFilters}>Limpiar filtros</button></div>:groups.slice(0,12).map(([date,tasks])=><section className="ag-list-group" key={date}><h3>{groupLabel(date)} <span style={{color:'var(--ag-muted)',fontWeight:400}}>· {tasks.length} eventos</span></h3>{tasks.sort(compareTaskTime).map(task=>{const Icon=categoryIcon(task.category,task.text);return <div className="ag-row" key={`${task.id}-${date}`} onClick={()=>setSelectedTask(task)}><span><Clock size={13} style={{marginRight:6,verticalAlign:'middle'}}/>{eventTime(task)}</span><span className="title"><Icon size={15} style={{color:eventColor(task),marginRight:8,verticalAlign:'middle'}}/>{task.text}</span><span className="category">{task.category}</span><span className="location">{task.location?<><MapPin size={12} style={{marginRight:5,verticalAlign:'middle'}}/>{task.location}</>:<span style={{opacity:.45}}>—</span>}</span>{isCompletableAgendaItem(task)?<button className={`ag-status ${task.completed?'done':''}`} onClick={e=>{e.stopPropagation();toggleComplete(task)}} aria-label={task.completed?'Marcar pendiente':'Completar tarea'} aria-pressed={Boolean(task.completed)} title={task.completed?'Marcar pendiente':'Completar tarea'}>{task.completed?<Check size={17}/>:<Circle size={17}/>}</button>:<span className="ag-status-placeholder" title={task.type==='reminder'?'Recordatorio':'Evento'}>{task.type==='reminder'?<Bell size={16}/>:<Calendar size={16}/>}</span>}<button className="ag-row-action" aria-label={`Más acciones para ${task.text}`} title="Más acciones" onClick={e=>{e.stopPropagation();setSelectedTask(task)}}><MoreVertical size={17}/></button></div>})}</section>)}</div></div>; };
 
   const UpcomingList = ({limit=5}) => <div>{upcoming.slice(0,limit).map(task=>{const Icon=agendaIcon(task);return <button className="ag-upcoming-item" key={`${task.id}-${task.dueDate}`} onClick={()=>setSelectedTask(task)}><Icon size={16} style={{color:eventColor(task),marginTop:2}}/><span><strong>{task.text}</strong><small>{task.dueDate===todayStr?'Hoy':new Date(`${task.dueDate}T12:00:00`).toLocaleDateString('es-CO',{weekday:'short',day:'numeric',month:'short'})}, {eventTime(task)}</small></span></button>})}</div>;
   const CalendarControls = () => <section className="ag-card ag-side-card"><div className="ag-side-head"><strong><CalendarDays size={17} style={{verticalAlign:'-3px',marginRight:7,color:'var(--ag-red)'}}/>Calendarios</strong><button className="ag-link" onClick={()=>setShowCalendars(true)}>Gestionar</button></div><div className="ag-cal-list">{categories.slice(0,7).map(cat=><label className="ag-cal-toggle" key={cat.id}><input type="checkbox" checked={activeCalendarNames.has(cat.name)} onChange={()=>setVisibleCalendars(prev=>{const next=new Set(Array.isArray(prev)?prev:categories.map(c=>c.name));next.has(cat.name)?next.delete(cat.name):next.add(cat.name);return [...next]})}/><i className="ag-dot" style={{background:cat.color,margin:0}}/>{cat.name}</label>)}</div></section>;
-  const ProductivityCard = ({ label = 'Esta semana', percent = productivity, completed = completedThisWeek, total = weekTotal }) => <section className="ag-card ag-side-card"><div className="ag-side-head"><strong><TrendingUp size={17} style={{verticalAlign:'-3px',marginRight:7,color:'var(--ag-red)'}}/>Tu productividad</strong><span style={{fontSize:10,color:'var(--ag-muted)'}}>{label}</span></div><div className="ag-productivity"><div className="ag-ring" style={{'--value':`${percent}%`}}><b>{percent}%</b></div><div><b style={{fontSize:13}}>¡Vas muy bien!</b><p style={{fontSize:10,color:'var(--ag-muted)'}}>Mantén el ritmo y protege tu tiempo.</p></div></div><div className="ag-kpis"><div className="ag-kpi"><b>{completed} de {total}</b><span>Eventos completados</span></div><div className="ag-kpi"><b>{Math.round(weekDays.flatMap(d=>visibleAgenda[toYYYYMMDD(d)]||[]).reduce((n,t)=>n+(getTaskDurationMinutes(t)||0),0)/60)}h</b><span>Tiempo planificado</span></div></div></section>;
+  const ProductivityCard = ({ label = 'Esta semana', percent = productivity, completed = completedThisWeek, total = weekTotal }) => <section className="ag-card ag-side-card"><div className="ag-side-head"><strong><TrendingUp size={17} style={{verticalAlign:'-3px',marginRight:7,color:'var(--ag-red)'}}/>Tu productividad</strong><span style={{fontSize: 'var(--font-size-xs)',color:'var(--ag-muted)'}}>{label}</span></div><div className="ag-productivity"><div className="ag-ring" style={{'--value':`${percent}%`}}><b>{percent}%</b></div><div><b style={{fontSize:13}}>¡Vas muy bien!</b><p style={{fontSize: 'var(--font-size-xs)',color:'var(--ag-muted)'}}>Mantén el ritmo y protege tu tiempo.</p></div></div><div className="ag-kpis"><div className="ag-kpi"><b>{completed} de {total}</b><span>Eventos completados</span></div><div className="ag-kpi"><b>{Math.round(weekDays.flatMap(d=>visibleAgenda[toYYYYMMDD(d)]||[]).reduce((n,t)=>n+(getTaskDurationMinutes(t)||0),0)/60)}h</b><span>Tiempo planificado</span></div></div></section>;
   const RightRail = () => {
     if (viewMode === 'day') {
       const dayMinutes = selectedTasks.reduce((sum, task) => sum + (getTaskDurationMinutes(task) || 0), 0);
       const completed = selectedTasks.filter(task => task.completed).length;
       const percent = selectedTasks.length ? Math.round(completed / selectedTasks.length * 100) : 0;
       const next = selectedTasks.find(task => !task.completed && (!hasTaskTime(task) || timeToMinutes(getTaskStartTime(task)) >= new Date().getHours()*60+new Date().getMinutes()));
-      return <aside className="ag-side"><section className="ag-card ag-side-card"><div className="ag-side-head"><strong><CalendarCheck size={17} style={{verticalAlign:'-3px',marginRight:7,color:'var(--ag-red)'}}/>Resumen del día</strong></div><p style={{fontSize:11,color:'var(--ag-muted)',textTransform:'capitalize'}}>{currentDate.toLocaleDateString('es-CO',{weekday:'long',day:'numeric',month:'long',year:'numeric'})}</p><div className="ag-kpis"><div className="ag-kpi"><b>{selectedTasks.length}</b><span>Eventos</span></div><div className="ag-kpi"><b>{Math.floor(dayMinutes/60)}h {dayMinutes%60}m</b><span>Tiempo ocupado</span></div><div className="ag-kpi"><b>{Math.max(0,16-Math.round(dayMinutes/60))}h</b><span>Tiempo libre</span></div><div className="ag-kpi"><b>{completed}</b><span>Completados</span></div></div><button className="ag-btn" style={{width:'100%',marginTop:14}} onClick={()=>setViewMode('agenda')}>Ver agenda completa</button></section><ProductivityCard label="Hoy" percent={percent} completed={completed} total={selectedTasks.length}/><section className="ag-card ag-side-card"><div className="ag-side-head"><strong><Clock size={17} style={{verticalAlign:'-3px',marginRight:7,color:'var(--ag-red)'}}/>Próximo evento</strong></div>{next?<><div style={{display:'flex',gap:10,alignItems:'center'}}>{React.createElement(categoryIcon(next.category,next.text),{size:19,style:{color:eventColor(next)}})}<div><b style={{fontSize:13}}>{next.text}</b><div style={{fontSize:10,color:'var(--ag-muted)'}}>{eventTime(next)}{next.location?` · ${next.location}`:''}</div></div></div><button className="ag-btn" style={{width:'100%',marginTop:14}} onClick={()=>setSelectedTask(next)}>Ver evento</button></>:<p style={{fontSize:11,color:'var(--ag-muted)'}}>No quedan eventos pendientes para hoy.</p>}</section></aside>;
+      return <aside className="ag-side"><section className="ag-card ag-side-card"><div className="ag-side-head"><strong><CalendarCheck size={17} style={{verticalAlign:'-3px',marginRight:7,color:'var(--ag-red)'}}/>Resumen del día</strong></div><p style={{fontSize: 'var(--font-size-xs)',color:'var(--ag-muted)',textTransform:'capitalize'}}>{currentDate.toLocaleDateString('es-CO',{weekday:'long',day:'numeric',month:'long',year:'numeric'})}</p><div className="ag-kpis"><div className="ag-kpi"><b>{selectedTasks.length}</b><span>Eventos</span></div><div className="ag-kpi"><b>{Math.floor(dayMinutes/60)}h {dayMinutes%60}m</b><span>Tiempo ocupado</span></div><div className="ag-kpi"><b>{Math.max(0,16-Math.round(dayMinutes/60))}h</b><span>Tiempo libre</span></div><div className="ag-kpi"><b>{completed}</b><span>Completados</span></div></div><button className="ag-btn" style={{width:'100%',marginTop:14}} onClick={()=>setViewMode('agenda')}>Ver agenda completa</button></section><ProductivityCard label="Hoy" percent={percent} completed={completed} total={selectedTasks.length}/><section className="ag-card ag-side-card"><div className="ag-side-head"><strong><Clock size={17} style={{verticalAlign:'-3px',marginRight:7,color:'var(--ag-red)'}}/>Próximo evento</strong></div>{next?<><div style={{display:'flex',gap:10,alignItems:'center'}}>{React.createElement(categoryIcon(next.category,next.text),{size:19,style:{color:eventColor(next)}})}<div><b style={{fontSize:13}}>{next.text}</b><div style={{fontSize: 'var(--font-size-xs)',color:'var(--ag-muted)'}}>{eventTime(next)}{next.location?` · ${next.location}`:''}</div></div></div><button className="ag-btn" style={{width:'100%',marginTop:14}} onClick={()=>setSelectedTask(next)}>Ver evento</button></>:<p style={{fontSize: 'var(--font-size-xs)',color:'var(--ag-muted)'}}>No quedan eventos pendientes para hoy.</p>}</section></aside>;
     }
-    if (viewMode === 'month') return <aside className="ag-side"><section className="ag-card ag-side-card"><div className="ag-side-head"><strong style={{textTransform:'capitalize'}}>{currentDate.toLocaleDateString('es-CO',{weekday:'long',day:'numeric',month:'long',year:'numeric'})}</strong><button className="ag-btn small" onClick={()=>openNew({dueDate:dateStr})}><Plus size={14}/>Añadir</button></div>{selectedTasks.length?selectedTasks.slice(0,6).map(task=>{const Icon=categoryIcon(task.category,task.text);return <button className="ag-upcoming-item" key={task.id} onClick={()=>setSelectedTask(task)}><Icon size={15} style={{color:eventColor(task),marginTop:1}}/><span><strong>{task.text}</strong><small>{eventTime(task)} · {task.category}</small></span></button>}):<p style={{fontSize:11,color:'var(--ag-muted)'}}>No hay eventos este día.</p>}</section><section className="ag-card ag-side-card"><div className="ag-side-head"><strong><FileText size={17} style={{verticalAlign:'-3px',marginRight:7,color:'var(--ag-red)'}}/>Notas del día</strong><button className="ag-link" onClick={()=>{const note=prompt('Nota del día',agendaNotes[dateStr]||'');if(note!==null)onUpdateAgendaNote?.(dateStr,note)}}>Editar nota</button></div><p style={{fontSize:11,color:'var(--ag-muted)',whiteSpace:'pre-wrap'}}>{agendaNotes[dateStr]||'Añade una nota para recordar lo importante de este día.'}</p></section><section className="ag-card ag-side-card"><div className="ag-side-head"><strong>Próximos eventos</strong><button className="ag-link" onClick={()=>setShowUpcoming(true)}>Ver todos</button></div><UpcomingList limit={4}/></section></aside>;
-    return <aside className="ag-side"><section className="ag-card ag-side-card"><div className="ag-side-head"><strong><Clock size={17} style={{verticalAlign:'-3px',marginRight:7,color:'var(--ag-red)'}}/>Próximos eventos</strong><button className="ag-link" onClick={()=>setShowUpcoming(true)}>Ver todos</button></div><UpcomingList limit={4}/></section><section className="ag-card ag-side-card"><div className="ag-side-head"><strong style={{textTransform:'capitalize'}}>{currentDate.toLocaleDateString('es-CO',{month:'long',year:'numeric'})}</strong><CalendarRange size={18} color="var(--ag-red)"/></div><div style={{display:'grid',gridTemplateColumns:'repeat(7,1fr)',gap:5,fontSize:10,textAlign:'center'}}>{['L','M','M','J','V','S','D'].map((d,i)=><b key={`${d}-${i}`} style={{color:'var(--ag-muted)'}}>{d}</b>)}{monthDays.map(day=><button key={toYYYYMMDD(day)} onClick={()=>setCurrentDate(day)} style={{height:26,border:0,borderRadius:'50%',background:toYYYYMMDD(day)===dateStr?'var(--ag-red)':'transparent',color:day.getMonth()===currentDate.getMonth()?'var(--ag-text)':'var(--ag-subtle)',cursor:'pointer'}}>{day.getDate()}</button>)}</div></section><ProductivityCard/><CalendarControls/></aside>;
+    if (viewMode === 'month') return <aside className="ag-side"><section className="ag-card ag-side-card"><div className="ag-side-head"><strong style={{textTransform:'capitalize'}}>{currentDate.toLocaleDateString('es-CO',{weekday:'long',day:'numeric',month:'long',year:'numeric'})}</strong><button className="ag-btn small" onClick={()=>openNew({dueDate:dateStr})}><Plus size={14}/>Añadir</button></div>{selectedTasks.length?selectedTasks.slice(0,6).map(task=>{const Icon=categoryIcon(task.category,task.text);return <button className="ag-upcoming-item" key={task.id} onClick={()=>setSelectedTask(task)}><Icon size={15} style={{color:eventColor(task),marginTop:1}}/><span><strong>{task.text}</strong><small>{eventTime(task)} · {task.category}</small></span></button>}):<p style={{fontSize: 'var(--font-size-xs)',color:'var(--ag-muted)'}}>No hay eventos este día.</p>}</section><section className="ag-card ag-side-card"><div className="ag-side-head"><strong><FileText size={17} style={{verticalAlign:'-3px',marginRight:7,color:'var(--ag-red)'}}/>Notas del día</strong><button className="ag-link" onClick={()=>{const note=prompt('Nota del día',agendaNotes[dateStr]||'');if(note!==null)onUpdateAgendaNote?.(dateStr,note)}}>Editar nota</button></div><p style={{fontSize: 'var(--font-size-xs)',color:'var(--ag-muted)',whiteSpace:'pre-wrap'}}>{agendaNotes[dateStr]||'Añade una nota para recordar lo importante de este día.'}</p></section><section className="ag-card ag-side-card"><div className="ag-side-head"><strong>Próximos eventos</strong><button className="ag-link" onClick={()=>setShowUpcoming(true)}>Ver todos</button></div><UpcomingList limit={4}/></section></aside>;
+    return <aside className="ag-side"><section className="ag-card ag-side-card"><div className="ag-side-head"><strong><Clock size={17} style={{verticalAlign:'-3px',marginRight:7,color:'var(--ag-red)'}}/>Próximos eventos</strong><button className="ag-link" onClick={()=>setShowUpcoming(true)}>Ver todos</button></div><UpcomingList limit={4}/></section><section className="ag-card ag-side-card"><div className="ag-side-head"><strong style={{textTransform:'capitalize'}}>{currentDate.toLocaleDateString('es-CO',{month:'long',year:'numeric'})}</strong><CalendarRange size={18} color="var(--ag-red)"/></div><div style={{display:'grid',gridTemplateColumns:'repeat(7,1fr)',gap:5,fontSize: 'var(--font-size-xs)',textAlign:'center'}}>{['L','M','M','J','V','S','D'].map((d,i)=><b key={`${d}-${i}`} style={{color:'var(--ag-muted)'}}>{d}</b>)}{monthDays.map(day=><button key={toYYYYMMDD(day)} onClick={()=>setCurrentDate(day)} style={{height:26,border:0,borderRadius:'50%',background:toYYYYMMDD(day)===dateStr?'var(--ag-red)':'transparent',color:day.getMonth()===currentDate.getMonth()?'var(--ag-text)':'var(--ag-subtle)',cursor:'pointer'}}>{day.getDate()}</button>)}</div></section><ProductivityCard/><CalendarControls/></aside>;
   };
 
   const resetFilters = () => setFilters({ category:'',datePreset:'all',fromDate:'',toDate:'',priorities:[],statuses:[],types:[],startHour:0,endHour:24 });
@@ -22923,9 +23020,9 @@ const AgendaView = ({ data, onUpdateAgenda, onUpdateAgendaNote, onUpdateAgendaTa
   return <div className="agenda-pro">
     <header className="ag-header"><div><div className="ag-eyebrow">{new Date().toLocaleDateString('es-CO',{weekday:'long',day:'numeric',month:'long',year:'numeric'})}</div><h1 className="ag-title"><CalendarDays size={30} style={{color:'var(--ag-red)',verticalAlign:'-3px',marginRight:10}}/>Agenda</h1><p className="ag-subtitle">Organiza tu tiempo, cumple tus compromisos y alcanza tus objetivos.</p></div><div className="ag-header-actions"><button className="ag-btn" disabled={googleSyncing} onClick={()=>googleSession ? syncGoogleCalendar() : connectGoogleCalendar()}><RefreshCw className={googleSyncing?'spin':''} size={16}/>{googleSyncing?'Sincronizando…':googleSession?'Sincronizar Google':'Conectar Google'}</button><button className="ag-btn primary" onClick={()=>openNew()}><Plus size={17}/>Nuevo evento</button></div></header>
     {!showUpcoming&&<><div className="ag-toolbar"><nav className="ag-view-nav" aria-label="Vista de agenda">{[['day','Día',Calendar],['week','Semana',Columns3],['month','Mes',CalendarRange],['agenda','Agenda',List]].map(([id,label,Icon])=><button key={id} className={viewMode===id?'active':''} onClick={()=>setViewMode(id)}><Icon size={15}/>{label}</button>)}</nav><div className="ag-date-nav"><button className="ag-btn icon" onClick={()=>navigate(-1)} aria-label="Periodo anterior"><ChevronLeft size={18}/></button><button className="ag-btn small" onClick={()=>setCurrentDate(new Date())}><CalendarCheck size={15}/>Hoy</button><strong className="ag-date-label">{periodLabel}</strong><button className="ag-btn icon" onClick={()=>navigate(1)} aria-label="Periodo siguiente"><ChevronRight size={18}/></button><button className="ag-btn" onClick={()=>setShowFilters(true)}><ListFilter size={16}/>Filtros{filterActiveCount>0&&<span className="ag-filter-badge">{filterActiveCount}</span>}</button></div></div><div className="ag-layout"><main className="ag-main">{['day','week'].includes(viewMode)&&<div className="ag-card ag-quick"><Plus size={17}/><input className="ag-input" value={quickText} onChange={e=>setQuickText(e.target.value)} onKeyDown={e=>e.key==='Enter'&&quickAdd()} placeholder="Agregar evento rápido… prueba: reunión mañana 14:00 @trabajo"/><button className="ag-btn small" onClick={quickAdd}>Añadir</button></div>}{viewMode==='day'?renderDay():viewMode==='week'?renderWeek():viewMode==='month'?renderMonth():renderList()}</main><RightRail/></div></>}
-    {showUpcoming&&<div><header className="ag-header"><div><h2 className="ag-title">Próximos eventos</h2><p className="ag-subtitle">Todos tus próximos compromisos en un solo lugar.</p></div><button className="ag-btn" onClick={()=>setShowUpcoming(false)}><ChevronLeft size={14}/>Volver a Agenda</button></header><div className="ag-upcoming-controls">{[['today','Hoy'],['week','Esta semana'],['month','Este mes'],['all','Todos']].map(([id,label])=><button className={`ag-btn small ${upcomingRange===id?'primary':''}`} onClick={()=>setUpcomingRange(id)} key={id}>{label}</button>)}<input className="ag-input" style={{maxWidth:260}} value={search} onChange={e=>setSearch(e.target.value)} placeholder="Buscar eventos…"/><select className="ag-select" style={{maxWidth:150}} value={upcomingSort} onChange={e=>setUpcomingSort(e.target.value)}><option value="date">Ordenar por fecha</option><option value="priority">Prioridad</option><option value="name">Nombre</option></select></div><div className="ag-upcoming-page"><div className="ag-card" style={{padding:14}}>{Object.entries(upcomingVisible.reduce((acc,t)=>{(acc[t.dueDate] ||= []).push(t);return acc},{})).map(([date,tasks])=><div className="ag-date-group" key={date}><div className="ag-date-badge"><span>{new Date(`${date}T12:00:00`).toLocaleDateString('es-CO',{weekday:'short'}).toUpperCase()}</span><b>{new Date(`${date}T12:00:00`).getDate()}</b></div><div>{tasks.map(task=><div className="ag-row" style={{gridTemplateColumns:'70px 1fr 120px 28px'}} onClick={()=>setSelectedTask(task)} key={`${task.id}-${date}`}><span>{eventTime(task)}</span><span className="title">{task.text}</span><span className="category">{task.category}</span><ChevronRight size={14}/></div>)}</div></div>)}</div><aside className="ag-side"><section className="ag-card ag-side-card"><div className="ag-side-head"><strong>Días más ocupados</strong></div>{Object.entries(upcomingVisible.reduce((a,t)=>(a[t.dueDate]=(a[t.dueDate]||0)+1,a),{})).sort((a,b)=>b[1]-a[1]).slice(0,5).map(([date,count])=><div key={date} style={{marginBottom:10,fontSize:9}}><div style={{display:'flex',justifyContent:'space-between'}}><span>{groupLabel(date)}</span><b>{count}</b></div><div style={{height:3,background:'var(--ag-line)',marginTop:5}}><div style={{height:'100%',width:`${Math.min(100,count*18)}%`,background:'var(--ag-red)'}}/></div></div>)}</section><section className="ag-card ag-side-card"><strong>Resumen</strong><div className="ag-kpis">{categories.slice(0,6).map(cat=><div className="ag-kpi" key={cat.id}><b>{upcomingVisible.filter(t=>t.category===cat.name).length}</b><span>{cat.name}</span></div>)}</div></section></aside></div></div>}
+    {showUpcoming&&<div><header className="ag-header"><div><h2 className="ag-title">Próximos eventos</h2><p className="ag-subtitle">Todos tus próximos compromisos en un solo lugar.</p></div><button className="ag-btn" onClick={()=>setShowUpcoming(false)}><ChevronLeft size={14}/>Volver a Agenda</button></header><div className="ag-upcoming-controls">{[['today','Hoy'],['week','Esta semana'],['month','Este mes'],['all','Todos']].map(([id,label])=><button className={`ag-btn small ${upcomingRange===id?'primary':''}`} onClick={()=>setUpcomingRange(id)} key={id}>{label}</button>)}<input className="ag-input" style={{maxWidth:260}} value={search} onChange={e=>setSearch(e.target.value)} placeholder="Buscar eventos…"/><select className="ag-select" style={{maxWidth:150}} value={upcomingSort} onChange={e=>setUpcomingSort(e.target.value)}><option value="date">Ordenar por fecha</option><option value="priority">Prioridad</option><option value="name">Nombre</option></select></div><div className="ag-upcoming-page"><div className="ag-card" style={{padding:14}}>{Object.entries(upcomingVisible.reduce((acc,t)=>{(acc[t.dueDate] ||= []).push(t);return acc},{})).map(([date,tasks])=><div className="ag-date-group" key={date}><div className="ag-date-badge"><span>{new Date(`${date}T12:00:00`).toLocaleDateString('es-CO',{weekday:'short'}).toUpperCase()}</span><b>{new Date(`${date}T12:00:00`).getDate()}</b></div><div>{tasks.map(task=><div className="ag-row" style={{gridTemplateColumns:'70px 1fr 120px 28px'}} onClick={()=>setSelectedTask(task)} key={`${task.id}-${date}`}><span>{eventTime(task)}</span><span className="title">{task.text}</span><span className="category">{task.category}</span><ChevronRight size={14}/></div>)}</div></div>)}</div><aside className="ag-side"><section className="ag-card ag-side-card"><div className="ag-side-head"><strong>Días más ocupados</strong></div>{Object.entries(upcomingVisible.reduce((a,t)=>(a[t.dueDate]=(a[t.dueDate]||0)+1,a),{})).sort((a,b)=>b[1]-a[1]).slice(0,5).map(([date,count])=><div key={date} style={{marginBottom:10,fontSize: 'var(--font-size-2xs)'}}><div style={{display:'flex',justifyContent:'space-between'}}><span>{groupLabel(date)}</span><b>{count}</b></div><div style={{height:3,background:'var(--ag-line)',marginTop:5}}><div style={{height:'100%',width:`${Math.min(100,count*18)}%`,background:'var(--ag-red)'}}/></div></div>)}</section><section className="ag-card ag-side-card"><strong>Resumen</strong><div className="ag-kpis">{categories.slice(0,6).map(cat=><div className="ag-kpi" key={cat.id}><b>{upcomingVisible.filter(t=>t.category===cat.name).length}</b><span>{cat.name}</span></div>)}</div></section></aside></div></div>}
     {showEditor&&ReactDOM.createPortal(<div className="ag-overlay" onMouseDown={e=>e.target===e.currentTarget&&setShowEditor(false)}><section className="ag-modal" role="dialog" aria-modal="true" aria-label={form.id?'Editar evento':'Nuevo evento'}><header className="ag-modal-head"><div><h2>{form.id?'Editar evento':'Nuevo evento'}</h2><p>Programa tu compromiso con todos sus detalles.</p></div><button className="ag-btn icon" onClick={()=>setShowEditor(false)} aria-label="Cerrar"><X size={16}/></button></header><div className="ag-modal-body"><div className="ag-form-grid"><label className="ag-field full">Título<input className="ag-input" value={form.text} onChange={e=>setForm({...form,text:e.target.value})} autoFocus/></label><label className="ag-field full">Descripción<textarea className="ag-textarea" value={form.description||''} onChange={e=>setForm({...form,description:e.target.value})}/></label><label className="ag-field">Fecha<input type="date" className="ag-input" value={form.dueDate} onChange={e=>setForm({...form,dueDate:e.target.value})}/></label><label className="ag-check"><input type="checkbox" checked={form.allDay} onChange={e=>setForm({...form,allDay:e.target.checked})}/>Todo el día</label>{!form.allDay&&<><label className="ag-field">Hora de inicio<input type="time" className="ag-input" value={form.startTime||''} onChange={e=>setForm({...form,startTime:e.target.value})}/></label><label className="ag-field">Hora final<input type="time" className="ag-input" value={form.endTime||''} onChange={e=>setForm({...form,endTime:e.target.value})}/></label></>}<label className="ag-field">Calendario<select className="ag-select" value={form.category} onChange={e=>setForm({...form,category:e.target.value})}>{categories.map(cat=><option key={cat.id}>{cat.name}</option>)}</select></label><label className="ag-field">Ubicación<input className="ag-input" value={form.location||''} onChange={e=>setForm({...form,location:e.target.value})}/></label><label className="ag-field">Prioridad<select className="ag-select" value={form.priority} onChange={e=>setForm({...form,priority:Number(e.target.value)})}><option value="1">Alta</option><option value="2">Media</option><option value="3">Normal</option><option value="4">Baja</option></select></label><label className="ag-field">Estado<select className="ag-select" value={form.status||'pending'} onChange={e=>setForm({...form,status:e.target.value})}><option value="pending">Pendiente</option><option value="confirmed">Confirmado</option><option value="completed">Completado</option><option value="cancelled">Cancelado</option></select></label><label className="ag-field">Recurrencia<select className="ag-select" value={form.recurrence||'none'} onChange={e=>setForm({...form,recurrence:e.target.value})}>{RECURRENCE_TYPES.filter(r=>!['weekdays','weekends','biweekly','yearly'].includes(r.id)).map(r=><option value={r.id} key={r.id}>{r.label}</option>)}</select></label><label className="ag-field">Recordatorio<select className="ag-select" value={form.reminders?.[0]||'15min'} onChange={e=>setForm({...form,alarm:true,reminders:[e.target.value]})}>{REMINDER_OPTIONS.map(r=><option value={r.id} key={r.id}>{r.label}</option>)}</select></label><label className="ag-field full">Notas<textarea className="ag-textarea" value={form.notes||''} onChange={e=>setForm({...form,notes:e.target.value})}/></label></div></div><footer className="ag-modal-actions"><button className="ag-btn" onClick={()=>setShowEditor(false)}>Cancelar</button><button className="ag-btn primary" onClick={saveEvent}>{form.id?'Guardar cambios':'Crear evento'}</button></footer></section></div>,document.body)}
-    {selectedTask&&ReactDOM.createPortal(<div className="ag-overlay" onMouseDown={e=>e.target===e.currentTarget&&setSelectedTask(null)}><section className="ag-modal" role="dialog" aria-modal="true" aria-label="Detalle del evento"><header className="ag-modal-head"><div><h2>{selectedTask.text}</h2><p>{eventTime(selectedTask)} · {selectedTask.category}</p></div><button className="ag-btn icon" onClick={()=>setSelectedTask(null)}><X size={16}/></button></header><div className="ag-modal-body"><p style={{color:'var(--ag-muted)',fontSize:12}}>{selectedTask.description||selectedTask.notes||'Sin descripción.'}</p>{selectedTask.location&&<p><strong>Ubicación:</strong> {selectedTask.location}</p>}</div><footer className="ag-modal-actions">{isCompletableAgendaItem(selectedTask)&&<button className="ag-btn" onClick={()=>toggleComplete(selectedTask)}>{selectedTask.completed?'Marcar pendiente':'Completar tarea'}</button>}<button className="ag-btn" onClick={()=>openEdit(selectedTask)}>Editar</button>{selectedTask.recurrence&&selectedTask.recurrence!=='none'&&<button className="ag-btn danger" onClick={()=>deleteTask(selectedTask,false)}>Eliminar solo este</button>}<button className="ag-btn danger" onClick={()=>deleteTask(selectedTask,true)}>Eliminar{selectedTask.recurrence&&selectedTask.recurrence!=='none'?' futuros':''}</button></footer></section></div>,document.body)}
+    {selectedTask&&ReactDOM.createPortal(<div className="ag-overlay" onMouseDown={e=>e.target===e.currentTarget&&setSelectedTask(null)}><section className="ag-modal" role="dialog" aria-modal="true" aria-label="Detalle del evento"><header className="ag-modal-head"><div><h2>{selectedTask.text}</h2><p>{eventTime(selectedTask)} · {selectedTask.category}</p></div><button className="ag-btn icon" onClick={()=>setSelectedTask(null)}><X size={16}/></button></header><div className="ag-modal-body"><p style={{color:'var(--ag-muted)',fontSize: 'var(--font-size-sm)'}}>{selectedTask.description||selectedTask.notes||'Sin descripción.'}</p>{selectedTask.location&&<p><strong>Ubicación:</strong> {selectedTask.location}</p>}</div><footer className="ag-modal-actions">{isCompletableAgendaItem(selectedTask)&&<button className="ag-btn" onClick={()=>toggleComplete(selectedTask)}>{selectedTask.completed?'Marcar pendiente':'Completar tarea'}</button>}<button className="ag-btn" onClick={()=>openEdit(selectedTask)}>Editar</button>{selectedTask.recurrence&&selectedTask.recurrence!=='none'&&<button className="ag-btn danger" onClick={()=>deleteTask(selectedTask,false)}>Eliminar solo este</button>}<button className="ag-btn danger" onClick={()=>deleteTask(selectedTask,true)}>Eliminar{selectedTask.recurrence&&selectedTask.recurrence!=='none'?' futuros':''}</button></footer></section></div>,document.body)}
     {showFilters&&ReactDOM.createPortal(<div className="ag-drawer-wrap" onMouseDown={e=>e.target===e.currentTarget&&setShowFilters(false)}><aside className="ag-drawer" role="dialog" aria-modal="true" aria-label="Filtros de Agenda"><header className="ag-modal-head" style={{padding:0,paddingBottom:16}}><div><h2>Filtros</h2><p>Personaliza la agenda sin eliminar eventos.</p></div><button className="ag-btn icon" onClick={()=>setShowFilters(false)}><X size={16}/></button></header><section className="ag-filter-section"><h4>Calendario</h4><div className="ag-filter-grid">{categories.map(cat=><label className="ag-pill-check" key={cat.id}><input type="checkbox" checked={activeCalendarNames.has(cat.name)} onChange={()=>setVisibleCalendars(prev=>{const n=new Set(Array.isArray(prev)?prev:categories.map(c=>c.name));n.has(cat.name)?n.delete(cat.name):n.add(cat.name);return[...n]})}/><i className="ag-dot" style={{background:cat.color,margin:0}}/>{cat.name}</label>)}</div></section><section className="ag-filter-section"><h4>Categoría</h4><select className="ag-select" value={filters.category} onChange={e=>setFilters({...filters,category:e.target.value})}><option value="">Todas las categorías</option>{categories.map(c=><option key={c.id}>{c.name}</option>)}</select></section>
 <section className="ag-filter-section"><h4>Fecha</h4><div className="ag-filter-grid">{[['today','Hoy'],['tomorrow','Mañana'],['week','Esta semana'],['month','Este mes'],['custom','Personalizado']].map(([id,label])=><button type="button" className={`ag-btn small ${filters.datePreset===id?'primary':''}`} key={id} onClick={()=>setFilters({...filters,datePreset:id})}>{label}</button>)}</div>{filters.datePreset==='custom'&&<div className="ag-filter-dates"><label className="ag-field">Fecha inicial<input className="ag-input" type="date" value={filters.fromDate} onChange={e=>setFilters({...filters,fromDate:e.target.value})}/></label><span>—</span><label className="ag-field">Fecha final<input className="ag-input" type="date" min={filters.fromDate} value={filters.toDate} onChange={e=>setFilters({...filters,toDate:e.target.value})}/></label></div>}</section>
 <section className="ag-filter-section"><h4>Prioridad</h4><div className="ag-filter-grid">{[[1,'Alta'],[2,'Media'],[4,'Baja']].map(([id,label])=><label className="ag-pill-check" key={id}><input type="checkbox" checked={filters.priorities.includes(id)} onChange={()=>toggleFilter('priorities',id)}/>{label}</label>)}</div></section>
@@ -25338,7 +25435,7 @@ const HabitFlowApp = () => {
         <div style={{ display: 'grid', gap: 10, marginBottom: 20 }}>
           {APP_UPDATE_NOTES.map((note, index) => (
             <div key={note} style={{ display: 'flex', gap: 10, alignItems: 'flex-start', padding: '11px 12px', borderRadius: 14, background: `${COLORS.primary}0c`, border: `1px solid ${COLORS.border}` }}>
-              <span style={{ width: 22, height: 22, borderRadius: 999, background: `${COLORS.primary}18`, color: COLORS.primary, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, fontWeight: 900, flexShrink: 0 }}>{index + 1}</span>
+              <span style={{ width: 22, height: 22, borderRadius: 999, background: `${COLORS.primary}18`, color: COLORS.primary, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 'var(--font-size-xs)', fontWeight: 900, flexShrink: 0 }}>{index + 1}</span>
               <span style={{ color: COLORS.text, fontSize: 13, lineHeight: 1.45 }}>{note}</span>
             </div>
           ))}
@@ -25369,18 +25466,18 @@ const HabitFlowApp = () => {
           <div style={{ display: sidebarOpen  ? 'block' : 'none', marginBottom: 6 }}>
             <BrandLogo size="sm" />
           </div>
-          <div style={{ display: sidebarOpen  ? 'block' : 'none', fontSize: 11, color: COLORS.textDim, lineHeight: 1.4, marginTop: 4 }}>
+          <div style={{ display: sidebarOpen  ? 'block' : 'none', fontSize: 'var(--font-size-xs)', color: COLORS.textDim, lineHeight: 1.4, marginTop: 4 }}>
               {data.user.motto}
           </div>
           <div style={{ marginTop: sidebarOpen  ? 12 : 10, display: 'flex', alignItems: 'center', justifyContent: sidebarOpen  ? 'flex-start' : 'center', gap: 8 }}>
-            <div style={{ width: 28, height: 28, borderRadius: 8, background: `linear-gradient(135deg, ${theme.primary}, #7f1028)`, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: 11, fontFamily: "'Inter', sans-serif", fontWeight: 600 }}>
+            <div style={{ width: 28, height: 28, borderRadius: 8, background: `linear-gradient(135deg, ${theme.primary}, #7f1028)`, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: 'var(--font-size-xs)', fontFamily: "'Inter', sans-serif", fontWeight: 600 }}>
               {data.user.level || 1}
             </div>
             <div style={{ flex: 1, display: sidebarOpen  ? 'block' : 'none' }}>
               <div style={{ height: 6, background: COLORS.bg, borderRadius: 3, overflow: 'hidden' }}>
                 {(() => { const p = getXpProgress(data.user.xp || 0); const pct = p.needed > 0  ? (p.xp / p.needed) * 100 : 0; return <div style={{ height: '100%', width: `${pct}%`, background: `linear-gradient(90deg, ${theme.primary}, #7f1028)`, borderRadius: 3, transition: 'width 0.5s ease' }} />; })()}
               </div>
-              <div style={{ fontSize: 9, color: COLORS.textDim, marginTop: 2 }}>Nv.{data.user.level || 1} - {(data.user.xp || 0)} XP</div>
+              <div style={{ fontSize: 'var(--font-size-2xs)', color: COLORS.textDim, marginTop: 2 }}>Nv.{data.user.level || 1} - {(data.user.xp || 0)} XP</div>
             </div>
           </div>
         </div>
@@ -25408,7 +25505,7 @@ const HabitFlowApp = () => {
           ))}
         </nav>
 
-        <div className="user-info" style={{ padding: sidebarOpen  ? '16px 20px' : '14px 8px', borderTop: `1px solid ${COLORS.border}`, fontSize: 11, color: COLORS.textDim }}>
+        <div className="user-info" style={{ padding: sidebarOpen  ? '16px 20px' : '14px 8px', borderTop: `1px solid ${COLORS.border}`, fontSize: 'var(--font-size-xs)', color: COLORS.textDim }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: sidebarOpen  ? 'flex-start' : 'center', gap: sidebarOpen  ? 8 : 4, margin: sidebarOpen  ? 0 : '0 auto', minHeight: 24, borderRadius: 9, background: sidebarOpen  ? 'transparent' : `${COLORS.alert}10`, border: sidebarOpen  ? 'none' : `1px solid ${COLORS.alert}24`, color: sidebarOpen  ? COLORS.textDim : COLORS.text, fontWeight: sidebarOpen  ? 400 : 700 }} title={`Racha global: ${getGlobalCurrentStreak(data.habits, data.records)} días`}>
             <Flame size={sidebarOpen  ? 14 : 13} color={COLORS.alert} />
             {!sidebarOpen && <span className="streak-compact-count">{getGlobalCurrentStreak(data.habits, data.records)}</span>}
@@ -25436,10 +25533,10 @@ const HabitFlowApp = () => {
               <div style={{ fontSize: 14, color: COLORS.text, fontFamily: "'DM Serif Display', serif" }}>
                 {data.user.name}
               </div>
-              <div style={{ fontSize: 11, color: COLORS.textDim }}>
+              <div style={{ fontSize: 'var(--font-size-xs)', color: COLORS.textDim }}>
                 {formatDateSpanish(new Date())}
               </div>
-              <div style={{ fontSize: 9, color: theme.primary, letterSpacing: '0.04em' }}>
+              <div style={{ fontSize: 'var(--font-size-2xs)', color: theme.primary, letterSpacing: '0.04em' }}>
                 {navItems.find(n => n.id === view)?.label || view}
               </div>
             </div>
@@ -25448,13 +25545,13 @@ const HabitFlowApp = () => {
             <div className="top-streak" style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, color: COLORS.alert }}>
               <Flame size={16} /> {getGlobalCurrentStreak(data.habits, data.records)}
             </div>
-            <div className="top-xp" style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, color: COLORS.textDim, fontFamily: "'Inter', sans-serif" }}>
+            <div className="top-xp" style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 'var(--font-size-sm)', color: COLORS.textDim, fontFamily: "'Inter', sans-serif" }}>
               <Award size={14} color={theme.primary} />
               <span>Nv.{data.user.level || 1}</span>
               <div style={{ width: 60, height: 5, background: COLORS.bg, borderRadius: 3, overflow: 'hidden' }}>
                 {(() => { const p = getXpProgress(data.user.xp || 0); const pct = p.needed > 0  ? (p.xp / p.needed) * 100 : 0; return <div style={{ height: '100%', width: `${pct}%`, background: `linear-gradient(90deg, ${theme.primary}, #7f1028)`, borderRadius: 3, transition: 'width 0.5s ease' }} />; })()}
               </div>
-              <span style={{ fontSize: 10 }}>{(data.user.xp || 0)}</span>
+              <span style={{ fontSize: 'var(--font-size-xs)' }}>{(data.user.xp || 0)}</span>
             </div>
             <div className="top-user"><ClerkUserButtonMount /></div>
           </div>
@@ -25487,7 +25584,7 @@ const HabitFlowApp = () => {
             padding: '8px 12px', borderRadius: 8, border: 'none',
             background: view === item.id  ? `${theme.primary}15` : 'transparent',
             color: view === item.id  ? theme.primary : COLORS.textDim,
-            cursor: 'pointer', fontSize: 10, fontFamily: "'Inter', sans-serif",
+            cursor: 'pointer', fontSize: 'var(--font-size-xs)', fontFamily: "'Inter', sans-serif",
             transition: 'all 0.2s', flex: 1
           }}>
             {item.icon}
@@ -25500,7 +25597,7 @@ const HabitFlowApp = () => {
             padding: '8px 12px', borderRadius: 8, border: 'none', width: '100%',
             background: showMoreNav  ? `${theme.primary}15` : 'transparent',
             color: showMoreNav  ? theme.primary : COLORS.textDim,
-            cursor: 'pointer', fontSize: 10, fontFamily: "'Inter', sans-serif",
+            cursor: 'pointer', fontSize: 'var(--font-size-xs)', fontFamily: "'Inter', sans-serif",
             transition: 'all 0.2s'
           }}>
             <Menu size={20} />
