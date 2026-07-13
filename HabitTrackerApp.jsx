@@ -8091,42 +8091,6 @@ const injectStyles = () => {
       font-size: 9px;
       line-height: 1.5;
     }
-    .cc-bottom {
-      display: grid;
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-      gap: 0;
-      margin-top: 14px;
-      border: 1px solid var(--hf-card-border);
-      border-radius: 15px;
-      background: var(--hf-surface);
-      overflow: hidden;
-    }
-    .cc-bottom-item {
-      display: grid;
-      grid-template-columns: 26px minmax(0, 1fr);
-      gap: 9px;
-      align-items: center;
-      min-width: 0;
-      padding: 11px 13px;
-    }
-    .cc-bottom-item:not(:last-child) {
-      border-right: 1px solid var(--hf-card-border);
-    }
-    .cc-bottom-item svg {
-      color: var(--app-primary);
-    }
-    .cc-bottom-item strong {
-      display: block;
-      color: var(--hf-text);
-      font-size: 9px;
-      margin-bottom: 2px;
-    }
-    .cc-bottom-item span {
-      display: block;
-      color: var(--hf-muted);
-      font-size: 8px;
-      line-height: 1.35;
-    }
     @media (hover: hover) and (pointer: fine) {
       .cc-quick-action:hover,
       .cc-module-button:hover,
@@ -8275,15 +8239,6 @@ const injectStyles = () => {
       .cc-rail .cc-rail-card:first-child {
         grid-template-columns: 1fr;
         grid-column: auto;
-      }
-      .cc-bottom {
-        grid-template-columns: 1fr 1fr;
-      }
-      .cc-bottom-item:nth-child(2) {
-        border-right: 0;
-      }
-      .cc-bottom-item:nth-child(-n+2) {
-        border-bottom: 1px solid var(--hf-card-border);
       }
     }
     @media (max-width: 390px) {
@@ -13034,19 +12989,6 @@ const DashboardView = ({
             <BrushingWidget brushing={brushing} onAdd={onAddBrushing} onUndo={onUndoBrushing} onGoalChange={onBrushingGoalChange} onReminderChange={onBrushingReminderChange} onTimesChange={onBrushingTimesChange} />
           )}
         </aside>
-      </div>
-
-      <div className="cc-bottom">
-        {[
-          { icon: <Zap size={17} />, title: 'Tareas conectadas', text: `${todayTasks.length} tareas y ${habitsToday.length} hábitos en contexto.` },
-          { icon: <BarChart3 size={17} />, title: 'Resumen del día', text: `${taskProgress}% de tareas y ${habitProgress}% de hábitos.` },
-          { icon: <Sparkles size={17} />, title: 'Atajos inteligentes', text: 'Captura y navega sin perder el foco.' },
-          { icon: <Star size={17} />, title: 'XP y progreso', text: `${xpProgress.xp} XP avanzados en este nivel.` }
-        ].map(item => (
-          <div className="cc-bottom-item" key={item.title}>
-            {item.icon}<div><strong>{item.title}</strong><span>{item.text}</span></div>
-          </div>
-        ))}
       </div>
 
       <Modal isOpen={tourStep !== null} onClose={() => setTourStep(null)} title={tourStep !== null ? tourSteps[tourStep].title : ''} width={460}>
