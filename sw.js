@@ -1,4 +1,4 @@
-const CACHE_VERSION = 'habitflow-pwa-v2026-07-13-typography-a';
+const CACHE_VERSION = 'habitflow-pwa-v2026-07-13-sidebar-a';
 const APP_SHELL = [
   './',
   './index.html',
