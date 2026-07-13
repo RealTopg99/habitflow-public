@@ -7947,6 +7947,10 @@ const injectStyles = () => {
         radial-gradient(circle, var(--hf-surface-strong) 65%, transparent 66%),
         conic-gradient(var(--app-primary) 0 72%, var(--hf-track) 72% 100%);
     }
+    .cc-pomodoro-ring > div {
+      width: 100%;
+      text-align: center;
+    }
     .cc-pomodoro-time {
       color: var(--hf-text);
       font-size: 27px;
