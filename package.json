@@ -7,9 +7,10 @@
     "start": "node server.js",
     "build": "node scripts/build-check.js",
     "check:text": "node scripts/check-text-encoding.js",
+    "test:sidebar": "node scripts/test-sidebar.js",
     "test:typography": "node scripts/test-typography.js",
     "test:widgets": "node scripts/test-widget-sync.js",
-    "test": "node scripts/test-widget-sync.js && node scripts/test-typography.js && node scripts/check-text-encoding.js"
+    "test": "node scripts/test-widget-sync.js && node scripts/test-typography.js && node scripts/test-sidebar.js && node scripts/check-text-encoding.js"
   },
   "dependencies": {
     "web-push": "^3.6.7"

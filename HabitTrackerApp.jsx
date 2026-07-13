@@ -2051,7 +2051,6 @@ const injectStyles = () => {
 
     .view-enter { animation: fadeIn 0.3s ease-out; }
     .content-area, .sidebar, header, main { position: relative; z-index: 1; }
-    .sidebar-toggle { display: flex; }
     .app-main { position: relative; z-index: 1; background: transparent !important; }
     .app-main h2 {
       background: linear-gradient(160deg, #ffffff 20%, #8a8a8a 100%);
@@ -4385,7 +4384,6 @@ const injectStyles = () => {
       .app-main { padding: 16px 14px 20px !important; }
       .content-area { margin-left: 0 !important; margin-bottom: 72px; }
       .sidebar { display: none !important; }
-      .sidebar-toggle { display: none !important; }
       .stats-grid { grid-template-columns: 1fr !important; }
       .stats-grid-2 { grid-template-columns: 1fr !important; }
       .kpi-grid { grid-template-columns: repeat(2, 1fr) !important; gap: 8px !important; }
@@ -5711,15 +5709,10 @@ const injectStyles = () => {
       white-space: nowrap;
     }
     @media (min-width: 769px) {
-      .sidebar-open + .content-area {
-        flex: 0 0 calc(100% - 240px) !important;
-        width: calc(100% - 240px) !important;
-        max-width: calc(100% - 240px) !important;
-      }
       .sidebar-collapsed + .content-area {
-        flex: 0 0 calc(100% - 64px) !important;
-        width: calc(100% - 64px) !important;
-        max-width: calc(100% - 64px) !important;
+        flex: 0 0 calc(100% - 72px) !important;
+        width: calc(100% - 72px) !important;
+        max-width: calc(100% - 72px) !important;
       }
     }
 
@@ -6207,7 +6200,6 @@ const injectStyles = () => {
     .mobile-more-popover button[style*="background: rgba"] {
       box-shadow: inset 0 1px 0 var(--hf-card-highlight);
     }
-    .sidebar-toggle,
     .top-sync,
     .top-random,
     .top-actions > button {
@@ -7431,8 +7423,7 @@ const injectStyles = () => {
     .agenda-side-tabs button,
     .mobile-bottom-nav button,
     .mobile-more-popover button,
-    .sidebar nav button,
-    .sidebar-toggle {
+    .sidebar nav button {
       transition:
         transform var(--motion-fast) var(--motion-ease),
         background-color var(--motion-fast) ease,
@@ -7495,8 +7486,7 @@ const injectStyles = () => {
         transform: translate3d(0, -1px, 0);
       }
       .habit-week-dots button:not(:disabled):hover,
-      .habit-row-status:not(:disabled):hover,
-      .sidebar-toggle:hover {
+      .habit-row-status:not(:disabled):hover {
         transform: scale(1.04);
       }
     }
@@ -10689,6 +10679,87 @@ const injectStyles = () => {
         max-width: 210px;
       }
       .hydration-visibility-action > span { display: none; }
+    }
+    .sidebar.sidebar-collapsed {
+      width: 72px !important;
+      overflow: visible !important;
+      transition: none !important;
+    }
+    .sidebar-collapsed .sidebar-nav {
+      padding: 16px 10px !important;
+      overflow-x: visible;
+    }
+    .sidebar nav > .sidebar-item {
+      width: 100%;
+      min-height: 44px;
+      padding: 0 !important;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid transparent !important;
+      border-radius: 11px;
+      background: transparent !important;
+      color: var(--sidebar-item-muted, var(--hf-muted));
+      cursor: pointer;
+      position: relative;
+      font-family: 'Inter', sans-serif;
+    }
+    .sidebar nav > .sidebar-item:hover,
+    .sidebar nav > .sidebar-item:focus-visible {
+      background: var(--hf-hover) !important;
+      border-color: var(--hf-card-border) !important;
+      color: var(--sidebar-item-primary, var(--primary));
+      transform: none !important;
+    }
+    .sidebar nav > .sidebar-item.is-active {
+      background: color-mix(in srgb, var(--sidebar-item-primary, var(--primary)) 14%, transparent) !important;
+      border-color: color-mix(in srgb, var(--sidebar-item-primary, var(--primary)) 34%, transparent) !important;
+      color: var(--sidebar-item-primary, var(--primary));
+      box-shadow: inset 0 1px 0 var(--hf-card-highlight);
+    }
+    .sidebar-item-icon {
+      width: 20px;
+      height: 20px;
+      display: grid;
+      place-items: center;
+      pointer-events: none;
+    }
+    .sidebar-item-indicator {
+      position: absolute;
+      left: -1px;
+      top: 50%;
+      width: 3px;
+      height: 22px;
+      border-radius: 0 4px 4px 0;
+      background: var(--sidebar-item-primary, var(--primary));
+      transform: translateY(-50%);
+    }
+    .sidebar-tooltip {
+      position: fixed;
+      left: var(--sidebar-tooltip-left);
+      top: var(--sidebar-tooltip-top);
+      z-index: 30000;
+      pointer-events: none;
+      max-width: min(220px, calc(100vw - 96px));
+      padding: 8px 10px;
+      border: 1px solid rgba(255,255,255,0.11);
+      border-radius: 9px;
+      background: #111318;
+      color: #f7f7f8;
+      box-shadow: 0 12px 30px rgba(0,0,0,0.34);
+      font: 650 var(--font-size-sm)/1.25 'Inter', sans-serif;
+      white-space: nowrap;
+      opacity: 0;
+      transform: translate3d(-4px,-50%,0) scale(.98);
+      transform-origin: left center;
+      transition: opacity 150ms ease, transform 170ms var(--motion-ease-soft);
+    }
+    .sidebar-tooltip.is-visible {
+      opacity: 1;
+      transform: translate3d(0,-50%,0) scale(1);
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .sidebar-tooltip { transition-duration: 1ms; }
     }
   `;
   document.head.appendChild(style);
@@ -24082,6 +24153,118 @@ const VoiceAssistant = ({
   );
 };
 
+const SIDEBAR_COLLAPSED_WIDTH = 72;
+const LEGACY_SIDEBAR_STORAGE_KEYS = [
+  'sidebarCollapsed',
+  'sidebarExpanded',
+  'habitflow_sidebar_state',
+  'habitflow_sidebar_open',
+  'habitflowSidebarOpen'
+];
+
+const SidebarItem = ({ icon: Icon, label, active, onActivate, primary, muted }) => {
+  const buttonRef = useRef(null);
+  const timersRef = useRef({ open: null, close: null });
+  const tooltipIdRef = useRef(`sidebar-tooltip-${label.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-')}`);
+  const [tooltipMounted, setTooltipMounted] = useState(false);
+  const [tooltipVisible, setTooltipVisible] = useState(false);
+  const [tooltipPosition, setTooltipPosition] = useState({ left: SIDEBAR_COLLAPSED_WIDTH + 12, top: 0 });
+
+  const clearTooltipTimers = useCallback(() => {
+    clearTimeout(timersRef.current.open);
+    clearTimeout(timersRef.current.close);
+  }, []);
+
+  const openTooltip = useCallback(() => {
+    clearTooltipTimers();
+    timersRef.current.open = setTimeout(() => {
+      const rect = buttonRef.current?.getBoundingClientRect();
+      if (!rect) return;
+      setTooltipPosition({
+        left: rect.right + 12,
+        top: Math.min(window.innerHeight - 24, Math.max(24, rect.top + (rect.height / 2)))
+      });
+      setTooltipMounted(true);
+      requestAnimationFrame(() => setTooltipVisible(true));
+    }, 180);
+  }, [clearTooltipTimers]);
+
+  const closeTooltip = useCallback((immediate = false) => {
+    clearTooltipTimers();
+    setTooltipVisible(false);
+    if (immediate) {
+      setTooltipMounted(false);
+      return;
+    }
+    timersRef.current.close = setTimeout(() => setTooltipMounted(false), 140);
+  }, [clearTooltipTimers]);
+
+  useEffect(() => () => clearTooltipTimers(), [clearTooltipTimers]);
+
+  useEffect(() => {
+    if (!tooltipMounted) return undefined;
+    const handleEscape = (event) => {
+      if (event.key === 'Escape') closeTooltip(true);
+    };
+    const handleViewportChange = () => closeTooltip(true);
+    window.addEventListener('keydown', handleEscape);
+    window.addEventListener('resize', handleViewportChange);
+    window.addEventListener('scroll', handleViewportChange, true);
+    return () => {
+      window.removeEventListener('keydown', handleEscape);
+      window.removeEventListener('resize', handleViewportChange);
+      window.removeEventListener('scroll', handleViewportChange, true);
+    };
+  }, [closeTooltip, tooltipMounted]);
+
+  return (
+    <>
+      <button
+        ref={buttonRef}
+        type="button"
+        className={`sidebar-item ${active ? 'is-active' : ''}`}
+        aria-label={label}
+        aria-current={active ? 'page' : undefined}
+        aria-describedby={tooltipMounted ? tooltipIdRef.current : undefined}
+        onClick={onActivate}
+        onMouseEnter={openTooltip}
+        onMouseLeave={() => closeTooltip()}
+        onFocus={openTooltip}
+        onBlur={() => closeTooltip()}
+        onKeyDown={(event) => {
+          if (event.key !== 'Escape') return;
+          event.preventDefault();
+          event.stopPropagation();
+          closeTooltip(true);
+        }}
+        style={{
+          '--sidebar-item-primary': primary,
+          '--sidebar-item-muted': muted
+        }}
+      >
+        <span className="sidebar-item-icon" aria-hidden="true">
+          <Icon size={20} aria-hidden="true" focusable="false" />
+        </span>
+        {active && <span className="sidebar-item-indicator" aria-hidden="true" />}
+      </button>
+      {tooltipMounted && ReactDOM.createPortal(
+        <span
+          id={tooltipIdRef.current}
+          role="tooltip"
+          className={`sidebar-tooltip ${tooltipVisible ? 'is-visible' : ''}`}
+          style={{
+            '--sidebar-tooltip-left': `${tooltipPosition.left}px`,
+            '--sidebar-tooltip-top': `${tooltipPosition.top}px`
+          }}
+        >
+          {label}
+        </span>,
+        document.body
+      )}
+    </>
+  );
+};
+
 // SECTION: Application shell, root state, navigation, notifications and update handlers.
 const HabitFlowApp = () => {
   const [data, setData] = useState(null);
@@ -24106,6 +24289,13 @@ const HabitFlowApp = () => {
   const widgetSyncManagerRef = useRef(null);
 
   useEffect(() => { injectStyles(); }, []);
+
+  useEffect(() => {
+    for (const key of LEGACY_SIDEBAR_STORAGE_KEYS) {
+      try { localStorage.removeItem(key); } catch {}
+      try { sessionStorage.removeItem(key); } catch {}
+    }
+  }, []);
 
   useEffect(() => {
     const seenVersion = localStorage.getItem('habitflow_seen_update_version');
@@ -24738,7 +24928,6 @@ const HabitFlowApp = () => {
   const [showLevelUp, setShowLevelUp] = useState(null);
   const [showChallengeComplete, setShowChallengeComplete] = useState(null);
   const [showFocus, setShowFocus] = useState(false);
-  const [sidebarOpen, setSidebarOpen] = useState(true);
 
   const navigateTo = useCallback((nextView) => {
     const blockedCreatorView = nextView === 'creator' && !hasCreatorAccess();
@@ -25394,16 +25583,16 @@ const HabitFlowApp = () => {
 
   const creatorAccess = hasCreatorAccess();
   const navItems = [
-    { id: 'dashboard', label: 'Panel', icon: <Activity size={20} /> },
-    { id: 'habits', label: 'Hábitos', icon: <Target size={20} /> },
-    { id: 'pomodoro', label: 'Pomodoro', icon: <Clock size={20} /> },
-    { id: 'workout', label: 'Entreno', icon: <Dumbbell size={20} /> },
-    { id: 'agenda', label: 'Agenda', icon: <List size={20} /> },
-    { id: 'dreams', label: 'Metas', icon: <Sparkles size={20} /> },
-    { id: 'finance', label: 'Finanzas', icon: <CreditCard size={20} /> },
-    { id: 'health', label: 'Salud', icon: <Heart size={20} /> },
-    ...(creatorAccess ? [{ id: 'creator', label: 'Creador', icon: <Shield size={20} /> }] : []),
-    { id: 'settings', label:  'Configuración', icon: <Settings size={20} /> }
+    { id: 'dashboard', label: 'Panel', icon: Activity },
+    { id: 'habits', label: 'Hábitos', icon: Target },
+    { id: 'pomodoro', label: 'Pomodoro', icon: Clock },
+    { id: 'workout', label: 'Entreno', icon: Dumbbell },
+    { id: 'agenda', label: 'Agenda', icon: List },
+    { id: 'dreams', label: 'Metas', icon: Sparkles },
+    { id: 'finance', label: 'Finanzas', icon: CreditCard },
+    { id: 'health', label: 'Salud', icon: Heart },
+    ...(creatorAccess ? [{ id: 'creator', label: 'Creador', icon: Shield }] : []),
+    { id: 'settings', label:  'Configuración', icon: Settings }
   ];
 
   const renderView = () => {
@@ -25421,8 +25610,6 @@ const HabitFlowApp = () => {
       default: return <DashboardView data={data} onCompleteHabit={onCompleteHabit} workoutData={data.workoutData} onNavigate={navigateTo} onQuickAction={runDashboardQuickAction} onUpdateUser={onUpdateUser} onUpdateAgenda={onUpdateAgenda} onUpdateFinance={onUpdateFinance} onAddHabit={onAddHabit} hydration={hydration} onAddHydration={addHydration} onHydrationGoalChange={changeHydrationGoal} onHydrationReminderChange={changeHydrationReminder} brushing={brushing} onAddBrushing={addBrushing} onUndoBrushing={undoBrushing} onBrushingGoalChange={changeBrushingGoal} onBrushingReminderChange={changeBrushingReminder} onBrushingTimesChange={changeBrushingTimes} />;
     }
   };
-
-  const sidebarWidth = sidebarOpen  ? 240 : 64;
 
   return (
     <div style={{ display: 'flex', minHeight: '100vh', background: COLORS.bg }}>
@@ -25446,76 +25633,44 @@ const HabitFlowApp = () => {
         </button>
       </Modal>
 
-      <button className="sidebar-toggle" onClick={() => setSidebarOpen(s => !s)} style={{
-        position: 'fixed', left: sidebarWidth - 12, top: 24, zIndex: 110,
-        width: 28, height: 28, borderRadius: '50%', border: `1px solid ${COLORS.border}`,
-        background: sidebarOpen  ? COLORS.surface : COLORS.card, color: COLORS.textDim, cursor: 'pointer',
-        display: 'flex', alignItems: 'center', justifyContent: 'center',
-        transition: 'left 0.3s ease, background 0.3s ease', padding: 0, boxShadow: '0 2px 8px rgba(0,0,0,0.2)'
-      }} title={sidebarOpen  ? 'Ocultar nombres' : 'Mostrar nombres'}>
-        {sidebarOpen  ? <ChevronLeft size={16} /> : <ChevronRight size={16} />}
-      </button>
-
-      <aside className={`sidebar ${sidebarOpen  ? 'sidebar-open' : 'sidebar-collapsed'}`} style={{
-        width: sidebarWidth, overflow: 'hidden',
+      <aside className="sidebar sidebar-collapsed" aria-label="Navegación principal" style={{
+        width: SIDEBAR_COLLAPSED_WIDTH, overflow: 'visible',
         background: COLORS.surface, borderRight: 'none',
         display: 'flex', flexDirection: 'column', position: 'fixed', top: 0, left: 0,
-        height: '100vh', zIndex: 100, transition: 'width 0.3s ease'
+        height: '100vh', zIndex: 100
       }}>
-        <div className="user-info" style={{ padding: sidebarOpen  ? '20px 16px' : '16px 8px', borderBottom: `1px solid ${COLORS.border}`, transition: 'padding 0.3s ease', textAlign: sidebarOpen  ? 'left' : 'center' }}>
-          <div style={{ display: sidebarOpen  ? 'block' : 'none', marginBottom: 6 }}>
-            <BrandLogo size="sm" />
-          </div>
-          <div style={{ display: sidebarOpen  ? 'block' : 'none', fontSize: 'var(--font-size-xs)', color: COLORS.textDim, lineHeight: 1.4, marginTop: 4 }}>
-              {data.user.motto}
-          </div>
-          <div style={{ marginTop: sidebarOpen  ? 12 : 10, display: 'flex', alignItems: 'center', justifyContent: sidebarOpen  ? 'flex-start' : 'center', gap: 8 }}>
+        <div className="user-info" style={{ padding: '16px 8px', borderBottom: `1px solid ${COLORS.border}`, textAlign: 'center' }}>
+          <div style={{ marginTop: 10, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <div style={{ width: 28, height: 28, borderRadius: 8, background: `linear-gradient(135deg, ${theme.primary}, #7f1028)`, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: 'var(--font-size-xs)', fontFamily: "'Inter', sans-serif", fontWeight: 600 }}>
               {data.user.level || 1}
-            </div>
-            <div style={{ flex: 1, display: sidebarOpen  ? 'block' : 'none' }}>
-              <div style={{ height: 6, background: COLORS.bg, borderRadius: 3, overflow: 'hidden' }}>
-                {(() => { const p = getXpProgress(data.user.xp || 0); const pct = p.needed > 0  ? (p.xp / p.needed) * 100 : 0; return <div style={{ height: '100%', width: `${pct}%`, background: `linear-gradient(90deg, ${theme.primary}, #7f1028)`, borderRadius: 3, transition: 'width 0.5s ease' }} />; })()}
-              </div>
-              <div style={{ fontSize: 'var(--font-size-2xs)', color: COLORS.textDim, marginTop: 2 }}>Nv.{data.user.level || 1} - {(data.user.xp || 0)} XP</div>
             </div>
           </div>
         </div>
 
-        <nav style={{ flex: 1, minHeight: 0, overflowY: 'auto', padding: sidebarOpen  ? '16px 12px' : '16px 8px', display: 'flex', flexDirection: 'column', gap: 4, transition: 'padding 0.3s ease' }}>
+        <nav className="sidebar-nav" aria-label="Secciones de HabitFlow" style={{ flex: 1, minHeight: 0, overflowY: 'auto', padding: '16px 10px', display: 'flex', flexDirection: 'column', gap: 4 }}>
           {navItems.map(item => (
-            <button key={item.id} aria-label={item.label} title={item.label} onClick={() => { navigateTo(item.id); setMobileMenu(false); }} style={{
-              display: 'flex', alignItems: 'center', justifyContent: sidebarOpen  ? 'flex-start' : 'center', gap: sidebarOpen  ? 12 : 0,
-              padding: sidebarOpen  ? '12px 16px' : '12px 0', borderRadius: 10,
-              border: 'none', background: view === item.id  ? `${theme.primary}15` : 'transparent',
-              color: view === item.id  ? theme.primary : COLORS.textDim,
-              cursor: 'pointer', fontSize: 14, fontFamily: "'Inter', sans-serif",
-              transition: 'all 0.2s', position: 'relative', width: '100%', textAlign: 'left'
-            }}>
-              <span className="nav-icon" style={{ display: 'flex' }}>{item.icon}</span>
-              <span className="nav-label" style={{ display: sidebarOpen  ? 'inline' : 'none' }}>{item.label}</span>
-              {view === item.id && (
-                <div className="nav-indicator" style={{
-                  position: 'absolute', left: 0, top: '50%', transform: 'translateY(-50%)',
-                  width: 3, height: 24, borderRadius: '0 4px 4px 0',
-                  background: theme.primary, boxShadow: `0 0 8px ${theme.primary}60`
-                }} />
-              )}
-            </button>
+            <SidebarItem
+              key={item.id}
+              icon={item.icon}
+              label={item.label}
+              active={view === item.id}
+              primary={theme.primary}
+              muted={COLORS.textDim}
+              onActivate={() => { navigateTo(item.id); setMobileMenu(false); }}
+            />
           ))}
         </nav>
 
-        <div className="user-info" style={{ padding: sidebarOpen  ? '16px 20px' : '14px 8px', borderTop: `1px solid ${COLORS.border}`, fontSize: 'var(--font-size-xs)', color: COLORS.textDim }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: sidebarOpen  ? 'flex-start' : 'center', gap: sidebarOpen  ? 8 : 4, margin: sidebarOpen  ? 0 : '0 auto', minHeight: 24, borderRadius: 9, background: sidebarOpen  ? 'transparent' : `${COLORS.alert}10`, border: sidebarOpen  ? 'none' : `1px solid ${COLORS.alert}24`, color: sidebarOpen  ? COLORS.textDim : COLORS.text, fontWeight: sidebarOpen  ? 400 : 700 }} title={`Racha global: ${getGlobalCurrentStreak(data.habits, data.records)} días`}>
-            <Flame size={sidebarOpen  ? 14 : 13} color={COLORS.alert} />
-            {!sidebarOpen && <span className="streak-compact-count">{getGlobalCurrentStreak(data.habits, data.records)}</span>}
-            Racha global: {getGlobalCurrentStreak(data.habits, data.records)} días
+        <div className="user-info" style={{ padding: '14px 8px', borderTop: `1px solid ${COLORS.border}`, fontSize: 'var(--font-size-xs)', color: COLORS.textDim }}>
+          <div aria-label={`Racha global: ${getGlobalCurrentStreak(data.habits, data.records)} días`} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4, margin: '0 auto', minHeight: 24, borderRadius: 9, background: `${COLORS.alert}10`, border: `1px solid ${COLORS.alert}24`, color: COLORS.text, fontWeight: 700 }}>
+            <Flame size={13} color={COLORS.alert} aria-hidden="true" />
+            <span className="streak-compact-count">{getGlobalCurrentStreak(data.habits, data.records)}</span>
           </div>
         </div>
       </aside>
 
       <div className="content-area" style={{
-        marginLeft: sidebarWidth, flex: 1, minHeight: '100vh', transition: 'margin-left 0.3s ease'
+        marginLeft: SIDEBAR_COLLAPSED_WIDTH, flex: 1, minHeight: '100vh'
       }}>
         <header style={{
           background: COLORS.surface, borderBottom: 'none',
@@ -25587,7 +25742,7 @@ const HabitFlowApp = () => {
             cursor: 'pointer', fontSize: 'var(--font-size-xs)', fontFamily: "'Inter', sans-serif",
             transition: 'all 0.2s', flex: 1
           }}>
-            {item.icon}
+            {React.createElement(item.icon, { size: 20, 'aria-hidden': true, focusable: false })}
             <span>{item.label}</span>
           </button>
         ))}
@@ -25619,7 +25774,7 @@ const HabitFlowApp = () => {
                   cursor: 'pointer', fontSize: 13, fontFamily: "'Inter', sans-serif",
                   textAlign: 'left', transition: 'all 0.2s'
                 }}>
-                  {item.icon}
+                  {React.createElement(item.icon, { size: 20, 'aria-hidden': true, focusable: false })}
                   <span>{item.label}</span>
                 </button>
               ))}
