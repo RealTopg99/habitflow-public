@@ -38,6 +38,7 @@ const CalendarCheck = Calendar;
 const Info = AlertCircle;
 
 const supabase = window.supabaseClient;
+const widgetSyncCore = window.HabitFlowWidgetSync;
 
 // SECTION: Global design tokens, themes and static domain catalogs.
 const BASE_COLORS = {
@@ -69,6 +70,7 @@ const BRUSHING_STORAGE_KEYS = {
   goal: 'habitflow_brushing_goal',
   remindersEnabled: 'habitflow_brushing_reminders_enabled',
   reminderTimes: 'habitflow_brushing_reminder_times',
+  widgetEnabled: 'habitflow_brushing_widget_enabled',
   streak: 'habitflow_brushing_streak'
 };
 
@@ -143,12 +145,16 @@ const readHydrationStorage = () => {
     widgetEnabled: widgetSetting === null ? true : widgetSetting === 'true',
     streak,
     lastCompletedDate,
-    lastReminderAt
+    lastReminderAt,
+    updatedAt: savedToday.updatedAt || '',
+    mutationId: savedToday.mutationId || ''
   };
   localStorage.setItem(HYDRATION_STORAGE_KEYS.today, JSON.stringify({
     date: state.date,
     amount: state.amount,
-    lastReminderAt: state.lastReminderAt
+    lastReminderAt: state.lastReminderAt,
+    updatedAt: state.updatedAt || '',
+    mutationId: state.mutationId || ''
   }));
   localStorage.setItem(HYDRATION_STORAGE_KEYS.streak, JSON.stringify({
     count: state.streak,
@@ -162,7 +168,9 @@ const persistHydrationStorage = (state) => {
     localStorage.setItem(HYDRATION_STORAGE_KEYS.today, JSON.stringify({
       date: state.date,
       amount: Math.max(0, Number(state.amount || 0)),
-      lastReminderAt: Math.max(0, Number(state.lastReminderAt || 0))
+      lastReminderAt: Math.max(0, Number(state.lastReminderAt || 0)),
+      updatedAt: state.updatedAt || '',
+      mutationId: state.mutationId || ''
     }));
     localStorage.setItem(HYDRATION_STORAGE_KEYS.goal, String(Math.max(250, Number(state.goal || 2500))));
     localStorage.setItem(HYDRATION_STORAGE_KEYS.remindersEnabled, state.remindersEnabled ? 'true' : 'false');
@@ -192,6 +200,7 @@ const readBrushingStorage = () => {
     : 2;
   reminderTimes = normalizeBrushingReminderTimes(reminderTimes, goal);
   const remindersEnabled = localStorage.getItem(BRUSHING_STORAGE_KEYS.remindersEnabled) === 'true';
+  const widgetSetting = localStorage.getItem(BRUSHING_STORAGE_KEYS.widgetEnabled);
   let count = Math.max(0, Number(savedToday.count || 0));
   let streak = Math.max(0, Number(savedStreak.count || 0));
   let lastCompletedDate = savedStreak.lastCompletedDate || '';
@@ -216,11 +225,14 @@ const readBrushingStorage = () => {
     goal,
     remindersEnabled,
     reminderTimes,
+    widgetEnabled: widgetSetting === null ? true : widgetSetting === 'true',
     streak,
     lastCompletedDate,
     sentReminderKeys: savedToday.date === todayKey && Array.isArray(savedToday.sentReminderKeys)
       ? savedToday.sentReminderKeys
-      : []
+      : [],
+    updatedAt: savedToday.updatedAt || '',
+    mutationId: savedToday.mutationId || ''
   };
 };
 
@@ -229,12 +241,15 @@ const persistBrushingStorage = (state) => {
     localStorage.setItem(BRUSHING_STORAGE_KEYS.today, JSON.stringify({
       date: state.date,
       count: Math.max(0, Number(state.count || 0)),
-      sentReminderKeys: Array.isArray(state.sentReminderKeys) ? state.sentReminderKeys : []
+      sentReminderKeys: Array.isArray(state.sentReminderKeys) ? state.sentReminderKeys : [],
+      updatedAt: state.updatedAt || '',
+      mutationId: state.mutationId || ''
     }));
     const safeGoal = Math.min(BRUSHING_MAX_DAILY_GOAL, Math.max(1, Number(state.goal || 2)));
     localStorage.setItem(BRUSHING_STORAGE_KEYS.goal, String(safeGoal));
     localStorage.setItem(BRUSHING_STORAGE_KEYS.remindersEnabled, state.remindersEnabled ? 'true' : 'false');
     localStorage.setItem(BRUSHING_STORAGE_KEYS.reminderTimes, JSON.stringify(normalizeBrushingReminderTimes(state.reminderTimes, safeGoal)));
+    localStorage.setItem(BRUSHING_STORAGE_KEYS.widgetEnabled, state.widgetEnabled === false ? 'false' : 'true');
     localStorage.setItem(BRUSHING_STORAGE_KEYS.streak, JSON.stringify({
       count: Math.max(0, Number(state.streak || 0)),
       lastCompletedDate: state.lastCompletedDate || ''
@@ -1418,6 +1433,7 @@ const GLOBAL_NOTIFICATIONS_STORAGE = 'habitflowNotificationsEnabled';
 const CREATOR_EMAIL = 'ventasdeeproots09@gmail.com';
 let cloudSaveTimer = null;
 let lastCloudSave = Promise.resolve();
+let cloudClientCache = null;
 
 const emitCloudSyncStatus = (detail) => {
   try {
@@ -1501,13 +1517,15 @@ const callCreatorNotificationsApi = async (payload) => {
 
 const getCloudClient = () => {
   if (!window.createSupabaseClient || !window.HABITFLOW_SUPABASE_URL || !window.HABITFLOW_SUPABASE_PUBLISHABLE_KEY) return null;
-  return window.createSupabaseClient(
+  if (cloudClientCache) return cloudClientCache;
+  cloudClientCache = window.createSupabaseClient(
     window.HABITFLOW_SUPABASE_URL,
     window.HABITFLOW_SUPABASE_PUBLISHABLE_KEY,
     {
       accessToken: async () => window.Clerk?.session?.getToken() ?? null
     }
   );
+  return cloudClientCache;
 };
 
 const loadCloudData = async () => {
@@ -1539,6 +1557,7 @@ const saveCloudDataNow = async (data) => {
       ...data,
       user: {
         ...data.user,
+        timezone: Intl.DateTimeFormat().resolvedOptions().timeZone || data.user?.timezone || 'America/Bogota',
         clerkUserId: userId,
         clerkEmail: identity.email || data.user?.clerkEmail || '',
         clerkName: identity.name || data.user?.clerkName || data.user?.name || 'Usuario',
@@ -1621,6 +1640,21 @@ const urlBase64ToUint8Array = (base64String) => {
   return outputArray;
 };
 
+const getHabitFlowDeviceMetadata = () => {
+  const storageKey = 'habitflow_device_id_v1';
+  let deviceId = localStorage.getItem(storageKey);
+  if (!deviceId) {
+    deviceId = widgetSyncCore?.createId?.() || `device-${Date.now()}-${Math.random().toString(36).slice(2)}`;
+    localStorage.setItem(storageKey, deviceId);
+  }
+  return {
+    deviceId,
+    deviceName: widgetSyncCore?.getDeviceName?.(navigator) || 'Navegador HabitFlow',
+    platform: widgetSyncCore?.getPlatform?.(navigator) || navigator.platform || 'Unknown',
+    timezone: Intl.DateTimeFormat().resolvedOptions().timeZone || 'America/Bogota'
+  };
+};
+
 const savePushSubscription = async (subscription) => {
   const client = getCloudClient();
   const userId = getClerkUserId();
@@ -1628,17 +1662,30 @@ const savePushSubscription = async (subscription) => {
     return { ok: false, reason: 'Para recibir avisos con la app cerrada debes iniciar sesión y tener la nube activa.' };
   }
   try {
+    const device = getHabitFlowDeviceMetadata();
+    await client
+      .from('habitflow_push_subscriptions')
+      .delete()
+      .eq('user_id', userId)
+      .eq('device_id', device.deviceId)
+      .neq('endpoint', subscription.endpoint);
     const { error } = await client
       .from('habitflow_push_subscriptions')
       .upsert({
         user_id: userId,
         endpoint: subscription.endpoint,
         subscription: subscription.toJSON(),
+        device_id: device.deviceId,
+        device_name: device.deviceName,
+        platform: device.platform,
+        timezone: device.timezone,
         user_agent: navigator.userAgent || '',
         enabled: areGlobalNotificationsEnabled(),
+        active: true,
         last_seen_at: new Date().toISOString()
       }, { onConflict: 'endpoint' });
     if (error) return { ok: false, reason: error.message };
+    localStorage.setItem('habitflow_push_registered_user', userId);
     return { ok: true };
   } catch (error) {
     return { ok: false, reason: error?.message || 'No se pudo guardar la suscripción push.' };
@@ -1652,11 +1699,22 @@ const updatePushSubscriptionsEnabled = async (enabled) => {
   try {
     const { error } = await client
       .from('habitflow_push_subscriptions')
-      .update({ enabled: !!enabled, last_seen_at: new Date().toISOString() })
+      .update({ enabled: !!enabled, active: !!enabled, last_seen_at: new Date().toISOString() })
       .eq('user_id', userId);
+    if (!error && !enabled) localStorage.removeItem('habitflow_push_registered_user');
     return error ? { ok: false, reason: error.message } : { ok: true };
   } catch (error) {
     return { ok: false, reason: error?.message || 'No se pudo actualizar la preferencia global.' };
+  }
+};
+
+const hasActiveServerPush = () => {
+  try {
+    return !!getClerkUserId()
+      && localStorage.getItem('habitflow_push_registered_user') === getClerkUserId()
+      && areGlobalNotificationsEnabled();
+  } catch {
+    return false;
   }
 };
 
@@ -12962,7 +13020,9 @@ const DashboardView = ({
           {hydration?.widgetEnabled && (
             <HydrationWidget hydration={hydration} panelMode onAdd={onAddHydration} onGoalChange={onHydrationGoalChange} onReminderChange={onHydrationReminderChange} />
           )}
-          <BrushingWidget brushing={brushing} onAdd={onAddBrushing} onUndo={onUndoBrushing} onGoalChange={onBrushingGoalChange} onReminderChange={onBrushingReminderChange} onTimesChange={onBrushingTimesChange} />
+          {brushing?.widgetEnabled !== false && (
+            <BrushingWidget brushing={brushing} onAdd={onAddBrushing} onUndo={onUndoBrushing} onGoalChange={onBrushingGoalChange} onReminderChange={onBrushingReminderChange} onTimesChange={onBrushingTimesChange} />
+          )}
         </aside>
       </div>
 
@@ -13689,7 +13749,9 @@ const HabitsView = ({
   quickAction,
   onQuickActionHandled,
   hydrationWidgetEnabled,
-  onToggleHydrationWidget
+  onToggleHydrationWidget,
+  brushingWidgetEnabled,
+  onToggleBrushingWidget
 }) => {
   const { habits } = data;
   const today = toYYYYMMDD(new Date());
@@ -13911,6 +13973,26 @@ const HabitsView = ({
             onClick={() => onToggleHydrationWidget(!hydrationWidgetEnabled)}
             aria-pressed={hydrationWidgetEnabled}
             aria-label={`${hydrationWidgetEnabled ? 'Ocultar' : 'Mostrar'} widget de hidratación`}
+          />
+        </div>
+      </section>
+
+      <section className="hydration-visibility-control" aria-label="Preferencia del widget de cepillado">
+        <div className="hydration-visibility-copy">
+          <span><ToothbrushGlyph size={18} /></span>
+          <span>
+            <strong>Widget de cepillado</strong>
+            <small>Muestra el control de higiene dental diaria en el Panel.</small>
+          </span>
+        </div>
+        <div className="hydration-visibility-action">
+          <span>{brushingWidgetEnabled ? 'Activo' : 'Oculto'}</span>
+          <button
+            type="button"
+            className={`hydration-toggle ${brushingWidgetEnabled ? 'is-active' : ''}`}
+            onClick={() => onToggleBrushingWidget(!brushingWidgetEnabled)}
+            aria-pressed={brushingWidgetEnabled}
+            aria-label={`${brushingWidgetEnabled ? 'Ocultar' : 'Mostrar'} widget de cepillado`}
           />
         </div>
       </section>
@@ -23955,6 +24037,8 @@ const VoiceAssistant = ({
 const HabitFlowApp = () => {
   const [data, setData] = useState(null);
   const [view, setView] = useState(() => {
+    const requestedView = new URLSearchParams(window.location.search).get('view');
+    if (requestedView && !['reading', 'stats', 'creator'].includes(requestedView)) return requestedView;
     const saved = localStorage.getItem('habitflow_active_view');
     if (saved === 'creator' && !hasCreatorAccess()) return 'dashboard';
     return saved && !['reading', 'stats'].includes(saved)  ? saved : 'dashboard';
@@ -23970,6 +24054,7 @@ const HabitFlowApp = () => {
   const [showUpdateNotes, setShowUpdateNotes] = useState(false);
   const [cloudSync, setCloudSync] = useState({ status: 'checking', label: 'Conectando nube', reason: '' });
   const pushAutoSyncRef = useRef(false);
+  const widgetSyncManagerRef = useRef(null);
 
   useEffect(() => { injectStyles(); }, []);
 
@@ -24313,11 +24398,71 @@ const HabitFlowApp = () => {
     saveData(newData);
   }, []);
 
+  useEffect(() => {
+    if (!widgetSyncCore?.createManager || !getClerkUserId()) return undefined;
+    const applyIncomingState = (widgetKey, incoming) => {
+      if (widgetKey === 'hydration') {
+        setHydration(current => {
+          const merged = widgetSyncCore.mergeByUpdatedAt(current, incoming);
+          if (merged === current) return current;
+          persistHydrationStorage(merged);
+          return merged;
+        });
+      }
+      if (widgetKey === 'brushing') {
+        setBrushing(current => {
+          const merged = widgetSyncCore.mergeByUpdatedAt(current, incoming);
+          if (merged === current) return current;
+          persistBrushingStorage(merged);
+          return merged;
+        });
+      }
+    };
+    const manager = widgetSyncCore.createManager({
+      getUserId: getClerkUserId,
+      getClient: getCloudClient,
+      storage: localStorage,
+      onState: applyIncomingState,
+      onStatus: status => {
+        try { window.dispatchEvent(new CustomEvent('habitflow-widget-sync', { detail: status })); } catch {}
+      }
+    });
+    widgetSyncManagerRef.current = manager;
+    manager.start({ hydration: readHydrationStorage(), brushing: readBrushingStorage() }).then(result => {
+      if (!result.ok && result.reason) {
+        setToast({ message: `Widgets en modo local: ${result.reason}`, type: 'warning' });
+      }
+    });
+    const flushPending = () => manager.flush();
+    window.addEventListener('online', flushPending);
+    window.addEventListener('focus', flushPending);
+    return () => {
+      window.removeEventListener('online', flushPending);
+      window.removeEventListener('focus', flushPending);
+      widgetSyncManagerRef.current = null;
+      manager.stop();
+    };
+  }, []);
+
   const updateHydration = useCallback((updater) => {
     setHydration(previous => {
       const current = previous.date === getHydrationDateKey() ? previous : readHydrationStorage();
-      const next = typeof updater === 'function' ? updater(current) : updater;
+      const requested = typeof updater === 'function' ? updater(current) : updater;
+      const manager = widgetSyncManagerRef.current;
+      const mutation = manager?.prepare('hydration', requested);
+      const next = mutation?.state || requested;
       persistHydrationStorage(next);
+      if (manager && mutation) {
+        Promise.resolve().then(() => manager.commitPrepared(mutation)).then(result => {
+          if (result.ok || result.queued) return;
+          setHydration(latest => {
+            if (latest.mutationId !== mutation.mutationId) return latest;
+            persistHydrationStorage(current);
+            return current;
+          });
+          setToast({ message: `No se pudo guardar Hidrataci\u00f3n: ${result.reason}`, type: 'warning' });
+        });
+      }
       return next;
     });
   }, []);
@@ -24383,8 +24528,22 @@ const HabitFlowApp = () => {
   const updateBrushing = useCallback((updater) => {
     setBrushing(previous => {
       const current = previous.date === getHydrationDateKey() ? previous : readBrushingStorage();
-      const next = typeof updater === 'function' ? updater(current) : updater;
+      const requested = typeof updater === 'function' ? updater(current) : updater;
+      const manager = widgetSyncManagerRef.current;
+      const mutation = manager?.prepare('brushing', requested);
+      const next = mutation?.state || requested;
       persistBrushingStorage(next);
+      if (manager && mutation) {
+        Promise.resolve().then(() => manager.commitPrepared(mutation)).then(result => {
+          if (result.ok || result.queued) return;
+          setBrushing(latest => {
+            if (latest.mutationId !== mutation.mutationId) return latest;
+            persistBrushingStorage(current);
+            return current;
+          });
+          setToast({ message: `No se pudo guardar Cepillado: ${result.reason}`, type: 'warning' });
+        });
+      }
       return next;
     });
   }, []);
@@ -24443,11 +24602,15 @@ const HabitFlowApp = () => {
     updateBrushing(previous => ({ ...previous, remindersEnabled: !!enabled }));
   }, [updateBrushing]);
 
+  const setBrushingWidgetEnabled = useCallback((enabled) => {
+    updateBrushing(previous => ({ ...previous, widgetEnabled: !!enabled }));
+  }, [updateBrushing]);
+
   useEffect(() => {
     const checkDate = () => {
       const todayKey = getHydrationDateKey();
-      if (hydration.date !== todayKey) setHydration(readHydrationStorage());
-      if (brushing.date !== todayKey) setBrushing(readBrushingStorage());
+      if (hydration.date !== todayKey) updateHydration(() => readHydrationStorage());
+      if (brushing.date !== todayKey) updateBrushing(() => readBrushingStorage());
     };
     const timer = setInterval(checkDate, 60000);
     window.addEventListener('focus', checkDate);
@@ -24457,11 +24620,12 @@ const HabitFlowApp = () => {
       window.removeEventListener('focus', checkDate);
       document.removeEventListener('visibilitychange', checkDate);
     };
-  }, [hydration.date, brushing.date]);
+  }, [hydration.date, brushing.date, updateHydration, updateBrushing]);
 
   useEffect(() => {
     if (!hydration.remindersEnabled || hydration.amount >= hydration.goal) return undefined;
     if (data?.user?.notificationsEnabled === false) return undefined;
+    if (hasActiveServerPush()) return undefined;
     const checkReminder = () => {
       if (getNotificationPermissionState() !== 'granted') return;
       const twoHours = 2 * 60 * 60 * 1000;
@@ -24491,6 +24655,7 @@ const HabitFlowApp = () => {
   useEffect(() => {
     if (!brushing.remindersEnabled || brushing.count >= brushing.goal) return undefined;
     if (data?.user?.notificationsEnabled === false) return undefined;
+    if (hasActiveServerPush()) return undefined;
     const checkReminder = () => {
       if (getNotificationPermissionState() !== 'granted') return;
       const now = new Date();
@@ -25195,7 +25360,7 @@ const HabitFlowApp = () => {
   const renderView = () => {
     switch (view) {
       case 'dashboard': return <DashboardView data={data} onCompleteHabit={onCompleteHabit} workoutData={data.workoutData} onNavigate={navigateTo} onQuickAction={runDashboardQuickAction} onUpdateUser={onUpdateUser} onUpdateAgenda={onUpdateAgenda} onUpdateFinance={onUpdateFinance} onAddHabit={onAddHabit} hydration={hydration} onAddHydration={addHydration} onHydrationGoalChange={changeHydrationGoal} onHydrationReminderChange={changeHydrationReminder} brushing={brushing} onAddBrushing={addBrushing} onUndoBrushing={undoBrushing} onBrushingGoalChange={changeBrushingGoal} onBrushingReminderChange={changeBrushingReminder} onBrushingTimesChange={changeBrushingTimes} />;
-      case 'habits': return <HabitsView data={data} onAddHabit={onAddHabit} onUpdateHabit={onUpdateHabit} onDeleteHabit={onDeleteHabit} onToggleHabit={onToggleHabit} onCompleteHabit={onCompleteHabit} onUpdateRecord={onUpdateRecord} onCreateHabitCategory={onCreateHabitCategory} records={data.records} quickAction={pendingQuickAction} onQuickActionHandled={markQuickActionHandled} hydrationWidgetEnabled={hydration.widgetEnabled} onToggleHydrationWidget={setHydrationWidgetEnabled} />;
+      case 'habits': return <HabitsView data={data} onAddHabit={onAddHabit} onUpdateHabit={onUpdateHabit} onDeleteHabit={onDeleteHabit} onToggleHabit={onToggleHabit} onCompleteHabit={onCompleteHabit} onUpdateRecord={onUpdateRecord} onCreateHabitCategory={onCreateHabitCategory} records={data.records} quickAction={pendingQuickAction} onQuickActionHandled={markQuickActionHandled} hydrationWidgetEnabled={hydration.widgetEnabled} onToggleHydrationWidget={setHydrationWidgetEnabled} brushingWidgetEnabled={brushing.widgetEnabled} onToggleBrushingWidget={setBrushingWidgetEnabled} />;
       case 'pomodoro': return <PomodoroView data={data} onUpdateUser={onUpdateUser} onUpdatePomodoro={onUpdatePomodoro} quickAction={pendingQuickAction} onQuickActionHandled={markQuickActionHandled} />;
       case 'workout': return <WorkoutView data={data} onUpdateData={onUpdateWorkout} onCompleteHabit={onCompleteHabit} awardXp={(prev, amt) => awardXp(prev, amt)} />;
       case 'agenda': return <AgendaView data={data} onUpdateAgenda={onUpdateAgenda} onUpdateAgendaNote={onUpdateAgendaNote} onUpdateAgendaTodos={onUpdateAgendaTodos} onUpdateAgendaTodoLabels={onUpdateAgendaTodoLabels} onUpdateAgendaTaskCategories={onUpdateAgendaTaskCategories} onMoveTaskToDate={onMoveTaskToDate} onCompleteHabit={onCompleteHabit} quickAction={pendingQuickAction} onQuickActionHandled={markQuickActionHandled} />;
