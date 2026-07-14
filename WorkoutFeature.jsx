@@ -14,7 +14,7 @@
     Activity, AlarmClock, ArrowDown, ArrowUp, BarChart3, Bookmark, BookOpen,
     Calendar, Check, ChevronDown, ChevronLeft, ChevronRight, Clock, Dumbbell,
     Edit, GripVertical, Heart, List, ListChecks, MoreHorizontal, Pause, Pencil,
-    Play, Plus, RefreshCw, Repeat, Save, Search, Settings, StopCircle, Timer,
+    Play, Plus, Repeat, Save, Search, Settings, StopCircle, Timer,
     Trash2, TrendingUp, Trophy, X, Zap
   } = icons;
   const ArrowLeft = icons.ArrowLeft || ChevronLeft;
@@ -183,7 +183,7 @@
       html[data-theme-mode='pinkLight'] .wr-root{--wr-red:#d96b7d;--wr-red-hover:#c95a70}.wr-root img{color:transparent}
       @media (max-width:1180px){.wr-summary-top,.wr-bottom-grid{grid-template-columns:1fr}.wr-library-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.wr-builder-layout,.wr-session-layout{grid-template-columns:1fr}.wr-builder-side{position:static}.wr-routines-grid{grid-template-columns:1fr 1fr}.wr-builder-row{grid-template-columns:28px minmax(150px,.8fr) minmax(360px,1.5fr) 112px}.wr-detail-grid{grid-template-columns:minmax(300px,.8fr) 1.2fr}.wr-session-side{min-height:460px}}
       @media (max-width:900px){.wr-header{align-items:flex-start}.wr-header-actions{justify-content:flex-end}.wr-routine-grid{grid-template-columns:1fr}.wr-library-grid{grid-template-columns:1fr 1fr}.wr-detail-grid{grid-template-columns:1fr}.wr-detail-media{min-height:430px}.wr-detail-info{padding:22px}.wr-current-grid{grid-template-columns:1fr}.wr-progress-grid{grid-template-columns:1fr 1fr}.wr-chart-grid{grid-template-columns:1fr}.wr-session-bar{grid-template-columns:1fr auto}.wr-session-bar>.wr-progress{grid-column:1/-1}.wr-toolbar{grid-template-columns:1fr 1fr}.wr-toolbar .wr-search{grid-column:1/-1}.wr-history-head{grid-template-columns:1fr 90px 90px auto}.wr-history-head .wr-hide-tablet{display:none}.wr-builder-row{grid-template-columns:28px minmax(0,1fr) 108px}.wr-builder-fields{grid-column:2/-1;grid-template-columns:repeat(4,minmax(76px,1fr))}.wr-picker-toolbar{grid-template-columns:1fr 1fr}.wr-picker-toolbar .wr-search{grid-column:1/-1}.wr-picker-list{grid-template-columns:1fr}}
-      @media (max-width:680px){.wr-root{width:100%;overflow:hidden}.wr-header{display:block;margin-bottom:14px}.wr-title{font-size:32px}.wr-subtitle{font-size:13px;line-height:1.5}.wr-header-actions{margin-top:14px;justify-content:flex-start}.wr-header-actions .wr-btn{flex:1}.wr-tabs{margin-inline:-2px}.wr-tab{min-width:98px;padding-inline:13px}.wr-summary-top{gap:13px}.wr-hero{min-height:300px;padding:20px}.wr-hero-content{max-width:100%}.wr-hero:after{opacity:.22;right:-20px}.wr-hero h2{font-size:25px}.wr-type-badge{position:static;width:max-content;margin-bottom:12px}.wr-metrics{grid-template-columns:1fr}.wr-metric,.wr-metric:nth-child(2n){border-right:0}.wr-metric:nth-last-child(-n+2){border-bottom:1px solid var(--hf-card-border)}.wr-metric:last-child{border-bottom:0}.wr-week-days{gap:4px;padding-inline:6px}.wr-section{padding:15px}.wr-bottom-grid{grid-template-columns:1fr}.wr-dataset-stats{grid-template-columns:1fr}.wr-dataset-stat{border-right:0;border-bottom:1px solid var(--hf-card-border)}.wr-dataset-stat:last-child{border-bottom:0}.wr-toolbar{grid-template-columns:1fr}.wr-toolbar .wr-search{grid-column:auto}.wr-library-grid,.wr-routines-grid{grid-template-columns:1fr}.wr-ex-media{height:190px}.wr-pagination{align-items:flex-start}.wr-pages{order:3;width:100%;justify-content:center}.wr-detail-head{align-items:flex-start}.wr-detail-head .wr-inline-actions{justify-content:flex-end}.wr-detail-media{min-height:360px}.wr-detail-info{padding:18px}.wr-detail-info h1{font-size:25px}.wr-info-grid,.wr-guidance,.wr-detail-actions{grid-template-columns:1fr}.wr-builder-head{align-items:flex-start}.wr-builder-heading{gap:7px}.wr-builder-heading .wr-title{font-size:25px}.wr-builder-head .wr-btn{min-width:44px;padding-inline:12px}.wr-builder-head .wr-sync-label{display:none}.wr-builder-main,.wr-builder-side{padding:15px}.wr-builder-row{grid-template-columns:28px minmax(0,1fr);padding:10px;gap:9px}.wr-builder-ex{grid-template-columns:44px minmax(0,1fr)}.wr-builder-fields{grid-column:1/-1;grid-template-columns:1fr 1fr}.wr-notes-field{grid-column:1/-1}.wr-row-menu{grid-column:1/-1;justify-content:flex-end;padding-top:3px}.wr-row-action{width:44px;height:44px}.wr-remove-confirm{justify-content:flex-start;flex-wrap:wrap}.wr-side-metrics{grid-template-columns:1fr 1fr}.wr-save-wrap{position:sticky;bottom:0;margin:18px -15px -15px;padding:12px 15px;background:var(--hf-surface-strong);border-top:1px solid var(--hf-card-border);z-index:2}.wr-picker-toolbar{grid-template-columns:1fr}.wr-picker-toolbar .wr-search{grid-column:auto}.wr-picker-footer{align-items:stretch;flex-direction:column}.wr-picker-footer .wr-btn{width:100%}.wr-session-bar{grid-template-columns:1fr}.wr-session-bar>.wr-inline-actions{justify-content:stretch}.wr-session-bar>.wr-inline-actions .wr-btn{flex:1}.wr-current{padding:15px}.wr-current-media{min-height:240px}.wr-set-head{grid-template-columns:38px 1fr 1fr minmax(48px,auto);gap:7px;padding-inline:8px;font-size:8px}.wr-set-head span:nth-child(2){font-size:0}.wr-set-head span:nth-child(2):after{content:'Reps';font-size:8px}.wr-set-head span:nth-child(3){font-size:0}.wr-set-head span:nth-child(3):after{content:'Peso (kg)';font-size:8px}.wr-set-row{grid-template-columns:38px 1fr 1fr minmax(48px,auto);gap:7px;padding-inline:8px}.wr-set-row input{font-size:16px}.wr-session-side{padding:15px;min-height:420px}.wr-progress-grid{grid-template-columns:1fr 1fr}.wr-history-head{grid-template-columns:1fr auto}.wr-history-head .wr-hide-mobile{display:none}.wr-info-box strong{font-size:13px}.wr-input,.wr-select,.wr-textarea{font-size:16px}.wr-toast{right:12px;bottom:78px;max-width:calc(100vw - 24px)}}
+      @media (max-width:680px){.wr-root{width:100%;overflow:hidden}.wr-header{display:block;margin-bottom:14px}.wr-title{font-size:32px}.wr-subtitle{font-size:13px;line-height:1.5}.wr-header-actions{margin-top:14px;justify-content:flex-start}.wr-header-actions .wr-btn{flex:1}.wr-tabs{margin-inline:-2px}.wr-tab{min-width:98px;padding-inline:13px}.wr-summary-top{gap:13px}.wr-hero{min-height:300px;padding:20px}.wr-hero-content{max-width:100%}.wr-hero:after{opacity:.22;right:-20px}.wr-hero h2{font-size:25px}.wr-type-badge{position:static;width:max-content;margin-bottom:12px}.wr-metrics{grid-template-columns:1fr}.wr-metric,.wr-metric:nth-child(2n){border-right:0}.wr-metric:nth-last-child(-n+2){border-bottom:1px solid var(--hf-card-border)}.wr-metric:last-child{border-bottom:0}.wr-week-days{gap:4px;padding-inline:6px}.wr-section{padding:15px}.wr-bottom-grid{grid-template-columns:1fr}.wr-dataset-stats{grid-template-columns:1fr}.wr-dataset-stat{border-right:0;border-bottom:1px solid var(--hf-card-border)}.wr-dataset-stat:last-child{border-bottom:0}.wr-toolbar{grid-template-columns:1fr}.wr-toolbar .wr-search{grid-column:auto}.wr-library-grid,.wr-routines-grid{grid-template-columns:1fr}.wr-ex-media{height:190px}.wr-pagination{align-items:flex-start}.wr-pages{order:3;width:100%;justify-content:center}.wr-detail-head{align-items:flex-start}.wr-detail-head .wr-inline-actions{justify-content:flex-end}.wr-detail-media{min-height:360px}.wr-detail-info{padding:18px}.wr-detail-info h1{font-size:25px}.wr-info-grid,.wr-guidance,.wr-detail-actions{grid-template-columns:1fr}.wr-builder-head{align-items:flex-start}.wr-builder-heading{gap:7px}.wr-builder-heading .wr-title{font-size:25px}.wr-builder-head .wr-btn{min-width:44px;padding-inline:12px}.wr-builder-main,.wr-builder-side{padding:15px}.wr-builder-row{grid-template-columns:28px minmax(0,1fr);padding:10px;gap:9px}.wr-builder-ex{grid-template-columns:44px minmax(0,1fr)}.wr-builder-fields{grid-column:1/-1;grid-template-columns:1fr 1fr}.wr-notes-field{grid-column:1/-1}.wr-row-menu{grid-column:1/-1;justify-content:flex-end;padding-top:3px}.wr-row-action{width:44px;height:44px}.wr-remove-confirm{justify-content:flex-start;flex-wrap:wrap}.wr-side-metrics{grid-template-columns:1fr 1fr}.wr-save-wrap{position:sticky;bottom:0;margin:18px -15px -15px;padding:12px 15px;background:var(--hf-surface-strong);border-top:1px solid var(--hf-card-border);z-index:2}.wr-picker-toolbar{grid-template-columns:1fr}.wr-picker-toolbar .wr-search{grid-column:auto}.wr-picker-footer{align-items:stretch;flex-direction:column}.wr-picker-footer .wr-btn{width:100%}.wr-session-bar{grid-template-columns:1fr}.wr-session-bar>.wr-inline-actions{justify-content:stretch}.wr-session-bar>.wr-inline-actions .wr-btn{flex:1}.wr-current{padding:15px}.wr-current-media{min-height:240px}.wr-set-head{grid-template-columns:38px 1fr 1fr minmax(48px,auto);gap:7px;padding-inline:8px;font-size:8px}.wr-set-head span:nth-child(2){font-size:0}.wr-set-head span:nth-child(2):after{content:'Reps';font-size:8px}.wr-set-head span:nth-child(3){font-size:0}.wr-set-head span:nth-child(3):after{content:'Peso (kg)';font-size:8px}.wr-set-row{grid-template-columns:38px 1fr 1fr minmax(48px,auto);gap:7px;padding-inline:8px}.wr-set-row input{font-size:16px}.wr-session-side{padding:15px;min-height:420px}.wr-progress-grid{grid-template-columns:1fr 1fr}.wr-history-head{grid-template-columns:1fr auto}.wr-history-head .wr-hide-mobile{display:none}.wr-info-box strong{font-size:13px}.wr-input,.wr-select,.wr-textarea{font-size:16px}.wr-toast{right:12px;bottom:78px;max-width:calc(100vw - 24px)}}
       @media (max-width:390px){.wr-progress-grid{grid-template-columns:1fr}.wr-header-actions{display:grid;grid-template-columns:1fr 1fr}.wr-detail-head{display:block}.wr-detail-head .wr-inline-actions{margin-top:10px;justify-content:flex-start}.wr-current-stats strong,.wr-current-weight{font-size:22px}.wr-days{gap:3px}.wr-day-toggle{height:38px}}
       @media (prefers-reduced-motion:reduce){.wr-root,.wr-skeleton{animation:none!important}.wr-root *{scroll-behavior:auto!important;transition:none!important}}
     `;
@@ -204,7 +204,7 @@
     <div className="wr-empty"><div><Icon size={31} /><h3>{title}</h3><p>{text}</p>{action && <button className="wr-btn wr-btn-primary" onClick={action}><Plus size={15} />{actionLabel}</button>}</div></div>
   );
 
-  const WorkoutHeader = ({ screen, onNavigate, onNew, onSync, syncing }) => {
+  const WorkoutHeader = ({ screen, onNavigate, onNew }) => {
     const detailTitles = {
       library: ['Biblioteca de ejercicios', 'Ejercicios reales con animaciones, filtros y guías en español.'],
       routines: ['Rutinas', 'Crea, programa y ejecuta planes sincronizados entre tus dispositivos.'],
@@ -218,7 +218,6 @@
       <header className="wr-header">
         <div><h1 className="wr-title">{title}</h1><p className="wr-subtitle">{subtitle}</p></div>
         <div className="wr-header-actions">
-          <button className="wr-btn" onClick={onSync} disabled={syncing}><RefreshCw size={15} className={syncing ? 'spin' : ''} />{syncing ? 'Sincronizando' : 'Sincronizar'}</button>
           <button className="wr-btn wr-btn-primary" onClick={onNew}><Plus size={16} />Nuevo</button>
         </div>
       </header>
@@ -426,7 +425,7 @@
     </section></div>;
   };
 
-  const RoutineBuilder = ({ catalog, routine, prefillExerciseId, onSave, onCancel, onSync, syncing }) => {
+  const RoutineBuilder = ({ catalog, routine, prefillExerciseId, onSave, onCancel }) => {
     const [name, setName] = useState(routine?.name || '');
     const [description, setDescription] = useState(routine?.description || '');
     const [scheduledDays, setScheduledDays] = useState(routine?.scheduledDays || []);
@@ -493,7 +492,7 @@
       finally { setSaving(false); }
     };
     return <>
-      <header className="wr-builder-head"><div className="wr-builder-heading"><button className="wr-btn wr-icon-btn wr-btn-quiet" onClick={onCancel} aria-label="Volver a rutinas" title="Volver a rutinas"><ArrowLeft size={18} /></button><div><h1 className="wr-title">Constructor de rutinas</h1><p className="wr-subtitle">Organiza ejercicios, series, carga y descansos.</p></div></div><button className="wr-btn" onClick={onSync} disabled={syncing} title="Sincronizar rutinas y cambios entre dispositivos" aria-label="Sincronizar rutinas y cambios entre dispositivos"><RefreshCw size={15} className={syncing ? 'spin' : ''} /><span className="wr-sync-label">{syncing ? 'Sincronizando' : 'Sincronizar'}</span></button></header>
+      <header className="wr-builder-head"><div className="wr-builder-heading"><button className="wr-btn wr-icon-btn wr-btn-quiet" onClick={onCancel} aria-label="Volver a rutinas" title="Volver a rutinas"><ArrowLeft size={18} /></button><div><h1 className="wr-title">Constructor de rutinas</h1><p className="wr-subtitle">Organiza ejercicios, series, carga y descansos.</p></div></div></header>
       <div className="wr-builder-layout">
         <section className="wr-card wr-builder-main"><div className="wr-builder-form"><label className="wr-form-label" htmlFor="routine-name">Nombre de la rutina *</label><input id="routine-name" className="wr-input wr-builder-name" value={name} onChange={e => { setName(e.target.value); setError(''); }} placeholder="Ej. Torso · Fuerza" aria-invalid={!name.trim()} aria-describedby={!name.trim() ? 'routine-name-error' : undefined} />{!name.trim() && <div className="wr-field-error" id="routine-name-error">Escribe un nombre para la rutina.</div>}<label className="wr-form-label" htmlFor="routine-description" style={{ marginTop: 5 }}>Descripción <span style={{ fontWeight: 500 }}>(opcional)</span></label><textarea id="routine-description" className="wr-textarea" style={{ minHeight: 70 }} value={description} onChange={e => setDescription(e.target.value)} placeholder="Objetivo, enfoque o indicaciones generales" /></div>
           <div className="wr-section-head" style={{ marginTop: 18 }}><div><h2 className="wr-card-title">Ejercicios</h2><div className="wr-meta">Arrastra para reordenar o usa los controles accesibles.</div></div><button className="wr-btn" onClick={() => setShowPicker(true)}><Plus size={14} />Añadir ejercicio</button></div>
@@ -622,7 +621,7 @@
     return <div className="wr-overlay"><section className="wr-card wr-modal" style={{ maxWidth: 560 }} role="dialog" aria-modal="true"><div className="wr-section-head"><h2 className="wr-card-title">Ejercicio personalizado</h2><button className="wr-btn wr-icon-btn" onClick={onClose}><X size={16} /></button></div><div style={{ display: 'grid', gap: 10 }}><input className="wr-input" value={form.name} onChange={e => setForm(current => ({ ...current, name: e.target.value }))} placeholder="Nombre" autoFocus /><input className="wr-input" value={form.muscle_group} onChange={e => setForm(current => ({ ...current, muscle_group: e.target.value, target: e.target.value }))} placeholder="Grupo muscular" /><input className="wr-input" value={form.equipment} onChange={e => setForm(current => ({ ...current, equipment: e.target.value }))} placeholder="Equipo" /><button className="wr-btn wr-btn-primary" onClick={submit}><Save size={15} />Guardar ejercicio</button>{error && <div className="wr-validation">{error}</div>}</div></section></div>;
   };
 
-  const HabitFlowWorkoutRedesign = ({ data, onUpdateData, onCompleteHabit, awardXp, onSync }) => {
+  const HabitFlowWorkoutRedesign = ({ data, onUpdateData, onCompleteHabit, awardXp }) => {
     ensureWorkoutStyles();
     const initialRoute = useMemo(getRoute, []);
     const [screen, setScreen] = useState(initialRoute.screen);
@@ -636,7 +635,6 @@
     const [detailLoading, setDetailLoading] = useState(false);
     const [detailError, setDetailError] = useState('');
     const [toast, setToast] = useState(null);
-    const [syncing, setSyncing] = useState(false);
     const [showCustom, setShowCustom] = useState(false);
     const workoutData = data.workoutData || {};
     const catalogWithCustom = useMemo(() => [...catalog, ...(workoutData.customExercises || [])], [catalog, workoutData.customExercises]);
@@ -692,13 +690,6 @@
       if (workoutData.activeSession && workoutData.activeSession.status !== 'completed' && getRoute().screen === 'active') setScreen('active');
     }, []);
 
-    const syncNow = async () => {
-      if (!onSync || syncing) return;
-      setSyncing(true);
-      try { const result = await onSync(); setToast({ type: result?.ok === false ? 'error' : 'success', message: result?.message || (result?.ok === false ? 'No se pudo sincronizar Entreno.' : 'Entreno sincronizado con tu cuenta.') }); }
-      catch (error) { setToast({ type: 'error', message: error.message || 'No se pudo sincronizar.' }); }
-      finally { setSyncing(false); }
-    };
     const openBuilder = async (routine = null, exerciseId = '') => {
       try { await ensureCatalog(); } catch { return; }
       setPrefillExerciseId(String(exerciseId || ''));
@@ -755,13 +746,13 @@
     else if (screen === 'library') content = <LibraryView catalog={catalog} catalogLoading={catalogLoading} catalogError={catalogError} workoutData={workoutData} onToggleFavorite={toggleFavorite} onOpenDetail={id => navigate('detail', { exerciseId: String(id) })} onCustomExercise={() => setShowCustom(true)} />;
     else if (screen === 'detail') content = <DetailView exercise={detail} loading={detailLoading} error={detailError} isFavorite={(workoutData.favorites || []).includes(String(selectedExerciseId))} onBack={() => navigate('library')} onToggleFavorite={() => toggleFavorite(selectedExerciseId)} onAddToRoutine={() => openBuilder(null, selectedExerciseId)} onStartNow={() => detail && startSingle(detail)} />;
     else if (screen === 'routines') content = <RoutinesView workoutData={workoutData} onNew={() => openBuilder()} onEdit={routine => openBuilder(routine)} onStart={startRoutine} onDuplicate={duplicateRoutine} onDelete={deleteRoutine} />;
-    else if (screen === 'builder') content = <RoutineBuilder catalog={catalogWithCustom} routine={currentRoutine} prefillExerciseId={prefillExerciseId} onSave={saveRoutine} onCancel={() => navigate('routines')} onSync={syncNow} syncing={syncing} />;
+    else if (screen === 'builder') content = <RoutineBuilder catalog={catalogWithCustom} routine={currentRoutine} prefillExerciseId={prefillExerciseId} onSave={saveRoutine} onCancel={() => navigate('routines')} />;
     else if (screen === 'active') content = <ActiveWorkout session={workoutData.activeSession} onChange={session => mutate(current => ({ ...current, activeSession: session }))} onFinish={finishSession} onExit={() => navigate('history')} />;
     else if (screen === 'progress') content = <ProgressView workoutData={workoutData} />;
     else content = <HistoryView workoutData={workoutData} />;
 
     return <div className={`wr-root ${screen === 'active' ? 'wr-session' : ''}`}>
-      {!['detail', 'builder'].includes(screen) && <WorkoutHeader screen={screen} onNavigate={navigate} onNew={onNew} onSync={syncNow} syncing={syncing} />}
+      {!['detail', 'builder'].includes(screen) && <WorkoutHeader screen={screen} onNavigate={navigate} onNew={onNew} />}
       {workoutData.activeSession && screen !== 'active' && <button className="wr-card wr-card-pad" style={{ width: '100%', marginBottom: 16, display: 'flex', alignItems: 'center', justifyContent: 'space-between', color: 'inherit', textAlign: 'left' }} onClick={() => navigate('active')}><span><strong>Sesión en curso</strong><span className="wr-meta" style={{ display: 'block' }}>{workoutData.activeSession.routineName} · toca para continuar</span></span><ChevronRight size={18} color="var(--wr-red)" /></button>}
       {content}
       {showCustom && <CustomExerciseModal onSave={saveCustomExercise} onClose={() => setShowCustom(false)} />}

@@ -49,7 +49,8 @@ for (const screen of ['summary', 'routines', 'library', 'detail', 'builder', 'ac
   assert(feature.includes(`'${screen}'`), `Falta la vista ${screen}`);
 }
 assert(app.includes("channel(`habitflow-workout-${userId}`)"), 'Falta la suscripción Realtime de Entreno');
-assert(app.includes('onSync={syncWorkoutNow}'), 'Falta la sincronización manual de Entreno');
+assert(app.includes('reconcileWorkoutAutomatically') && app.includes("window.addEventListener('online', reconcile)") && app.includes("window.addEventListener('focus', reconcile)"), 'Falta la reconciliación automática de Entreno');
+assert(!feature.includes('>Sincronizar<') && !feature.includes('syncNow') && !feature.includes('onSync'), 'Entreno todavía muestra controles manuales de sincronización');
 assert(!feature.includes('01_dashboard_entreno.png') && !feature.includes('02_biblioteca_ejercicios.png'), 'Las referencias visuales no deben incrustarse');
 
 console.log('Entreno redesign tests ok');
