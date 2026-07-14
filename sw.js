@@ -1,4 +1,4 @@
-const CACHE_VERSION = 'habitflow-pwa-v2026-07-14-entreno-a';
+const CACHE_VERSION = 'habitflow-pwa-v2026-07-14-entreno-es-media-b';
 const APP_SHELL = [
   './',
   './index.html',

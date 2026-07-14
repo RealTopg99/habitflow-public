@@ -2,6 +2,7 @@
   const BASE = './public/exercises-dataset';
   let catalogPromise = null;
   let metaPromise = null;
+  let translationsPromise = null;
   const details = new Map();
 
   const fetchJson = async (path, signal) => {
@@ -10,9 +11,27 @@
     return response.json();
   };
 
+  const loadTranslations = () => {
+    if (!translationsPromise) {
+      translationsPromise = fetchJson(`${BASE}/data/translations.es.json`)
+        .then(payload => payload?.translations || {})
+        .catch(() => ({}));
+    }
+    return translationsPromise;
+  };
+
+  const localizeExercise = (item, translations) => {
+    if (!item) return item;
+    const spanishName = translations?.[String(item.id)];
+    return spanishName ? { ...item, name_en: item.name, name: spanishName } : item;
+  };
+
   const loadCatalog = () => {
     if (!catalogPromise) {
-      catalogPromise = fetchJson(`${BASE}/data/catalog.json`).catch(error => {
+      catalogPromise = Promise.all([
+        fetchJson(`${BASE}/data/catalog.json`),
+        loadTranslations()
+      ]).then(([items, translations]) => items.map(item => localizeExercise(item, translations))).catch(error => {
         catalogPromise = null;
         throw error;
       });
@@ -34,7 +53,11 @@
     const key = String(id || '');
     if (!key) throw new Error('El ejercicio solicitado no tiene identificador.');
     if (details.has(key)) return details.get(key);
-    const item = await fetchJson(`${BASE}/data/details/${encodeURIComponent(key)}.json`, signal);
+    const [rawItem, translations] = await Promise.all([
+      fetchJson(`${BASE}/data/details/${encodeURIComponent(key)}.json`, signal),
+      loadTranslations()
+    ]);
+    const item = localizeExercise(rawItem, translations);
     details.set(key, item);
     return item;
   };
@@ -54,6 +77,7 @@
 
   const searchableText = (item) => normalizeSearch([
     item?.name,
+    item?.name_en,
     item?.category,
     item?.body_part,
     item?.equipment,

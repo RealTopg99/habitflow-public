@@ -30,6 +30,8 @@ const readJson = (path) => JSON.parse(readFileSync(path, 'utf8'));
 const writeJson = (path, value) => writeFileSync(path, `${JSON.stringify(value)}\n`, 'utf8');
 
 const buildOutput = () => {
+  const translationsPath = join(OUTPUT_DIR, 'data', 'translations.es.json');
+  const existingTranslations = existsSync(translationsPath) ? readFileSync(translationsPath, 'utf8') : null;
   const records = readJson(join(SOURCE_DIR, 'data', 'exercises.json'));
   if (!Array.isArray(records) || records.length < 1000) {
     throw new Error(`Catálogo inválido: se esperaban al menos 1.000 ejercicios y llegaron ${records?.length || 0}.`);
@@ -81,6 +83,7 @@ const buildOutput = () => {
 
   writeJson(join(OUTPUT_DIR, 'data', 'catalog.json'), catalog);
   writeJson(join(OUTPUT_DIR, 'data', 'meta.json'), meta);
+  if (existingTranslations) writeFileSync(translationsPath, existingTranslations, 'utf8');
   cpSync(join(SOURCE_DIR, 'data', 'exercises.json'), join(OUTPUT_DIR, 'data', 'exercises.json'));
   cpSync(join(SOURCE_DIR, 'data', 'exercises.schema.json'), join(OUTPUT_DIR, 'data', 'exercises.schema.json'));
   cpSync(join(SOURCE_DIR, 'images'), join(OUTPUT_DIR, 'images'), { recursive: true, force: true });
