@@ -19849,10 +19849,10 @@ const PomodoroView = ({ data, onUpdateUser, onUpdatePomodoro, quickAction, onQui
 };
 
 // SECTION: Workout routines, gym mode, calendar and progress.
-const WorkoutView = ({ data, onUpdateData, onCompleteHabit, awardXp, onSync }) => {
+const WorkoutView = ({ data, onUpdateData, onCompleteHabit, awardXp }) => {
   const WorkoutRedesign = window.HabitFlowWorkoutRedesign;
   if (!WorkoutRedesign) return <EmptyState icon={<Dumbbell size={28} />} title="Entreno no disponible" subtitle="Recarga la página para volver a cargar el módulo." compact />;
-  return <WorkoutRedesign data={data} onUpdateData={onUpdateData} onCompleteHabit={onCompleteHabit} awardXp={awardXp} onSync={onSync} />;
+  return <WorkoutRedesign data={data} onUpdateData={onUpdateData} onCompleteHabit={onCompleteHabit} awardXp={awardXp} />;
 };
 
 const WorkoutTrainTab = ({ workoutData, onUpdateData, setGymMode, awardXp, onCompleteHabit }) => {
@@ -25157,30 +25157,56 @@ const HabitFlowApp = () => {
     });
   }, []);
 
-  const syncWorkoutNow = useCallback(async () => {
+  const reconcileWorkoutAutomatically = useCallback(async () => {
     const cloud = await loadCloudData();
-    if (!cloud.ok) return { ok: false, message: cloud.reason || 'No se pudo conectar con Supabase.' };
+    if (!cloud.ok) {
+      setCloudSync({ status: 'local', label: 'Guardado local', reason: cloud.reason || 'No se pudo conectar con Supabase.' });
+      return { ok: false };
+    }
     if (!cloud.data?.workoutData) {
       const saved = await saveCloudDataNow(data);
-      return saved.ok
-        ? { ok: true, message: 'Tus datos de Entreno se guardaron en la nube.' }
-        : { ok: false, message: saved.reason || 'No se pudo guardar Entreno.' };
+      setCloudSync(saved.ok
+        ? { status: 'active', label: 'Nube activa', reason: 'Entreno sincronizado automáticamente.' }
+        : { status: 'local', label: 'Guardado local', reason: saved.reason || 'No se pudo guardar Entreno.' });
+      return { ok: saved.ok };
     }
     const localTime = Date.parse(data?.workoutData?.updatedAt || 0) || 0;
     const remoteTime = Date.parse(cloud.data.workoutData.updatedAt || cloud.updatedAt || 0) || 0;
     if (localTime > remoteTime) {
       const saved = await saveCloudDataNow(data);
-      return saved.ok
-        ? { ok: true, message: 'La versión más reciente de Entreno se envió a tus dispositivos.' }
-        : { ok: false, message: saved.reason || 'No se pudo guardar Entreno.' };
+      setCloudSync(saved.ok
+        ? { status: 'active', label: 'Nube activa', reason: 'Entreno sincronizado automáticamente.' }
+        : { status: 'local', label: 'Guardado local', reason: saved.reason || 'No se pudo guardar Entreno.' });
+      return { ok: saved.ok };
     }
-    setData(previous => {
-      const next = { ...previous, workoutData: cloud.data.workoutData };
-      saveLocalData(next);
-      return next;
-    });
-    return { ok: true, message: 'Entreno actualizado desde Supabase.' };
+    if (remoteTime > localTime) {
+      setData(previous => {
+        const next = { ...previous, workoutData: cloud.data.workoutData };
+        saveLocalData(next);
+        return next;
+      });
+    }
+    setCloudSync({ status: 'active', label: 'Nube activa', reason: 'Entreno sincronizado automáticamente.' });
+    return { ok: true };
   }, [data]);
+
+  useEffect(() => {
+    let running = false;
+    const reconcile = async () => {
+      if (running || !getClerkUserId()) return;
+      running = true;
+      try { await reconcileWorkoutAutomatically(); } finally { running = false; }
+    };
+    const onVisible = () => { if (document.visibilityState === 'visible') reconcile(); };
+    window.addEventListener('online', reconcile);
+    window.addEventListener('focus', reconcile);
+    document.addEventListener('visibilitychange', onVisible);
+    return () => {
+      window.removeEventListener('online', reconcile);
+      window.removeEventListener('focus', reconcile);
+      document.removeEventListener('visibilitychange', onVisible);
+    };
+  }, [reconcileWorkoutAutomatically]);
 
   const onUpdateFinance = useCallback((updater) => {
     setData(prev => {
@@ -25634,7 +25660,7 @@ const HabitFlowApp = () => {
       case 'dashboard': return <DashboardView data={data} onCompleteHabit={onCompleteHabit} workoutData={data.workoutData} onNavigate={navigateTo} onQuickAction={runDashboardQuickAction} onUpdateUser={onUpdateUser} onUpdateAgenda={onUpdateAgenda} onUpdateFinance={onUpdateFinance} onAddHabit={onAddHabit} hydration={hydration} onAddHydration={addHydration} onHydrationGoalChange={changeHydrationGoal} onHydrationReminderChange={changeHydrationReminder} brushing={brushing} onAddBrushing={addBrushing} onUndoBrushing={undoBrushing} onBrushingGoalChange={changeBrushingGoal} onBrushingReminderChange={changeBrushingReminder} onBrushingTimesChange={changeBrushingTimes} />;
       case 'habits': return <HabitsView data={data} onAddHabit={onAddHabit} onUpdateHabit={onUpdateHabit} onDeleteHabit={onDeleteHabit} onToggleHabit={onToggleHabit} onCompleteHabit={onCompleteHabit} onUpdateRecord={onUpdateRecord} onCreateHabitCategory={onCreateHabitCategory} records={data.records} quickAction={pendingQuickAction} onQuickActionHandled={markQuickActionHandled} hydrationWidgetEnabled={hydration.widgetEnabled} onToggleHydrationWidget={setHydrationWidgetEnabled} brushingWidgetEnabled={brushing.widgetEnabled} onToggleBrushingWidget={setBrushingWidgetEnabled} />;
       case 'pomodoro': return <PomodoroView data={data} onUpdateUser={onUpdateUser} onUpdatePomodoro={onUpdatePomodoro} quickAction={pendingQuickAction} onQuickActionHandled={markQuickActionHandled} />;
-      case 'workout': return <WorkoutView data={data} onUpdateData={onUpdateWorkout} onCompleteHabit={onCompleteHabit} awardXp={(prev, amt) => awardXp(prev, amt)} onSync={syncWorkoutNow} />;
+      case 'workout': return <WorkoutView data={data} onUpdateData={onUpdateWorkout} onCompleteHabit={onCompleteHabit} awardXp={(prev, amt) => awardXp(prev, amt)} />;
       case 'agenda': return <AgendaView data={data} onUpdateAgenda={onUpdateAgenda} onUpdateAgendaNote={onUpdateAgendaNote} onUpdateAgendaTodos={onUpdateAgendaTodos} onUpdateAgendaTodoLabels={onUpdateAgendaTodoLabels} onUpdateAgendaTaskCategories={onUpdateAgendaTaskCategories} onMoveTaskToDate={onMoveTaskToDate} onCompleteHabit={onCompleteHabit} quickAction={pendingQuickAction} onQuickActionHandled={markQuickActionHandled} />;
       case 'dreams': return <DreamGoalsView data={data} onUpdateDreamGoals={onUpdateDreamGoals} />;
       case 'finance': return <FinanceView data={data} onUpdateFinance={onUpdateFinance} quickAction={pendingQuickAction} onQuickActionHandled={markQuickActionHandled} />;
