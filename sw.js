@@ -1,9 +1,11 @@
-const CACHE_VERSION = 'habitflow-pwa-v2026-07-13-pomodoro-center-a';
+const CACHE_VERSION = 'habitflow-pwa-v2026-07-14-entreno-a';
 const APP_SHELL = [
   './',
   './index.html',
   './HabitTrackerApp.jsx',
   './widget-sync-core.js',
+  './exercise-dataset-service.js',
+  './WorkoutFeature.jsx',
   './manifest.webmanifest',
   './brand-logo.svg',
   './icon-192.png',

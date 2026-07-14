@@ -10,6 +10,19 @@ create table if not exists public.habitflow_user_data (
 
 alter table public.habitflow_user_data enable row level security;
 
+do $$
+begin
+  if not exists (
+    select 1 from pg_publication_tables
+    where pubname = 'supabase_realtime'
+      and schemaname = 'public'
+      and tablename = 'habitflow_user_data'
+  ) then
+    alter publication supabase_realtime add table public.habitflow_user_data;
+  end if;
+end;
+$$;
+
 drop policy if exists "habitflow_select_own_data" on public.habitflow_user_data;
 drop policy if exists "habitflow_insert_own_data" on public.habitflow_user_data;
 drop policy if exists "habitflow_update_own_data" on public.habitflow_user_data;

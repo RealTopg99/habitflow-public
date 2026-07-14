@@ -10,7 +10,9 @@ La aplicación no tiene rutas URL independientes. La navegación se controla con
 
 Fuentes principales:
 
-- `HabitTrackerApp.jsx`: interfaz, lógica de dominio, estado, estilos y navegación.
+- `HabitTrackerApp.jsx`: shell, autenticación, persistencia y vistas globales.
+- `WorkoutFeature.jsx`: módulo completo de Entreno, cargado de forma aislada.
+- `exercise-dataset-service.js`: catálogo, detalles y resolución de medios de Entreno.
 - `index.html`: arranque, dependencias CDN, configuración pública y montaje de React.
 - `server.js`: servidor local en `http://127.0.0.1:8080` con recarga automática.
 
@@ -44,10 +46,11 @@ No editar como fuente principal:
 1. `server.js` sirve los archivos y añade recarga en vivo al HTML local.
 2. `index.html` registra `sw.js` cuando el contexto lo permite.
 3. `index.html` carga React, Babel, Lucide, Supabase y Recharts.
-4. Descarga `HabitTrackerApp.jsx`, reemplaza los imports por objetos globales y lo transpila.
-5. `App` ejecuta `injectStyles()` y monta `AuthGate`.
-6. `AuthGate` abre Clerk o permite el modo local `?dev-preview=1`.
-7. `HabitFlowApp` carga datos locales, intenta recuperar la nube y renderiza la vista activa.
+4. Descarga y transpila `WorkoutFeature.jsx`, que registra el módulo de Entreno.
+5. Descarga `HabitTrackerApp.jsx`, reemplaza los imports por objetos globales y lo transpila.
+6. `App` ejecuta `injectStyles()` y monta `AuthGate`.
+7. `AuthGate` abre Clerk o permite el modo local `?dev-preview=1`.
+8. `HabitFlowApp` carga datos locales, intenta recuperar la nube y renderiza la vista activa.
 
 ## Capas actuales
 
@@ -117,7 +120,7 @@ El objeto de `getDefaultData()` tiene estas ramas:
 | `records` | cumplimiento diario de hábitos | Hábitos / Panel |
 | `dailyNotes` | notas diarias heredadas | compatibilidad |
 | `challenges` | retos | Panel / retos |
-| `workoutData` | ejercicios, rutinas y sesiones | Entreno |
+| `workoutData` | favoritos, ejercicios propios, rutinas, sesión activa e historial | Entreno |
 | `financeData` | cuentas, movimientos, deudas, presupuestos y recurrentes | Finanzas |
 | `healthData` | medicamentos y tomas | Salud |
 | `studyData` | materias y sesiones heredadas | vista no navegable |
@@ -137,6 +140,8 @@ Regla: cualquier campo nuevo persistente debe tener valor por defecto en `getDef
 ## Navegación
 
 No hay React Router. `HabitFlowApp` define `navItems`, `navigateTo()` y `renderView()`.
+Entreno añade rutas consultables con `?view=workout&workout=<pantalla>` y, cuando
+corresponde, `exercise=<id>` o `routine=<id>`.
 
 IDs activos:
 
@@ -211,6 +216,9 @@ Cuando se cambia el modelo de tareas, hábitos, salud o deudas, hay que revisar 
 | Archivo | Responsabilidad | Riesgo |
 | --- | --- | --- |
 | `HabitTrackerApp.jsx` | aplicación completa | muy alto |
+| `WorkoutFeature.jsx` | pantallas y flujo de Entreno | alto |
+| `exercise-dataset-service.js` | carga paginada y medios del dataset | medio |
+| `scripts/sync-exercises-dataset.mjs` | importación reproducible del dataset | medio |
 | `index.html` | bootstrap y configuración pública | alto |
 | `server.js` | vista local y recarga en vivo | bajo |
 | `sw.js` | recepción y click de push | alto |

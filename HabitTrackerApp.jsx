@@ -727,9 +727,13 @@ const genSampleSessions = () => {
 };
 
 const getWorkoutData = () => ({
-  exercises: WORKOUT_EXERCISES.map(e => ({ ...e, custom: false })),
-  routines: SAMPLE_ROUTINES.map(r => ({ id: r.id, name: r.name, muscleGroups: r.mgs, exercises: r.exs, createdAt: toYYYYMMDD(addDays(new Date(), -60)) })),
-  sessions: genSampleSessions()
+  exercises: [],
+  customExercises: [],
+  routines: [],
+  sessions: [],
+  favorites: [],
+  activeSession: null,
+  updatedAt: new Date().toISOString()
 });
 
 const SUBSCRIPTION_SERVICES = [
@@ -1172,7 +1176,7 @@ const getDefaultData = (reset = false) => {
     records,
     dailyNotes: reset  ? {} : { [toYYYYMMDD(new Date())]: { note: 'Buen día en general, cumplí todos mis hábitos', mood: 4 } },
     challenges: reset  ? [] : [{ id: 'ch1', habitId: 'h1', startDate: toYYYYMMDD(addDays(new Date(), -14)), status: 'active' }],
-    workoutData: reset  ? { exercises: WORKOUT_EXERCISES.map(e => ({ ...e, custom: false })), routines: [], sessions: [] } : getWorkoutData(),
+    workoutData: getWorkoutData(),
     financeData: reset  ? { ...getFinanceData(), monthlyBudget: 0, transactions: [], recurring: [], subscriptions: [], goals: [] } : getFinanceData(),
     healthData: reset  ? { medications: [], takenLogs: [] } : getHealthData(),
     studyData: reset  ? { subjects: [], sessions: [] } : getStudyData(),
@@ -1306,9 +1310,13 @@ const normalizeLoadedData = (parsed) => {
   });
   parsed.records.forEach(r => { if (r.mood === undefined) r.mood = 0; });
   if (!parsed.workoutData) parsed.workoutData = getWorkoutData();
-  if (!parsed.workoutData.exercises) parsed.workoutData.exercises = WORKOUT_EXERCISES.map(e => ({ ...e, custom: false }));
-  if (!parsed.workoutData.routines) parsed.workoutData.routines = SAMPLE_ROUTINES.map(r => ({ id: r.id, name: r.name, muscleGroups: r.mgs, exercises: r.exs, createdAt: toYYYYMMDD(addDays(new Date(), -60)) }));
-  if (!parsed.workoutData.sessions) parsed.workoutData.sessions = genSampleSessions();
+  if (!Array.isArray(parsed.workoutData.exercises)) parsed.workoutData.exercises = [];
+  if (!Array.isArray(parsed.workoutData.customExercises)) parsed.workoutData.customExercises = parsed.workoutData.exercises.filter(exercise => exercise?.custom).map(exercise => ({ ...exercise, source: 'custom' }));
+  if (!Array.isArray(parsed.workoutData.routines)) parsed.workoutData.routines = [];
+  if (!Array.isArray(parsed.workoutData.sessions)) parsed.workoutData.sessions = [];
+  if (!Array.isArray(parsed.workoutData.favorites)) parsed.workoutData.favorites = [];
+  if (!Object.prototype.hasOwnProperty.call(parsed.workoutData, 'activeSession')) parsed.workoutData.activeSession = null;
+  if (!parsed.workoutData.updatedAt) parsed.workoutData.updatedAt = new Date().toISOString();
   if (!parsed.financeData) parsed.financeData = getFinanceData();
   if (!parsed.financeData.currency) parsed.financeData.currency = 'USD';
   if (!parsed.financeData.copRate) parsed.financeData.copRate = 4000;
@@ -19841,43 +19849,10 @@ const PomodoroView = ({ data, onUpdateUser, onUpdatePomodoro, quickAction, onQui
 };
 
 // SECTION: Workout routines, gym mode, calendar and progress.
-const WorkoutView = ({ data, onUpdateData, onCompleteHabit, awardXp }) => {
-  const { workoutData } = data;
-  const [tab, setTab] = useState('train');
-  const [gymMode, setGymMode] = useState(null);
-  const mgs = [...new Set(workoutData.exercises.map(e => e.mg))];
-  const getEx = (id) => workoutData.exercises.find(e => e.id === id);
-
-  const handleGymSaveSession = (session, prs) => {
-    onUpdateData(wd => ({ ...wd, sessions: [...wd.sessions, session] }));
-    awardXp(data, 30);
-    if (prs.length > 0) awardXp(data, prs.length * 20);
-    setGymMode(null);
-  };
-
-  return (
-    <div className="workout-mobile-view" style={{ animation: 'fadeIn 0.3s ease-out' }}>
-      <div className="workout-tabs" style={{ display: 'flex', gap: 8, marginBottom: 24 }}>
-        {[
-          { id: 'train', label: 'Entrenar Ahora', icon: <Play size={16} /> },
-          { id: 'cal', label: 'Calendario', icon: <Calendar size={16} /> },
-          { id: 'prog', label: 'Progreso', icon: <TrendingUp size={16} /> }
-        ].map(t => (
-          <button key={t.id} onClick={() => setTab(t.id)} style={{
-            padding: '10px 20px', borderRadius: 20, border: 'none',
-            background: tab === t.id  ? `linear-gradient(135deg, ${COLORS.primary}, #7f1028)` : COLORS.card,
-            color: tab === t.id  ? '#fff' : COLORS.textDim, cursor: 'pointer',
-            fontSize: 14, fontFamily: "'Inter', sans-serif", display: 'flex', alignItems: 'center', gap: 6,
-            transition: 'all 0.2s'
-          }}><span className="fire-emoji">{t.icon}</span>{t.label}</button>
-        ))}
-      </div>
-      {tab === 'train' && <WorkoutTrainTab workoutData={workoutData} onUpdateData={onUpdateData} setGymMode={setGymMode} awardXp={awardXp} onCompleteHabit={onCompleteHabit} />}
-      {tab === 'cal' && <WorkoutCalTab workoutData={workoutData} />}
-      {tab === 'prog' && <WorkoutProgTab workoutData={workoutData} />}
-      {gymMode && <GymMode gymData={gymMode} workoutData={workoutData} onUpdateData={onUpdateData} onClose={() => setGymMode(null)} onSaveSession={handleGymSaveSession} onCompleteHabit={onCompleteHabit} />}
-    </div>
-  );
+const WorkoutView = ({ data, onUpdateData, onCompleteHabit, awardXp, onSync }) => {
+  const WorkoutRedesign = window.HabitFlowWorkoutRedesign;
+  if (!WorkoutRedesign) return <EmptyState icon={<Dumbbell size={28} />} title="Entreno no disponible" subtitle="Recarga la página para volver a cargar el módulo." compact />;
+  return <WorkoutRedesign data={data} onUpdateData={onUpdateData} onCompleteHabit={onCompleteHabit} awardXp={awardXp} onSync={onSync} />;
 };
 
 const WorkoutTrainTab = ({ workoutData, onUpdateData, setGymMode, awardXp, onCompleteHabit }) => {
@@ -24352,6 +24327,35 @@ const HabitFlowApp = () => {
   }, []);
 
   useEffect(() => {
+    const userId = getClerkUserId();
+    const client = getCloudClient();
+    if (!userId || !client?.channel) return undefined;
+    const channel = client
+      .channel(`habitflow-workout-${userId}`)
+      .on('postgres_changes', {
+        event: 'UPDATE',
+        schema: 'public',
+        table: CLOUD_TABLE,
+        filter: `user_id=eq.${userId}`
+      }, payload => {
+        const incoming = normalizeLoadedData(payload?.new?.data);
+        const incomingWorkout = incoming?.workoutData;
+        if (!incomingWorkout) return;
+        setData(previous => {
+          if (!previous) return previous;
+          const localTime = Date.parse(previous.workoutData?.updatedAt || 0) || 0;
+          const remoteTime = Date.parse(incomingWorkout.updatedAt || payload?.new?.updated_at || 0) || 0;
+          if (remoteTime <= localTime) return previous;
+          const next = { ...previous, workoutData: incomingWorkout };
+          saveLocalData(next);
+          return next;
+        });
+      })
+      .subscribe();
+    return () => { client.removeChannel?.(channel); };
+  }, []);
+
+  useEffect(() => {
     if (cloudSync.status !== 'active') return;
     if (data?.user?.notificationsEnabled === false) return;
     if (pushAutoSyncRef.current) return;
@@ -25146,11 +25150,37 @@ const HabitFlowApp = () => {
 
   const onUpdateWorkout = useCallback((updater) => {
     setData(prev => {
-      const newData = { ...prev, workoutData: updater(prev.workoutData) };
+      const workoutData = updater(prev.workoutData);
+      const newData = { ...prev, workoutData: { ...workoutData, updatedAt: workoutData?.updatedAt || new Date().toISOString() } };
       saveData(newData);
       return newData;
     });
   }, []);
+
+  const syncWorkoutNow = useCallback(async () => {
+    const cloud = await loadCloudData();
+    if (!cloud.ok) return { ok: false, message: cloud.reason || 'No se pudo conectar con Supabase.' };
+    if (!cloud.data?.workoutData) {
+      const saved = await saveCloudDataNow(data);
+      return saved.ok
+        ? { ok: true, message: 'Tus datos de Entreno se guardaron en la nube.' }
+        : { ok: false, message: saved.reason || 'No se pudo guardar Entreno.' };
+    }
+    const localTime = Date.parse(data?.workoutData?.updatedAt || 0) || 0;
+    const remoteTime = Date.parse(cloud.data.workoutData.updatedAt || cloud.updatedAt || 0) || 0;
+    if (localTime > remoteTime) {
+      const saved = await saveCloudDataNow(data);
+      return saved.ok
+        ? { ok: true, message: 'La versión más reciente de Entreno se envió a tus dispositivos.' }
+        : { ok: false, message: saved.reason || 'No se pudo guardar Entreno.' };
+    }
+    setData(previous => {
+      const next = { ...previous, workoutData: cloud.data.workoutData };
+      saveLocalData(next);
+      return next;
+    });
+    return { ok: true, message: 'Entreno actualizado desde Supabase.' };
+  }, [data]);
 
   const onUpdateFinance = useCallback((updater) => {
     setData(prev => {
@@ -25604,7 +25634,7 @@ const HabitFlowApp = () => {
       case 'dashboard': return <DashboardView data={data} onCompleteHabit={onCompleteHabit} workoutData={data.workoutData} onNavigate={navigateTo} onQuickAction={runDashboardQuickAction} onUpdateUser={onUpdateUser} onUpdateAgenda={onUpdateAgenda} onUpdateFinance={onUpdateFinance} onAddHabit={onAddHabit} hydration={hydration} onAddHydration={addHydration} onHydrationGoalChange={changeHydrationGoal} onHydrationReminderChange={changeHydrationReminder} brushing={brushing} onAddBrushing={addBrushing} onUndoBrushing={undoBrushing} onBrushingGoalChange={changeBrushingGoal} onBrushingReminderChange={changeBrushingReminder} onBrushingTimesChange={changeBrushingTimes} />;
       case 'habits': return <HabitsView data={data} onAddHabit={onAddHabit} onUpdateHabit={onUpdateHabit} onDeleteHabit={onDeleteHabit} onToggleHabit={onToggleHabit} onCompleteHabit={onCompleteHabit} onUpdateRecord={onUpdateRecord} onCreateHabitCategory={onCreateHabitCategory} records={data.records} quickAction={pendingQuickAction} onQuickActionHandled={markQuickActionHandled} hydrationWidgetEnabled={hydration.widgetEnabled} onToggleHydrationWidget={setHydrationWidgetEnabled} brushingWidgetEnabled={brushing.widgetEnabled} onToggleBrushingWidget={setBrushingWidgetEnabled} />;
       case 'pomodoro': return <PomodoroView data={data} onUpdateUser={onUpdateUser} onUpdatePomodoro={onUpdatePomodoro} quickAction={pendingQuickAction} onQuickActionHandled={markQuickActionHandled} />;
-      case 'workout': return <WorkoutView data={data} onUpdateData={onUpdateWorkout} onCompleteHabit={onCompleteHabit} awardXp={(prev, amt) => awardXp(prev, amt)} />;
+      case 'workout': return <WorkoutView data={data} onUpdateData={onUpdateWorkout} onCompleteHabit={onCompleteHabit} awardXp={(prev, amt) => awardXp(prev, amt)} onSync={syncWorkoutNow} />;
       case 'agenda': return <AgendaView data={data} onUpdateAgenda={onUpdateAgenda} onUpdateAgendaNote={onUpdateAgendaNote} onUpdateAgendaTodos={onUpdateAgendaTodos} onUpdateAgendaTodoLabels={onUpdateAgendaTodoLabels} onUpdateAgendaTaskCategories={onUpdateAgendaTaskCategories} onMoveTaskToDate={onMoveTaskToDate} onCompleteHabit={onCompleteHabit} quickAction={pendingQuickAction} onQuickActionHandled={markQuickActionHandled} />;
       case 'dreams': return <DreamGoalsView data={data} onUpdateDreamGoals={onUpdateDreamGoals} />;
       case 'finance': return <FinanceView data={data} onUpdateFinance={onUpdateFinance} quickAction={pendingQuickAction} onQuickActionHandled={markQuickActionHandled} />;

@@ -55,6 +55,7 @@
   <!-- PropTypes needed by recharts UMD -->
   <script src="https://cdn.jsdelivr.net/npm/prop-types@15.8.1/prop-types.min.js"></script>
   <script src="./widget-sync-core.js"></script>
+  <script src="./exercise-dataset-service.js"></script>
 
   <script>
   window.HABITFLOW_CLERK_PUBLISHABLE_KEY = 'pk_test_cHVtcGVkLWNoaW1wLTgxLmNsZXJrLmFjY291bnRzLmRldiQ';
@@ -93,6 +94,15 @@
       }
 
       console.log('Recharts OK, componentes:', Object.keys(window.Recharts).filter(k => k[0] === k[0].toUpperCase()).join(', '));
+
+      const workoutResp = await fetch('./WorkoutFeature.jsx?_=' + Date.now());
+      if (!workoutResp.ok) throw new Error('Error al cargar WorkoutFeature.jsx: HTTP ' + workoutResp.status);
+      const workoutCode = new TextDecoder('utf-8').decode(await workoutResp.arrayBuffer());
+      const workoutResult = Babel.transform(workoutCode, { presets: [['react', { runtime: 'classic' }]] });
+      new Function('React', workoutResult.code)(React);
+      if (typeof window.HabitFlowWorkoutRedesign !== 'function') {
+        throw new Error('El módulo Entreno no pudo inicializarse.');
+      }
 
       const resp = await fetch('./HabitTrackerApp.jsx?_=' + Date.now());
       if (!resp.ok) throw new Error('Error al cargar HabitTrackerApp.jsx: HTTP ' + resp.status);
