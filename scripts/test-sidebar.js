@@ -13,7 +13,8 @@ const requiredContracts = [
   ['Escape handling', "event.key !== 'Escape'"],
   ['legacy storage cleanup', 'LEGACY_SIDEBAR_STORAGE_KEYS'],
   ['fixed content offset', 'marginLeft: SIDEBAR_COLLAPSED_WIDTH'],
-  ['mobile navigation retained', 'className="mobile-bottom-nav"']
+  ['responsive navigation loaded', 'className="mobile-bottom-nav legacy-mobile-nav"'],
+  ['new mobile navigation mounted', '<MobileBottomNav']
 ];
 
 for (const [label, contract] of requiredContracts) {

@@ -36,6 +36,13 @@ const MoreVertical = MoreHorizontal;
 const Plane = Rocket;
 const CalendarCheck = Calendar;
 const Info = AlertCircle;
+const {
+  useResponsiveViewport,
+  MobileAppShell,
+  MobileHeader,
+  MobileBottomNav,
+  MobilePageContainer
+} = window.HabitFlowResponsive;
 
 const supabase = window.supabaseClient;
 const widgetSyncCore = window.HabitFlowWidgetSync;
@@ -16897,7 +16904,13 @@ const ReadingView = ({ data, onUpdateReading }) => {
 };
 
 const DreamGoalsView = ({ data, onUpdateDreamGoals }) => {
-  const goals = data.dreamGoals || getDreamGoals();
+  const allGoals = data.dreamGoals || getDreamGoals();
+  const [goalSection, setGoalSection] = useState('active');
+  const goals = goalSection === 'completed'
+    ? allGoals.filter(goal => Number(goal.current || 0) >= Number(goal.target || 0))
+    : goalSection === 'active'
+      ? allGoals.filter(goal => Number(goal.current || 0) < Number(goal.target || 0))
+      : allGoals;
   const s = { fontFamily: "'Inter', sans-serif" };
   const isPinkLight = (data?.user?.themeMode || '') === 'pinkLight';
   const dreamPanelBg = isPinkLight  ? 'rgba(255,255,255,0.92)' : '#080808';
@@ -16986,6 +16999,16 @@ const DreamGoalsView = ({ data, onUpdateDreamGoals }) => {
         </p>
       </div>
 
+      <div className="dream-goal-tabs" role="tablist" aria-label="Secciones de metas">
+        {[
+          ['active', 'Activas'],
+          ['completed', 'Completadas'],
+          ['dreams', 'Sueños']
+        ].map(([id, label]) => (
+          <button key={id} type="button" role="tab" aria-selected={goalSection === id} className={goalSection === id ? 'is-active' : ''} onClick={() => setGoalSection(id)}>{label}</button>
+        ))}
+      </div>
+
       <div style={{
         display: 'grid',
         gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 360px))',
@@ -16993,6 +17016,7 @@ const DreamGoalsView = ({ data, onUpdateDreamGoals }) => {
         marginBottom: 30,
         justifyContent: goals.length === 1  ? 'center' : 'start'
       }}>
+        {!goals.length && <div className="dream-goal-empty">No hay metas en esta sección.</div>}
         {goals.map((goal, index) => {
           const target = Number(goal.target || 0);
           const current = Number(goal.current || 0);
@@ -24246,6 +24270,7 @@ const SidebarItem = ({ icon: Icon, label, active, onActivate, primary, muted }) 
 
 // SECTION: Application shell, root state, navigation, notifications and update handlers.
 const HabitFlowApp = () => {
+  const responsiveViewport = useResponsiveViewport();
   const [data, setData] = useState(null);
   const [view, setView] = useState(() => {
     const requestedView = new URLSearchParams(window.location.search).get('view');
@@ -25672,7 +25697,8 @@ const HabitFlowApp = () => {
   };
 
   return (
-    <div style={{ display: 'flex', minHeight: '100vh', background: COLORS.bg }}>
+    <MobileAppShell view={view}>
+    <div className="habitflow-root" style={{ display: 'flex', minHeight: '100vh', background: COLORS.bg }}>
       {confetti && <Confetti key={confetti.key} x={confetti.x} y={confetti.y} />}
       {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
       <Modal isOpen={showUpdateNotes} onClose={closeUpdateNotes} title="Novedades de HabitFlow" width={620}>
@@ -25692,6 +25718,15 @@ const HabitFlowApp = () => {
           <span>Entendido, abrir HabitFlow</span>
         </button>
       </Modal>
+
+      {responsiveViewport.isMobileTablet && (
+        <MobileHeader
+          dateLabel={formatDateSpanish(new Date())}
+          streak={getGlobalCurrentStreak(data.habits, data.records)}
+          userName={data.user.name}
+          onNotifications={() => requestHabitFlowNotifications()}
+        />
+      )}
 
       <aside className="sidebar sidebar-collapsed" aria-label="Navegación principal" style={{
         width: SIDEBAR_COLLAPSED_WIDTH, overflow: 'visible',
@@ -25732,7 +25767,7 @@ const HabitFlowApp = () => {
       <div className="content-area" style={{
         marginLeft: SIDEBAR_COLLAPSED_WIDTH, flex: 1, minHeight: '100vh'
       }}>
-        <header style={{
+        <header className="desktop-topbar" style={{
           background: COLORS.surface, borderBottom: 'none',
           padding: '16px 32px', display: 'flex', justifyContent: 'space-between',
           alignItems: 'center', position: 'sticky', top: 0, zIndex: 50
@@ -25775,7 +25810,7 @@ const HabitFlowApp = () => {
         <main id="habitflow-main" className="app-main" tabIndex="-1">
           <div className={`view-enter ${view === 'dashboard'  ? 'dashboard-view-enter' : ''}`} key={view}>
             <ErrorBoundary>
-              {renderView()}
+              <MobilePageContainer view={view}>{renderView()}</MobilePageContainer>
             </ErrorBoundary>
           </div>
         </main>
@@ -25787,7 +25822,7 @@ const HabitFlowApp = () => {
         }} />
       )}
 
-      <nav className="mobile-bottom-nav" style={{
+      {!responsiveViewport.isMobileTablet && <nav className="mobile-bottom-nav legacy-mobile-nav" style={{
         position: 'fixed', bottom: 0, left: 0, right: 0,
         background: COLORS.surface, borderTop: `1px solid ${COLORS.border}`,
         display: 'none', zIndex: 100, justifyContent: 'space-around',
@@ -25841,7 +25876,17 @@ const HabitFlowApp = () => {
             </div>
           )}
         </div>
-      </nav>
+      </nav>}
+
+      {responsiveViewport.isMobileTablet && (
+        <MobileBottomNav
+          view={view}
+          onNavigate={navigateTo}
+          moreOpen={showMoreNav}
+          onToggleMore={(next) => setShowMoreNav(current => typeof next === 'boolean' ? next : !current)}
+          includeCreator={creatorAccess}
+        />
+      )}
 
       <VoiceAssistant
         data={data}
@@ -25860,6 +25905,7 @@ const HabitFlowApp = () => {
       )}
       {showFocus && <FocusMode habits={data.habits} records={data.records} onCompleteHabit={onCompleteHabit} onClose={() => setShowFocus(false)} />}
     </div>
+    </MobileAppShell>
   );
 };
 
