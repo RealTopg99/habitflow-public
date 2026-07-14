@@ -167,23 +167,29 @@ Alertas servidor: `dueMedicationNotificationsForUser`.
 
 Símbolos:
 
-- `WorkoutView`: tabs principales
-- `WorkoutTrainTab`: rutinas
-- `RoutineModal`: crear/editar rutina
-- `WorkoutAdvisorModal`: asesor de rutina
-- `ExerciseManager`: ejercicios personalizados
-- `GymMode`: sesión activa
-- `WorkoutExerciseAdder`: añadir ejercicio durante sesión
-- `WorkoutCalTab`: calendario
-- `WorkoutProgTab`: progreso
+- `WorkoutView` en `HabitTrackerApp.jsx`: adaptador al módulo aislado.
+- `WorkoutRedesign` en `WorkoutFeature.jsx`: navegación y coordinación.
+- `SummaryView`: resumen de Entreno.
+- `RoutinesView`: listado de rutinas.
+- `ExerciseLibrary`: biblioteca paginada y filtrable.
+- `ExerciseDetail`: detalle técnico y GIF bajo demanda.
+- `RoutineBuilder`: constructor con reordenamiento y validación.
+- `ActiveWorkout`: sesión persistente, series, descanso y finalización.
+- `ProgressView`: métricas derivadas de sesiones reales.
+- `HistoryView`: historial de sesiones.
 
 Datos:
 
-- `workoutData.exercises`
+- `workoutData.customExercises`
 - `workoutData.routines`
 - `workoutData.sessions`
+- `workoutData.favorites`
+- `workoutData.activeSession`
+- `workoutData.updatedAt`
 
-Catálogos: `WORKOUT_EXERCISES`, `SAMPLE_ROUTINES`, `MGS`.
+Catálogo: `public/exercises-dataset/`, atendido por
+`exercise-dataset-service.js`. Consulta `WORKOUT_DATASET.md` para importación,
+atribución, carga de medios y sincronización.
 
 ## Pomodoro
 
