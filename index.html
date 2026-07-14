@@ -67,7 +67,17 @@
     try {
       const rootEl = document.getElementById('root');
       if ('serviceWorker' in navigator && (window.isSecureContext || ['localhost', '127.0.0.1'].includes(window.location.hostname))) {
-        navigator.serviceWorker.register('./sw.js').catch(() => {});
+        let reloadingForUpdate = false;
+        navigator.serviceWorker.addEventListener('controllerchange', () => {
+          if (reloadingForUpdate) return;
+          reloadingForUpdate = true;
+          window.location.reload();
+        });
+        navigator.serviceWorker.register('./sw.js', { updateViaCache: 'none' }).then(registration => {
+          registration.update().catch(() => {});
+          window.addEventListener('focus', () => registration.update().catch(() => {}));
+          window.addEventListener('online', () => registration.update().catch(() => {}));
+        }).catch(() => {});
       }
 
       // Load lucide-react
