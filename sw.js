@@ -1,4 +1,4 @@
-const CACHE_VERSION = 'habitflow-pwa-v2026-07-14-entreno-es-media-b';
+const CACHE_VERSION = 'habitflow-pwa-v2026-07-14-auto-update-a';
 const APP_SHELL = [
   './',
   './index.html',
@@ -30,35 +30,43 @@ self.addEventListener('fetch', (event) => {
   const url = new URL(request.url);
   const isNavigation = request.mode === 'navigate';
   const isLocalAsset = url.origin === self.location.origin;
+  const isFreshAppAsset = isLocalAsset && (
+    isNavigation ||
+    url.pathname.endsWith('/index.html') ||
+    url.pathname.endsWith('/HabitTrackerApp.jsx') ||
+    url.pathname.endsWith('/WorkoutFeature.jsx') ||
+    url.pathname.endsWith('/widget-sync-core.js') ||
+    url.pathname.endsWith('/exercise-dataset-service.js') ||
+    url.pathname.endsWith('/manifest.webmanifest')
+  );
   const isRuntimeAsset = ['script', 'style', 'font', 'image'].includes(request.destination)
     && ['unpkg.com', 'cdn.jsdelivr.net', 'esm.sh', 'fonts.googleapis.com', 'fonts.gstatic.com'].includes(url.hostname);
   if (!isNavigation && !isLocalAsset && !isRuntimeAsset) return;
 
   event.respondWith((async () => {
     const cache = await caches.open(CACHE_VERSION);
-    if (!isNavigation) {
-      const cached = await cache.match(request, { ignoreSearch: isLocalAsset });
-      const refresh = fetch(request).then(response => {
-        if (response.ok) cache.put(request, response.clone());
-        return response;
-      }).catch(() => null);
-      if (cached) {
-        event.waitUntil(refresh);
-        return cached;
-      }
-      const response = await refresh;
-      if (response) return response;
-    } else {
+    if (isFreshAppAsset) {
+      const canonicalKey = isNavigation
+        ? new Request(new URL('./index.html', self.registration.scope).href)
+        : new Request(`${url.origin}${url.pathname}`);
       try {
-        const response = await fetch(request);
-        if (response.ok) cache.put('./index.html', response.clone());
+        const response = await fetch(request, { cache: 'no-store' });
+        if (response.ok) await cache.put(canonicalKey, response.clone());
         return response;
-      } catch {}
+      } catch {
+        return (await cache.match(canonicalKey)) || Response.error();
+      }
     }
-    const cached = await cache.match(request, { ignoreSearch: isLocalAsset });
+
+    const cached = await cache.match(request);
     if (cached) return cached;
-    if (isNavigation) return (await cache.match('./index.html')) || Response.error();
-    return Response.error();
+    try {
+      const response = await fetch(request);
+      if (response.ok) await cache.put(request, response.clone());
+      return response;
+    } catch {
+      return Response.error();
+    }
   })());
 });
 

@@ -11,9 +11,10 @@
     "test:typography": "node scripts/test-typography.js",
     "test:widgets": "node scripts/test-widget-sync.js",
     "test:entreno": "node scripts/test-entreno.js",
+    "test:pwa": "node scripts/test-pwa-update.js",
     "sync:exercises": "node scripts/sync-exercises-dataset.mjs",
     "translate:exercises": "node scripts/translate-exercise-names.mjs",
-    "test": "node scripts/test-widget-sync.js && node scripts/test-typography.js && node scripts/test-sidebar.js && node scripts/test-entreno.js && node scripts/check-text-encoding.js"
+    "test": "node scripts/test-widget-sync.js && node scripts/test-typography.js && node scripts/test-sidebar.js && node scripts/test-entreno.js && node scripts/test-pwa-update.js && node scripts/check-text-encoding.js"
   },
   "dependencies": {
     "web-push": "^3.6.7"
