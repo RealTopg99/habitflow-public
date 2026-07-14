@@ -19,7 +19,7 @@
   <link rel="apple-touch-icon" href="./apple-touch-icon-20260603.png">
   <link rel="apple-touch-icon" sizes="180x180" href="./apple-touch-icon-20260603.png">
   <link rel="manifest" href="./manifest.webmanifest">
-  <link rel="stylesheet" href="./mobile-tablet.css?v=20260714-mobile-redesign-2">
+  <link rel="stylesheet" href="./mobile-v2.css?v=20260714-mobile-v2-exact-3">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -106,12 +106,12 @@
 
       console.log('Recharts OK, componentes:', Object.keys(window.Recharts).filter(k => k[0] === k[0].toUpperCase()).join(', '));
 
-      const responsiveResp = await fetch('./MobileResponsive.jsx?_=' + Date.now());
-      if (!responsiveResp.ok) throw new Error('Error al cargar MobileResponsive.jsx: HTTP ' + responsiveResp.status);
-      const responsiveCode = new TextDecoder('utf-8').decode(await responsiveResp.arrayBuffer());
-      const responsiveResult = Babel.transform(responsiveCode, { presets: [['react', { runtime: 'classic' }]] });
-      new Function('React', responsiveResult.code)(React);
-      if (!window.HabitFlowResponsive?.MobileAppShell) throw new Error('El diseño móvil no pudo inicializarse.');
+      const mobileV2Resp = await fetch('./MobileTabletV2.jsx?_=' + Date.now());
+      if (!mobileV2Resp.ok) throw new Error('Error al cargar MobileTabletV2.jsx: HTTP ' + mobileV2Resp.status);
+      const mobileV2Code = new TextDecoder('utf-8').decode(await mobileV2Resp.arrayBuffer());
+      const mobileV2Result = Babel.transform(mobileV2Code, { presets: [['react', { runtime: 'classic' }]] });
+      new Function('React', mobileV2Result.code)(React);
+      if (!window.HabitFlowMobileV2?.MobileTabletV2App) throw new Error('El shell Mobile/Tablet V2 no pudo inicializarse.');
 
       const workoutResp = await fetch('./WorkoutFeature.jsx?_=' + Date.now());
       if (!workoutResp.ok) throw new Error('Error al cargar WorkoutFeature.jsx: HTTP ' + workoutResp.status);

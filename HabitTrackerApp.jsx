@@ -36,13 +36,7 @@ const MoreVertical = MoreHorizontal;
 const Plane = Rocket;
 const CalendarCheck = Calendar;
 const Info = AlertCircle;
-const {
-  useResponsiveViewport,
-  MobileAppShell,
-  MobileHeader,
-  MobileBottomNav,
-  MobilePageContainer
-} = window.HabitFlowResponsive;
+const { MobileTabletV2App, useMobileV2Viewport } = window.HabitFlowMobileV2;
 
 const supabase = window.supabaseClient;
 const widgetSyncCore = window.HabitFlowWidgetSync;
@@ -24270,7 +24264,7 @@ const SidebarItem = ({ icon: Icon, label, active, onActivate, primary, muted }) 
 
 // SECTION: Application shell, root state, navigation, notifications and update handlers.
 const HabitFlowApp = () => {
-  const responsiveViewport = useResponsiveViewport();
+  const responsiveViewport = useMobileV2Viewport();
   const [data, setData] = useState(null);
   const [view, setView] = useState(() => {
     const requestedView = new URLSearchParams(window.location.search).get('view');
@@ -24282,7 +24276,6 @@ const HabitFlowApp = () => {
   const [pendingQuickAction, setPendingQuickAction] = useState(null);
   const quickActionSequenceRef = useRef(0);
   const [confetti, setConfetti] = useState(null);
-  const [mobileMenu, setMobileMenu] = useState(false);
   const [showMoreNav, setShowMoreNav] = useState(false);
   const [toast, setToast] = useState(null);
   const [hydration, setHydration] = useState(() => readHydrationStorage());
@@ -25667,6 +25660,40 @@ const HabitFlowApp = () => {
   }
 
   const creatorAccess = hasCreatorAccess();
+  if (responsiveViewport.isMobileTablet) {
+    return (
+      <>
+        {confetti && <Confetti key={confetti.key} x={confetti.x} y={confetti.y} />}
+        {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
+        <MobileTabletV2App
+          data={data}
+          view={view}
+          navigate={navigateTo}
+          moreOpen={showMoreNav}
+          setMoreOpen={setShowMoreNav}
+          creatorAccess={creatorAccess}
+          streak={getGlobalCurrentStreak(data.habits, data.records)}
+          dateLabel={formatDateSpanish(new Date())}
+          onNotifications={() => requestHabitFlowNotifications()}
+          onQuickAction={runDashboardQuickAction}
+          onCompleteHabit={onCompleteHabit}
+          onUpdatePomodoro={onUpdatePomodoro}
+          onUpdateAgenda={onUpdateAgenda}
+          onUpdateWorkout={onUpdateWorkout}
+          onUpdateDreamGoals={onUpdateDreamGoals}
+          onUpdateFinance={onUpdateFinance}
+          onUpdateHealth={onUpdateHealth}
+          hydration={hydration}
+          brushing={brushing}
+          addHydration={addHydration}
+          addBrushing={addBrushing}
+          onToggleHydrationWidget={setHydrationWidgetEnabled}
+        />
+        <VoiceAssistant data={data} onUpdateAgenda={onUpdateAgenda} onUpdateFinance={onUpdateFinance} onAddHabit={onAddHabit} onDeleteHabit={onDeleteHabit} />
+        <LevelUpModal open={showLevelUp !== null} level={showLevelUp} onClose={() => setShowLevelUp(null)} />
+      </>
+    );
+  }
   const navItems = [
     { id: 'dashboard', label: 'Panel', icon: Activity },
     { id: 'habits', label: 'Hábitos', icon: Target },
@@ -25697,7 +25724,6 @@ const HabitFlowApp = () => {
   };
 
   return (
-    <MobileAppShell view={view}>
     <div className="habitflow-root" style={{ display: 'flex', minHeight: '100vh', background: COLORS.bg }}>
       {confetti && <Confetti key={confetti.key} x={confetti.x} y={confetti.y} />}
       {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
@@ -25718,15 +25744,6 @@ const HabitFlowApp = () => {
           <span>Entendido, abrir HabitFlow</span>
         </button>
       </Modal>
-
-      {responsiveViewport.isMobileTablet && (
-        <MobileHeader
-          dateLabel={formatDateSpanish(new Date())}
-          streak={getGlobalCurrentStreak(data.habits, data.records)}
-          userName={data.user.name}
-          onNotifications={() => requestHabitFlowNotifications()}
-        />
-      )}
 
       <aside className="sidebar sidebar-collapsed" aria-label="Navegación principal" style={{
         width: SIDEBAR_COLLAPSED_WIDTH, overflow: 'visible',
@@ -25751,7 +25768,7 @@ const HabitFlowApp = () => {
               active={view === item.id}
               primary={theme.primary}
               muted={COLORS.textDim}
-              onActivate={() => { navigateTo(item.id); setMobileMenu(false); }}
+              onActivate={() => navigateTo(item.id)}
             />
           ))}
         </nav>
@@ -25773,12 +25790,6 @@ const HabitFlowApp = () => {
           alignItems: 'center', position: 'sticky', top: 0, zIndex: 50
         }}>
           <div className="top-identity" style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-            <button className="mobile-header-btn" onClick={() => setMobileMenu(!mobileMenu)} style={{
-              background: 'none', border: 'none', color: COLORS.textDim, cursor: 'pointer',
-              padding: 4
-            }}>
-              <Menu size={24} />
-            </button>
             <div>
               <div style={{ fontSize: 14, color: COLORS.text, fontFamily: "'DM Serif Display', serif" }}>
                 {data.user.name}
@@ -25810,83 +25821,11 @@ const HabitFlowApp = () => {
         <main id="habitflow-main" className="app-main" tabIndex="-1">
           <div className={`view-enter ${view === 'dashboard'  ? 'dashboard-view-enter' : ''}`} key={view}>
             <ErrorBoundary>
-              <MobilePageContainer view={view}>{renderView()}</MobilePageContainer>
+              {renderView()}
             </ErrorBoundary>
           </div>
         </main>
       </div>
-
-      {mobileMenu && (
-        <div className="mobile-menu-overlay" onClick={() => setMobileMenu(false)} style={{
-          position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', zIndex: 90
-        }} />
-      )}
-
-      {!responsiveViewport.isMobileTablet && <nav className="mobile-bottom-nav legacy-mobile-nav" style={{
-        position: 'fixed', bottom: 0, left: 0, right: 0,
-        background: COLORS.surface, borderTop: `1px solid ${COLORS.border}`,
-        display: 'none', zIndex: 100, justifyContent: 'space-around',
-        padding: '8px 0', paddingBottom: 'calc(8px + env(safe-area-inset-bottom))'
-      }}>
-        {navItems.slice(0, 4).map(item => (
-          <button key={item.id} aria-label={item.label} title={item.label} onClick={() => { navigateTo(item.id); setShowMoreNav(false); }} style={{
-            display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2,
-            padding: '8px 12px', borderRadius: 8, border: 'none',
-            background: view === item.id  ? `${theme.primary}15` : 'transparent',
-            color: view === item.id  ? theme.primary : COLORS.textDim,
-            cursor: 'pointer', fontSize: 'var(--font-size-xs)', fontFamily: "'Inter', sans-serif",
-            transition: 'all 0.2s', flex: 1
-          }}>
-            {React.createElement(item.icon, { size: 20, 'aria-hidden': true, focusable: false })}
-            <span>{item.label}</span>
-          </button>
-        ))}
-        <div style={{ position: 'relative', flex: 1 }}>
-          <button aria-label="Más secciones" title="Más secciones" onClick={() => setShowMoreNav(s => !s)} style={{
-            display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2,
-            padding: '8px 12px', borderRadius: 8, border: 'none', width: '100%',
-            background: showMoreNav  ? `${theme.primary}15` : 'transparent',
-            color: showMoreNav  ? theme.primary : COLORS.textDim,
-            cursor: 'pointer', fontSize: 'var(--font-size-xs)', fontFamily: "'Inter', sans-serif",
-            transition: 'all 0.2s'
-          }}>
-            <Menu size={20} />
-            <span>Más</span>
-          </button>
-          {showMoreNav && (
-            <div className="mobile-more-popover" style={{
-              position: 'absolute', bottom: '100%', right: 0, marginBottom: 8,
-              background: COLORS.surface, borderRadius: 12, border: `1px solid ${COLORS.border}`,
-              padding: 8, boxShadow: '0 -8px 32px rgba(0,0,0,0.3)', minWidth: 160,
-              animation: 'fadeIn 0.15s ease-out'
-            }}>
-              {navItems.slice(4).map(item => (
-                <button className="mobile-more-item" key={item.id} aria-label={item.label} title={item.label} onClick={() => { navigateTo(item.id); setShowMoreNav(false); }} style={{
-                  display: 'flex', alignItems: 'center', gap: 10, width: '100%',
-                  padding: '10px 14px', borderRadius: 8, border: 'none',
-                  background: view === item.id  ? `${theme.primary}15` : 'transparent',
-                  color: view === item.id  ? theme.primary : COLORS.textDim,
-                  cursor: 'pointer', fontSize: 13, fontFamily: "'Inter', sans-serif",
-                  textAlign: 'left', transition: 'all 0.2s'
-                }}>
-                  {React.createElement(item.icon, { size: 20, 'aria-hidden': true, focusable: false })}
-                  <span>{item.label}</span>
-                </button>
-              ))}
-            </div>
-          )}
-        </div>
-      </nav>}
-
-      {responsiveViewport.isMobileTablet && (
-        <MobileBottomNav
-          view={view}
-          onNavigate={navigateTo}
-          moreOpen={showMoreNav}
-          onToggleMore={(next) => setShowMoreNav(current => typeof next === 'boolean' ? next : !current)}
-          includeCreator={creatorAccess}
-        />
-      )}
 
       <VoiceAssistant
         data={data}
@@ -25905,7 +25844,6 @@ const HabitFlowApp = () => {
       )}
       {showFocus && <FocusMode habits={data.habits} records={data.records} onCompleteHabit={onCompleteHabit} onClose={() => setShowFocus(false)} />}
     </div>
-    </MobileAppShell>
   );
 };
 
