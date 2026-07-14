@@ -26,9 +26,14 @@ GIF antes de reemplazar el catálogo público.
 ## Atribución
 
 Los medios conservan la atribución incluida por el dataset: **© Gym visual —
-https://gymvisual.com/**. El enlace se muestra en el detalle de cada ejercicio y
-los avisos originales se copian a `public/exercises-dataset/NOTICE` y
+https://gymvisual.com/**. La interfaz muestra `© Gym visual` sin exponer una URL
+ni convertirla en enlace; los avisos originales se copian a `public/exercises-dataset/NOTICE` y
 `public/exercises-dataset/LICENSE`.
+
+Los nombres visibles se cargan desde `data/translations.es.json`. El nombre
+original en inglés se conserva internamente como `name_en`, por lo que las
+búsquedas funcionan en ambos idiomas. Las traducciones se pueden regenerar con
+`npm run translate:exercises` sin realizar llamadas desde el navegador.
 
 La sincronización del dataset no concede derechos adicionales. Antes de una
 distribución comercial debe verificarse que el uso previsto cumple los términos
