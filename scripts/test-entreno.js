@@ -34,6 +34,16 @@ assert(feature.includes('<span className="wr-attribution">© Gym visual</span>')
 assert(feature.includes('setInterval(() => setTick(Date.now()), 1000)') && feature.includes('clearInterval(id)'), 'El temporizador no limpia su intervalo');
 assert(feature.includes("activeSession: session") && feature.includes("activeSession: null"), 'La sesión activa no se persiste o limpia');
 assert(feature.includes('updatedAt: nowIso()'), 'Los cambios de Entreno no incluyen updatedAt');
+assert(!feature.includes('Base de ejercicios integrada'), 'La tarjeta intermedia de la base de ejercicios sigue visible');
+assert(feature.includes("!['detail', 'builder'].includes(screen)"), 'El constructor sigue mostrando el encabezado global con Nuevo');
+assert(feature.includes('Indicaciones, técnica, tempo o ajustes…'), 'Falta el campo amplio de notas del constructor');
+for (const label of ['Series', 'Repeticiones', 'Carga (kg)', 'Descanso (s)', 'Notas']) {
+  assert(feature.includes(`>${label}<`), `Falta la etiqueta visible ${label}`);
+}
+assert(feature.includes('Selecciona al menos un día.') && feature.includes('disabled={!formValid || saving}'), 'La programación semanal no bloquea guardados inválidos');
+assert(feature.includes('Añadir seleccionados') && feature.includes('pendingIds') && feature.includes('Filtrar por grupo muscular'), 'El selector no admite selección múltiple y filtros');
+assert(feature.includes('Este ejercicio ya está incluido en la rutina.'), 'Falta el aviso de ejercicios duplicados');
+assert(feature.includes('wr-row-action') && feature.includes('pendingRemoveId'), 'Faltan acciones accesibles o confirmación de borrado');
 for (const screen of ['summary', 'routines', 'library', 'detail', 'builder', 'active', 'progress', 'history']) {
   assert(feature.includes(`'${screen}'`), `Falta la vista ${screen}`);
 }
