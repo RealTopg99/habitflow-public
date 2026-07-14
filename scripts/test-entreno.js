@@ -44,6 +44,7 @@ assert(feature.includes('Selecciona al menos un día.') && feature.includes('dis
 assert(feature.includes('Añadir seleccionados') && feature.includes('pendingIds') && feature.includes('Filtrar por grupo muscular'), 'El selector no admite selección múltiple y filtros');
 assert(feature.includes('Este ejercicio ya está incluido en la rutina.'), 'Falta el aviso de ejercicios duplicados');
 assert(feature.includes('wr-row-action') && feature.includes('pendingRemoveId'), 'Faltan acciones accesibles o confirmación de borrado');
+assert(feature.includes('wr-set-head') && feature.includes('>Repeticiones<') && feature.includes('>Peso (kg)<') && feature.includes('>Estado<'), 'La sesión activa no muestra los encabezados de las series');
 for (const screen of ['summary', 'routines', 'library', 'detail', 'builder', 'active', 'progress', 'history']) {
   assert(feature.includes(`'${screen}'`), `Falta la vista ${screen}`);
 }
