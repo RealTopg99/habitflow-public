@@ -6,7 +6,7 @@ const output = path.resolve('test-results/home-polish-fixes');
 fs.mkdirSync(output, { recursive: true });
 const url = 'http://127.0.0.1:8080/index.html?dev-preview=1&view=dashboard';
 const chrome = 'C:/Program Files/Google/Chrome/Application/chrome.exe';
-const version = '2026-07-14-mobile-capture-layout-v5';
+const version = '2026-07-14-voice-review-layout-v6';
 
 const prepare = async (page, errors, label) => {
   page.on('pageerror', error => errors.push(`${label}: ${error.message}`));
@@ -65,13 +65,25 @@ const layoutAudit = page => page.evaluate(() => {
     const grid = document.querySelector('.voice-field-grid')?.getBoundingClientRect();
     return { viewport, count: nodes.length, overflow: document.documentElement.scrollWidth - viewport, card: card&&{left:card.left,right:card.right}, grid:grid&&{left:grid.left,right:grid.right}, rects: nodes.map(node => { const rect = node.getBoundingClientRect(); return { left: rect.left, right: rect.right, width: rect.width }; }) };
   });
-  for (const [width,height] of [[320,568],[360,800],[390,844],[430,932],[768,1024],[820,1180]]) {
-    await fields.setViewportSize({width,height});
-    const fieldAudit = await readFieldAudit();
-    if (fieldAudit.count < 2 || fieldAudit.overflow > 1 || fieldAudit.rects.some(rect => rect.left < 0 || rect.right > fieldAudit.viewport || rect.width <= 0 || rect.left < fieldAudit.grid.left - 1 || rect.right > fieldAudit.grid.right + 1 || rect.left < fieldAudit.card.left || rect.right > fieldAudit.card.right)) throw new Error(`Fecha/hora ${width}px: ${JSON.stringify(fieldAudit)}`);
-  }
+  const validateFields = async source => {
+    for (const [width,height] of [[320,568],[360,800],[390,844],[430,932],[768,1024],[820,1180]]) {
+      await fields.setViewportSize({width,height});
+      const fieldAudit = await readFieldAudit();
+      if (fieldAudit.count < 2 || fieldAudit.overflow > 1 || fieldAudit.rects.some(rect => rect.left < 0 || rect.right > fieldAudit.viewport || rect.width <= 0 || rect.left < fieldAudit.grid.left - 1 || rect.right > fieldAudit.grid.right + 1 || rect.left < fieldAudit.card.left || rect.right > fieldAudit.card.right)) throw new Error(`Fecha/hora ${source} ${width}px: ${JSON.stringify(fieldAudit)}`);
+    }
+  };
+  await validateFields('captura-rápida');
   await fields.setViewportSize({width:320,height:568});
   await fields.locator('.voice-assistant').screenshot({ path: path.join(output, 'quick-capture-date-time.png') });
+  await fields.locator('.voice-assistant').getByRole('button', { name: 'Cancelar', exact: true }).click();
+  await fields.locator('.voice-assistant-launcher').click();
+  await fields.locator('.voice-transcript').fill('Reunión mañana a las 3');
+  await fields.getByRole('button', { name: 'Interpretar comando', exact: true }).click();
+  await fields.getByRole('heading', { name: 'Entendí esto' }).waitFor();
+  await validateFields('micrófono-flotante');
+  await fields.setViewportSize({width:320,height:568});
+  await fields.locator('.voice-assistant').evaluate(node => { node.scrollTop = 0; });
+  await fields.locator('.voice-assistant').screenshot({ path: path.join(output, 'quick-capture-date-time-audio.png') });
   await fields.locator('.voice-assistant').getByRole('button', { name: 'Cancelar', exact: true }).click();
   await fields.close();
 

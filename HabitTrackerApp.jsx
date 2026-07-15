@@ -258,7 +258,7 @@ const persistBrushingStorage = (state) => {
   } catch {}
 };
 
-const APP_UPDATE_VERSION = '2026-07-14-mobile-capture-layout-v5';
+const APP_UPDATE_VERSION = '2026-07-14-voice-review-layout-v6';
 const APP_UPDATE_NOTES = [
   'Pomodoro ya no falla al terminar una sesión y ahora avisa al finalizar enfoque, descanso y descanso largo.',
   'Finanzas ahora usa un switch global USD/COP para mantener la vista limpia.',
@@ -9729,6 +9729,10 @@ const injectStyles = () => {
       scrollbar-width: thin;
       scrollbar-color: #8b1320 transparent;
     }
+    .voice-assistant,
+    .voice-assistant * {
+      box-sizing: border-box;
+    }
     .voice-assistant-header {
       position: sticky;
       top: 0;
@@ -9767,6 +9771,9 @@ const injectStyles = () => {
       cursor: pointer;
     }
     .voice-assistant-body {
+      width: 100%;
+      max-width: 100%;
+      min-width: 0;
       padding: 22px;
     }
     .voice-listening-hero {
@@ -9889,8 +9896,14 @@ const injectStyles = () => {
     .voice-draft-list {
       display: grid;
       gap: 12px;
+      width: 100%;
+      max-width: 100%;
+      min-width: 0;
     }
     .voice-draft-card {
+      width: 100%;
+      max-width: 100%;
+      min-width: 0;
       padding: 15px;
       border: 1px solid #282828;
       border-radius: 14px;
@@ -9923,10 +9936,15 @@ const injectStyles = () => {
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: 10px;
+      width: 100%;
+      max-width: 100%;
+      min-width: 0;
     }
     .voice-field {
       display: grid;
       gap: 6px;
+      width: auto;
+      max-width: 100%;
       min-width: 0;
     }
     .voice-field.is-wide {
@@ -9941,7 +9959,9 @@ const injectStyles = () => {
     }
     .voice-field input,
     .voice-field select {
+      display: block;
       width: 100%;
+      max-width: 100%;
       min-width: 0;
       height: 42px;
       padding: 0 11px;
@@ -9951,6 +9971,18 @@ const injectStyles = () => {
       color: #f5f5f5;
       color-scheme: dark;
       font: 500 var(--font-size-sm) 'Inter', sans-serif;
+    }
+    .voice-field input[type="date"],
+    .voice-field input[type="time"] {
+      inline-size: 100%;
+      max-inline-size: 100%;
+      min-inline-size: 0;
+      overflow: hidden;
+    }
+    .voice-field input[type="date"]::-webkit-date-and-time-value,
+    .voice-field input[type="time"]::-webkit-date-and-time-value {
+      min-width: 0;
+      text-align: left;
     }
     .voice-missing {
       display: flex;
