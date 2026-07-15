@@ -145,3 +145,14 @@ No se añadió un segundo store ni datos mock para ocultar estados vacíos. Las 
 - Prueba funcional/visual: `scripts/capture-home-full-width.cjs` comprueba foco carácter por carácter, borrado, tildes, números, rotación, Enter, cancelar/reabrir, 15 tareas, 15 hábitos, Pomodoro, configuración, Finanzas y desktop.
 - Resoluciones verificadas: 320×568, 360×800, 390×844, 430×932, 768×1024, 820×1180, 1024×1366 y desktop 1440×900.
 - Evidencias: `test-results/home-full-width-fixes/`.
+
+## Pulido específico de Inicio Mobile/Tablet — 2026-07-14
+
+- Progreso superior: anillo de 68 px en teléfono y 72 px en tablet, porcentaje de 21–23 px y etiqueta “Completado / hoy” separada en dos líneas dentro del círculo.
+- Captura rápida: retirado únicamente el micrófono lateral; la barra ocupa ahora todo el ancho y conserva el intérprete textual y el asistente de voz flotante global.
+- Intérprete: los campos Fecha/Hora tienen ancho flexible, `min-width: 0`, `max-width: 100%` y una columna en teléfono; se verificaron dentro del viewport a 320 px.
+- Finanzas rápidas: eliminados categoría principal, monto y separador asociados; permanecen gasto diario, gráfica, presupuesto, porcentaje, barra y “Ver todo” con datos reales.
+- Logros recientes: retirada la tarjeta solo del Inicio V2; el sistema global y desktop permanecen intactos.
+- Racha: animación `m2-streak-flame` de 2.3 segundos, leve traslación/rotación/escala y alternativa sin movimiento mediante `prefers-reduced-motion`.
+- Accesos rápidos: una sola fila compacta; Nueva tarea y Nuevo hábito abren formularios reales, Pomodoro navega a su sección y Nuevo gasto abre Wallet/Agregar con Gasto seleccionado.
+- Evidencias y recorridos: `scripts/capture-home-polish.cjs` y `test-results/home-polish-fixes/` en 320, 360, 390, 430, 768, 820 y desktop 1440.

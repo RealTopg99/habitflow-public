@@ -82,3 +82,38 @@ html[data-theme-mode="pinkLight"]{--m2-bg:#fff7fa;--m2-bg-elevated:#fff;--m2-sur
   .m2-home-secondary>.m2-card{padding:16px;min-height:0!important}
   .m2-home-page{padding-bottom:calc(44px + env(safe-area-inset-bottom))}
 }
+
+/* Pulido final del bloque superior y accesos de Inicio Mobile/Tablet. */
+@keyframes m2-streak-flame{0%,100%{transform:translateX(0) rotate(-2deg) scale(1);filter:drop-shadow(0 0 2px rgba(243,19,43,.25))}50%{transform:translateX(2px) rotate(2deg) scale(1.04);filter:drop-shadow(0 0 5px rgba(243,19,43,.38))}}
+@media(max-width:1180px){
+  .m2-streak svg{transform-origin:50% 70%;animation:m2-streak-flame 2.3s ease-in-out infinite;will-change:transform,filter}
+  .m2-home-page .m2-hero-row{grid-template-columns:minmax(0,1fr) 72px;align-items:center;gap:16px;min-width:0}
+  .m2-home-page .m2-hero-row>div:first-child{min-width:0}
+  .m2-home-page .m2-hero-row .m2-ring{width:72px!important;height:72px!important;flex-basis:72px;overflow:hidden;padding:10px}
+  .m2-home-page .m2-ring:after{inset:7px}
+  .m2-home-page .m2-ring-split strong{font-size:23px;line-height:1;margin:0 0 3px}
+  .m2-home-page .m2-ring-split span{display:grid;gap:0;max-width:52px;margin:0;text-align:center;font-size:10px;line-height:1.02}
+  .m2-home-page .m2-ring-split span i{display:block;color:inherit;font-style:normal}
+  .m2-capture-shell{display:block;width:100%}
+  .m2-capture-shell .m2-capture{width:100%;min-width:0}
+  .m2-home-page .m2-quick-grid{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(80px,112px);grid-template-columns:none;justify-content:start;gap:10px;width:100%;min-width:0;overflow-x:auto;overscroll-behavior-inline:contain;scroll-snap-type:x proximity;scrollbar-width:none;padding:1px}
+  .m2-home-page .m2-quick-grid::-webkit-scrollbar{display:none}
+  .m2-home-page .m2-quick-grid button{width:100%;min-width:0;min-height:82px;padding:10px 8px;border-radius:14px;gap:8px;font-size:12px;line-height:1.15;scroll-snap-align:start}
+  .m2-home-page .m2-quick-grid button svg{width:23px;height:23px}
+  .m2-home-secondary{grid-template-columns:minmax(0,1fr)}
+  .m2-finance-mini .m2-budget-summary{padding-bottom:0}
+  .voice-assistant-backdrop{background:rgba(0,0,0,.92);backdrop-filter:none}
+  .voice-assistant{position:relative;z-index:1;background:#080808!important;isolation:isolate;contain:paint}
+  .voice-assistant,.voice-assistant-body,.voice-draft-list,.voice-draft-card,.voice-field-grid,.voice-field{width:100%;max-width:100%;min-width:0}
+  .voice-field-grid>*{min-width:0;max-width:100%}
+  .voice-field input,.voice-field select{display:block;width:100%;max-width:100%;min-width:0;box-sizing:border-box}
+}
+@media(max-width:767px){
+  .m2-home-page .m2-hero-row{grid-template-columns:minmax(0,1fr) 68px;gap:12px}
+  .m2-home-page .m2-hero-row .m2-ring{width:68px!important;height:68px!important;flex-basis:68px;padding:9px}
+  .m2-home-page .m2-ring-split strong{font-size:21px}
+  .m2-home-page .m2-ring-split span{font-size:9px;line-height:1}
+  .m2-home-page .m2-quick-grid{grid-auto-columns:minmax(70px,1fr);gap:8px}
+  .m2-home-page .m2-quick-grid button{min-height:76px;padding:9px 6px;font-size:11px}
+}
+@media(prefers-reduced-motion:reduce){.m2-streak svg{animation:none!important;will-change:auto}}
