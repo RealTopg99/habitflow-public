@@ -120,3 +120,17 @@ Capturas:
 - Desktop: no se cambió la estructura desktop; CSS funcional y compactación están protegidos por breakpoints V2.
 
 No se añadió un segundo store ni datos mock para ocultar estados vacíos. Las operaciones mutan el mismo estado raíz usado por desktop; `saveData` conserva la política de caché local + sincronización Supabase ya existente.
+
+## Corrección profesional de Inicio Mobile/Tablet — 2026-07-14
+
+- Header: retirados logo y campana solo en V2; fecha española completa, racha y avatar real de Clerk/perfil con fallback gráfico.
+- Progreso: combina tareas y hábitos del día y usa un indicador de 62–70 px.
+- Captura rápida: abre el mismo `VoiceAssistant` y `voiceParseCommand` que desktop; admite texto, Enter, dictado, revisión y confirmación.
+- Hábitos: `ActionCenter` monta el `HabitForm` desktop completo y conserva categorías personalizadas, icono, color, frecuencia, racha y recordatorios.
+- Pomodoro rápido: inicia, pausa, reanuda y reinicia dentro del Panel; persiste `endAt`/tiempo restante en `user.quickPomodoro`, registra la sesión y comparte `user.pomodoro` con la vista completa.
+- Finanzas rápidas: gasto diario, gasto/presupuesto mensual, porcentaje, gráfica de siete días y categoría principal se derivan de `financeData`; la categoría abre Movimientos filtrados.
+- XP: nivel, XP total, XP del nivel, requisito y barra se calculan con la misma progresión de desktop.
+- Plan del día: eliminado “Añadir tarea”; checks y navegación a Agenda permanecen.
+- Capas: un modal abierto oculta temporalmente bottom nav y micrófono flotante para impedir intercepciones.
+- Pruebas: `scripts/test-mobile-home.js` (24 comprobaciones) y recorrido visual `scripts/capture-mobile-home.cjs` en 360, 390, 430, 768, 820 y desktop 1440.
+- Evidencias: `test-results/mobile-home-fixes/`.

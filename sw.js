@@ -1,4 +1,4 @@
-const CACHE_VERSION = 'habitflow-pwa-v2026-07-14-functional-audit-b';
+const CACHE_VERSION = 'habitflow-pwa-v2026-07-14-mobile-home-v2';
 const APP_SHELL = [
   './',
   './index.html',

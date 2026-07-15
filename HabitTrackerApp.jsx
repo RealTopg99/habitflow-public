@@ -258,7 +258,7 @@ const persistBrushingStorage = (state) => {
   } catch {}
 };
 
-const APP_UPDATE_VERSION = '2026-07-14-mobile-functional-audit-v1';
+const APP_UPDATE_VERSION = '2026-07-14-mobile-home-professional-v2';
 const APP_UPDATE_NOTES = [
   'Pomodoro ya no falla al terminar una sesión y ahora avisa al finalizar enfoque, descanso y descanso largo.',
   'Finanzas ahora usa un switch global USD/COP para mantener la vista limpia.',
@@ -23661,6 +23661,28 @@ const VoiceAssistant = ({
     }
   }, [interpretTranscript, releaseMicrophone, speechSupported, stopRecognition]);
 
+  useEffect(() => {
+    const openFromSharedCapture = event => {
+      const detail = event?.detail || {};
+      if (detail.voice) {
+        startListening();
+        return;
+      }
+      const command = String(detail.text || '').trim();
+      stopRecognition();
+      setTranscript(command);
+      transcriptRef.current = command;
+      setDraft(null);
+      setCorrection('');
+      setSuccessMessage('');
+      setError('');
+      if (command) interpretTranscript(command);
+      else setState('listening');
+    };
+    window.addEventListener('habitflow-open-shared-capture', openFromSharedCapture);
+    return () => window.removeEventListener('habitflow-open-shared-capture', openFromSharedCapture);
+  }, [interpretTranscript, startListening, stopRecognition]);
+
   const pauseAndReview = () => {
     const current = transcriptRef.current || transcript;
     setIsListening(false);
@@ -24964,6 +24986,10 @@ const HabitFlowApp = () => {
       const url = new URL(window.location.href);
       url.searchParams.set('view', safeView);
       ['agenda', 'workout', 'wallet', 'goals'].forEach(key => url.searchParams.delete(key));
+      Object.entries(options.params || {}).forEach(([key, value]) => {
+        if (value === undefined || value === null || value === '') url.searchParams.delete(key);
+        else url.searchParams.set(key, String(value));
+      });
       window.history[options.replace ? 'replaceState' : 'pushState']({ view: safeView }, '', url);
     }
     requestAnimationFrame(() => {
@@ -25690,6 +25716,18 @@ const HabitFlowApp = () => {
           streak={getGlobalCurrentStreak(data.habits, data.records)}
           dateLabel={formatDateSpanish(new Date())}
           onNotifications={() => requestHabitFlowNotifications()}
+          avatarUrl={data.user?.profileImage || data.user?.avatarUrl || data.user?.clerkImageUrl || window.Clerk?.user?.imageUrl || ''}
+          onProfile={() => {
+            if (typeof window.Clerk?.openUserProfile === 'function') window.Clerk.openUserProfile();
+            else navigateTo('settings');
+          }}
+          HabitForm={HabitForm}
+          habitCategories={[...CATEGORIES, ...(data.customHabitCategories || [])]}
+          onQuickPomodoroComplete={minutes => showHabitFlowNotification('Pomodoro terminado', {
+            body: `Completaste ${minutes} minutos de enfoque.`,
+            tag: `habitflow-quick-pomodoro-${toYYYYMMDD(new Date())}`,
+            data: { url: '/?view=pomodoro' }
+          })}
           onQuickAction={runDashboardQuickAction}
           pendingQuickAction={pendingQuickAction}
           onQuickActionHandled={markQuickActionHandled}

@@ -70,6 +70,19 @@
 
   const ActionCenter = ({ action, onClose, data, handlers, notify }) => {
     if (!action) return null;
+    if (action.type === 'habit' && handlers.HabitForm) {
+      const HabitForm = handlers.HabitForm;
+      return <FunctionalModal title="Nuevo hábito" onClose={onClose}><HabitForm
+        categories={handlers.habitCategories}
+        onCreateCategory={handlers.onCreateHabitCategory}
+        onCancel={onClose}
+        onSave={habit => {
+          handlers.onAddHabit({ ...habit, id: uid('habit'), createdAt: habit.createdAt || isoDate(), updatedAt: new Date().toISOString() });
+          notify('Hábito creado y sincronizado');
+          onClose();
+        }}
+      /></FunctionalModal>;
+    }
     const submit = event => {
       event.preventDefault();
       const fields = Object.fromEntries(new FormData(event.currentTarget));
@@ -85,7 +98,6 @@
     };
     const forms = {
       task: <><label>Nombre<input name="name" required autoFocus/></label><label>Fecha<input name="date" type="date" required defaultValue={isoDate()}/></label><label>Hora<input name="time" type="time" required defaultValue="09:00"/></label><label>Calendario<select name="category"><option>Personal</option><option>Trabajo</option><option>Salud</option></select></label></>,
-      habit: <><label>Nombre<input name="name" required autoFocus/></label><label>Categoría<select name="category"><option>Bienestar</option><option>Mente</option><option>Salud</option></select></label><label>Color<input name="color" type="color" defaultValue="#f3132b"/></label></>,
       expense: <><label>Monto<input name="amount" type="number" min="0.01" step="0.01" required autoFocus/></label><label>Cuenta<select name="account" required>{(data.financeData?.accounts || []).map(item => <option key={item.id} value={item.id}>{item.name}</option>)}</select></label><label>Categoría<select name="category">{(data.financeData?.categories || []).map(item => <option key={item.id} value={item.id}>{item.name}</option>)}</select></label><label>Fecha<input name="date" type="date" defaultValue={isoDate()} required/></label><label>Nota<input name="note"/></label></>,
       goal: <><label>Meta<input name="name" required autoFocus/></label><label>Objetivo<input name="target" type="number" min="1" required/></label><label>Imagen<input name="image" type="url"/></label></>,
       routine: <label>Nombre de la rutina<input name="name" required autoFocus/></label>,
@@ -97,17 +109,22 @@
     return <FunctionalModal title={titles[action.type]} onClose={onClose}><form className="m2-action-form" onSubmit={submit}>{forms[action.type]}<footer><Button secondary onClick={onClose}>Cancelar</Button><Button type="submit">Guardar</Button></footer></form></FunctionalModal>;
   };
 
-  const MobileV2Header = ({ userName, dateLabel, streak, onNotifications }) => (
-    <header className="m2-header" data-testid="mobile-v2-header">
-      <div className="m2-brand"><span className="m2-logo" aria-hidden="true"><i/><i/><i/><i/></span><strong>HabitFlow</strong></div>
-      <div className="m2-date"><CalendarDays size={18} /><span>{dateLabel}</span></div>
+  const MobileV2Header = ({ userName, streak, avatarUrl, onProfile }) => {
+    const [imageFailed, setImageFailed] = useState(false);
+    const compact = global.matchMedia('(max-width: 350px)').matches;
+    const dateLabel = new Date().toLocaleDateString('es-CO', { weekday: compact ? 'short' : 'long', day: 'numeric', month: 'long' });
+    const generatedAvatar = `data:image/svg+xml,${encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="32" fill="#17191d"/><circle cx="32" cy="25" r="12" fill="#f3132b"/><path d="M12 58c2-14 10-21 20-21s18 7 20 21" fill="#f3132b"/><circle cx="28" cy="23" r="2" fill="white"/><circle cx="36" cy="23" r="2" fill="white"/></svg>')}`;
+    const avatarSrc = avatarUrl || generatedAvatar;
+    return <header className="m2-header" data-testid="mobile-v2-header">
+      <div className="m2-date"><CalendarDays size={19} /><span>{dateLabel}</span></div>
       <div className="m2-header-actions">
-        <span className="m2-streak"><Flame size={22} /><b>{streak}</b></span>
-        <button type="button" aria-label="Notificaciones" onClick={onNotifications}><Bell size={22} /><i /></button>
-        <span className="m2-avatar">{initials(userName)}</span>
+        <span className="m2-streak" aria-label={`${streak} días de racha`}><Flame size={21} /><b>{streak}</b></span>
+        <button type="button" className="m2-avatar" aria-label="Abrir perfil" onClick={onProfile}>
+          {!imageFailed ? <img src={avatarSrc} alt="" onError={() => setImageFailed(true)}/> : <span>{initials(userName)}</span>}
+        </button>
       </div>
-    </header>
-  );
+    </header>;
+  };
 
   const PRIMARY_NAV = [
     { id: 'dashboard', label: 'Inicio', icon: Home },
@@ -139,27 +156,38 @@
 
   const ProgressRing = ({ value = 0, label = 'Completado hoy', size = 104 }) => <div className="m2-ring" style={{ '--m2-progress': `${Math.max(0, Math.min(100, value))}%`, width: size, height: size }}><strong>{Math.round(value)}%</strong><span>{label}</span></div>;
 
-  const HomePage = ({ data, navigate, openAction, streak, onCompleteHabit, onUpdateAgenda }) => {
-    const habits = activeHabits(data);
-    const today = isoDate();
-    const done = habits.filter(habit => recordsFor(data, habit.id, today)).length;
-    const pct = habits.length ? Math.round(done / habits.length * 100) : 0;
-    const agenda = (data.agenda?.[today] || []).slice(0, 3);
-    const pending = habits.filter(habit => !recordsFor(data, habit.id, today)).slice(0, 3);
-    const finance = data.financeData || {};
-    const expenses = (finance.transactions || []).filter(item => item.type === 'expense').reduce((sum, item) => sum + Number(item.amount || 0), 0);
-    return <div className="m2-page m2-home-page"><div className="m2-hero-row"><div><h1>Buenas tardes, <em>{data.user?.name || 'Usuario'}.</em></h1><p>Mantén el enfoque. Pequeñas acciones, grandes resultados.</p></div><ProgressRing value={pct} /></div>
-      <button className="m2-capture" onClick={() => openAction('task')}><Sparkles size={22} /><span>Captura algo rápido... tarea, hábito, gasto o evento</span><Mic size={23} /></button>
-      <div className="m2-quick-grid">{[
-        ['task', 'Nueva tarea', CalendarDays], ['pomodoro', 'Pomodoro', Timer], ['habit', 'Nuevo hábito', Target], ['expense', 'Nuevo gasto', WalletCards]
-      ].map(([id, label, Icon]) => <button key={id} onClick={() => id === 'pomodoro' ? navigate('pomodoro') : openAction(id)}><Icon size={29} /><span>{label}</span></button>)}</div>
+  const SharedCapture = () => {
+    const [open,setOpen]=useState(false); const [command,setCommand]=useState('');
+    const submit=event=>{event?.preventDefault?.();if(!command.trim())return;global.dispatchEvent(new CustomEvent('habitflow-open-shared-capture',{detail:{text:command.trim()}}));setCommand('');setOpen(false)};
+    const voice=()=>{global.dispatchEvent(new CustomEvent('habitflow-open-shared-capture',{detail:{voice:true}}));setOpen(false)};
+    return <><div className="m2-capture-shell"><button className="m2-capture" onClick={()=>setOpen(true)}><Sparkles size={22}/><span>Captura algo rápido... tarea, hábito, gasto o evento</span></button><button className="m2-capture-mic" aria-label="Dictar captura rápida" onClick={voice}><Mic/></button></div>{open&&<FunctionalModal title="Captura rápida" onClose={()=>setOpen(false)}><form className="m2-shared-capture" onSubmit={submit}><label>¿Qué quieres registrar?<textarea autoFocus value={command} onChange={event=>setCommand(event.target.value)} onKeyDown={event=>{if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();submit(event)}}} placeholder="Ej.: Gasté 20.000 pesos en comida con Bancolombia"/></label><p>Usa el mismo intérprete de Agenda, Hábitos y Finanzas. Podrás revisar todo antes de guardar.</p><footer><Button secondary onClick={voice}><Mic/>Dictar</Button><Button type="submit" disabled={!command.trim()}><ArrowUp/>Interpretar</Button></footer></form></FunctionalModal>}</>;
+  };
+
+  const QuickPomodoroCard = ({ data, onUpdateUser, onUpdatePomodoro, onComplete, navigate }) => {
+    const settings=data.user?.pomodoro||{focus:25,shortBreak:5,longBreak:15}; const saved=data.user?.quickPomodoro||{};
+    const baseDuration=Math.max(1,Number(saved.duration||settings.focus||25)); const [clock,setClock]=useState(Date.now()); const [showSettings,setShowSettings]=useState(false); const [local,setLocal]=useState(settings); const completionRef=useRef('');
+    const running=!!saved.running&&Number(saved.endAt)>Date.now(); const remaining=running?Math.max(0,Math.ceil((Number(saved.endAt)-clock)/1000)):Math.max(0,Number(saved.remaining??baseDuration*60));
+    const persist=patch=>onUpdateUser({quickPomodoro:{duration:baseDuration,remaining,...saved,...patch,updatedAt:new Date().toISOString()}});
+    useEffect(()=>{if(!saved.running)return;const id=setInterval(()=>setClock(Date.now()),1000);return()=>clearInterval(id)},[saved.running,saved.endAt]);
+    useEffect(()=>{if(!saved.running||Number(saved.endAt)>clock)return;const key=String(saved.endAt);if(completionRef.current===key)return;completionRef.current=key;persist({running:false,endAt:null,remaining:baseDuration*60});onUpdatePomodoro(prev=>[...(prev||[]),{id:uid('pomodoro'),date:isoDate(),completedAt:new Date().toISOString(),focusTime:baseDuration,source:'mobile-home'}]);onComplete?.(baseDuration)},[clock,saved.running,saved.endAt]);
+    const choose=value=>persist({duration:value,remaining:value*60,running:false,endAt:null}); const start=()=>persist({running:true,endAt:Date.now()+Math.max(1,remaining)*1000}); const pause=()=>persist({running:false,endAt:null,remaining}); const reset=()=>persist({running:false,endAt:null,remaining:baseDuration*60});
+    const saveSettings=()=>{onUpdateUser({pomodoro:{...settings,...local}});if(!saved.running)persist({duration:Number(local.focus),remaining:Number(local.focus)*60});setShowSettings(false)};
+    return <><Card className="m2-pomodoro-mini"><header><h2><Timer size={20}/>Pomodoro rápido</h2><button aria-label="Configurar Pomodoro rápido" onClick={()=>{setLocal(settings);setShowSettings(true)}}><Settings size={18}/></button></header><strong>{minutes(remaining)}</strong><div className="m2-duration-row">{[25,15,50].map(value=><button onClick={()=>choose(value)} className={baseDuration===value?'is-active':''} key={value}>{value} min</button>)}</div><div className="m2-pomo-quick-actions"><Button onClick={running?pause:start}>{running?<Pause/>:<Play/>}{running?'Pausar':remaining<baseDuration*60?'Reanudar':'Iniciar'}</Button><button aria-label="Reiniciar Pomodoro" onClick={reset}><RefreshCcw/></button></div><button className="m2-open-pomodoro" onClick={()=>navigate('pomodoro')}>Abrir Pomodoro completo</button></Card>{showSettings&&<FunctionalModal title="Configurar Pomodoro" onClose={()=>setShowSettings(false)}><div className="m2-pomo-quick-settings">{[['focus','Enfoque',1,120],['shortBreak','Descanso corto',1,30],['longBreak','Descanso largo',5,60]].map(([key,label,min,max])=><label key={key}>{label}<input type="number" min={min} max={max} value={local[key]} onChange={event=>setLocal(current=>({...current,[key]:Math.max(min,Math.min(max,Number(event.target.value)||min))}))}/></label>)}<label className="m2-toggle-label">Sonido al finalizar<input type="checkbox" checked={local.soundEnabled!==false} onChange={event=>setLocal(current=>({...current,soundEnabled:event.target.checked}))}/></label><label className="m2-toggle-label">Alerta visual<input type="checkbox" checked={local.alertEnabled!==false} onChange={event=>setLocal(current=>({...current,alertEnabled:event.target.checked}))}/></label><label>Modo de enfoque<select value={local.focusMode||'standard'} onChange={event=>setLocal(current=>({...current,focusMode:event.target.value}))}><option value="standard">Estándar</option><option value="distraction-free">Sin distracciones</option></select></label><footer><Button secondary onClick={()=>setShowSettings(false)}>Cancelar</Button><Button onClick={saveSettings}>Guardar configuración</Button></footer></div></FunctionalModal>}</>;
+  };
+
+  const HomePage = ({ data, navigate, openAction, streak, onCompleteHabit, onUpdateAgenda, onUpdateUser, onUpdatePomodoro, onQuickPomodoroComplete }) => {
+    const habits=activeHabits(data); const today=isoDate(); const allAgenda=data.agenda?.[today]||[]; const agenda=allAgenda.slice(0,3); const doneHabits=habits.filter(habit=>recordsFor(data,habit.id,today)).length; const completedTasks=allAgenda.filter(item=>item.completed).length; const pct=habits.length+allAgenda.length?Math.round((doneHabits+completedTasks)/(habits.length+allAgenda.length)*100):0; const pending=habits.filter(habit=>!recordsFor(data,habit.id,today)).slice(0,3);
+    const finance=data.financeData||{}; const rate=Math.max(1,Number(finance.copRate||4000)); const currency=finance.currency||'COP'; const tx=(finance.transactions||[]).filter(item=>item.category!=='transfer'); const month=today.slice(0,7); const expenses=tx.filter(item=>item.type==='expense'); const toDisplay=amount=>currency==='COP'?Number(amount||0)*rate:Number(amount||0); const todaySpend=expenses.filter(item=>item.date===today).reduce((sum,item)=>sum+toDisplay(item.amount),0); const monthSpend=expenses.filter(item=>String(item.date||'').startsWith(month)).reduce((sum,item)=>sum+toDisplay(item.amount),0); const budget=toDisplay(finance.monthlyBudget||0); const budgetPct=budget?Math.min(100,Math.round(monthSpend/budget*100)):0; const days=Array.from({length:7},(_,index)=>{const date=new Date();date.setDate(date.getDate()-(6-index));return isoDate(date)}); const chart=days.map(date=>expenses.filter(item=>item.date===date).reduce((sum,item)=>sum+toDisplay(item.amount),0)); const maxChart=Math.max(1,...chart); const byCategory=expenses.filter(item=>item.date===today).reduce((map,item)=>{map[item.category]=(map[item.category]||0)+toDisplay(item.amount);return map},{}); const topCategory=Object.entries(byCategory).sort((a,b)=>b[1]-a[1])[0]; const categoryInfo=finance.categories?.find(item=>item.id===topCategory?.[0]);
+    let xp=Number(data.user?.xp||0),level=1,needed=Math.round(100*level*1.5);while(xp>=needed){xp-=needed;level+=1;needed=Math.round(100*level*1.5)}const xpPct=needed?Math.round(xp/needed*100):0;
+    return <div className="m2-page m2-home-page"><div className="m2-hero-row"><div><h1>Buenas tardes, <em>{data.user?.name||'Usuario'}.</em></h1><p>Mantén el enfoque. Pequeñas acciones, grandes resultados.</p></div><ProgressRing value={pct} size={64}/></div><SharedCapture/>
+      <div className="m2-quick-grid">{[['task','Nueva tarea',CalendarDays],['pomodoro','Pomodoro',Timer],['habit','Nuevo hábito',Target],['expense','Nuevo gasto',WalletCards]].map(([id,label,Icon])=><button key={id} onClick={()=>id==='pomodoro'?document.querySelector('.m2-pomodoro-mini')?.scrollIntoView({behavior:'smooth',block:'center'}):openAction(id)}><Icon size={27}/><span>{label}</span></button>)}</div>
       <div className="m2-home-grid">
-        <Card className="m2-list-card"><header><h2><CalendarDays size={20} />Plan del día</h2><button onClick={() => navigate('agenda')}>Ver todo</button></header>{agenda.length ? agenda.map(item => <button className="m2-line m2-line-button" key={item.id} onClick={() => onUpdateAgenda(today, rows => rows.map(row => row.id === item.id ? { ...row, completed: !row.completed } : row))}>{item.completed ? <CheckCircle2 size={19}/> : <Circle size={19}/>}<span>{item.text || item.title}</span><small>{item.startTime || item.dueTime || 'Hoy'}</small></button>) : <p className="m2-muted">Tu plan está despejado. Añade una tarea.</p>}<button className="m2-link" onClick={() => openAction('task')}><Plus size={16} />Añadir tarea</button></Card>
-        <Card className="m2-list-card"><header><h2><RefreshCcw size={20} />Hábitos pendientes</h2><button onClick={() => navigate('habits')}>Ver todo</button></header>{pending.length ? pending.map((habit, index) => <button className="m2-line m2-line-button" key={habit.id} onClick={() => onCompleteHabit(habit.id)}><IconCircle tone={['green','amber','blue'][index] || 'red'}><Target size={18} /></IconCircle><span>{habit.name}</span><small>0/1</small></button>) : <p className="m2-muted">Todos los hábitos están listos.</p>}<button className="m2-link" onClick={() => openAction('habit')}><Plus size={16} />Añadir hábito</button></Card>
-        <Card className="m2-pomodoro-mini"><header><h2><Timer size={20} />Pomodoro rápido</h2><Settings size={18} /></header><strong>25:00</strong><div className="m2-duration-row"><button onClick={() => navigate('pomodoro')} className="is-active">25 min</button><button onClick={() => navigate('pomodoro')}>15 min</button><button onClick={() => navigate('pomodoro')}>50 min</button></div><Button onClick={() => navigate('pomodoro')}><Play size={18} />Iniciar</Button></Card>
-        <Card className="m2-finance-mini"><header><h2><WalletCards size={20} />Finanzas rápidas</h2><button onClick={() => navigate('finance')}>Ver todo</button></header><span>Gasto registrado</span><strong>{money(expenses, finance.currency || 'USD')}</strong><div className="m2-sparkline"><i/><i/><i/><i/><i/></div><hr/><span>Presupuesto mensual</span><b>{money(finance.monthlyBudget || 0, finance.currency || 'USD')}</b><div className="m2-progress"><i style={{width:'35%'}}/></div></Card>
-        <Card className="m2-xp-card"><header><span>Nivel {data.user?.level || 1}</span><small>{data.user?.xp || 0} XP</small></header><div><Medal size={48}/><span><strong>Camino imparable</strong><small>{data.user?.xp || 0} XP acumulados</small><i className="m2-progress"><b style={{width:'57%'}}/></i></span></div></Card>
-        <Card className="m2-achievement"><header><h2>Logros recientes</h2><button onClick={() => navigate('habits')}>Ver todos</button></header><div><Trophy size={44}/><span><strong>Racha de fuego</strong><small>{streak} días consecutivos</small></span></div></Card>
+        <Card className="m2-list-card"><header><h2><CalendarDays size={20}/>Plan del día</h2><button onClick={()=>navigate('agenda')}>Ver todo</button></header>{agenda.length?agenda.map(item=><div className="m2-line" key={item.id}><button aria-label={`${item.completed?'Descompletar':'Completar'} ${item.text||item.title}`} onClick={()=>onUpdateAgenda(today,rows=>rows.map(row=>row.id===item.id?{...row,completed:!row.completed}:row))}>{item.completed?<CheckCircle2 size={19}/>:<Circle size={19}/>}</button><button className="m2-line-title" onClick={()=>navigate('agenda')}>{item.text||item.title}</button><small>{item.startTime||item.dueTime||'Hoy'}</small></div>):<p className="m2-muted">Tu plan está despejado.</p>}</Card>
+        <Card className="m2-list-card"><header><h2><RefreshCcw size={20}/>Hábitos pendientes</h2><button onClick={()=>navigate('habits')}>Ver todo</button></header>{pending.length?pending.map((habit,index)=><div className="m2-line" key={habit.id}><button aria-label={`Completar ${habit.name}`} onClick={()=>onCompleteHabit(habit.id)}><IconCircle tone={['green','amber','blue'][index]||'red'}><Target size={18}/></IconCircle></button><button className="m2-line-title" onClick={()=>navigate('habits')}>{habit.name}</button><small>0/1</small></div>):<p className="m2-muted">Todos los hábitos están listos.</p>}<button className="m2-link" onClick={()=>openAction('habit')}><Plus size={16}/>Añadir hábito</button></Card>
+        <QuickPomodoroCard data={data} onUpdateUser={onUpdateUser} onUpdatePomodoro={onUpdatePomodoro} onComplete={onQuickPomodoroComplete} navigate={navigate}/>
+        <Card className="m2-finance-mini"><header><h2><WalletCards size={20}/>Finanzas rápidas</h2><button onClick={()=>navigate('finance')}>Ver todo</button></header><span>Gasto del día</span><strong>{money(todaySpend,currency)}</strong><div className="m2-real-sparkline" aria-label="Gastos de los últimos siete días">{chart.map((value,index)=><i key={days[index]} style={{height:`${Math.max(5,value/maxChart*100)}%`}}/>)}</div><button className="m2-budget-summary" onClick={()=>navigate('finance')}><span>Presupuesto mensual</span><b>{money(monthSpend,currency)} / {money(budget,currency)}</b><em>{budgetPct}%</em><i className="m2-progress"><b style={{width:`${budgetPct}%`}}/></i></button><button className="m2-category-summary" disabled={!topCategory} onClick={()=>navigate('finance',{params:{wallet:'movements',category:topCategory?.[0]}})}><span>Categoría principal<strong>{categoryInfo?.name||categoryInfo?.label||'Sin gastos hoy'}</strong></span><b>{topCategory?money(topCategory[1],currency):money(0,currency)}</b></button></Card>
+        <Card className="m2-xp-card"><header><span>Nivel {data.user?.level||level}</span><small>{data.user?.xp||0} XP</small></header><button onClick={()=>navigate('habits')}><Medal size={42}/><span><strong>Camino imparable</strong><small>{xp} / {needed} XP</small><i className="m2-progress"><b style={{width:`${xpPct}%`}}/></i></span></button></Card>
+        <Card className="m2-achievement"><header><h2>Logros recientes</h2><button onClick={()=>navigate('habits')}>Ver todos</button></header><button onClick={()=>navigate('habits')}><Trophy size={40}/><span><strong>Racha de fuego</strong><small>{streak} días consecutivos</small></span></button></Card>
       </div>
     </div>;
   };
@@ -238,7 +266,7 @@
   const WalletNav=({value,onChange})=><nav className="m2-wallet-nav" aria-label="Secciones de Wallet">{walletTabs.map(item=><button type="button" aria-current={value===item.id?'page':undefined} className={value===item.id?'is-active':''} key={item.id} onClick={()=>onChange(item.id)}><item.icon/><span>{item.label}</span></button>)}</nav>;
   const WalletPage = ({ data, onUpdateFinance, openAction, notify }) => {
     const [section,change]=useQuerySection('wallet','summary',['summary','add','accounts','movements','categories','export']); const [txType,setTxType]=useState('income'); const [search,setSearch]=useState(''); const [movementType,setMovementType]=useState('all'); const [categoryType,setCategoryType]=useState('expense'); const [currency,setCurrency]=useState('COP');
-    const finance=data.financeData||{}; const rate=Number(finance.copRate||4000); const accounts=finance.accounts||[]; const tx=finance.transactions||[]; const inCop=value=>Number(value||0)*rate; const total=accounts.reduce((s,a)=>s+inCop(a.balance),0); const currencyValue=value=>currency==='COP'?value:currency==='USD'?value/rate:value/(rate*1.08); const filteredTx=tx.filter(item=>(movementType==='all'||item.type===movementType)&&`${item.payee||''} ${item.note||''}`.toLowerCase().includes(search.toLowerCase()));
+    const finance=data.financeData||{}; const rate=Number(finance.copRate||4000); const accounts=finance.accounts||[]; const tx=finance.transactions||[]; const categoryFilter=routeParam('category',''); const inCop=value=>Number(value||0)*rate; const total=accounts.reduce((s,a)=>s+inCop(a.balance),0); const currencyValue=value=>currency==='COP'?value:currency==='USD'?value/rate:value/(rate*1.08); const filteredTx=tx.filter(item=>(movementType==='all'||item.type===movementType)&&(!categoryFilter||item.category===categoryFilter)&&`${item.payee||''} ${item.note||''}`.toLowerCase().includes(search.toLowerCase()));
     const back=<button type="button" className="m2-back" aria-label="Volver al resumen de Wallet" onClick={()=>change('summary')}><ArrowLeft/></button>;
     const addTx=event=>{event.preventDefault();const fd=new FormData(event.currentTarget);const amountCop=Number(fd.get('amount')||0);const source=fd.get('account');const target=fd.get('target');if(!amountCop||!source)return;const amount=amountCop/rate;onUpdateFinance(prev=>({...prev,transactions:[{id:uid('fin'),type:txType,amount,category:fd.get('category')||'general',accountId:source,targetAccountId:target||null,payee:fd.get('note')||({income:'Ingreso',expense:'Gasto',transfer:'Transferencia'}[txType]),note:fd.get('note')||'',date:fd.get('date')||isoDate(),updatedAt:new Date().toISOString()},...(prev.transactions||[])],accounts:(prev.accounts||[]).map(account=>account.id===source?{...account,balance:Number(account.balance||0)+(txType==='income'?amount:-amount)}:txType==='transfer'&&account.id===target?{...account,balance:Number(account.balance||0)+amount}:account),updatedAt:new Date().toISOString()}));notify('Movimiento guardado y sincronizado');change('movements')};
     const exportData=()=>{const rows=[['tipo','fecha','descripción','monto_COP'],...tx.map(item=>[item.type,item.date,item.payee||item.note||'Movimiento',Math.round(inCop(item.amount))])];const csv=rows.map(row=>row.map(value=>`"${String(value??'').replaceAll('"','""')}"`).join(',')).join('\n');const blob=new Blob([`\uFEFF${csv}`],{type:'text/csv;charset=utf-8'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=`habitflow-wallet-${isoDate()}.csv`;a.click();URL.revokeObjectURL(url);notify('Archivo CSV generado')};
@@ -269,11 +297,11 @@
     const [action,setAction]=useState(null); const [feedback,setFeedback]=useState('');
     const notify=useCallback(message=>{setFeedback(message);global.clearTimeout(MobileTabletV2App.feedbackTimer);MobileTabletV2App.feedbackTimer=global.setTimeout(()=>setFeedback(''),3200)},[]);
     const openAction=useCallback((type,extra={})=>setAction({type,...extra}),[]);
-    const navigateSafely=useCallback(next=>{setMoreOpen(false);navigate(next)},[navigate,setMoreOpen]);
+    const navigateSafely=useCallback((next,options)=>{setMoreOpen(false);navigate(next,options)},[navigate,setMoreOpen]);
     useEffect(()=>{if(!props.pendingQuickAction)return;const map={task:'task',habit:'habit',expense:'expense',goal:'goal',routine:'routine'};const type=map[props.pendingQuickAction.action||props.pendingQuickAction.type];if(type)openAction(type);props.onQuickActionHandled?.(props.pendingQuickAction.id)},[props.pendingQuickAction,props.onQuickActionHandled,openAction]);
-    const handlers={onUpdateAgenda:props.onUpdateAgenda,onAddHabit:props.onAddHabit,onUpdateFinance:props.onUpdateFinance,onUpdateDreamGoals:props.onUpdateDreamGoals,onUpdateWorkout:props.onUpdateWorkout};
+    const handlers={onUpdateAgenda:props.onUpdateAgenda,onAddHabit:props.onAddHabit,onUpdateFinance:props.onUpdateFinance,onUpdateDreamGoals:props.onUpdateDreamGoals,onUpdateWorkout:props.onUpdateWorkout,onCreateHabitCategory:props.onCreateHabitCategory,HabitForm:props.HabitForm,habitCategories:props.habitCategories};
     let page;
-    if(view==='dashboard')page=<HomePage data={data} navigate={navigateSafely} openAction={openAction} streak={streak} onCompleteHabit={props.onCompleteHabit} onUpdateAgenda={props.onUpdateAgenda}/>;
+    if(view==='dashboard')page=<HomePage data={data} navigate={navigateSafely} openAction={openAction} streak={streak} onCompleteHabit={props.onCompleteHabit} onUpdateAgenda={props.onUpdateAgenda} onUpdateUser={props.onUpdateUser} onUpdatePomodoro={props.onUpdatePomodoro} onQuickPomodoroComplete={props.onQuickPomodoroComplete}/>;
     else if(view==='habits')page=<HabitsPage data={data} onCompleteHabit={props.onCompleteHabit} hydration={props.hydration} onToggleHydrationWidget={props.onToggleHydrationWidget} openAction={openAction}/>;
     else if(view==='pomodoro')page=<PomodoroPage data={data} onUpdatePomodoro={props.onUpdatePomodoro} onUpdateUser={props.onUpdateUser} onUpdateAgenda={props.onUpdateAgenda} openAction={openAction}/>;
     else if(view==='agenda')page=<AgendaPage data={data} onUpdateAgenda={props.onUpdateAgenda} openAction={openAction}/>;
@@ -282,7 +310,7 @@
     else if(view==='finance')page=<WalletPage data={data} onUpdateFinance={props.onUpdateFinance} openAction={openAction} notify={notify}/>;
     else if(view==='health')page=<HealthPage data={data} hydration={props.hydration} brushing={props.brushing} addHydration={props.addHydration} addBrushing={props.addBrushing} onUpdateHealth={props.onUpdateHealth}/>;
     else page=<SettingsPage data={data} onUpdateUser={props.onUpdateUser} onNotifications={onNotifications} notify={notify}/>;
-    return <div className={`mobile-v2 mobile-v2-${view}`} data-testid="mobile-tablet-v2-shell"><MobileV2Header userName={data.user?.name} dateLabel={dateLabel} streak={streak} onNotifications={onNotifications}/><main id="habitflow-main" tabIndex="-1">{page}</main><MobileV2BottomNav view={view} onNavigate={navigateSafely} moreOpen={moreOpen} onToggleMore={()=>setMoreOpen(!moreOpen)} workoutActive={view==='workout'}/><MobileV2MoreSheet open={moreOpen} view={view} onClose={()=>setMoreOpen(false)} onNavigate={navigateSafely} creatorAccess={creatorAccess}/>{action&&<ActionCenter action={action} onClose={()=>setAction(null)} data={data} handlers={handlers} notify={notify}/>} {feedback&&<div className="m2-feedback" role="status">{feedback}</div>}</div>;
+    return <div className={`mobile-v2 mobile-v2-${view}`} data-testid="mobile-tablet-v2-shell"><MobileV2Header userName={data.user?.name} streak={streak} avatarUrl={props.avatarUrl} onProfile={props.onProfile}/><main id="habitflow-main" tabIndex="-1">{page}</main><MobileV2BottomNav view={view} onNavigate={navigateSafely} moreOpen={moreOpen} onToggleMore={()=>setMoreOpen(!moreOpen)} workoutActive={view==='workout'}/><MobileV2MoreSheet open={moreOpen} view={view} onClose={()=>setMoreOpen(false)} onNavigate={navigateSafely} creatorAccess={creatorAccess}/>{action&&<ActionCenter action={action} onClose={()=>setAction(null)} data={data} handlers={handlers} notify={notify}/>} {feedback&&<div className="m2-feedback" role="status">{feedback}</div>}</div>;
   };
 
   global.HabitFlowMobileV2 = Object.freeze({ MobileTabletV2App, useMobileV2Viewport });

@@ -14,9 +14,10 @@
     "test:pwa": "node scripts/test-pwa-update.js",
     "test:responsive": "node scripts/test-mobile-tablet.js",
     "test:functional": "node scripts/test-mobile-functional.js",
+    "test:mobile-home": "node scripts/test-mobile-home.js",
     "sync:exercises": "node scripts/sync-exercises-dataset.mjs",
     "translate:exercises": "node scripts/translate-exercise-names.mjs",
-    "test": "node scripts/test-widget-sync.js && node scripts/test-typography.js && node scripts/test-sidebar.js && node scripts/test-entreno.js && node scripts/test-pwa-update.js && node scripts/test-mobile-tablet.js && node scripts/test-mobile-functional.js && node scripts/check-text-encoding.js"
+    "test": "node scripts/test-widget-sync.js && node scripts/test-typography.js && node scripts/test-sidebar.js && node scripts/test-entreno.js && node scripts/test-pwa-update.js && node scripts/test-mobile-tablet.js && node scripts/test-mobile-functional.js && node scripts/test-mobile-home.js && node scripts/check-text-encoding.js"
   },
   "dependencies": {
     "web-push": "^3.6.7"
