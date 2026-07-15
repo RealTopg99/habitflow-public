@@ -134,3 +134,14 @@ No se añadió un segundo store ni datos mock para ocultar estados vacíos. Las 
 - Capas: un modal abierto oculta temporalmente bottom nav y micrófono flotante para impedir intercepciones.
 - Pruebas: `scripts/test-mobile-home.js` (24 comprobaciones) y recorrido visual `scripts/capture-mobile-home.cjs` en 360, 390, 430, 768, 820 y desktop 1440.
 - Evidencias: `test-results/mobile-home-fixes/`.
+
+## Corrección específica Inicio full-width — 2026-07-14
+
+- Causa del teclado: `FunctionalModal` dependía de una función `onClose` recreada por `SharedCapture`; cada carácter limpiaba y repetía el efecto de foco, devolviéndolo al botón de cierre y sacándolo del `textarea`.
+- Foco estable: el modal conserva `onClose` en una referencia, instala su ciclo de foco una sola vez y la captura usa borrador local, `textarea`/ref estable, `inputMode="text"`, `enterKeyHint="send"` y foco único al abrir.
+- Panel: Plan del día, Hábitos pendientes, Pomodoro rápido y Finanzas rápidas viven en `m2-home-main-sections`, una columna flex de ancho completo entre 320 y 1180 px.
+- Altura dinámica: se retiraron los recortes `.slice(0,3)` y las alturas mínimas heredadas; tareas y hábitos se muestran completos, hasta dos líneas por nombre, sin scroll interno.
+- Contenido secundario: XP y Logros quedan en `m2-home-secondary`, fuera del contenedor principal solicitado.
+- Prueba funcional/visual: `scripts/capture-home-full-width.cjs` comprueba foco carácter por carácter, borrado, tildes, números, rotación, Enter, cancelar/reabrir, 15 tareas, 15 hábitos, Pomodoro, configuración, Finanzas y desktop.
+- Resoluciones verificadas: 320×568, 360×800, 390×844, 430×932, 768×1024, 820×1180, 1024×1366 y desktop 1440×900.
+- Evidencias: `test-results/home-full-width-fixes/`.
