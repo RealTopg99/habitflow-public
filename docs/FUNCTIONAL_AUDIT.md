@@ -156,3 +156,4 @@ No se añadió un segundo store ni datos mock para ocultar estados vacíos. Las 
 - Racha: animación `m2-streak-flame` de 2.3 segundos, leve traslación/rotación/escala y alternativa sin movimiento mediante `prefers-reduced-motion`.
 - Accesos rápidos: una sola fila compacta; Nueva tarea y Nuevo hábito abren formularios reales, Pomodoro navega a su sección y Nuevo gasto abre Wallet/Agregar con Gasto seleccionado.
 - Evidencias y recorridos: `scripts/capture-home-polish.cjs` y `test-results/home-polish-fixes/` en 320, 360, 390, 430, 768, 820 y desktop 1440.
+- Corrección V5: el desbordamiento de Fecha/Hora provenía de aplicar `width: 100%` con `box-sizing: content-box` a `voice-assistant-body`, `voice-draft-card` y los hijos del grid. Todos los contenedores relevantes usan ahora `border-box`; cada campo usa ancho automático dentro de su track y los inputs permanecen dentro de los límites del grid y la tarjeta en 320–820 px.

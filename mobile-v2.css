@@ -104,8 +104,10 @@ html[data-theme-mode="pinkLight"]{--m2-bg:#fff7fa;--m2-bg-elevated:#fff;--m2-sur
   .m2-finance-mini .m2-budget-summary{padding-bottom:0}
   .voice-assistant-backdrop{background:rgba(0,0,0,.92);backdrop-filter:none}
   .voice-assistant{position:relative;z-index:1;background:#080808!important;isolation:isolate;contain:paint}
-  .voice-assistant,.voice-assistant-body,.voice-draft-list,.voice-draft-card,.voice-field-grid,.voice-field{width:100%;max-width:100%;min-width:0}
-  .voice-field-grid>*{min-width:0;max-width:100%}
+  .voice-assistant,.voice-assistant-body,.voice-draft-list,.voice-draft-card,.voice-field-grid,.voice-field{max-width:100%;min-width:0;box-sizing:border-box}
+  .voice-assistant,.voice-assistant-body,.voice-draft-list,.voice-draft-card,.voice-field-grid{width:100%}
+  .voice-field{width:auto}
+  .voice-field-grid>*{min-width:0;max-width:100%;box-sizing:border-box}
   .voice-field input,.voice-field select{display:block;width:100%;max-width:100%;min-width:0;box-sizing:border-box}
 }
 @media(max-width:767px){

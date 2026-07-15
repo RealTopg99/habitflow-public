@@ -6,7 +6,7 @@ const output = path.resolve('test-results/home-polish-fixes');
 fs.mkdirSync(output, { recursive: true });
 const url = 'http://127.0.0.1:8080/index.html?dev-preview=1&view=dashboard';
 const chrome = 'C:/Program Files/Google/Chrome/Application/chrome.exe';
-const version = '2026-07-14-mobile-home-polish-v4';
+const version = '2026-07-14-mobile-capture-layout-v5';
 
 const prepare = async (page, errors, label) => {
   page.on('pageerror', error => errors.push(`${label}: ${error.message}`));
@@ -58,12 +58,19 @@ const layoutAudit = page => page.evaluate(() => {
   await fields.locator('.m2-shared-capture textarea').fill('Reunión mañana a las 3');
   await fields.getByRole('button', { name: 'Interpretar', exact: true }).click();
   await fields.getByRole('heading', { name: 'Entendí esto' }).waitFor();
-  const fieldAudit = await fields.evaluate(() => {
+  const readFieldAudit = () => fields.evaluate(() => {
     const viewport = document.documentElement.clientWidth;
     const nodes = [...document.querySelectorAll('.voice-field input[type="date"],.voice-field input[type="time"]')];
-    return { count: nodes.length, overflow: document.documentElement.scrollWidth - viewport, rects: nodes.map(node => { const rect = node.getBoundingClientRect(); return { left: rect.left, right: rect.right, width: rect.width }; }) };
+    const card = document.querySelector('.voice-draft-card')?.getBoundingClientRect();
+    const grid = document.querySelector('.voice-field-grid')?.getBoundingClientRect();
+    return { viewport, count: nodes.length, overflow: document.documentElement.scrollWidth - viewport, card: card&&{left:card.left,right:card.right}, grid:grid&&{left:grid.left,right:grid.right}, rects: nodes.map(node => { const rect = node.getBoundingClientRect(); return { left: rect.left, right: rect.right, width: rect.width }; }) };
   });
-  if (fieldAudit.count < 2 || fieldAudit.overflow > 1 || fieldAudit.rects.some(rect => rect.left < 0 || rect.right > 320 || rect.width <= 0)) throw new Error(`Fecha/hora: ${JSON.stringify(fieldAudit)}`);
+  for (const [width,height] of [[320,568],[360,800],[390,844],[430,932],[768,1024],[820,1180]]) {
+    await fields.setViewportSize({width,height});
+    const fieldAudit = await readFieldAudit();
+    if (fieldAudit.count < 2 || fieldAudit.overflow > 1 || fieldAudit.rects.some(rect => rect.left < 0 || rect.right > fieldAudit.viewport || rect.width <= 0 || rect.left < fieldAudit.grid.left - 1 || rect.right > fieldAudit.grid.right + 1 || rect.left < fieldAudit.card.left || rect.right > fieldAudit.card.right)) throw new Error(`Fecha/hora ${width}px: ${JSON.stringify(fieldAudit)}`);
+  }
+  await fields.setViewportSize({width:320,height:568});
   await fields.locator('.voice-assistant').screenshot({ path: path.join(output, 'quick-capture-date-time.png') });
   await fields.locator('.voice-assistant').getByRole('button', { name: 'Cancelar', exact: true }).click();
   await fields.close();

@@ -1,4 +1,4 @@
-const CACHE_VERSION = 'habitflow-pwa-v2026-07-14-mobile-home-polish-v4';
+const CACHE_VERSION = 'habitflow-pwa-v2026-07-14-mobile-capture-layout-v5';
 const APP_SHELL = [
   './',
   './index.html',
