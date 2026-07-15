@@ -50,5 +50,6 @@ assert(css.includes('.mobile-v2~.voice-assistant-launcher') && css.includes('bac
 assert(css.includes('.m2-home-main-sections{display:flex;flex-direction:column') && css.includes('max-height:none') && css.includes('overflow:visible'), 'Las cards principales deben ser de una columna y altura dinámica');
 assert(css.includes('@keyframes m2-streak-flame') && css.includes('@media(prefers-reduced-motion:reduce)'), 'La llama debe animarse sutilmente y respetar movimiento reducido');
 assert(app.includes('.voice-assistant *') && app.includes('box-sizing: border-box') && app.includes('max-inline-size: 100%'), 'Fecha y hora del intérprete global deben respetar el ancho disponible');
+assert(app.includes('voice-field is-wide voice-field-date') && app.includes('voice-field is-wide voice-field-time') && app.includes('-webkit-appearance: none'), 'Fecha y hora deben igualar el ancho de Título y neutralizar el ancho intrínseco de Safari');
 
-console.log('Inicio Mobile/Tablet profesional: 38 comprobaciones correctas.');
+console.log('Inicio Mobile/Tablet profesional: 39 comprobaciones correctas.');

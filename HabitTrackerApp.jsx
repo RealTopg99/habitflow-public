@@ -258,7 +258,7 @@ const persistBrushingStorage = (state) => {
   } catch {}
 };
 
-const APP_UPDATE_VERSION = '2026-07-14-voice-review-layout-v6';
+const APP_UPDATE_VERSION = '2026-07-14-ios-date-time-width-v7';
 const APP_UPDATE_NOTES = [
   'Pomodoro ya no falla al terminar una sesión y ahora avisa al finalizar enfoque, descanso y descanso largo.',
   'Finanzas ahora usa un switch global USD/COP para mantener la vista limpia.',
@@ -9974,15 +9974,37 @@ const injectStyles = () => {
     }
     .voice-field input[type="date"],
     .voice-field input[type="time"] {
-      inline-size: 100%;
-      max-inline-size: 100%;
-      min-inline-size: 0;
+      width: 100% !important;
+      max-width: 100% !important;
+      min-width: 0 !important;
+      inline-size: 100% !important;
+      max-inline-size: 100% !important;
+      min-inline-size: 0 !important;
+      height: 42px;
+      margin: 0;
+      padding: 0 11px;
+      border-radius: 10px;
+      -webkit-appearance: none;
+      appearance: none;
       overflow: hidden;
     }
     .voice-field input[type="date"]::-webkit-date-and-time-value,
     .voice-field input[type="time"]::-webkit-date-and-time-value {
+      width: 100%;
       min-width: 0;
       text-align: left;
+    }
+    .voice-field input[type="date"]::-webkit-datetime-edit,
+    .voice-field input[type="time"]::-webkit-datetime-edit {
+      min-width: 0;
+      padding: 0;
+    }
+    .voice-field input[type="date"]::-webkit-calendar-picker-indicator,
+    .voice-field input[type="time"]::-webkit-calendar-picker-indicator {
+      flex: 0 0 auto;
+      margin: 0;
+      padding: 0;
+      opacity: .82;
     }
     .voice-missing {
       display: flex;
@@ -24019,11 +24041,11 @@ const VoiceAssistant = ({
                   <span>Título</span>
                   <input value={item.title || ''} onChange={event => updateItem(item.id, { title: event.target.value })} />
                 </label>
-                <label className="voice-field">
+                <label className="voice-field is-wide voice-field-date">
                   <span>Fecha</span>
                   <input type="date" value={item.date || ''} onChange={event => updateItem(item.id, { date: event.target.value })} />
                 </label>
-                <label className="voice-field">
+                <label className="voice-field is-wide voice-field-time">
                   <span>Hora opcional</span>
                   <input type="time" value={item.time || ''} onChange={event => updateItem(item.id, { time: event.target.value })} />
                 </label>
