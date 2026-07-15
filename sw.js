@@ -1,4 +1,4 @@
-const CACHE_VERSION = 'habitflow-pwa-v2026-07-14-auto-update-a';
+const CACHE_VERSION = 'habitflow-pwa-v2026-07-14-functional-audit-b';
 const APP_SHELL = [
   './',
   './index.html',
@@ -34,6 +34,8 @@ self.addEventListener('fetch', (event) => {
     isNavigation ||
     url.pathname.endsWith('/index.html') ||
     url.pathname.endsWith('/HabitTrackerApp.jsx') ||
+    url.pathname.endsWith('/MobileTabletV2.jsx') ||
+    url.pathname.endsWith('/mobile-v2.css') ||
     url.pathname.endsWith('/WorkoutFeature.jsx') ||
     url.pathname.endsWith('/widget-sync-core.js') ||
     url.pathname.endsWith('/exercise-dataset-service.js') ||

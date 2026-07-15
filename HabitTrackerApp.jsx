@@ -258,7 +258,7 @@ const persistBrushingStorage = (state) => {
   } catch {}
 };
 
-const APP_UPDATE_VERSION = '2026-06-04-pro-ui-audit-v4';
+const APP_UPDATE_VERSION = '2026-07-14-mobile-functional-audit-v1';
 const APP_UPDATE_NOTES = [
   'Pomodoro ya no falla al terminar una sesión y ahora avisa al finalizar enfoque, descanso y descanso largo.',
   'Finanzas ahora usa un switch global USD/COP para mantener la vista limpia.',
@@ -24955,11 +24955,17 @@ const HabitFlowApp = () => {
   const [showChallengeComplete, setShowChallengeComplete] = useState(null);
   const [showFocus, setShowFocus] = useState(false);
 
-  const navigateTo = useCallback((nextView) => {
+  const navigateTo = useCallback((nextView, options = {}) => {
     const blockedCreatorView = nextView === 'creator' && !hasCreatorAccess();
     const safeView = ['reading', 'stats'].includes(nextView) || blockedCreatorView ? 'dashboard' : nextView;
     setView(safeView);
     localStorage.setItem('habitflow_active_view', safeView);
+    if (!options.fromHistory) {
+      const url = new URL(window.location.href);
+      url.searchParams.set('view', safeView);
+      ['agenda', 'workout', 'wallet', 'goals'].forEach(key => url.searchParams.delete(key));
+      window.history[options.replace ? 'replaceState' : 'pushState']({ view: safeView }, '', url);
+    }
     requestAnimationFrame(() => {
       window.scrollTo(0, 0);
       const main = document.querySelector('.app-main');
@@ -25174,6 +25180,15 @@ const HabitFlowApp = () => {
       return newData;
     });
   }, []);
+
+  useEffect(() => {
+    const onPopState = () => {
+      const requested = new URLSearchParams(window.location.search).get('view') || 'dashboard';
+      navigateTo(requested, { fromHistory: true });
+    };
+    window.addEventListener('popstate', onPopState);
+    return () => window.removeEventListener('popstate', onPopState);
+  }, [navigateTo]);
 
   const reconcileWorkoutAutomatically = useCallback(async () => {
     const cloud = await loadCloudData();
@@ -25676,6 +25691,13 @@ const HabitFlowApp = () => {
           dateLabel={formatDateSpanish(new Date())}
           onNotifications={() => requestHabitFlowNotifications()}
           onQuickAction={runDashboardQuickAction}
+          pendingQuickAction={pendingQuickAction}
+          onQuickActionHandled={markQuickActionHandled}
+          onAddHabit={onAddHabit}
+          onUpdateHabit={onUpdateHabit}
+          onDeleteHabit={onDeleteHabit}
+          onCreateHabitCategory={onCreateHabitCategory}
+          onUpdateUser={onUpdateUser}
           onCompleteHabit={onCompleteHabit}
           onUpdatePomodoro={onUpdatePomodoro}
           onUpdateAgenda={onUpdateAgenda}
