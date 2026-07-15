@@ -258,7 +258,7 @@ const persistBrushingStorage = (state) => {
   } catch {}
 };
 
-const APP_UPDATE_VERSION = '2026-07-14-ios-date-time-width-v7';
+const APP_UPDATE_VERSION = '2026-07-15-mobile-habits-redesign-v8';
 const APP_UPDATE_NOTES = [
   'Pomodoro ya no falla al terminar una sesión y ahora avisa al finalizar enfoque, descanso y descanso largo.',
   'Finanzas ahora usa un switch global USD/COP para mantener la vista limpia.',

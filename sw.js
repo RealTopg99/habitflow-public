@@ -1,4 +1,4 @@
-const CACHE_VERSION = 'habitflow-pwa-v2026-07-14-ios-date-time-width-v7';
+const CACHE_VERSION = 'habitflow-pwa-v2026-07-15-mobile-habits-redesign-v8';
 const APP_SHELL = [
   './',
   './index.html',

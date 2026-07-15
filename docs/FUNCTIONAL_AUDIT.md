@@ -159,3 +159,11 @@ No se añadió un segundo store ni datos mock para ocultar estados vacíos. Las 
 - Corrección V5: el desbordamiento de Fecha/Hora provenía de aplicar `width: 100%` con `box-sizing: content-box` a `voice-assistant-body`, `voice-draft-card` y los hijos del grid. Todos los contenedores relevantes usan ahora `border-box`; cada campo usa ancho automático dentro de su track y los inputs permanecen dentro de los límites del grid y la tarjeta en 320–820 px.
 - Corrección V6: la regla definitiva vive en el CSS global de `VoiceAssistant`, no en el shell Mobile V2. Todo el árbol del diálogo usa `border-box`; los inputs `date/time` tienen límites físicos e inline explícitos y valor WebKit alineado. El recorrido automatizado valida por separado la barra “Captura algo rápido” y el micrófono flotante en 320, 360, 390, 430, 768 y 820 px. Evidencias: `quick-capture-date-time.png` y `quick-capture-date-time-audio.png`.
 - Corrección V7 para iPhone: Fecha y Hora opcional ocupan filas completas como Título y neutralizan el ancho intrínseco de Safari mediante `appearance`, dimensiones inline/físicas y pseudoelementos WebKit. La prueba compara igualdad exacta de bordes, ancho, altura, padding y radio con Título, además de los límites de tarjeta/grid/viewport, en ambas entradas al intérprete.
+
+## Rediseño de Hábitos Mobile/Tablet — 2026-07-15
+
+- La tabla semanal y las métricas superiores se sustituyeron por una experiencia dedicada: saludo, tarjetas individuales de hábitos, matriz visual de días, FAB de creación, resumen final y widget compacto.
+- Cada tarjeta usa datos existentes de `habits`, `records`, rachas, metas y XP; completar conserva `onCompleteHabit`, sincronización, registro de XP y operación offline existentes.
+- La matriz usa cuadrados de color por identidad del hábito, pendiente oscuro y futuro atenuado. Rachas/Meses cambia 14/35 días con navegación de períodos sin usar un calendario tradicional.
+- El FAB reutiliza `HabitForm`; el widget de hidratación conserva su interruptor real. El botón de completar ofrece feedback local de +XP, escala y confeti breve sin modal ni recarga.
+- Pruebas visuales/funcionales: `scripts/capture-mobile-habits.cjs`; evidencias en `test-results/mobile-habits-redesign/` para 320, 390, 768, 820 y regresión desktop.
